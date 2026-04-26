@@ -61,51 +61,137 @@
 <script>
   function timeAgo(dateStr) {
     const m = Math.floor((Date.now() - new Date(dateStr)) / 60000);
+    if (m < 1)    return 'just now';
     if (m < 60)   return m + 'm ago';
     if (m < 1440) return Math.floor(m / 60) + 'h ago';
     return Math.floor(m / 1440) + 'd ago';
   }
 
   function renderNews(items) {
+    if (!items.length) throw new Error('empty');
     document.getElementById('news-container').innerHTML = items.map(item => `
       <div class="news-card" onclick="window.open('${item.link}','_blank')">
         <div class="news-meta">
-          <span class="news-source"><i class="fa-solid fa-rss" style="margin-right:4px;font-size:8px;"></i>Kitco</span>
+          <span class="news-source">
+            <i class="fa-solid fa-rss" style="margin-right:4px;font-size:8px;"></i>Kitco
+          </span>
           <span class="news-time">${timeAgo(item.pubDate)}</span>
         </div>
         <div class="news-title">${item.title}</div>
-        <div class="news-desc">${item.description?.replace(/<[^>]*>/g,'').slice(0,140) || ''}...</div>
-        <div class="news-link"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i> Read full article</div>
+        <div class="news-desc">${item.description}</div>
+        <div class="news-link">
+          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i> Read full article
+        </div>
       </div>`).join('');
   }
 
+  function showError() {
+    document.getElementById('news-container').innerHTML = `
+      <div class="news-card" style="text-align:center;padding:30px 16px;">
+        <i class="fa-solid fa-satellite-dish" style="font-size:28px;color:var(--txt-3);display:block;margin-bottom:10px;"></i>
+        <p style="color:var(--txt-2);font-size:13px;">Could not load news feed.</p>
+        <p style="color:var(--txt-3);font-size:11px;margin-top:6px;">Check your connection or try refreshing.</p>
+        <a href="https://www.kitco.com/news/gold" target="_blank"
+           style="color:var(--gold);font-size:12px;margin-top:12px;display:inline-block;">
+          <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i>Open Kitco directly
+        </a>
+      </div>`;
+  }
+
   async function fetchNews() {
-    const rss = encodeURIComponent('https://www.kitco.com/news/rss/gold-news.rss');
+    /* Strategy 1 — allorigins CORS proxy, parse raw RSS XML */
+    const RSS_URL = 'https://www.kitco.com/news/rss/gold-news.rss';
+    const PROXY   = `https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}&timestamp=${Date.now()}`;
+
     try {
-      const res  = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rss}&count=15`);
-      const data = await res.json();
-      if (data.status !== 'ok' || !data.items?.length) throw new Error();
-      renderNews(data.items);
-    } catch {
-      document.getElementById('news-container').innerHTML = `
-        <div class="news-card" style="text-align:center;padding:30px 16px;">
-          <i class="fa-solid fa-satellite-dish" style="font-size:28px;color:var(--txt-3);display:block;margin-bottom:10px;"></i>
-          <p style="color:var(--txt-2);font-size:13px;">Could not load live news.</p>
-          <a href="https://www.kitco.com/news/gold" target="_blank" style="color:var(--gold);font-size:12px;margin-top:10px;display:inline-block;">
-            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i>Open Kitco directly
-          </a>
-        </div>`;
+      const res  = await fetch(PROXY, { cache: 'no-store' });
+      if (!res.ok) throw new Error('proxy ' + res.status);
+      const json = await res.json();
+
+      /* allorigins returns the raw RSS as a string inside .contents */
+      const parser = new DOMParser();
+      const xml    = parser.parseFromString(json.contents, 'text/xml');
+
+      /* Check parse worked */
+      if (xml.querySelector('parsererror')) throw new Error('XML parse failed');
+
+      const rawItems = [...xml.querySelectorAll('item')];
+      if (!rawItems.length) throw new Error('no items in feed');
+
+      const items = rawItems.slice(0, 15).map(el => {
+        /* Strip HTML tags from description */
+        const rawDesc = el.querySelector('description')?.textContent || '';
+        const tmp     = document.createElement('div');
+        tmp.innerHTML = rawDesc;
+        const cleanDesc = (tmp.textContent || '').trim().slice(0, 160);
+
+        /* Kitco's <link> is a text node after a comment node — grab it carefully */
+        let link = '';
+        el.childNodes.forEach(node => {
+          if (node.nodeName === 'link') link = node.textContent;
+        });
+        if (!link) link = el.querySelector('link')?.textContent || '#';
+
+        return {
+          title:   el.querySelector('title')?.textContent?.trim()   || 'Gold Market Update',
+          link:    link.trim(),
+          pubDate: el.querySelector('pubDate')?.textContent         || new Date().toUTCString(),
+          description: cleanDesc || 'Tap to read the full article on Kitco.',
+        };
+      });
+
+      renderNews(items);
+    } catch (err) {
+      console.error('News fetch failed:', err.message);
+
+      /* Strategy 2 — fallback to corsproxy.io */
+      try {
+        const PROXY2 = `https://corsproxy.io/?${encodeURIComponent(RSS_URL)}`;
+        const res2   = await fetch(PROXY2, { cache: 'no-store' });
+        if (!res2.ok) throw new Error('proxy2 ' + res2.status);
+        const text   = await res2.text();
+        const parser = new DOMParser();
+        const xml2   = parser.parseFromString(text, 'text/xml');
+        if (xml2.querySelector('parsererror')) throw new Error('XML2 parse failed');
+
+        const rawItems2 = [...xml2.querySelectorAll('item')];
+        if (!rawItems2.length) throw new Error('no items in feed2');
+
+        const items2 = rawItems2.slice(0, 15).map(el => {
+          const rawDesc = el.querySelector('description')?.textContent || '';
+          const tmp = document.createElement('div');
+          tmp.innerHTML = rawDesc;
+          const cleanDesc = (tmp.textContent || '').trim().slice(0, 160);
+          let link = '';
+          el.childNodes.forEach(node => { if (node.nodeName === 'link') link = node.textContent; });
+          if (!link) link = el.querySelector('link')?.textContent || '#';
+          return {
+            title:   el.querySelector('title')?.textContent?.trim()   || 'Gold Market Update',
+            link:    link.trim(),
+            pubDate: el.querySelector('pubDate')?.textContent         || new Date().toUTCString(),
+            description: cleanDesc || 'Tap to read the full article on Kitco.',
+          };
+        });
+        renderNews(items2);
+      } catch (err2) {
+        console.error('Both proxies failed:', err2.message);
+        showError();
+      }
     }
   }
 
-  document.getElementById('refresh-btn').addEventListener('click', async function() {
-    this.classList.add('spin');
-    document.getElementById('news-container').innerHTML = `
+  function showSkeletons() {
+    document.getElementById('news-container').innerHTML = ['90', '85', '80'].map(w => `
       <div class="news-card" style="min-height:90px;">
         <div class="skeleton" style="height:12px;width:60px;margin-bottom:10px;"></div>
-        <div class="skeleton" style="height:14px;width:90%;margin-bottom:6px;"></div>
+        <div class="skeleton" style="height:14px;width:${w}%;margin-bottom:6px;"></div>
         <div class="skeleton" style="height:12px;width:70%;"></div>
-      </div>`;
+      </div>`).join('');
+  }
+
+  document.getElementById('refresh-btn').addEventListener('click', async function () {
+    this.classList.add('spin');
+    showSkeletons();
     await fetchNews();
     showToast('✓ News refreshed');
     setTimeout(() => this.classList.remove('spin'), 700);
