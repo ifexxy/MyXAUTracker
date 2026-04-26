@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070c12" />
+  <title>GOLD NEWS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+
+  <div id="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="topbar-title">XAU<span>/USD</span></span>
+    </div>
+    <div class="live-dot">LIVE</div>
+    <button class="refresh-btn" id="refresh-btn" title="Refresh news">
+      <i class="fa-solid fa-rotate-right"></i>
+    </button>
+  </div>
+
+  <div id="content">
+    <div class="section-hdr" style="padding-top:16px;">
+      <i class="fa-solid fa-newspaper" style="margin-right:6px;color:var(--gold)"></i>Latest Gold News
+    </div>
+    <div id="news-container">
+      <!-- Skeleton loaders shown while fetching -->
+      <div class="news-card" style="min-height:90px;">
+        <div class="skeleton" style="height:12px;width:60px;margin-bottom:10px;"></div>
+        <div class="skeleton" style="height:14px;width:90%;margin-bottom:6px;"></div>
+        <div class="skeleton" style="height:12px;width:70%;"></div>
+      </div>
+      <div class="news-card" style="min-height:90px;">
+        <div class="skeleton" style="height:12px;width:60px;margin-bottom:10px;"></div>
+        <div class="skeleton" style="height:14px;width:85%;margin-bottom:6px;"></div>
+        <div class="skeleton" style="height:12px;width:65%;"></div>
+      </div>
+      <div class="news-card" style="min-height:90px;">
+        <div class="skeleton" style="height:12px;width:60px;margin-bottom:10px;"></div>
+        <div class="skeleton" style="height:14px;width:80%;margin-bottom:6px;"></div>
+        <div class="skeleton" style="height:12px;width:75%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <nav id="bottomnav">
+    <a class="nav-btn" data-page="index.html"   href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+    <a class="nav-btn" data-page="news.html"    href="news.html"><i class="fa-solid fa-newspaper"></i>News</a>
+    <a class="nav-btn" data-page="trends.html"  href="trends.html"><i class="fa-solid fa-chart-area"></i>Trends</a>
+    <a class="nav-btn" data-page="predict.html" href="predict.html"><i class="fa-solid fa-brain"></i>Predict</a>
+  </nav>
+
+</div>
+<div id="toast"></div>
+
+<script src="js/api.js"></script>
+<script>
+  function timeAgo(dateStr) {
+    const m = Math.floor((Date.now() - new Date(dateStr)) / 60000);
+    if (m < 60)   return m + 'm ago';
+    if (m < 1440) return Math.floor(m / 60) + 'h ago';
+    return Math.floor(m / 1440) + 'd ago';
+  }
+
+  function renderNews(items) {
+    document.getElementById('news-container').innerHTML = items.map(item => `
+      <div class="news-card" onclick="window.open('${item.link}','_blank')">
+        <div class="news-meta">
+          <span class="news-source"><i class="fa-solid fa-rss" style="margin-right:4px;font-size:8px;"></i>Kitco</span>
+          <span class="news-time">${timeAgo(item.pubDate)}</span>
+        </div>
+        <div class="news-title">${item.title}</div>
+        <div class="news-desc">${item.description?.replace(/<[^>]*>/g,'').slice(0,140) || ''}...</div>
+        <div class="news-link"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i> Read full article</div>
+      </div>`).join('');
+  }
+
+  async function fetchNews() {
+    const rss = encodeURIComponent('https://www.kitco.com/news/rss/gold-news.rss');
+    try {
+      const res  = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rss}&count=15`);
+      const data = await res.json();
+      if (data.status !== 'ok' || !data.items?.length) throw new Error();
+      renderNews(data.items);
+    } catch {
+      document.getElementById('news-container').innerHTML = `
+        <div class="news-card" style="text-align:center;padding:30px 16px;">
+          <i class="fa-solid fa-satellite-dish" style="font-size:28px;color:var(--txt-3);display:block;margin-bottom:10px;"></i>
+          <p style="color:var(--txt-2);font-size:13px;">Could not load live news.</p>
+          <a href="https://www.kitco.com/news/gold" target="_blank" style="color:var(--gold);font-size:12px;margin-top:10px;display:inline-block;">
+            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i>Open Kitco directly
+          </a>
+        </div>`;
+    }
+  }
+
+  document.getElementById('refresh-btn').addEventListener('click', async function() {
+    this.classList.add('spin');
+    document.getElementById('news-container').innerHTML = `
+      <div class="news-card" style="min-height:90px;">
+        <div class="skeleton" style="height:12px;width:60px;margin-bottom:10px;"></div>
+        <div class="skeleton" style="height:14px;width:90%;margin-bottom:6px;"></div>
+        <div class="skeleton" style="height:12px;width:70%;"></div>
+      </div>`;
+    await fetchNews();
+    showToast('✓ News refreshed');
+    setTimeout(() => this.classList.remove('spin'), 700);
+  });
+
+  setActiveNav();
+  fetchNews();
+</script>
+</body>
+</html>
