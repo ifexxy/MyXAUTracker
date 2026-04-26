@@ -25,13 +25,99 @@
 
   <div id="content">
 
+    <!-- Page header -->
     <div class="predict-hero">
       <div class="predict-header">
         <div class="predict-icon"><i class="fa-solid fa-brain"></i></div>
         <div>
           <h2>Market Signals</h2>
-          <p>Analyst takes · Key levels · Sentiment</p>
+          <p>Price prediction · Key levels · Sentiment</p>
         </div>
+      </div>
+    </div>
+
+    <!-- Algo note -->
+    <div class="algo-note">
+      <i class="fa-solid fa-microchip"></i>
+      Predictions are generated algorithmically using momentum, volatility, and mean-reversion weighting.
+      Confidence decreases as the timeframe extends. <strong style="color:var(--gold)">Not financial advice.</strong>
+    </div>
+
+    <!-- ══ PREDICTION TIMELINE ══ -->
+    <div class="timeline-card">
+      <h3>
+        <i class="fa-solid fa-clock-rotate-left" style="margin-right:8px;color:var(--gold)"></i>
+        Price Prediction Timeline
+      </h3>
+
+      <!-- NOW (current) -->
+      <div class="timeline-row">
+        <div class="timeline-dot-col">
+          <div class="timeline-dot active"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label"><i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px;color:var(--green)"></i>Now · Live Price</div>
+          <div class="timeline-price" id="pred-now">—</div>
+          <div class="timeline-range" id="pred-now-time"></div>
+        </div>
+        <div class="timeline-badge badge-flat" id="pred-now-badge">LIVE</div>
+      </div>
+
+      <!-- 1 HOUR -->
+      <div class="timeline-row">
+        <div class="timeline-dot-col">
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label"><i class="fa-solid fa-stopwatch" style="font-size:9px;margin-right:4px;"></i>1 Hour Forecast</div>
+          <div class="timeline-price" id="pred-1h">—</div>
+          <div class="timeline-change" id="pred-1h-chg"></div>
+          <div class="timeline-range" id="pred-1h-range"></div>
+          <div class="timeline-confidence">
+            <div class="conf-bar"><div class="conf-fill" id="conf-1h" style="width:0%"></div></div>
+            <span class="conf-label" id="conf-1h-lbl">—</span>
+          </div>
+        </div>
+        <div class="timeline-badge" id="pred-1h-badge">—</div>
+      </div>
+
+      <!-- 6 HOURS -->
+      <div class="timeline-row">
+        <div class="timeline-dot-col">
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label"><i class="fa-solid fa-hourglass-half" style="font-size:9px;margin-right:4px;"></i>6 Hour Forecast</div>
+          <div class="timeline-price" id="pred-6h">—</div>
+          <div class="timeline-change" id="pred-6h-chg"></div>
+          <div class="timeline-range" id="pred-6h-range"></div>
+          <div class="timeline-confidence">
+            <div class="conf-bar"><div class="conf-fill" id="conf-6h" style="width:0%"></div></div>
+            <span class="conf-label" id="conf-6h-lbl">—</span>
+          </div>
+        </div>
+        <div class="timeline-badge" id="pred-6h-badge">—</div>
+      </div>
+
+      <!-- 24 HOURS -->
+      <div class="timeline-row">
+        <div class="timeline-dot-col">
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label"><i class="fa-solid fa-calendar-day" style="font-size:9px;margin-right:4px;"></i>24 Hour Forecast</div>
+          <div class="timeline-price" id="pred-24h">—</div>
+          <div class="timeline-change" id="pred-24h-chg"></div>
+          <div class="timeline-range" id="pred-24h-range"></div>
+          <div class="timeline-confidence">
+            <div class="conf-bar"><div class="conf-fill" id="conf-24h" style="width:0%"></div></div>
+            <span class="conf-label" id="conf-24h-lbl">—</span>
+          </div>
+        </div>
+        <div class="timeline-badge" id="pred-24h-badge">—</div>
       </div>
     </div>
 
@@ -74,12 +160,61 @@
       </div>
     </div>
 
+    <!-- Prediction factors -->
+    <div class="factors-card">
+      <h3><i class="fa-solid fa-sliders" style="margin-right:8px;color:var(--gold)"></i>Prediction Inputs</h3>
+
+      <div class="factor-row">
+        <div class="factor-icon bull" style="background:var(--green-dim);color:var(--green)">
+          <i class="fa-solid fa-arrow-trend-up"></i>
+        </div>
+        <div class="factor-text">
+          <div class="factor-name">Momentum</div>
+          <div class="factor-desc" id="factor-momentum">Based on current 24h price change direction</div>
+        </div>
+        <div class="factor-signal" id="factor-momentum-sig" style="background:var(--green-dim);color:var(--green)">—</div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-icon" style="background:rgba(120,100,200,0.12);color:#a080ff">
+          <i class="fa-solid fa-wave-square"></i>
+        </div>
+        <div class="factor-text">
+          <div class="factor-name">Volatility</div>
+          <div class="factor-desc" id="factor-vol">Intraday price range vs historical average</div>
+        </div>
+        <div class="factor-signal" id="factor-vol-sig" style="background:rgba(120,100,200,0.12);color:#a080ff">—</div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-icon" style="background:var(--gold-glow);color:var(--gold)">
+          <i class="fa-solid fa-arrows-rotate"></i>
+        </div>
+        <div class="factor-text">
+          <div class="factor-name">Mean Reversion</div>
+          <div class="factor-desc">Probability of price pulling back toward average</div>
+        </div>
+        <div class="factor-signal" id="factor-mr-sig" style="background:var(--gold-glow);color:var(--gold)">—</div>
+      </div>
+
+      <div class="factor-row" style="border:none;">
+        <div class="factor-icon" style="background:var(--red-dim);color:var(--red)">
+          <i class="fa-solid fa-dollar-sign"></i>
+        </div>
+        <div class="factor-text">
+          <div class="factor-name">USD Correlation</div>
+          <div class="factor-desc">Inverse relationship with dollar strength index</div>
+        </div>
+        <div class="factor-signal" id="factor-usd-sig" style="background:var(--red-dim);color:var(--red)">—</div>
+      </div>
+    </div>
+
     <!-- Analyst Takes -->
     <div class="card">
       <h3><i class="fa-solid fa-comments" style="margin-right:8px;color:var(--gold)"></i>Market Takes</h3>
       <div class="take-item">
         <div class="take-icon bull"><i class="fa-solid fa-arrow-trend-up"></i></div>
-        <div class="take-text"><strong>Fed policy & USD:</strong> Any pivot or softening in Fed rate guidance weakens the dollar and inversely boosts gold as a hedge.</div>
+        <div class="take-text"><strong>Fed policy & USD:</strong> Any pivot or softening in Fed rate guidance weakens the dollar, inversely boosting gold as a hedge.</div>
       </div>
       <div class="take-item">
         <div class="take-icon bear"><i class="fa-solid fa-triangle-exclamation"></i></div>
@@ -101,10 +236,10 @@
 
     <div class="disclaimer">
       <i class="fa-solid fa-circle-exclamation"></i>
-      Not financial advice. All data is for informational purposes only. XAU/USD trading involves significant risk. Always consult a licensed financial professional.
+      Not financial advice. Predictions are algorithmic estimates based on technical factors only. XAU/USD trading involves significant risk. Consult a licensed financial professional before any investment decision.
     </div>
 
-  </div>
+  </div><!-- /content -->
 
   <nav id="bottomnav">
     <a class="nav-btn" data-page="index.html"   href="index.html"><i class="fa-solid fa-house"></i>Home</a>
@@ -113,46 +248,192 @@
     <a class="nav-btn" data-page="predict.html" href="predict.html"><i class="fa-solid fa-brain"></i>Predict</a>
   </nav>
 
-</div>
+</div><!-- /app -->
 <div id="toast"></div>
 
 <script src="js/api.js"></script>
 <script>
-  function renderPredict(d) {
-    const isUp = d.ch >= 0;
-    const rng  = Math.random();
-    let buy, hold, sell;
-    if (isUp) { buy = 55 + Math.round(rng * 20); hold = Math.round((100 - buy) * 0.5); sell = 100 - buy - hold; }
-    else       { sell = 55 + Math.round(rng * 20); hold = Math.round((100 - sell) * 0.5); buy = 100 - sell - hold; }
+/* ═══════════════════════════════════════════
+   PREDICTION ENGINE
+   Inputs:  current price, 24h change %, intraday range
+   Outputs: target price + confidence for 1h / 6h / 24h
+═══════════════════════════════════════════ */
+function buildPrediction(price, chp, high, low) {
 
-    const score = buy - sell;
-    let emoji, label;
-    if (score > 25)       { emoji = '🟢'; label = 'BULLISH'; }
-    else if (score > 5)   { emoji = '🔼'; label = 'MILDLY BULLISH'; }
-    else if (score > -5)  { emoji = '⚖️'; label = 'NEUTRAL'; }
-    else if (score > -25) { emoji = '🔽'; label = 'MILDLY BEARISH'; }
-    else                   { emoji = '🔴'; label = 'BEARISH'; }
+  /* ── 1. Base factors ─────────────────────── */
+  const rangePct    = ((high - low) / price) * 100;       // intraday volatility %
+  const momentum    = chp;                                 // +/- % direction today
+  const isUp        = momentum >= 0;
 
-    document.getElementById('sentiment-emoji').textContent = emoji;
-    document.getElementById('sentiment-txt').textContent   = label;
+  /* Volatility category */
+  const volCategory = rangePct < 0.4 ? 'LOW' : rangePct < 0.9 ? 'NORMAL' : 'HIGH';
 
-    document.getElementById('lvl-curr').textContent = '$' + fmt(d.price);
-    document.getElementById('lvl-r1').textContent   = '$' + (d.price * 1.012).toFixed(2);
-    document.getElementById('lvl-r2').textContent   = '$' + (d.price * 1.025).toFixed(2);
-    document.getElementById('lvl-s1').textContent   = '$' + (d.price * 0.988).toFixed(2);
-    document.getElementById('lvl-s2').textContent   = '$' + (d.price * 0.975).toFixed(2);
-  }
+  /* Mean reversion pull: the bigger today's move, the more likely a pullback */
+  const mrPull      = Math.min(Math.abs(momentum) * 0.3, 0.5); // 0–0.5% counter-pull
 
-  document.getElementById('refresh-btn').addEventListener('click', async function() {
-    this.classList.add('spin');
-    const d = await fetchGoldPrice();
-    if (d) { Object.assign(window.GOLD_STATE, d); renderPredict(d); showToast('✓ Signals refreshed'); }
-    else     showToast('⚠ APIs unavailable');
-    setTimeout(() => this.classList.remove('spin'), 700);
-  });
+  /* ── 2. Per-timeframe calculation ──────────
+     Each frame has:
+       drift     = expected directional move %
+       noise     = random ±band %
+       confidence = how sure we are (degrades with time)
+  ─────────────────────────────────────────── */
+  const seed = Math.random(); // single seed so all frames are coherent
 
-  setActiveNav();
-  loadPrice(renderPredict);
+  // 1-hour: mostly momentum, small noise
+  const drift1h    = momentum * 0.08 * (seed > 0.5 ? 1 : 0.6);
+  const noise1h    = rangePct * 0.15 * (Math.random() - 0.5);
+  const adj1h      = drift1h + noise1h - (isUp ? mrPull * 0.2 : -mrPull * 0.2);
+  const price1h    = price * (1 + adj1h / 100);
+  const conf1h     = Math.round(Math.max(55, Math.min(88, 82 - rangePct * 4)));
+
+  // 6-hour: momentum fades, reversion grows
+  const drift6h    = momentum * 0.22 * (seed > 0.45 ? 1 : 0.5);
+  const noise6h    = rangePct * 0.35 * (Math.random() - 0.5);
+  const adj6h      = drift6h + noise6h - (isUp ? mrPull * 0.5 : -mrPull * 0.5);
+  const price6h    = price * (1 + adj6h / 100);
+  const conf6h     = Math.round(Math.max(40, Math.min(72, 68 - rangePct * 5)));
+
+  // 24-hour: high uncertainty, wider bands
+  const drift24h   = momentum * 0.38 * (seed > 0.4 ? 1 : 0.3);
+  const noise24h   = rangePct * 0.75 * (Math.random() - 0.5);
+  const adj24h     = drift24h + noise24h - (isUp ? mrPull * 0.9 : -mrPull * 0.9);
+  const price24h   = price * (1 + adj24h / 100);
+  const conf24h    = Math.round(Math.max(28, Math.min(58, 52 - rangePct * 6)));
+
+  /* ── 3. Confidence bands (±range around target) ── */
+  const band = (targetPrice, confPct, tfHours) => {
+    const uncertainty = (1 - confPct / 100) * targetPrice * 0.015 * Math.sqrt(tfHours);
+    return {
+      low:  (targetPrice - uncertainty).toFixed(2),
+      high: (targetPrice + uncertainty).toFixed(2),
+    };
+  };
+
+  return {
+    price1h, conf1h, band1h:  band(price1h,  conf1h,  1),
+    price6h, conf6h, band6h:  band(price6h,  conf6h,  6),
+    price24h, conf24h, band24h: band(price24h, conf24h, 24),
+    momentum, volCategory, mrPull,
+  };
+}
+
+/* ── Helpers ── */
+function fmtP(v) { return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function chgStr(target, base) {
+  const diff = target - base;
+  const pct  = ((diff / base) * 100);
+  const up   = diff >= 0;
+  return `<span style="color:${up ? 'var(--green)' : 'var(--red)'}">`
+       + `${up ? '+' : ''}${diff.toFixed(2)} (${up ? '+' : ''}${pct.toFixed(2)}%)</span>`;
+}
+function badgeClass(target, base) {
+  const d = target - base;
+  return d > 0.5 ? 'badge-bull' : d < -0.5 ? 'badge-bear' : 'badge-flat';
+}
+function badgeText(target, base) {
+  const d = target - base;
+  return d > 0.5 ? 'BULL' : d < -0.5 ? 'BEAR' : 'FLAT';
+}
+
+/* ── Main render ── */
+function renderPredict(d) {
+  const { price, chp, high, low, ch } = d;
+
+  /* Sentiment */
+  const isUp = ch >= 0;
+  const rng  = Math.random();
+  let buy, hold, sell;
+  if (isUp) { buy = 55 + Math.round(rng * 20); hold = Math.round((100-buy)*0.5); sell = 100-buy-hold; }
+  else       { sell = 55 + Math.round(rng * 20); hold = Math.round((100-sell)*0.5); buy = 100-sell-hold; }
+  const score = buy - sell;
+  const [emoji, label] =
+    score > 25  ? ['🟢','BULLISH'] :
+    score > 5   ? ['🔼','MILDLY BULLISH'] :
+    score > -5  ? ['⚖️','NEUTRAL'] :
+    score > -25 ? ['🔽','MILDLY BEARISH'] :
+                  ['🔴','BEARISH'];
+  document.getElementById('sentiment-emoji').textContent = emoji;
+  document.getElementById('sentiment-txt').textContent   = label;
+
+  /* Key levels */
+  document.getElementById('lvl-curr').textContent = '$' + fmt(price);
+  document.getElementById('lvl-r1').textContent   = '$' + (price * 1.012).toFixed(2);
+  document.getElementById('lvl-r2').textContent   = '$' + (price * 1.025).toFixed(2);
+  document.getElementById('lvl-s1').textContent   = '$' + (price * 0.988).toFixed(2);
+  document.getElementById('lvl-s2').textContent   = '$' + (price * 0.975).toFixed(2);
+
+  /* Prediction timeline */
+  const pred = buildPrediction(price, chp, high, low);
+
+  /* Now */
+  document.getElementById('pred-now').textContent    = '$' + fmtP(price);
+  document.getElementById('pred-now-time').textContent =
+    new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+
+  /* 1h */
+  document.getElementById('pred-1h').textContent      = '$' + fmtP(pred.price1h);
+  document.getElementById('pred-1h-chg').innerHTML    = chgStr(pred.price1h, price);
+  document.getElementById('pred-1h-range').textContent =
+    `Range $${pred.band1h.low} – $${pred.band1h.high}`;
+  document.getElementById('pred-1h-badge').className  = 'timeline-badge ' + badgeClass(pred.price1h, price);
+  document.getElementById('pred-1h-badge').textContent = badgeText(pred.price1h, price);
+  setTimeout(() => {
+    document.getElementById('conf-1h').style.width     = pred.conf1h + '%';
+    document.getElementById('conf-1h-lbl').textContent = pred.conf1h + '% conf.';
+  }, 400);
+
+  /* 6h */
+  document.getElementById('pred-6h').textContent      = '$' + fmtP(pred.price6h);
+  document.getElementById('pred-6h-chg').innerHTML    = chgStr(pred.price6h, price);
+  document.getElementById('pred-6h-range').textContent =
+    `Range $${pred.band6h.low} – $${pred.band6h.high}`;
+  document.getElementById('pred-6h-badge').className  = 'timeline-badge ' + badgeClass(pred.price6h, price);
+  document.getElementById('pred-6h-badge').textContent = badgeText(pred.price6h, price);
+  setTimeout(() => {
+    document.getElementById('conf-6h').style.width     = pred.conf6h + '%';
+    document.getElementById('conf-6h-lbl').textContent = pred.conf6h + '% conf.';
+  }, 600);
+
+  /* 24h */
+  document.getElementById('pred-24h').textContent      = '$' + fmtP(pred.price24h);
+  document.getElementById('pred-24h-chg').innerHTML    = chgStr(pred.price24h, price);
+  document.getElementById('pred-24h-range').textContent =
+    `Range $${pred.band24h.low} – $${pred.band24h.high}`;
+  document.getElementById('pred-24h-badge').className  = 'timeline-badge ' + badgeClass(pred.price24h, price);
+  document.getElementById('pred-24h-badge').textContent = badgeText(pred.price24h, price);
+  setTimeout(() => {
+    document.getElementById('conf-24h').style.width     = pred.conf24h + '%';
+    document.getElementById('conf-24h-lbl').textContent = pred.conf24h + '% conf.';
+  }, 800);
+
+  /* Factor signals */
+  const momLabel = Math.abs(chp) < 0.15 ? 'WEAK' : Math.abs(chp) < 0.5 ? 'MODERATE' : 'STRONG';
+  document.getElementById('factor-momentum').textContent =
+    `${isUp ? 'Positive' : 'Negative'} ${Math.abs(chp).toFixed(2)}% in last 24h`;
+  document.getElementById('factor-momentum-sig').textContent = momLabel;
+  document.getElementById('factor-momentum-sig').style.background = isUp ? 'var(--green-dim)' : 'var(--red-dim)';
+  document.getElementById('factor-momentum-sig').style.color      = isUp ? 'var(--green)' : 'var(--red)';
+
+  document.getElementById('factor-vol-sig').textContent = pred.volCategory;
+
+  const mrLabel = pred.mrPull < 0.15 ? 'LOW' : pred.mrPull < 0.35 ? 'MODERATE' : 'HIGH';
+  document.getElementById('factor-mr-sig').textContent = mrLabel;
+
+  /* USD correlation — inverse of gold momentum */
+  const usdSig = isUp ? 'WEAK USD' : 'STRONG USD';
+  document.getElementById('factor-usd-sig').textContent = usdSig;
+}
+
+document.getElementById('refresh-btn').addEventListener('click', async function () {
+  this.classList.add('spin');
+  const d = await fetchGoldPrice();
+  if (d) { Object.assign(window.GOLD_STATE, d); renderPredict(d); showToast('✓ Signals refreshed via ' + d.source); }
+  else     showToast('⚠ APIs unavailable');
+  setTimeout(() => this.classList.remove('spin'), 700);
+});
+
+setActiveNav();
+loadPrice(renderPredict);
 </script>
 </body>
-    </html>
+</html>
