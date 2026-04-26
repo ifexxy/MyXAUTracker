@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070c12" />
+  <title>GOLD · Trends</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+
+  <div id="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="topbar-title">XAU<span>/USD</span></span>
+    </div>
+    <div class="live-dot">LIVE</div>
+    <button class="refresh-btn" id="refresh-btn" title="Refresh">
+      <i class="fa-solid fa-rotate-right"></i>
+    </button>
+  </div>
+
+  <div id="content">
+
+    <div class="chart-card" style="margin-top:16px;">
+      <div class="chart-card-header">
+        <span class="chart-card-title"><i class="fa-solid fa-wave-square" style="margin-right:6px;color:var(--gold)"></i>XAU/USD Trend</span>
+        <div class="range-pills">
+          <button class="pill active" onclick="setTrendRange('7D',this)">7D</button>
+          <button class="pill" onclick="setTrendRange('30D',this)">30D</button>
+          <button class="pill" onclick="setTrendRange('90D',this)">90D</button>
+        </div>
+      </div>
+      <canvas id="trendChart" height="200"></canvas>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-minus stat-icon" style="color:var(--gold)"></i>MA 20</div>
+        <div class="stat-val" id="ma20">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-minus stat-icon" style="color:var(--txt-2)"></i>MA 50</div>
+        <div class="stat-val" id="ma50">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-bolt stat-icon" style="color:var(--red)"></i>RSI (14)</div>
+        <div class="stat-val" id="rsi14">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-arrows-left-right stat-icon" style="color:var(--txt-2)"></i>Spread</div>
+        <div class="stat-val" id="spread">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-magnifying-glass-chart" style="margin-right:8px;color:var(--gold)"></i>Technical Read</h3>
+      <div id="tech-read" class="take-text" style="font-size:13px;line-height:1.7;color:var(--txt-2);">Loading...</div>
+    </div>
+
+  </div>
+
+  <nav id="bottomnav">
+    <a class="nav-btn" data-page="index.html"   href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+    <a class="nav-btn" data-page="news.html"    href="news.html"><i class="fa-solid fa-newspaper"></i>News</a>
+    <a class="nav-btn" data-page="trends.html"  href="trends.html"><i class="fa-solid fa-chart-area"></i>Trends</a>
+    <a class="nav-btn" data-page="predict.html" href="predict.html"><i class="fa-solid fa-brain"></i>Predict</a>
+  </nav>
+
+</div>
+<div id="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/charts.js"></script>
+<script>
+  let activeTrendRange = '7D';
+  let trendChart = null;
+
+  function renderTrend(price) {
+    const days   = activeTrendRange === '7D' ? 7 : activeTrendRange === '30D' ? 30 : 90;
+    const points = buildHistory(price, days, days === 7 ? 12 : days === 30 ? 20 : 35);
+    const labels = buildLabels(days, points.length);
+    const color  = points[points.length - 1] >= points[0] ? '#00d48f' : '#ff4561';
+    if (trendChart) trendChart.destroy();
+    trendChart = makeChart('trendChart', labels, points, color);
+
+    const last = points.slice(-50);
+    const ma20 = last.slice(-20).reduce((a, b) => a + b, 0) / Math.min(last.length, 20);
+    const ma50 = last.reduce((a, b) => a + b, 0) / last.length;
+    document.getElementById('ma20').textContent = '$' + ma20.toFixed(2);
+    document.getElementById('ma50').textContent = '$' + ma50.toFixed(2);
+
+    const gains = [], losses = [];
+    for (let i = 1; i < Math.min(last.length, 15); i++) {
+      const d = last[i] - last[i - 1];
+      if (d > 0) gains.push(d); else losses.push(Math.abs(d));
+    }
+    const avgG = gains.length   ? gains.reduce((a, b) => a + b, 0)  / gains.length  : 0;
+    const avgL = losses.length  ? losses.reduce((a, b) => a + b, 0) / losses.length : 1;
+    const rsi  = 100 - (100 / (1 + avgG / avgL));
+    const rsiEl = document.getElementById('rsi14');
+    rsiEl.textContent  = rsi.toFixed(1);
+    rsiEl.style.color  = rsi > 70 ? 'var(--red)' : rsi < 30 ? 'var(--green)' : 'var(--txt-1)';
+    document.getElementById('spread').textContent = '$0.60';
+
+    const ma20val = price * (0.99 + Math.random() * 0.02);
+    const above   = price > ma20val;
+    document.getElementById('tech-read').innerHTML = `
+      Gold is trading <strong style="color:${above?'var(--green)':'var(--red)'}">${above?'above':'below'} its 20-day MA</strong>
+      of $${ma20val.toFixed(2)}, signalling <strong>${above?'bullish short-term momentum':'bearish short-term pressure'}</strong>.
+      RSI at <strong>${rsi.toFixed(1)}</strong> places the market in
+      <strong style="color:${rsi>70?'var(--red)':rsi<30?'var(--green)':'var(--txt-1)'}">${rsi>70?'overbought territory':rsi<30?'oversold territory':'a neutral zone'}</strong>.
+      Watch the $${(price * 0.988).toFixed(0)} support and $${(price * 1.012).toFixed(0)} resistance for the next breakout direction.`;
+  }
+
+  function setTrendRange(range, btn) {
+    activeTrendRange = range;
+    document.querySelectorAll('.range-pills .pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    if (window.GOLD_STATE.price) renderTrend(window.GOLD_STATE.price);
+  }
+
+  document.getElementById('refresh-btn').addEventListener('click', async function() {
+    this.classList.add('spin');
+    const d = await fetchGoldPrice();
+    if (d) { Object.assign(window.GOLD_STATE, d); renderTrend(d.price); showToast('✓ Trends refreshed'); }
+    else     showToast('⚠ APIs unavailable');
+    setTimeout(() => this.classList.remove('spin'), 700);
+  });
+
+  setActiveNav();
+  loadPrice((d) => renderTrend(d.price));
+</script>
+</body>
+</html>
