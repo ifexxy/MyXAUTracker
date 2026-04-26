@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070c12" />
+  <title>XAU/USD Trends, Price, Prediction</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+
+  <div id="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="topbar-title">XAU<span>/USD</span></span>
+    </div>
+    <div class="live-dot">LIVE</div>
+    <button class="refresh-btn" id="refresh-btn" title="Refresh">
+      <i class="fa-solid fa-rotate-right"></i>
+    </button>
+  </div>
+
+  <div id="content">
+
+    <div class="price-hero">
+      <div class="price-pair"><i class="fa-solid fa-layer-group" style="font-size:9px;margin-right:4px;"></i>SPOT GOLD · XAU/USD · TROY OZ</div>
+      <div id="price-display" class="price-main"><div class="skeleton skel-price"></div></div>
+      <div id="price-change"></div>
+      <div class="update-time" id="last-update"></div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-arrow-up stat-icon" style="color:var(--green)"></i>Day High</div>
+        <div class="stat-val" id="stat-high">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-arrow-down stat-icon" style="color:var(--red)"></i>Day Low</div>
+        <div class="stat-val" id="stat-low">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-door-open stat-icon" style="color:var(--gold)"></i>Open</div>
+        <div class="stat-val" id="stat-open">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-chart-bar stat-icon" style="color:var(--txt-2)"></i>24h Change</div>
+        <div class="stat-val" id="stat-chg">—</div>
+      </div>
+    </div>
+
+    <div class="stats-grid" style="margin-top:-4px;">
+      <div class="stat-card" style="border-color:rgba(0,212,143,0.2)">
+        <div class="stat-label"><i class="fa-solid fa-circle stat-icon" style="color:var(--green)"></i>Bid</div>
+        <div class="stat-val" id="stat-bid" style="color:var(--green)">—</div>
+      </div>
+      <div class="stat-card" style="border-color:rgba(255,69,97,0.2)">
+        <div class="stat-label"><i class="fa-solid fa-circle stat-icon" style="color:var(--red)"></i>Ask</div>
+        <div class="stat-val" id="stat-ask" style="color:var(--red)">—</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <span class="chart-card-title"><i class="fa-solid fa-chart-line" style="margin-right:6px;color:var(--gold)"></i>Price Chart</span>
+        <div class="range-pills">
+          <button class="pill active" onclick="setRange('1D',this)">1D</button>
+          <button class="pill" onclick="setRange('1W',this)">1W</button>
+          <button class="pill" onclick="setRange('1M',this)">1M</button>
+        </div>
+      </div>
+      <canvas id="homeChart" height="160"></canvas>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-label"><i class="fa-solid fa-gauge-high" style="margin-right:6px;color:var(--gold)"></i>Market Signal</div>
+      <div class="gauge-row">
+        <span class="gauge-name" style="color:var(--green)">BUY</span>
+        <div class="gauge-bar"><div class="gauge-fill buy" id="sig-buy" style="width:0%"></div></div>
+        <span class="gauge-pct" id="sig-buy-pct" style="color:var(--green)">—</span>
+      </div>
+      <div class="gauge-row">
+        <span class="gauge-name" style="color:var(--gold)">HLD</span>
+        <div class="gauge-bar"><div class="gauge-fill hold" id="sig-hold" style="width:0%"></div></div>
+        <span class="gauge-pct" id="sig-hold-pct" style="color:var(--gold)">—</span>
+      </div>
+      <div class="gauge-row">
+        <span class="gauge-name" style="color:var(--red)">SELL</span>
+        <div class="gauge-bar"><div class="gauge-fill sell" id="sig-sell" style="width:0%"></div></div>
+        <span class="gauge-pct" id="sig-sell-pct" style="color:var(--red)">—</span>
+      </div>
+    </div>
+
+  </div>
+
+  <nav id="bottomnav">
+    <a class="nav-btn" data-page="index.html" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+    <a class="nav-btn" data-page="news.html"  href="news.html"><i class="fa-solid fa-newspaper"></i>News</a>
+    <a class="nav-btn" data-page="trends.html" href="trends.html"><i class="fa-solid fa-chart-area"></i>Trends</a>
+    <a class="nav-btn" data-page="predict.html" href="predict.html"><i class="fa-solid fa-brain"></i>Predict</a>
+  </nav>
+
+</div>
+<div id="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/charts.js"></script>
+<script>
+  let activeRange = '1D';
+  let homeChart   = null;
+
+  function renderPrice(d, isDemo) {
+    const isUp = d.ch >= 0;
+    document.getElementById('price-display').innerHTML = `<span class="currency">$</span>${fmt(d.price)}`;
+    document.getElementById('price-change').innerHTML  = `
+      <div class="price-change ${isUp ? 'up' : 'down'}">
+        <i class="fa-solid fa-caret-${isUp ? 'up' : 'down'}"></i>
+        ${isUp ? '+' : ''}${d.ch.toFixed(2)} (${isUp ? '+' : ''}${d.chp.toFixed(2)}%)
+      </div>`;
+    document.getElementById('last-update').textContent =
+      (isDemo ? '⚠ Demo · ' : '') + 'Updated ' + new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+
+    document.getElementById('stat-high').textContent = '$' + fmt(d.high);
+    document.getElementById('stat-low').textContent  = '$' + fmt(d.low);
+    document.getElementById('stat-open').textContent = '$' + fmt(d.open);
+    document.getElementById('stat-chg').innerHTML    = `<span style="color:${isUp?'var(--green)':'var(--red)'}">${isUp?'+':''}${d.ch.toFixed(2)}</span>`;
+    document.getElementById('stat-bid').textContent  = '$' + fmt(d.bid);
+    document.getElementById('stat-ask').textContent  = '$' + fmt(d.ask);
+
+    const rng = Math.random();
+    let buy, hold, sell;
+    if (isUp) { buy = 55 + Math.round(rng * 20); hold = Math.round((100 - buy) * 0.5); sell = 100 - buy - hold; }
+    else       { sell = 55 + Math.round(rng * 20); hold = Math.round((100 - sell) * 0.5); buy = 100 - sell - hold; }
+    setTimeout(() => {
+      document.getElementById('sig-buy').style.width   = buy + '%';
+      document.getElementById('sig-hold').style.width  = hold + '%';
+      document.getElementById('sig-sell').style.width  = sell + '%';
+      document.getElementById('sig-buy-pct').textContent  = buy + '%';
+      document.getElementById('sig-hold-pct').textContent = hold + '%';
+      document.getElementById('sig-sell-pct').textContent = sell + '%';
+    }, 300);
+
+    renderHomeChart(d.price);
+    if (isDemo) showToast('⚠ Demo mode — add your API key in js/api.js');
+  }
+
+  function renderHomeChart(price) {
+    const days   = activeRange === '1D' ? 1 : activeRange === '1W' ? 7 : 30;
+    const points = buildHistory(price, days, days === 1 ? 3 : days === 7 ? 10 : 18);
+    const labels = buildLabels(days, points.length);
+    const color  = points[points.length - 1] >= points[0] ? '#00d48f' : '#ff4561';
+    if (homeChart) homeChart.destroy();
+    homeChart = makeChart('homeChart', labels, points, color);
+  }
+
+  function setRange(range, btn) {
+    activeRange = range;
+    document.querySelectorAll('.range-pills .pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    if (window.GOLD_STATE.price) renderHomeChart(window.GOLD_STATE.price);
+  }
+
+  document.getElementById('refresh-btn').addEventListener('click', async function() {
+    this.classList.add('spin');
+    const d = await fetchGoldPrice();
+    if (d) { Object.assign(window.GOLD_STATE, d); renderPrice(d, false); showToast('✓ Updated via ' + d.source); }
+    else     showToast('⚠ Both APIs unavailable');
+    setTimeout(() => this.classList.remove('spin'), 700);
+  });
+
+  setActiveNav();
+  loadPrice(renderPrice);
+  setInterval(() => loadPrice(renderPrice), 60000);
+</script>
+</body>
+</html>
