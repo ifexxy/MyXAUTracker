@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070c12" />
+  <title>GOLD · Predict</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+
+  <div id="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="topbar-title">XAU<span>/USD</span></span>
+    </div>
+    <div class="live-dot">LIVE</div>
+    <button class="refresh-btn" id="refresh-btn" title="Refresh">
+      <i class="fa-solid fa-rotate-right"></i>
+    </button>
+  </div>
+
+  <div id="content">
+
+    <div class="predict-hero">
+      <div class="predict-header">
+        <div class="predict-icon"><i class="fa-solid fa-brain"></i></div>
+        <div>
+          <h2>Market Signals</h2>
+          <p>Analyst takes · Key levels · Sentiment</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sentiment -->
+    <div class="card">
+      <h3><i class="fa-solid fa-heart-pulse" style="margin-right:8px;color:var(--gold)"></i>Market Sentiment</h3>
+      <div class="sentiment-arc">
+        <div class="sentiment-big" id="sentiment-emoji">⚖️</div>
+        <div class="sentiment-label" id="sentiment-txt">Calculating...</div>
+      </div>
+    </div>
+
+    <!-- Key Levels -->
+    <div class="card">
+      <h3><i class="fa-solid fa-layer-group" style="margin-right:8px;color:var(--gold)"></i>Key Price Levels</h3>
+      <div class="level-row">
+        <span class="level-name">Strong Resistance</span>
+        <span class="level-val" id="lvl-r2">—</span>
+        <span class="level-badge badge-resist">R2</span>
+      </div>
+      <div class="level-row">
+        <span class="level-name">Resistance</span>
+        <span class="level-val" id="lvl-r1">—</span>
+        <span class="level-badge badge-resist">R1</span>
+      </div>
+      <div class="level-row" style="background:rgba(212,167,44,0.04);border-radius:8px;padding:8px 4px;">
+        <span class="level-name" style="font-weight:700;color:var(--txt-1)">Current Price</span>
+        <span class="level-val" id="lvl-curr" style="color:var(--gold)">—</span>
+        <span class="level-badge badge-neutral">NOW</span>
+      </div>
+      <div class="level-row">
+        <span class="level-name">Support</span>
+        <span class="level-val" id="lvl-s1">—</span>
+        <span class="level-badge badge-support">S1</span>
+      </div>
+      <div class="level-row">
+        <span class="level-name">Strong Support</span>
+        <span class="level-val" id="lvl-s2">—</span>
+        <span class="level-badge badge-support">S2</span>
+      </div>
+    </div>
+
+    <!-- Analyst Takes -->
+    <div class="card">
+      <h3><i class="fa-solid fa-comments" style="margin-right:8px;color:var(--gold)"></i>Market Takes</h3>
+      <div class="take-item">
+        <div class="take-icon bull"><i class="fa-solid fa-arrow-trend-up"></i></div>
+        <div class="take-text"><strong>Fed policy & USD:</strong> Any pivot or softening in Fed rate guidance weakens the dollar and inversely boosts gold as a hedge.</div>
+      </div>
+      <div class="take-item">
+        <div class="take-icon bear"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="take-text"><strong>Rising yields risk:</strong> Elevated real interest rates increase the opportunity cost of holding gold, suppressing upside momentum.</div>
+      </div>
+      <div class="take-item">
+        <div class="take-icon bull"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="take-text"><strong>Geopolitical premium:</strong> Ongoing global tensions drive safe-haven demand, providing a structural floor for gold prices.</div>
+      </div>
+      <div class="take-item">
+        <div class="take-icon neutral"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="take-text"><strong>Central bank buying:</strong> China, Russia, and India continue accumulating reserves, adding deep structural demand.</div>
+      </div>
+      <div class="take-item" style="border:none;">
+        <div class="take-icon bear"><i class="fa-solid fa-chart-pie"></i></div>
+        <div class="take-text"><strong>ETF flow watch:</strong> Monitor SPDR Gold Shares (GLD) inflows/outflows as a leading indicator of institutional sentiment shifts.</div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      Not financial advice. All data is for informational purposes only. XAU/USD trading involves significant risk. Always consult a licensed financial professional.
+    </div>
+
+  </div>
+
+  <nav id="bottomnav">
+    <a class="nav-btn" data-page="index.html"   href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+    <a class="nav-btn" data-page="news.html"    href="news.html"><i class="fa-solid fa-newspaper"></i>News</a>
+    <a class="nav-btn" data-page="trends.html"  href="trends.html"><i class="fa-solid fa-chart-area"></i>Trends</a>
+    <a class="nav-btn" data-page="predict.html" href="predict.html"><i class="fa-solid fa-brain"></i>Predict</a>
+  </nav>
+
+</div>
+<div id="toast"></div>
+
+<script src="js/api.js"></script>
+<script>
+  function renderPredict(d) {
+    const isUp = d.ch >= 0;
+    const rng  = Math.random();
+    let buy, hold, sell;
+    if (isUp) { buy = 55 + Math.round(rng * 20); hold = Math.round((100 - buy) * 0.5); sell = 100 - buy - hold; }
+    else       { sell = 55 + Math.round(rng * 20); hold = Math.round((100 - sell) * 0.5); buy = 100 - sell - hold; }
+
+    const score = buy - sell;
+    let emoji, label;
+    if (score > 25)       { emoji = '🟢'; label = 'BULLISH'; }
+    else if (score > 5)   { emoji = '🔼'; label = 'MILDLY BULLISH'; }
+    else if (score > -5)  { emoji = '⚖️'; label = 'NEUTRAL'; }
+    else if (score > -25) { emoji = '🔽'; label = 'MILDLY BEARISH'; }
+    else                   { emoji = '🔴'; label = 'BEARISH'; }
+
+    document.getElementById('sentiment-emoji').textContent = emoji;
+    document.getElementById('sentiment-txt').textContent   = label;
+
+    document.getElementById('lvl-curr').textContent = '$' + fmt(d.price);
+    document.getElementById('lvl-r1').textContent   = '$' + (d.price * 1.012).toFixed(2);
+    document.getElementById('lvl-r2').textContent   = '$' + (d.price * 1.025).toFixed(2);
+    document.getElementById('lvl-s1').textContent   = '$' + (d.price * 0.988).toFixed(2);
+    document.getElementById('lvl-s2').textContent   = '$' + (d.price * 0.975).toFixed(2);
+  }
+
+  document.getElementById('refresh-btn').addEventListener('click', async function() {
+    this.classList.add('spin');
+    const d = await fetchGoldPrice();
+    if (d) { Object.assign(window.GOLD_STATE, d); renderPredict(d); showToast('✓ Signals refreshed'); }
+    else     showToast('⚠ APIs unavailable');
+    setTimeout(() => this.classList.remove('spin'), 700);
+  });
+
+  setActiveNav();
+  loadPrice(renderPredict);
+</script>
+</body>
+    </html>
