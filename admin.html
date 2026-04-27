@@ -549,16 +549,28 @@
               <span class="post-date">${date}</span>
               <span class="badge ${p.published ? 'badge-pub' : 'badge-draft'}">${p.published ? 'Published' : 'Draft'}</span>
               <span class="badge badge-cat">${p.category || 'Update'}</span>
+              <button onclick="event.stopPropagation();copyPostLink('${p.id}')"
+        style="background:none;border:none;color:var(--txt-3);cursor:pointer;
+               font-size:11px;margin-top:5px;display:flex;align-items:center;gap:4px;
+               font-family:'Space Mono',monospace;"
+        title="Copy shareable link">
+  <i class="fa-solid fa-link"></i> copy link
+</button>
             </div>
           </div>
-          <div class="post-actions">
-            <button class="btn btn-outline btn-sm" onclick="editPost('${p.id}')">
-              <i class="fa-solid fa-pen"></i>
-            </button>
-            <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
+        
+<div class="post-actions">
+  <a href="post.html?id=${p.id}" target="_blank"
+     class="btn btn-outline btn-sm" title="View live post">
+    <i class="fa-solid fa-eye"></i>
+  </a>
+  <button class="btn btn-outline btn-sm" onclick="editPost('${p.id}')">
+    <i class="fa-solid fa-pen"></i>
+  </button>
+  <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">
+    <i class="fa-solid fa-trash"></i>
+  </button>
+</div>
         </div>`;
     }).join('');
   }
