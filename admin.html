@@ -639,6 +639,15 @@
   document.getElementById('login-pass').addEventListener('keydown', e => {
     if (e.key === 'Enter') window.doLogin();
   });
+  window.copyPostLink = async (id) => {
+  const url = `https://xautracker.vercel.app/post.html?id=${id}`;
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('✓ Link copied: ' + url);
+  } catch {
+    showToast('Link: ' + url);
+  }
+};
 </script>
 </body>
 </html>
