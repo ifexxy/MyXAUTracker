@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · XAU Tracker</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-deep:   #070c12;
+      --bg-card:   #0e1622;
+      --bg-muted:  #121c2a;
+      --gold:      #d4a72c;
+      --gold-glow: rgba(212,167,44,0.12);
+      --green:     #00d48f;
+      --red:       #ff4561;
+      --txt-1:     #e8edf5;
+      --txt-2:     #6e7f99;
+      --txt-3:     #3a4a60;
+      --border:    rgba(255,255,255,0.07);
+      --radius:    12px;
+    }
+    html, body {
+      min-height: 100%; background: var(--bg-deep);
+      color: var(--txt-1); font-family: 'Syne', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Login screen ── */
+    #login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 20px;
+    }
+    .login-box {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px 28px; width: 100%; max-width: 380px;
+    }
+    .login-logo {
+      width: 44px; height: 44px; background: var(--gold); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: #000; margin: 0 auto 16px;
+    }
+    .login-box h2 { text-align: center; font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .login-box p  { text-align: center; font-size: 12px; color: var(--txt-2); margin-bottom: 24px; }
+
+    /* ── Admin app ── */
+    #admin-app { display: none; max-width: 900px; margin: 0 auto; padding: 24px 20px 60px; }
+
+    /* ── Topbar ── */
+    .admin-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+    .admin-brand { display: flex; align-items: center; gap: 10px; }
+    .admin-logo  {
+      width: 34px; height: 34px; background: var(--gold); border-radius: 9px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px; color: #000;
+    }
+    .admin-brand h1 { font-size: 18px; font-weight: 800; }
+    .admin-brand h1 span { color: var(--gold); }
+
+    /* ── Shared form/card styles ── */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
+    }
+    .card h2 { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--txt-1); }
+
+    label { display: block; font-size: 11px; color: var(--txt-2); text-transform: uppercase;
+            letter-spacing: 0.08em; margin-bottom: 6px; margin-top: 14px; }
+    label:first-of-type { margin-top: 0; }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%; background: var(--bg-muted); border: 1px solid var(--border);
+      border-radius: 9px; color: var(--txt-1); font-family: 'Syne', sans-serif;
+      font-size: 14px; padding: 10px 13px; outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+    textarea { resize: vertical; min-height: 160px; line-height: 1.6; }
+
+    /* image preview */
+    #img-preview {
+      width: 100%; height: 160px; object-fit: cover;
+      border-radius: 9px; margin-top: 10px; display: none;
+      border: 1px solid var(--border);
+    }
+
+    /* toggle row */
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 14px;
+    }
+    .toggle-label { font-size: 13px; color: var(--txt-1); }
+    .toggle-sub   { font-size: 11px; color: var(--txt-2); margin-top: 2px; }
+    .toggle {
+      position: relative; width: 44px; height: 24px;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; inset: 0; background: var(--bg-muted);
+      border-radius: 12px; border: 1px solid var(--border); transition: background 0.2s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--green); border-color: var(--green); }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; background: #fff; border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
+
+    /* buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 20px; border-radius: 10px; font-family: 'Syne', sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer; border: none;
+      transition: all 0.2s; text-decoration: none;
+    }
+    .btn-gold    { background: var(--gold); color: #000; }
+    .btn-gold:hover { opacity: 0.88; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--txt-2); }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-danger  { background: rgba(255,69,97,0.12); color: var(--red); border: 1px solid rgba(255,69,97,0.2); }
+    .btn-danger:hover { background: rgba(255,69,97,0.22); }
+    .btn-sm { padding: 6px 12px; font-size: 11px; border-radius: 8px; }
+    .btn-full { width: 100%; justify-content: center; }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
+    /* post list */
+    .post-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .post-item:last-child { border-bottom: none; }
+    .post-thumb {
+      width: 56px; height: 56px; object-fit: cover; border-radius: 8px;
+      flex-shrink: 0; background: var(--bg-muted);
+    }
+    .post-thumb-placeholder {
+      width: 56px; height: 56px; border-radius: 8px; background: var(--bg-muted);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--txt-3); font-size: 20px; flex-shrink: 0;
+    }
+    .post-info { flex: 1; min-width: 0; }
+    .post-title {
+      font-size: 14px; font-weight: 700; color: var(--txt-1);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;
+    }
+    .post-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .post-date { font-size: 11px; color: var(--txt-2); font-family: 'Space Mono', monospace; }
+    .badge {
+      font-size: 10px; padding: 2px 8px; border-radius: 8px;
+      font-family: 'Space Mono', monospace;
+    }
+    .badge-pub   { background: rgba(0,212,143,0.12); color: var(--green); }
+    .badge-draft { background: var(--gold-glow); color: var(--gold); }
+    .badge-cat   { background: rgba(255,255,255,0.05); color: var(--txt-2); }
+    .post-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    /* toast */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg-card); border: 1px solid var(--border);
+      color: var(--txt-1); padding: 10px 20px; border-radius: 20px;
+      font-size: 13px; opacity: 0; transition: all 0.3s;
+      pointer-events: none; z-index: 200; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* empty state */
+    .empty {
+      text-align: center; padding: 32px 16px; color: var(--txt-2); font-size: 13px;
+    }
+    .empty i { font-size: 32px; color: var(--txt-3); display: block; margin-bottom: 10px; }
+
+    /* section divider */
+    .section-label {
+      font-size: 11px; color: var(--txt-2); text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* char counter */
+    .char-count { font-size: 11px; color: var(--txt-3); text-align: right; margin-top: 4px; }
+
+    /* tag input */
+    .tag-wrap {
+      display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px;
+      background: var(--bg-muted); border: 1px solid var(--border);
+      border-radius: 9px; cursor: text; min-height: 42px;
+    }
+    .tag-wrap:focus-within { border-color: var(--gold); }
+    .tag-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--gold-glow); color: var(--gold);
+      padding: 3px 10px; border-radius: 20px; font-size: 12px;
+    }
+    .tag-chip button {
+      background: none; border: none; color: var(--gold);
+      cursor: pointer; font-size: 10px; padding: 0; line-height: 1;
+    }
+    .tag-input {
+      border: none !important; background: transparent !important;
+      padding: 0 !important; width: 120px; flex: 1; font-size: 13px;
+      min-width: 80px; outline: none !important;
+    }
+
+    /* layout grid on wider screens */
+    @media (min-width: 700px) {
+      .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .form-grid .full { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo"><i class="fa-solid fa-coins"></i></div>
+    <h2>XAU Tracker Admin</h2>
+    <p>Sign in to manage blog posts</p>
+    <label>Email</label>
+    <input type="email" id="login-email" placeholder="you@email.com" />
+    <label>Password</label>
+    <input type="password" id="login-pass" placeholder="••••••••" />
+    <p id="login-err" style="color:var(--red);font-size:12px;margin-top:10px;display:none;"></p>
+    <button class="btn btn-gold btn-full" style="margin-top:16px;" onclick="doLogin()">
+      <i class="fa-solid fa-right-to-bracket"></i> Sign In
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADMIN APP
+══════════════════════════════════════ -->
+<div id="admin-app">
+
+  <div class="admin-topbar">
+    <div class="admin-brand">
+      <div class="admin-logo"><i class="fa-solid fa-coins"></i></div>
+      <h1>XAU <span>Admin</span></h1>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="news.html" target="_blank" class="btn btn-outline btn-sm">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> View News Page
+      </a>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Post Editor ── -->
+  <div class="card">
+    <h2 id="editor-heading">
+      <i class="fa-solid fa-pen-to-square" style="margin-right:8px;color:var(--gold)"></i>
+      New Post
+    </h2>
+    <input type="hidden" id="edit-id" />
+
+    <div class="form-grid">
+      <div class="full">
+        <label>Post Title *</label>
+        <input type="text" id="f-title" placeholder="e.g. Gold Surges Past $3,200 Amid Fed Uncertainty" maxlength="120" oninput="updateChar('f-title','title-count',120)" />
+        <div class="char-count"><span id="title-count">0</span>/120</div>
+      </div>
+
+      <div>
+        <label>Category</label>
+        <select id="f-cat">
+          <option value="Market Update">Market Update</option>
+          <option value="Analysis">Analysis</option>
+          <option value="Central Banks">Central Banks</option>
+          <option value="Fed & USD">Fed & USD</option>
+          <option value="Geopolitics">Geopolitics</option>
+          <option value="ETFs">ETFs</option>
+          <option value="Opinion">Opinion</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Read Time</label>
+        <input type="text" id="f-readtime" placeholder="e.g. 3 min read" />
+      </div>
+
+      <div class="full">
+        <label>Cover Image URL</label>
+        <input type="url" id="f-img"
+               placeholder="https://example.com/image.jpg"
+               oninput="previewImg(this.value)" />
+        <img id="img-preview" alt="Cover preview" />
+        <p style="font-size:11px;color:var(--txt-3);margin-top:6px;">
+          <i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>
+          Upload to <a href="https://imgur.com/upload" target="_blank" style="color:var(--gold)">imgur.com</a>
+          or <a href="https://imgbb.com" target="_blank" style="color:var(--gold)">imgbb.com</a> and paste the direct link here.
+        </p>
+      </div>
+
+      <div class="full">
+        <label>External Link (optional)</label>
+        <input type="url" id="f-link" placeholder="https://... — if this post links out to a source" />
+      </div>
+
+      <div class="full">
+        <label>Body / Content *</label>
+        <textarea id="f-body"
+                  placeholder="Write your post content here. You can use line breaks for paragraphs."
+                  oninput="updateChar('f-body','body-count',4000)"
+                  maxlength="4000"></textarea>
+        <div class="char-count"><span id="body-count">0</span>/4000</div>
+      </div>
+
+      <div class="full">
+        <label>Tags</label>
+        <div class="tag-wrap" id="tag-wrap" onclick="document.getElementById('tag-input').focus()">
+          <input class="tag-input" id="tag-input" type="text"
+                 placeholder="Type tag + Enter"
+                 onkeydown="handleTagKey(event)" />
+        </div>
+        <p style="font-size:11px;color:var(--txt-3);margin-top:5px;">Press Enter to add each tag</p>
+      </div>
+
+      <div class="full">
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Publish immediately</div>
+            <div class="toggle-sub">Off = saved as draft, not visible on news page</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="f-published" checked />
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-gold" onclick="savePost()">
+        <i class="fa-solid fa-floppy-disk"></i>
+        <span id="save-btn-label">Publish Post</span>
+      </button>
+      <button class="btn btn-outline" onclick="resetForm()">
+        <i class="fa-solid fa-xmark"></i> Clear Form
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Post List ── -->
+  <div class="card">
+    <h2>
+      <i class="fa-solid fa-list" style="margin-right:8px;color:var(--gold)"></i>
+      All Posts
+      <span id="post-count" style="font-size:13px;color:var(--txt-2);font-weight:400;margin-left:8px;"></span>
+    </h2>
+    <div id="post-list">
+      <div class="empty">
+        <i class="fa-solid fa-newspaper"></i>
+        Loading posts...
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, collection, addDoc, updateDoc, deleteDoc,
+    doc, getDocs, orderBy, query, serverTimestamp, Timestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  /* ── Firebase config ── */
+  const firebaseConfig = {
+     apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  /* ── Auth ── */
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-app').style.display    = 'block';
+      loadPosts();
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('admin-app').style.display    = 'none';
+    }
+  });
+
+  window.doLogin = async () => {
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-pass').value;
+    const errEl = document.getElementById('login-err');
+    errEl.style.display = 'none';
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (e) {
+      errEl.textContent    = 'Incorrect email or password.';
+      errEl.style.display  = 'block';
+    }
+  };
+
+  window.doLogout = () => signOut(auth);
+
+  /* ── Tag state ── */
+  let tags = [];
+
+  window.handleTagKey = (e) => {
+    if (e.key !== 'Enter' && e.key !== ',') return;
+    e.preventDefault();
+    const val = e.target.value.trim().replace(/,/g,'');
+    if (val && !tags.includes(val)) {
+      tags.push(val);
+      renderTags();
+    }
+    e.target.value = '';
+  };
+
+  function renderTags() {
+    const wrap  = document.getElementById('tag-wrap');
+    const input = document.getElementById('tag-input');
+    // Remove existing chips
+    wrap.querySelectorAll('.tag-chip').forEach(c => c.remove());
+    tags.forEach(t => {
+      const chip = document.createElement('span');
+      chip.className = 'tag-chip';
+      chip.innerHTML = `${t}<button onclick="removeTag('${t}')">✕</button>`;
+      wrap.insertBefore(chip, input);
+    });
+  }
+
+  window.removeTag = (t) => {
+    tags = tags.filter(x => x !== t);
+    renderTags();
+  };
+
+  /* ── Image preview ── */
+  window.previewImg = (url) => {
+    const el = document.getElementById('img-preview');
+    if (url.startsWith('http')) {
+      el.src          = url;
+      el.style.display = 'block';
+      el.onerror      = () => { el.style.display = 'none'; };
+    } else {
+      el.style.display = 'none';
+    }
+  };
+
+  /* ── Char counter ── */
+  window.updateChar = (inputId, countId, max) => {
+    const len = document.getElementById(inputId).value.length;
+    document.getElementById(countId).textContent = len;
+    document.getElementById(countId).style.color = len > max * 0.9 ? 'var(--red)' : 'var(--txt-3)';
+  };
+
+  /* ── Save / Update post ── */
+  window.savePost = async () => {
+    const title     = document.getElementById('f-title').value.trim();
+    const body      = document.getElementById('f-body').value.trim();
+    const imageUrl  = document.getElementById('f-img').value.trim();
+    const link      = document.getElementById('f-link').value.trim();
+    const category  = document.getElementById('f-cat').value;
+    const readTime  = document.getElementById('f-readtime').value.trim() || '3 min read';
+    const published = document.getElementById('f-published').checked;
+    const editId    = document.getElementById('edit-id').value;
+
+    if (!title) { showToast('⚠ Title is required'); return; }
+    if (!body)  { showToast('⚠ Body content is required'); return; }
+
+    const data = {
+      title, body, imageUrl, link, category,
+      readTime, published, tags,
+      updatedAt: serverTimestamp(),
+    };
+
+    try {
+      if (editId) {
+        await updateDoc(doc(db, 'posts', editId), data);
+        showToast('✓ Post updated');
+      } else {
+        data.createdAt = serverTimestamp();
+        await addDoc(collection(db, 'posts'), data);
+        showToast('✓ Post ' + (published ? 'published' : 'saved as draft'));
+      }
+      resetForm();
+      loadPosts();
+    } catch (e) {
+      console.error(e);
+      showToast('⚠ Save failed: ' + e.message);
+    }
+  };
+
+  /* ── Load all posts ── */
+  async function loadPosts() {
+    const q       = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+    const snap    = await getDocs(q);
+    const posts   = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const listEl  = document.getElementById('post-list');
+    const countEl = document.getElementById('post-count');
+    countEl.textContent = `(${posts.length})`;
+
+    if (!posts.length) {
+      listEl.innerHTML = `<div class="empty"><i class="fa-solid fa-newspaper"></i>No posts yet — write your first one above.</div>`;
+      return;
+    }
+
+    listEl.innerHTML = posts.map(p => {
+      const date = p.createdAt?.toDate?.()?.toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' }) || '—';
+      const thumb = p.imageUrl
+        ? `<img class="post-thumb" src="${p.imageUrl}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="post-thumb-placeholder" style="display:none"><i class="fa-solid fa-image"></i></div>`
+        : `<div class="post-thumb-placeholder"><i class="fa-solid fa-newspaper"></i></div>`;
+      return `
+        <div class="post-item">
+          ${thumb}
+          <div class="post-info">
+            <div class="post-title">${p.title}</div>
+            <div class="post-meta">
+              <span class="post-date">${date}</span>
+              <span class="badge ${p.published ? 'badge-pub' : 'badge-draft'}">${p.published ? 'Published' : 'Draft'}</span>
+              <span class="badge badge-cat">${p.category || 'Update'}</span>
+            </div>
+          </div>
+          <div class="post-actions">
+            <button class="btn btn-outline btn-sm" onclick="editPost('${p.id}')">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /* ── Edit post ── */
+  window.editPost = async (id) => {
+    const snap = await getDocs(collection(db, 'posts'));
+    const post = snap.docs.find(d => d.id === id)?.data();
+    if (!post) return;
+
+    document.getElementById('edit-id').value     = id;
+    document.getElementById('f-title').value     = post.title      || '';
+    document.getElementById('f-body').value      = post.body       || '';
+    document.getElementById('f-img').value       = post.imageUrl   || '';
+    document.getElementById('f-link').value      = post.link       || '';
+    document.getElementById('f-cat').value       = post.category   || 'Market Update';
+    document.getElementById('f-readtime').value  = post.readTime   || '';
+    document.getElementById('f-published').checked = post.published ?? true;
+    document.getElementById('editor-heading').innerHTML =
+      `<i class="fa-solid fa-pen-to-square" style="margin-right:8px;color:var(--gold)"></i>Editing Post`;
+    document.getElementById('save-btn-label').textContent = 'Update Post';
+
+    tags = post.tags || [];
+    renderTags();
+    previewImg(post.imageUrl || '');
+    updateChar('f-title', 'title-count', 120);
+    updateChar('f-body',  'body-count',  4000);
+
+    document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+  };
+
+  /* ── Delete post ── */
+  window.deletePost = async (id) => {
+    if (!confirm('Delete this post? This cannot be undone.')) return;
+    await deleteDoc(doc(db, 'posts', id));
+    showToast('Post deleted');
+    loadPosts();
+  };
+
+  /* ── Reset form ── */
+  window.resetForm = () => {
+    ['f-title','f-body','f-img','f-link','f-readtime'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('f-cat').value       = 'Market Update';
+    document.getElementById('f-published').checked = true;
+    document.getElementById('edit-id').value     = '';
+    document.getElementById('editor-heading').innerHTML =
+      `<i class="fa-solid fa-pen-to-square" style="margin-right:8px;color:var(--gold)"></i>New Post`;
+    document.getElementById('save-btn-label').textContent = 'Publish Post';
+    document.getElementById('img-preview').style.display  = 'none';
+    document.getElementById('title-count').textContent = '0';
+    document.getElementById('body-count').textContent  = '0';
+    tags = [];
+    renderTags();
+  };
+
+  /* ── Toast ── */
+  window.showToast = (msg) => {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  };
+
+  /* Enter key on login */
+  document.getElementById('login-pass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.doLogin();
+  });
+</script>
+</body>
+</html>
