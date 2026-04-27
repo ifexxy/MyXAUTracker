@@ -1,7 +1,7 @@
 
 const TWELVE_DATA_KEY   = '4bfe15a2ab7a43e89d1c3b86f126aa37';
 const ALPHA_VANTAGE_KEY = 'N5ZYQU29IN023LBN';
-const GNEWS_KEY = 'fe8c7d413e5dee922d87e0430edf6f98';
+
 
 /* Shared state — all pages read from this */
 window.GOLD_STATE = {
