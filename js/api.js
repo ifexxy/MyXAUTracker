@@ -1,7 +1,14 @@
 
 const TWELVE_DATA_KEY   = '4bfe15a2ab7a43e89d1c3b86f126aa37';
 const ALPHA_VANTAGE_KEY = 'N5ZYQU29IN023LBN';
-
+const firebaseConfig = {
+  apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+};
 
 /* Shared state — all pages read from this */
 window.GOLD_STATE = {
