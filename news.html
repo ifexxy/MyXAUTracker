@@ -319,58 +319,53 @@ async function loadBlogPosts() {
 
 function renderBlogPosts(posts) {
   document.getElementById('blog-container').innerHTML = posts.map(p => {
-    const date = p.createdAt?.toDate?.()?.toLocaleDateString('en-US', {
-      day: 'numeric', month: 'long', year: 'numeric'
-    }) || '';
 
-    const imgHtml = p.imageUrl ? `
+    const postUrl  = `post.html?id=${p.id}`;
+    const date     = p.createdAt?.toDate?.()?.toLocaleDateString('en-US', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    }) || '';
+    const preview  = p.body.slice(0, 160) + (p.body.length > 160 ? '...' : '');
+
+    const imgHtml  = p.imageUrl ? `
       <img src="${p.imageUrl}" alt="${p.title}"
-           style="width:100%;height:180px;object-fit:cover;border-radius:10px 10px 0 0;display:block;"
+           style="width:100%;height:180px;object-fit:cover;
+                  border-radius:10px 10px 0 0;display:block;"
            onerror="this.style.display='none'" />` : '';
 
-    const bodyPreview = p.body.slice(0, 200) + (p.body.length > 200 ? '...' : '');
-    const destination = p.link || '#';
-    const onclick     = p.link
-      ? `window.open('${p.link}','_blank')`
-      : `toggleExpand('${p.id}')`;
-
     return `
-      <div class="news-card" style="padding:0;overflow:hidden;margin-bottom:14px;">
+      <div class="news-card" style="padding:0;overflow:hidden;margin-bottom:14px;"
+           onclick="location.href='${postUrl}'">
+
         ${imgHtml}
-        <div style="padding:14px 16px;" onclick="${onclick}">
+
+        <div style="padding:14px 16px;">
           <div class="news-meta">
             <span class="news-source">
               <i class="fa-solid fa-pen-nib" style="margin-right:4px;font-size:8px;"></i>
               ${p.category || 'Update'}
             </span>
             <span class="news-time">${date}</span>
-            ${p.readTime ? `<span style="font-size:10px;color:var(--txt-3)"><i class="fa-regular fa-clock" style="margin-right:3px;"></i>${p.readTime}</span>` : ''}
+            ${p.readTime
+              ? `<span style="font-size:10px;color:var(--txt-3);">
+                   <i class="fa-regular fa-clock" style="margin-right:3px;"></i>${p.readTime}
+                 </span>`
+              : ''}
           </div>
-          <div class="news-title" style="font-size:15px;">${p.title}</div>
 
-          <!-- Tags -->
+          <div class="news-title" style="font-size:15px;">${p.title}</div>
+          <div class="news-desc" style="margin-top:6px;">${preview}</div>
+
           ${p.tags?.length ? `
             <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;">
-              ${p.tags.map(t => `<span style="font-size:10px;padding:2px 8px;background:var(--gold-glow);color:var(--gold);border-radius:8px;">#${t}</span>`).join('')}
+              ${p.tags.map(t =>
+                `<span style="font-size:10px;padding:2px 8px;background:var(--gold-glow);
+                              color:var(--gold);border-radius:8px;">#${t}</span>`
+              ).join('')}
             </div>` : ''}
 
-          <!-- Expandable body -->
-          <div id="body-${p.id}" style="display:none;margin-top:10px;">
-            <div style="font-size:13px;line-height:1.75;color:var(--txt-2);white-space:pre-wrap;">${p.body}</div>
-            ${p.link ? `
-              <a href="${p.link}" target="_blank" class="news-link" style="margin-top:12px;display:inline-flex;">
-                <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i>
-                Read source
-              </a>` : ''}
-          </div>
-
-          <!-- Preview / expand trigger -->
-          <div id="preview-${p.id}" style="margin-top:8px;">
-            <div class="news-desc">${bodyPreview}</div>
-            <div class="news-link" style="margin-top:8px;">
-              <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
-              ${p.link ? 'Read full article' : 'Expand post'}
-            </div>
+          <div class="news-link" style="margin-top:10px;">
+            <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
+            Read full post
           </div>
         </div>
       </div>`;
