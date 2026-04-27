@@ -126,308 +126,291 @@
 </div>
 <div id="toast"></div>
 
-<script src="js/api.js"></script>
-<script>
-const GNEWS_KEY = 'fe8c7d413e5dee922d87e0430edf6f98'; // ← paste your key here
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, getDocs, orderBy, query, where }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ── Helpers ────────────────────────────── */
-function timeAgo(dateStr) {
-  const m = Math.floor((Date.now() - new Date(dateStr)) / 60000);
-  if (m < 1)    return 'just now';
-  if (m < 60)   return m + 'm ago';
-  if (m < 1440) return Math.floor(m / 60) + 'h ago';
-  return Math.floor(m / 1440) + 'd ago';
-}
-
-function safeLink(url) {
-  /* Make sure we never open a broken or empty link */
-  try {
-    const u = new URL(url);
-    return u.href;
-  } catch {
-    return 'https://gnews.io/s?q=gold+XAU';
-  }
-}
-
-function buildCard(title, desc, time, source, link) {
-  const safeTitle = title.replace(/"/g, '&quot;');
-  return `
-    <div class="news-card" onclick="window.open('${safeLink(link)}','_blank')">
-      <div class="news-meta">
-        <span class="news-source">
-          <i class="fa-solid fa-rss" style="margin-right:4px;font-size:8px;"></i>
-          ${source}
-        </span>
-        <span class="news-time">${timeAgo(time)}</span>
-      </div>
-      <div class="news-title">${safeTitle}</div>
-      <div class="news-desc">${desc}</div>
-      <div class="news-link">
-        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i>
-        Read full article
-      </div>
-    </div>`;
-}
-
-function showError(msg) {
-  document.getElementById('news-container').innerHTML = `
-    <div class="news-card" style="text-align:center;padding:30px 16px;">
-      <i class="fa-solid fa-satellite-dish"
-         style="font-size:28px;color:var(--txt-3);display:block;margin-bottom:12px;"></i>
-      <p style="color:var(--txt-2);font-size:13px;margin-bottom:6px;">${msg}</p>
-      <p style="color:var(--txt-3);font-size:11px;">Try refreshing or check your connection.</p>
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
-        <a href="https://www.reuters.com/markets/commodities/" target="_blank"
-           style="color:var(--gold);font-size:12px;">
-          <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i>Reuters Gold
-        </a>
-        <a href="https://www.investing.com/commodities/gold-news" target="_blank"
-           style="color:var(--gold);font-size:12px;">
-          <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i>Investing.com
-        </a>
-      </div>
-    </div>`;
-}
-
-/* ── Strategy 1: GNews API ──────────────── */
-async function fetchFromGNews() {
-  const articles = await fetchGNewsArticles(); // calls /api/news — no key exposed
-  if (!articles?.length) throw new Error('No articles');
-  return articles.map(a => ({
-    title:   a.title || 'Gold Market Update',
-    desc:    (a.description || '').slice(0, 160),
-    time:    a.publishedAt,
-    source:  a.source?.name || 'GNews',
-    link:    a.url,
-  }));
-}
-
-/* ── Strategy 2: Investing.com RSS proxy ── */
-async function fetchFromInvesting() {
-  const RSS    = 'https://www.investing.com/rss/news_25.rss'; /* commodities feed */
-  const PROXY  = `https://api.allorigins.win/get?url=${encodeURIComponent(RSS)}&timestamp=${Date.now()}`;
-  const res    = await fetch(PROXY, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Investing proxy HTTP ' + res.status);
-  const json   = await res.json();
-  const parser = new DOMParser();
-  const xml    = parser.parseFromString(json.contents, 'text/xml');
-  if (xml.querySelector('parsererror')) throw new Error('Investing XML parse failed');
-  const items  = [...xml.querySelectorAll('item')];
-  if (!items.length) throw new Error('Investing: no items');
-
-  return items.slice(0, 15).map(el => {
-    /* description often has HTML — strip it */
-    const rawDesc = el.querySelector('description')?.textContent || '';
-    const tmp = document.createElement('div');
-    tmp.innerHTML = rawDesc;
-    const cleanDesc = (tmp.textContent || '').trim().slice(0, 160) || 'Tap to read the full article.';
-
-    /* link node in Investing RSS is a text node between tags */
-    let link = '';
-    el.childNodes.forEach(n => { if (n.nodeName === 'link') link = n.textContent?.trim(); });
-    if (!link) link = el.querySelector('link')?.textContent?.trim() || '';
-
-    return {
-      title:  (el.querySelector('title')?.textContent || 'Gold Market Update').trim(),
-      desc:   cleanDesc,
-      time:   el.querySelector('pubDate')?.textContent || new Date().toUTCString(),
-      source: 'Investing.com',
-      link,
-    };
-  });
-}
-
-/* ── Strategy 3: BullionVault RSS proxy ── */
-async function fetchFromBullionVault() {
-  const RSS   = 'https://www.bullionvault.com/gold-news/rss';
-  const PROXY = `https://corsproxy.io/?${encodeURIComponent(RSS)}`;
-  const res   = await fetch(PROXY, { cache: 'no-store' });
-  if (!res.ok) throw new Error('BullionVault proxy HTTP ' + res.status);
-  const text  = await res.text();
-  const parser = new DOMParser();
-  const xml   = parser.parseFromString(text, 'text/xml');
-  if (xml.querySelector('parsererror')) throw new Error('BullionVault XML parse failed');
-  const items = [...xml.querySelectorAll('item')];
-  if (!items.length) throw new Error('BullionVault: no items');
-
-  return items.slice(0, 15).map(el => {
-    const rawDesc = el.querySelector('description')?.textContent || '';
-    const tmp = document.createElement('div');
-    tmp.innerHTML = rawDesc;
-    const cleanDesc = (tmp.textContent || '').trim().slice(0, 160) || 'Tap to read the full article.';
-    let link = el.querySelector('link')?.textContent?.trim() || '';
-    el.childNodes.forEach(n => { if (n.nodeName === 'link') link = n.textContent?.trim() || link; });
-    return {
-      title:  (el.querySelector('title')?.textContent || 'Gold Market Update').trim(),
-      desc:   cleanDesc,
-      time:   el.querySelector('pubDate')?.textContent || new Date().toUTCString(),
-      source: 'BullionVault',
-      link,
-    };
-  });
-}
-
-/* ── Render ─────────────────────────────── */
-function renderNews(articles) {
-  if (!articles?.length) { showError('No articles found.'); return; }
-  document.getElementById('news-container').innerHTML =
-    articles.map(a => buildCard(a.title, a.desc, a.time, a.source, a.link)).join('');
-}
-
-  /* ═══════════════════════════════════════════
-   LOAD YOUR BLOG POSTS FROM FIRESTORE
-═══════════════════════════════════════════ */
-import { initializeApp }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, orderBy, query, where }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+  /* ── Firebase config ── */
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
     authDomain: "xautracker.firebaseapp.com",
     projectId: "xautracker",
     storageBucket: "xautracker.firebasestorage.app",
     messagingSenderId: "831752609455",
     appId: "1:831752609455:web:ea9be478691744afa73e5a"
-};
-const fbApp = initializeApp(firebaseConfig, 'news-app');
-const db    = getFirestore(fbApp);
+  };
+  const fbApp = initializeApp(firebaseConfig, 'news-page');
+  const db    = getFirestore(fbApp);
 
-async function loadBlogPosts() {
-  try {
-    const q    = query(
-      collection(db, 'posts'),
-      where('published', '==', true),
-      orderBy('createdAt', 'desc')
-    );
-    const snap = await getDocs(q);
-    if (snap.empty) return;
-
-    const posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderBlogPosts(posts);
-    document.getElementById('blog-section').style.display = 'block';
-  } catch (e) {
-    console.warn('Blog posts failed to load:', e.message);
-    /* Silently skip — live news still shows */
-  }
-}
-
-function renderBlogPosts(posts) {
-  document.getElementById('blog-container').innerHTML = posts.map(p => {
-
-    const postUrl  = `post.html?id=${p.id}`;
-    const date     = p.createdAt?.toDate?.()?.toLocaleDateString('en-US', {
-      day: 'numeric', month: 'short', year: 'numeric'
-    }) || '';
-    const preview  = p.body.slice(0, 160) + (p.body.length > 160 ? '...' : '');
-
-    const imgHtml  = p.imageUrl ? `
-      <img src="${p.imageUrl}" alt="${p.title}"
-           style="width:100%;height:180px;object-fit:cover;
-                  border-radius:10px 10px 0 0;display:block;"
-           onerror="this.style.display='none'" />` : '';
-
-    return `
-      <div class="news-card" style="padding:0;overflow:hidden;margin-bottom:14px;"
-           onclick="location.href='${postUrl}'">
-
-        ${imgHtml}
-
-        <div style="padding:14px 16px;">
-          <div class="news-meta">
-            <span class="news-source">
-              <i class="fa-solid fa-pen-nib" style="margin-right:4px;font-size:8px;"></i>
-              ${p.category || 'Update'}
-            </span>
-            <span class="news-time">${date}</span>
-            ${p.readTime
-              ? `<span style="font-size:10px;color:var(--txt-3);">
-                   <i class="fa-regular fa-clock" style="margin-right:3px;"></i>${p.readTime}
-                 </span>`
-              : ''}
-          </div>
-
-          <div class="news-title" style="font-size:15px;">${p.title}</div>
-          <div class="news-desc" style="margin-top:6px;">${preview}</div>
-
-          ${p.tags?.length ? `
-            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;">
-              ${p.tags.map(t =>
-                `<span style="font-size:10px;padding:2px 8px;background:var(--gold-glow);
-                              color:var(--gold);border-radius:8px;">#${t}</span>`
-              ).join('')}
-            </div>` : ''}
-
-          <div class="news-link" style="margin-top:10px;">
-            <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
-            Read full post
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-window.toggleExpand = (id) => {
-  const body    = document.getElementById('body-' + id);
-  const preview = document.getElementById('preview-' + id);
-  const isOpen  = body.style.display !== 'none';
-  body.style.display    = isOpen ? 'none'  : 'block';
-  preview.style.display = isOpen ? 'block' : 'none';
-};
-
-/* Call it on load */
-loadBlogPosts();
-
-/* ── Orchestrator: tries all 3 in order ── */
-async function fetchNews() {
-  const strategies = [
-    { name: 'GNews',        fn: fetchFromGNews },
-    { name: 'Investing.com',fn: fetchFromInvesting },
-    { name: 'BullionVault', fn: fetchFromBullionVault },
-  ];
-
-  for (const s of strategies) {
+  /* ════════════════════════════════════════
+     BLOG POSTS
+  ════════════════════════════════════════ */
+  async function loadBlogPosts() {
     try {
-      console.log('Trying news source:', s.name);
-      const articles = await s.fn();
-      renderNews(articles);
-      console.log('News loaded from:', s.name);
-      return; /* stop as soon as one works */
-    } catch (err) {
-      console.warn(s.name + ' failed:', err.message);
+      const q    = query(
+        collection(db, 'posts'),
+        where('published', '==', true),
+        orderBy('createdAt', 'desc')
+      );
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        console.log('Blog: no published posts found');
+        return;
+      }
+
+      const posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      console.log('Blog: loaded', posts.length, 'posts');
+      renderBlogPosts(posts);
+      document.getElementById('blog-section').style.display = 'block';
+
+    } catch (e) {
+      /* Most common cause: missing composite index in Firestore */
+      console.error('Blog posts failed:', e.code, e.message);
+      if (e.code === 'failed-precondition') {
+        console.error('Fix: create composite index in Firebase Console → Firestore → Indexes');
+        console.error('Fields: published ASC + createdAt DESC on collection: posts');
+      }
     }
   }
 
-  /* All three failed */
-  showError('Could not load news from any source.');
-}
+  function renderBlogPosts(posts) {
+    document.getElementById('blog-container').innerHTML = posts.map(p => {
+      const date    = p.createdAt?.toDate?.()?.toLocaleDateString('en-US', {
+        day: 'numeric', month: 'short', year: 'numeric'
+      }) || '';
+      const preview = (p.body || '').slice(0, 160) + (p.body?.length > 160 ? '...' : '');
+      const postUrl = `post.html?id=${p.id}`;
+      const imgHtml = p.imageUrl
+        ? `<img src="${p.imageUrl}" alt="${p.title}"
+               style="width:100%;height:180px;object-fit:cover;border-radius:10px 10px 0 0;display:block;"
+               onerror="this.style.display='none'" />`
+        : '';
 
-/* ── Skeletons ──────────────────────────── */
-function showSkeletons() {
-  document.getElementById('news-container').innerHTML =
-    ['90%','85%','80%','90%','75%'].map(() => `
-      <div class="news-card" style="min-height:90px;">
-        <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <div class="skeleton" style="height:18px;width:60px;border-radius:10px;"></div>
-          <div class="skeleton" style="height:18px;width:50px;border-radius:10px;"></div>
+      return `
+        <div class="news-card" style="padding:0;overflow:hidden;margin-bottom:14px;cursor:pointer;"
+             onclick="location.href='${postUrl}'">
+          ${imgHtml}
+          <div style="padding:14px 16px;">
+            <div class="news-meta">
+              <span class="news-source">
+                <i class="fa-solid fa-pen-nib" style="margin-right:4px;font-size:8px;"></i>
+                ${p.category || 'Update'}
+              </span>
+              <span class="news-time">${date}</span>
+              ${p.readTime
+                ? `<span style="font-size:10px;color:var(--txt-3);">
+                     <i class="fa-regular fa-clock" style="margin-right:3px;"></i>${p.readTime}
+                   </span>`
+                : ''}
+            </div>
+            <div class="news-title" style="font-size:15px;">${p.title}</div>
+            <div class="news-desc" style="margin-top:6px;">${preview}</div>
+            ${p.tags?.length
+              ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;">
+                   ${p.tags.map(t =>
+                     `<span style="font-size:10px;padding:2px 8px;background:var(--gold-glow);
+                                   color:var(--gold);border-radius:8px;">#${t}</span>`
+                   ).join('')}
+                 </div>`
+              : ''}
+            <div class="news-link" style="margin-top:10px;">
+              <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
+              Read full post
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /* ════════════════════════════════════════
+     MARKET NEWS
+  ════════════════════════════════════════ */
+  function timeAgo(dateStr) {
+    const m = Math.floor((Date.now() - new Date(dateStr)) / 60000);
+    if (m < 1)    return 'just now';
+    if (m < 60)   return m + 'm ago';
+    if (m < 1440) return Math.floor(m / 60) + 'h ago';
+    return Math.floor(m / 1440) + 'd ago';
+  }
+
+  function buildCard(title, desc, time, source, link) {
+    const safeLink = (() => { try { return new URL(link).href; } catch { return '#'; } })();
+    return `
+      <div class="news-card" onclick="window.open('${safeLink}','_blank')">
+        <div class="news-meta">
+          <span class="news-source">
+            <i class="fa-solid fa-rss" style="margin-right:4px;font-size:8px;"></i>${source}
+          </span>
+          <span class="news-time">${timeAgo(time)}</span>
         </div>
-        <div class="skeleton" style="height:15px;width:90%;margin-bottom:8px;"></div>
-        <div class="skeleton" style="height:15px;width:70%;margin-bottom:8px;"></div>
-        <div class="skeleton" style="height:12px;width:50%;"></div>
-      </div>`).join('');
-}
+        <div class="news-title">${title}</div>
+        <div class="news-desc">${desc}</div>
+        <div class="news-link">
+          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i>
+          Read full article
+        </div>
+      </div>`;
+  }
 
-/* ── Refresh button ─────────────────────── */
-document.getElementById('refresh-btn').addEventListener('click', async function () {
-  this.classList.add('spin');
-  showSkeletons();
-  await fetchNews();
-  showToast(' News refreshed');
-  setTimeout(() => this.classList.remove('spin'), 700);
-});
+  function showNewsError() {
+    document.getElementById('news-container').innerHTML = `
+      <div class="news-card" style="text-align:center;padding:30px 16px;">
+        <i class="fa-solid fa-satellite-dish"
+           style="font-size:28px;color:var(--txt-3);display:block;margin-bottom:12px;"></i>
+        <p style="color:var(--txt-2);font-size:13px;">Could not load market news.</p>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
+          <a href="https://www.reuters.com/markets/commodities/" target="_blank"
+             style="color:var(--gold);font-size:12px;">
+            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i>Reuters
+          </a>
+          <a href="https://www.investing.com/commodities/gold-news" target="_blank"
+             style="color:var(--gold);font-size:12px;">
+            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i>Investing.com
+          </a>
+        </div>
+      </div>`;
+  }
 
-setActiveNav();
-fetchNews();
+  /* Strategy 1: your own /api/news serverless function (GNews, key hidden) */
+  async function fetchFromVercelAPI() {
+    const res = await fetch('/api/news');
+    console.log('GNews API status:', res.status);
+    if (!res.ok) throw new Error('/api/news returned ' + res.status);
+    const articles = await res.json();
+    console.log('GNews articles received:', articles?.length);
+    if (!articles?.length) throw new Error('Empty articles array');
+    return articles.map(a => ({
+      title:  a.title || 'Gold Update',
+      desc:   (a.description || '').slice(0, 160),
+      time:   a.publishedAt,
+      source: a.source?.name || 'GNews',
+      link:   a.url,
+    }));
+  }
+
+  /* Strategy 2: Investing.com RSS via CORS proxy */
+  async function fetchFromInvesting() {
+    const RSS   = 'https://www.investing.com/rss/news_25.rss';
+    const PROXY = `https://api.allorigins.win/get?url=${encodeURIComponent(RSS)}&timestamp=${Date.now()}`;
+    const res   = await fetch(PROXY, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Investing proxy ' + res.status);
+    const json   = await res.json();
+    const parser = new DOMParser();
+    const xml    = parser.parseFromString(json.contents, 'text/xml');
+    if (xml.querySelector('parsererror')) throw new Error('XML parse failed');
+    const items  = [...xml.querySelectorAll('item')];
+    if (!items.length) throw new Error('No items in feed');
+    return items.slice(0, 15).map(el => {
+      const rawDesc = el.querySelector('description')?.textContent || '';
+      const tmp     = document.createElement('div');
+      tmp.innerHTML = rawDesc;
+      let link = '';
+      el.childNodes.forEach(n => { if (n.nodeName === 'link') link = n.textContent?.trim(); });
+      if (!link) link = el.querySelector('link')?.textContent?.trim() || '#';
+      return {
+        title:  (el.querySelector('title')?.textContent || 'Gold Update').trim(),
+        desc:   (tmp.textContent || '').trim().slice(0, 160) || 'Tap to read.',
+        time:   el.querySelector('pubDate')?.textContent || new Date().toUTCString(),
+        source: 'Investing.com',
+        link,
+      };
+    });
+  }
+
+  /* Strategy 3: BullionVault RSS */
+  async function fetchFromBullionVault() {
+    const RSS   = 'https://www.bullionvault.com/gold-news/rss';
+    const PROXY = `https://corsproxy.io/?${encodeURIComponent(RSS)}`;
+    const res   = await fetch(PROXY, { cache: 'no-store' });
+    if (!res.ok) throw new Error('BullionVault proxy ' + res.status);
+    const text   = await res.text();
+    const parser = new DOMParser();
+    const xml    = parser.parseFromString(text, 'text/xml');
+    if (xml.querySelector('parsererror')) throw new Error('XML parse failed');
+    const items  = [...xml.querySelectorAll('item')];
+    if (!items.length) throw new Error('No items');
+    return items.slice(0, 15).map(el => {
+      const rawDesc = el.querySelector('description')?.textContent || '';
+      const tmp     = document.createElement('div');
+      tmp.innerHTML = rawDesc;
+      let link = el.querySelector('link')?.textContent?.trim() || '';
+      el.childNodes.forEach(n => { if (n.nodeName === 'link') link = n.textContent?.trim() || link; });
+      return {
+        title:  (el.querySelector('title')?.textContent || 'Gold Update').trim(),
+        desc:   (tmp.textContent || '').trim().slice(0, 160) || 'Tap to read.',
+        time:   el.querySelector('pubDate')?.textContent || new Date().toUTCString(),
+        source: 'BullionVault',
+        link,
+      };
+    });
+  }
+
+  async function fetchNews() {
+    const strategies = [
+      { name: 'Vercel /api/news', fn: fetchFromVercelAPI },
+      { name: 'Investing.com',    fn: fetchFromInvesting },
+      { name: 'BullionVault',     fn: fetchFromBullionVault },
+    ];
+    for (const s of strategies) {
+      try {
+        console.log('Trying news source:', s.name);
+        const articles = await s.fn();
+        document.getElementById('news-container').innerHTML =
+          articles.map(a => buildCard(a.title, a.desc, a.time, a.source, a.link)).join('');
+        console.log('News loaded from:', s.name);
+        return;
+      } catch (err) {
+        console.warn(s.name + ' failed:', err.message);
+      }
+    }
+    showNewsError();
+  }
+
+  /* ── Skeletons ── */
+  function showSkeletons() {
+    document.getElementById('news-container').innerHTML =
+      [1,2,3,4,5].map(() => `
+        <div class="news-card" style="min-height:90px;">
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <div class="skeleton" style="height:18px;width:60px;border-radius:10px;"></div>
+            <div class="skeleton" style="height:18px;width:50px;border-radius:10px;"></div>
+          </div>
+          <div class="skeleton" style="height:15px;width:90%;margin-bottom:8px;"></div>
+          <div class="skeleton" style="height:15px;width:70%;margin-bottom:8px;"></div>
+          <div class="skeleton" style="height:12px;width:50%;"></div>
+        </div>`).join('');
+  }
+
+  /* ── Toast ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  /* ── Refresh button ── */
+  document.getElementById('refresh-btn').addEventListener('click', async function () {
+    this.classList.add('spin');
+    showSkeletons();
+    await fetchNews();
+    showToast('✓ News refreshed');
+    setTimeout(() => this.classList.remove('spin'), 700);
+  });
+
+  /* ── Active nav ── */
+  const page = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.page === page);
+  });
+
+  /* ── Init: run both in parallel ── */
+  loadBlogPosts();
+  fetchNews();
 </script>
 </body>
 </html>
