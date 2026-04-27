@@ -191,16 +191,11 @@ function showError(msg) {
 
 /* ── Strategy 1: GNews API ──────────────── */
 async function fetchFromGNews() {
-  if (GNEWS_KEY === 'YOUR_GNEWS_KEY') throw new Error('no key');
-  const url = `https://gnews.io/api/v4/search?q=gold+XAU+USD&lang=en&country=us&max=15&sortby=publishedAt&apikey=${GNEWS_KEY}`;
-  const res  = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error('GNews HTTP ' + res.status);
-  const data = await res.json();
-  if (!data.articles?.length) throw new Error('GNews: no articles');
-
-  return data.articles.map(a => ({
-    title:   a.title  || 'Gold Market Update',
-    desc:    (a.description || a.content || 'Tap to read the full article.').slice(0, 160),
+  const articles = await fetchGNewsArticles(); // calls /api/news — no key exposed
+  if (!articles?.length) throw new Error('No articles');
+  return articles.map(a => ({
+    title:   a.title || 'Gold Market Update',
+    desc:    (a.description || '').slice(0, 160),
     time:    a.publishedAt,
     source:  a.source?.name || 'GNews',
     link:    a.url,
