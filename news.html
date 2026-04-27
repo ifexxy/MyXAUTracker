@@ -79,6 +79,20 @@
   </div>
 
   <div id="content">
+    <!-- ── Your custom blog posts (from Firestore) ── -->
+<div id="blog-section" style="display:none;">
+  <div class="section-hdr" style="padding-top:16px;">
+    <i class="fa-solid fa-pen-nib" style="margin-right:6px;color:var(--gold)"></i>
+    From the Desk
+  </div>
+  <div id="blog-container"></div>
+  <div style="height:4px;background:var(--border);margin:0 16px 16px;border-radius:2px;"></div>
+</div>
+
+
+<div id="news-container">
+  <!-- skeletons here as before -->
+</div>
     <div class="section-hdr" style="padding-top:16px;">
       <i class="fa-solid fa-newspaper" style="margin-right:6px;color:var(--gold)"></i>Latest Gold News
     </div>
@@ -264,6 +278,115 @@ function renderNews(articles) {
   document.getElementById('news-container').innerHTML =
     articles.map(a => buildCard(a.title, a.desc, a.time, a.source, a.link)).join('');
 }
+
+  /* ═══════════════════════════════════════════
+   LOAD YOUR BLOG POSTS FROM FIRESTORE
+═══════════════════════════════════════════ */
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, orderBy, query, where }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+};
+const fbApp = initializeApp(firebaseConfig, 'news-app');
+const db    = getFirestore(fbApp);
+
+async function loadBlogPosts() {
+  try {
+    const q    = query(
+      collection(db, 'posts'),
+      where('published', '==', true),
+      orderBy('createdAt', 'desc')
+    );
+    const snap = await getDocs(q);
+    if (snap.empty) return;
+
+    const posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderBlogPosts(posts);
+    document.getElementById('blog-section').style.display = 'block';
+  } catch (e) {
+    console.warn('Blog posts failed to load:', e.message);
+    /* Silently skip — live news still shows */
+  }
+}
+
+function renderBlogPosts(posts) {
+  document.getElementById('blog-container').innerHTML = posts.map(p => {
+    const date = p.createdAt?.toDate?.()?.toLocaleDateString('en-US', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    }) || '';
+
+    const imgHtml = p.imageUrl ? `
+      <img src="${p.imageUrl}" alt="${p.title}"
+           style="width:100%;height:180px;object-fit:cover;border-radius:10px 10px 0 0;display:block;"
+           onerror="this.style.display='none'" />` : '';
+
+    const bodyPreview = p.body.slice(0, 200) + (p.body.length > 200 ? '...' : '');
+    const destination = p.link || '#';
+    const onclick     = p.link
+      ? `window.open('${p.link}','_blank')`
+      : `toggleExpand('${p.id}')`;
+
+    return `
+      <div class="news-card" style="padding:0;overflow:hidden;margin-bottom:14px;">
+        ${imgHtml}
+        <div style="padding:14px 16px;" onclick="${onclick}">
+          <div class="news-meta">
+            <span class="news-source">
+              <i class="fa-solid fa-pen-nib" style="margin-right:4px;font-size:8px;"></i>
+              ${p.category || 'Update'}
+            </span>
+            <span class="news-time">${date}</span>
+            ${p.readTime ? `<span style="font-size:10px;color:var(--txt-3)"><i class="fa-regular fa-clock" style="margin-right:3px;"></i>${p.readTime}</span>` : ''}
+          </div>
+          <div class="news-title" style="font-size:15px;">${p.title}</div>
+
+          <!-- Tags -->
+          ${p.tags?.length ? `
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;">
+              ${p.tags.map(t => `<span style="font-size:10px;padding:2px 8px;background:var(--gold-glow);color:var(--gold);border-radius:8px;">#${t}</span>`).join('')}
+            </div>` : ''}
+
+          <!-- Expandable body -->
+          <div id="body-${p.id}" style="display:none;margin-top:10px;">
+            <div style="font-size:13px;line-height:1.75;color:var(--txt-2);white-space:pre-wrap;">${p.body}</div>
+            ${p.link ? `
+              <a href="${p.link}" target="_blank" class="news-link" style="margin-top:12px;display:inline-flex;">
+                <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i>
+                Read source
+              </a>` : ''}
+          </div>
+
+          <!-- Preview / expand trigger -->
+          <div id="preview-${p.id}" style="margin-top:8px;">
+            <div class="news-desc">${bodyPreview}</div>
+            <div class="news-link" style="margin-top:8px;">
+              <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+              ${p.link ? 'Read full article' : 'Expand post'}
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+window.toggleExpand = (id) => {
+  const body    = document.getElementById('body-' + id);
+  const preview = document.getElementById('preview-' + id);
+  const isOpen  = body.style.display !== 'none';
+  body.style.display    = isOpen ? 'none'  : 'block';
+  preview.style.display = isOpen ? 'block' : 'none';
+};
+
+/* Call it on load */
+loadBlogPosts();
 
 /* ── Orchestrator: tries all 3 in order ── */
 async function fetchNews() {
