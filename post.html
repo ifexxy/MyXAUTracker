@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#070c12" />
+
+  <!-- These get overwritten dynamically once the post loads -->
+  <title>Loading post... · XAU Tracker</title>
+  <meta name="description" content="Gold market analysis and updates from XAU Tracker." />
+  <meta property="og:site_name" content="XAU Tracker" />
+  <meta property="og:type" content="article" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* ── Post page specific styles ── */
+    .post-hero-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .post-wrapper {
+      padding: 20px 20px 100px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .post-category {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      color: var(--gold);
+      background: var(--gold-glow);
+      padding: 3px 10px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .post-headline {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.3;
+      color: var(--txt-1);
+      margin-bottom: 14px;
+    }
+
+    .post-byline {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .byline-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--txt-2);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .byline-item i { color: var(--gold); font-size: 10px; }
+
+    .post-body {
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--txt-2);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .post-body-paragraph {
+      margin-bottom: 18px;
+    }
+
+    .post-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .post-tag {
+      font-size: 11px;
+      padding: 3px 10px;
+      background: var(--gold-glow);
+      color: var(--gold);
+      border-radius: 10px;
+    }
+
+    .post-source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 24px;
+      padding: 10px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--gold);
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+
+    .post-source-link:hover { border-color: var(--gold); }
+
+    .share-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--txt-2);
+      transition: all 0.2s;
+    }
+
+    .share-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .share-btn i { font-size: 13px; }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--txt-2);
+      text-decoration: none;
+      margin-bottom: 16px;
+      transition: color 0.2s;
+    }
+
+    .back-btn:hover { color: var(--gold); }
+
+    /* ── Error state ── */
+    .post-error {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .post-error i {
+      font-size: 40px;
+      color: var(--txt-3);
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .post-error h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .post-error p {
+      font-size: 13px;
+      color: var(--txt-2);
+    }
+
+    /* ── Skeleton ── */
+    .skel-headline {
+      height: 28px; width: 85%; border-radius: 6px; margin-bottom: 10px;
+    }
+
+    .skel-headline-2 {
+      height: 28px; width: 60%; border-radius: 6px; margin-bottom: 20px;
+    }
+
+    .skel-meta {
+      height: 14px; width: 40%; border-radius: 6px; margin-bottom: 6px;
+    }
+
+    .skel-body {
+      height: 14px; border-radius: 6px; margin-bottom: 10px;
+    }
+
+    /* ── Related / back card ── */
+    .back-card {
+      margin-top: 32px;
+      padding: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .back-card-text { font-size: 13px; color: var(--txt-2); }
+    .back-card-text strong { color: var(--txt-1); display: block; font-size: 14px; margin-bottom: 2px; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Top bar -->
+  <div id="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="topbar-title">XAU<span>/USD</span></span>
+    </div>
+    <div class="live-dot">LIVE</div>
+    <a href="news.html" style="color:var(--txt-2);font-size:13px;text-decoration:none;">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+  </div>
+
+  <!-- Content -->
+  <div id="content">
+    <div id="post-content">
+      <!-- Skeleton shown while loading -->
+      <div style="height:220px;" class="skeleton"></div>
+      <div class="post-wrapper">
+        <div class="skeleton skel-meta" style="width:80px;margin-bottom:16px;"></div>
+        <div class="skeleton skel-headline"></div>
+        <div class="skeleton skel-headline-2"></div>
+        <div class="skeleton skel-meta" style="margin-bottom:24px;"></div>
+        <div class="skeleton skel-body" style="width:100%"></div>
+        <div class="skeleton skel-body" style="width:92%"></div>
+        <div class="skeleton skel-body" style="width:96%"></div>
+        <div class="skeleton skel-body" style="width:80%"></div>
+        <div class="skeleton skel-body" style="width:94%"></div>
+        <div class="skeleton skel-body" style="width:70%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav id="bottomnav">
+    <a class="nav-btn" data-page="index.html"   href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+    <a class="nav-btn" data-page="news.html"    href="news.html"><i class="fa-solid fa-newspaper"></i>News</a>
+    <a class="nav-btn" data-page="trends.html"  href="trends.html"><i class="fa-solid fa-chart-area"></i>Trends</a>
+    <a class="nav-btn" data-page="predict.html" href="predict.html"><i class="fa-solid fa-brain"></i>Predict</a>
+  </nav>
+
+</div>
+
+<div id="toast"></div>
+
+<script src="js/api.js"></script>
+
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  /* ── Firebase config — same as admin.html ── */
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+
+  const app = initializeApp(firebaseConfig, 'post-page');
+  const db  = getFirestore(app);
+
+  /* ── Read post ID from URL ── */
+  const params = new URLSearchParams(window.location.search);
+  const postId = params.get('id');
+
+  if (!postId) {
+    showError('No post ID in URL.', 'The link you followed seems to be incomplete.');
+  } else {
+    loadPost(postId);
+  }
+
+  /* ── Fetch and render ── */
+  async function loadPost(id) {
+    try {
+      const snap = await getDoc(doc(db, 'posts', id));
+
+      if (!snap.exists()) {
+        showError('Post not found.', 'This post may have been deleted or the link is incorrect.');
+        return;
+      }
+
+      const post = { id: snap.id, ...snap.data() };
+
+      if (!post.published) {
+        showError('Post unavailable.', 'This post is not published yet.');
+        return;
+      }
+
+      renderPost(post);
+    } catch (e) {
+      console.error(e);
+      showError('Failed to load post.', 'Check your connection and try again.');
+    }
+  }
+
+  function renderPost(post) {
+    const date = post.createdAt?.toDate?.()?.toLocaleDateString('en-US', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    }) || '';
+
+    const postUrl = `https://xautracker.vercel.app/post.html?id=${post.id}`;
+
+    /* ── Dynamic meta tags for sharing ── */
+    document.title = post.title + ' · XAU Tracker';
+    setMeta('description',           post.body.slice(0, 155));
+    setMeta('og:title',              post.title);
+    setMeta('og:description',        post.body.slice(0, 155));
+    setMeta('og:url',                postUrl);
+    setMeta('og:image',              post.imageUrl || 'https://xautracker.vercel.app/og-image.png');
+    setMeta('og:type',               'article');
+    setMeta('twitter:card',          'summary_large_image');
+    setMeta('twitter:title',         post.title);
+    setMeta('twitter:description',   post.body.slice(0, 155));
+    setMeta('twitter:image',         post.imageUrl || 'https://xautracker.vercel.app/og-image.png');
+    setMeta('article:published_time', post.createdAt?.toDate?.()?.toISOString() || '');
+
+    /* ── Format body into paragraphs ── */
+    const bodyHtml = post.body
+      .split(/\n\n+/)
+      .map(p => `<p class="post-body-paragraph">${p.trim().replace(/\n/g, '<br/>')}</p>`)
+      .join('');
+
+    /* ── Tags HTML ── */
+    const tagsHtml = post.tags?.length
+      ? `<div class="post-tags">${post.tags.map(t => `<span class="post-tag">#${t}</span>`).join('')}</div>`
+      : '';
+
+    /* ── Source link ── */
+    const sourceLinkHtml = post.link
+      ? `<a href="${post.link}" target="_blank" class="post-source-link">
+           <i class="fa-solid fa-arrow-up-right-from-square"></i>
+           Read original source
+         </a>`
+      : '';
+
+    /* ── Share buttons ── */
+    const encodedUrl   = encodeURIComponent(postUrl);
+    const encodedTitle = encodeURIComponent(post.title);
+
+    document.getElementById('post-content').innerHTML = `
+
+      ${post.imageUrl
+        ? `<img class="post-hero-img" src="${post.imageUrl}" alt="${post.title}"
+               onerror="this.style.display='none'" />`
+        : `<div style="height:8px;background:linear-gradient(90deg,var(--gold-dim),transparent);"></div>`
+      }
+
+      <div class="post-wrapper">
+
+        <a href="news.html" class="back-btn">
+          <i class="fa-solid fa-arrow-left"></i> Back to News
+        </a>
+
+        <div class="post-category">
+          <i class="fa-solid fa-pen-nib" style="font-size:8px;"></i>
+          ${post.category || 'Update'}
+        </div>
+
+        <h1 class="post-headline">${post.title}</h1>
+
+        <div class="post-byline">
+          <div class="byline-item">
+            <i class="fa-regular fa-calendar"></i>
+            ${date}
+          </div>
+          ${post.readTime ? `
+          <div class="byline-item">
+            <i class="fa-regular fa-clock"></i>
+            ${post.readTime}
+          </div>` : ''}
+          <div class="byline-item">
+            <i class="fa-solid fa-coins"></i>
+            XAU Tracker
+          </div>
+        </div>
+
+        <div class="post-body">${bodyHtml}</div>
+
+        ${sourceLinkHtml}
+        ${tagsHtml}
+
+        <!-- Share buttons -->
+        <div class="share-row">
+          <button class="share-btn" onclick="copyLink('${postUrl}')">
+            <i class="fa-solid fa-link"></i> Copy Link
+          </button>
+          <a class="share-btn"
+             href="https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}"
+             target="_blank">
+            <i class="fa-brands fa-x-twitter"></i> Share on X
+          </a>
+          <a class="share-btn"
+             href="https://wa.me/?text=${encodedTitle}%20${encodedUrl}"
+             target="_blank">
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+          </a>
+        </div>
+
+        <!-- Back card -->
+        <div class="back-card">
+          <div class="back-card-text">
+            <strong>More from XAU Tracker</strong>
+            Latest gold news, trends and market signals
+          </div>
+          <a href="news.html"
+             style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;
+                    background:var(--gold);color:#000;border-radius:10px;
+                    font-size:12px;font-weight:700;text-decoration:none;">
+            <i class="fa-solid fa-newspaper"></i> All News
+          </a>
+        </div>
+
+      </div>`;
+  }
+
+  /* ── Meta tag helper ── */
+  function setMeta(nameOrProp, content) {
+    if (!content) return;
+    let el = document.querySelector(
+      `meta[name="${nameOrProp}"], meta[property="${nameOrProp}"]`
+    );
+    if (!el) {
+      el = document.createElement('meta');
+      const attr = nameOrProp.startsWith('og:') || nameOrProp.startsWith('twitter:') || nameOrProp.startsWith('article:')
+        ? 'property' : 'name';
+      el.setAttribute(attr, nameOrProp);
+      document.head.appendChild(el);
+    }
+    el.setAttribute('content', content);
+  }
+
+  /* ── Error state ── */
+  function showError(heading, sub) {
+    document.getElementById('post-content').innerHTML = `
+      <div class="post-error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <h2>${heading}</h2>
+        <p>${sub}</p>
+        <a href="news.html"
+           style="display:inline-flex;align-items:center;gap:6px;margin-top:20px;
+                  padding:10px 20px;background:var(--gold);color:#000;
+                  border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;">
+          <i class="fa-solid fa-arrow-left"></i> Back to News
+        </a>
+      </div>`;
+  }
+
+  /* ── Copy link ── */
+  window.copyLink = async (url) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast(' Link copied to clipboard');
+    } catch {
+      showToast(' Could not copy — copy manually from address bar');
+    }
+  };
+
+  /* ── Active nav ── */
+  setActiveNav();
+</script>
+</body>
+</html>
