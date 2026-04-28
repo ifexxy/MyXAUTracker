@@ -72,11 +72,13 @@ html, body {
 
 /* ── Scrollable content ── */
 #content {
-  flex: 1; overflow-y: auto; overflow-x: hidden;
+  flex: 1; overflow-y: scroll; overflow-x: hidden;
   padding-bottom: calc(var(--nav-h) + 12px);
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 #content::-webkit-scrollbar { display: none; }
+
 
 /* ── Shared cards ── */
 .card {
