@@ -3,69 +3,265 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
- 
-  <!-- ── Primary SEO ── -->
+  <meta name="theme-color" content="#070c12" />
   <title>Gold Predict · XAU/USD Price Forecast & Market Signals — XAU Tracker</title>
-  <meta name="description" content="Algorithmic XAU/USD gold price predictions for 1 hour, 6 hours and 24 hours ahead. Key support and resistance levels, market sentiment score, analyst takes and trading signals." />
-  <meta name="keywords" content="gold price prediction, XAU USD forecast, gold price tomorrow, gold support resistance, gold sentiment, gold trading signals, gold 24 hour forecast, gold 1 hour prediction" />
-  <meta name="author" content="XAU Tracker" />
+  <meta name="description" content="Algorithmic XAU/USD gold price predictions for 5m, 10m, 15m, 1h, 6h and 24h. Key levels, sentiment and market signals." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://xautracker.vercel.app/predict.html" />
- 
-  <!-- ── Open Graph ── -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://xautracker.vercel.app/predict.html" />
-  <meta property="og:title" content="Gold Predict · XAU/USD Price Forecast & Market Signals — XAU Tracker" />
-  <meta property="og:description" content="Algorithmic XAU/USD gold price predictions for 1h, 6h and 24h. Key support and resistance levels, market sentiment and analyst takes." />
-  <meta property="og:image" content="https://xautracker.vercel.app/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="XAU Tracker — Gold Price Forecast" />
-  <meta property="og:site_name" content="XAU Tracker" />
-  <meta property="og:locale" content="en_US" />
- 
-  <!-- ── Twitter / X Card ── -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://xautracker.vercel.app/predict.html" />
-  <meta name="twitter:title" content="Gold Predict · XAU/USD Price Forecast & Market Signals — XAU Tracker" />
-  <meta name="twitter:description" content="Algorithmic XAU/USD gold price predictions for 1h, 6h and 24h with key levels and sentiment." />
-  <meta name="twitter:image" content="https://xautracker.vercel.app/og-image.png" />
-  <meta name="twitter:image:alt" content="XAU Tracker — Gold Price Forecast" />
- 
-  <!-- ── PWA & Mobile ── -->
-  <meta name="theme-color" content="#070c12" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="XAU Tracker" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="application-name" content="XAU Tracker" />
-  <meta name="msapplication-TileColor" content="#070c12" />
- 
-  <!-- ── Structured Data ── -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Gold Predict — XAU/USD Price Forecast",
-    "url": "https://xautracker.vercel.app/predict.html",
-    "description": "Algorithmic XAU/USD gold price predictions for 1h, 6h and 24h timeframes with key support/resistance levels and market sentiment.",
-    "isPartOf": {
-      "@type": "WebSite",
-      "name": "XAU Tracker",
-      "url": "https://xautracker.vercel.app"
-    }
-  }
-  </script>
- 
-  <!-- ── Fonts & Libs ── -->
+  <meta property="og:title"       content="Gold Predict · XAU/USD Forecast — XAU Tracker" />
+  <meta property="og:description" content="Realistic algorithmic XAU/USD gold price predictions with ATR-based volatility model." />
+  <meta property="og:url"         content="https://xautracker.vercel.app/predict.html" />
+  <meta property="og:image"       content="https://xautracker.vercel.app/og-image.png" />
+  <meta name="twitter:card"       content="summary_large_image" />
+  <meta name="apple-mobile-web-app-capable"            content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style"   content="black-translucent" />
+  <meta name="apple-mobile-web-app-title"              content="XAU Tracker" />
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* ── Predict-specific styles ── */
+
+    .predict-hero { padding: 16px 16px 0; }
+    .predict-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .predict-icon {
+      width: 38px; height: 38px; background: var(--gold-glow);
+      border: 1px solid var(--gold-dim); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); font-size: 16px;
+    }
+    .predict-header h2 { font-size: 18px; font-weight: 800; }
+    .predict-header p  { font-size: 11px; color: var(--txt-2); margin-top: 2px; }
+
+    /* ── Algo note ── */
+    .algo-note {
+      margin: 0 16px 12px;
+      padding: 10px 14px;
+      background: rgba(212,167,44,0.05);
+      border: 1px solid rgba(212,167,44,0.12);
+      border-radius: 10px;
+      font-size: 11px; color: var(--txt-2); line-height: 1.6;
+    }
+    .algo-note i { color: var(--gold); margin-right: 5px; }
+
+    /* ── Section card ── */
+    .predict-card {
+      margin: 0 16px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .predict-card h3 {
+      font-size: 13px; font-weight: 700; color: var(--txt-1); margin-bottom: 14px;
+    }
+
+    /* ── Live price strip ── */
+    .live-strip {
+      margin: 0 16px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .live-strip-left { display: flex; align-items: center; gap: 10px; }
+    .live-price-big  {
+      font-family: 'Space Mono', monospace;
+      font-size: 26px; font-weight: 700; color: var(--txt-1);
+    }
+    .live-price-big .sym { font-size: 14px; color: var(--txt-2); vertical-align: super; }
+    .live-change {
+      font-family: 'Space Mono', monospace; font-size: 12px;
+      padding: 4px 10px; border-radius: 8px;
+    }
+    .live-change.up   { background: var(--green-dim); color: var(--green); }
+    .live-change.down { background: var(--red-dim);   color: var(--red); }
+    .atr-badge {
+      font-size: 10px; color: var(--txt-3);
+      font-family: 'Space Mono', monospace; text-align: right;
+    }
+
+    /* ── Session indicator ── */
+    .session-row {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin: 0 16px 12px;
+    }
+    .session-chip {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 10px; padding: 4px 10px; border-radius: 20px;
+      font-family: 'Space Mono', monospace;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--txt-3);
+    }
+    .session-chip.active { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+    .session-chip .dot   {
+      width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+    }
+    .session-chip.active .dot { animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.4; transform:scale(.7); }
+    }
+
+    /* ── Timeline ── */
+    .timeline-container { position: relative; }
+
+    .tl-group-label {
+      font-size: 10px; color: var(--txt-3); text-transform: uppercase;
+      letter-spacing: 0.1em; padding: 10px 0 6px;
+      font-family: 'Space Mono', monospace;
+      border-top: 1px solid var(--border); margin-top: 6px;
+    }
+    .tl-group-label:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+
+    .timeline-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 11px 0; border-bottom: 1px solid var(--border);
+    }
+    .timeline-row:last-child { border-bottom: none; }
+
+    .tl-dot-col {
+      display: flex; flex-direction: column; align-items: center;
+      width: 18px; flex-shrink: 0; padding-top: 4px;
+    }
+    .tl-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 2px solid var(--txt-3); background: var(--bg-deep); flex-shrink: 0;
+    }
+    .tl-dot.now  { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 8px var(--gold); }
+    .tl-dot.done { border-color: var(--gold); }
+    .tl-line {
+      width: 2px; flex: 1; min-height: 16px;
+      background: var(--border);
+    }
+
+    .tl-body { flex: 1; min-width: 0; }
+
+    .tl-label {
+      font-size: 10px; color: var(--txt-2); text-transform: uppercase;
+      letter-spacing: 0.08em; margin-bottom: 3px;
+    }
+    .tl-price {
+      font-family: 'Space Mono', monospace;
+      font-size: 18px; font-weight: 700; color: var(--txt-1); line-height: 1.1;
+    }
+    .tl-sub {
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      margin-top: 2px;
+    }
+    .tl-range {
+      font-size: 10px; color: var(--txt-3);
+      font-family: 'Space Mono', monospace; margin-top: 2px;
+    }
+    .tl-conf-row {
+      display: flex; align-items: center; gap: 6px; margin-top: 6px;
+    }
+    .conf-bar  {
+      flex: 1; height: 3px; background: var(--bg-muted);
+      border-radius: 2px; overflow: hidden;
+    }
+    .conf-fill {
+      height: 100%; border-radius: 2px; transition: width 0.9s ease;
+    }
+    .conf-fill.high   { background: var(--green); }
+    .conf-fill.medium { background: var(--gold); }
+    .conf-fill.low    { background: var(--red); }
+    .conf-label { font-size: 10px; color: var(--txt-3); font-family: 'Space Mono', monospace; white-space: nowrap; }
+
+    .tl-badge {
+      flex-shrink: 0; padding: 4px 9px; border-radius: 8px;
+      font-size: 10px; font-family: 'Space Mono', monospace; font-weight: 700;
+      margin-top: 2px; text-align: center; min-width: 52px;
+    }
+    .badge-bull { background: var(--green-dim); color: var(--green); }
+    .badge-bear { background: var(--red-dim);   color: var(--red); }
+    .badge-flat { background: var(--gold-glow); color: var(--gold); }
+    .badge-live { background: rgba(212,167,44,0.15); color: var(--gold); }
+
+    /* ── Signal meter ── */
+    .sig-gauge-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .sig-gauge-bar { flex: 1; height: 8px; background: var(--bg-muted); border-radius: 4px; overflow: hidden; }
+    .sig-gauge-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+    .sig-gauge-fill.buy  { background: var(--green); }
+    .sig-gauge-fill.hold { background: var(--gold); }
+    .sig-gauge-fill.sell { background: var(--red); }
+    .sig-name { font-size: 12px; width: 30px; }
+    .sig-pct  { font-size: 12px; font-family: 'Space Mono', monospace; width: 36px; text-align: right; }
+
+    /* ── Sentiment ── */
+    .sentiment-arc { text-align: center; padding: 10px 0 4px; }
+    .sentiment-big  { font-size: 44px; font-weight: 800; line-height: 1; }
+    .sentiment-lbl  { font-size: 12px; color: var(--txt-2); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+    /* ── Key levels ── */
+    .level-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+    }
+    .level-row:last-child { border-bottom: none; }
+    .level-name { font-size: 12px; color: var(--txt-2); }
+    .level-val  { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; }
+    .level-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+    .badge-support { background: var(--green-dim); color: var(--green); }
+    .badge-resist  { background: var(--red-dim);   color: var(--red); }
+    .badge-neutral { background: var(--gold-glow);  color: var(--gold); }
+
+    /* ── Factors ── */
+    .factor-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+    }
+    .factor-row:last-child { border-bottom: none; }
+    .factor-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; flex-shrink: 0;
+    }
+    .factor-text { flex: 1; }
+    .factor-name { font-size: 12px; font-weight: 600; color: var(--txt-1); }
+    .factor-desc { font-size: 11px; color: var(--txt-2); margin-top: 1px; }
+    .factor-sig  {
+      font-size: 10px; padding: 3px 9px; border-radius: 8px;
+      font-family: 'Space Mono', monospace; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ── Takes ── */
+    .take-item {
+      display: flex; gap: 10px; padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .take-item:last-child { border-bottom: none; }
+    .take-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0;
+    }
+    .take-icon.bull    { background: var(--green-dim); color: var(--green); }
+    .take-icon.bear    { background: var(--red-dim);   color: var(--red); }
+    .take-icon.neutral { background: var(--gold-glow); color: var(--gold); }
+    .take-text { font-size: 13px; line-height: 1.55; color: var(--txt-2); }
+    .take-text strong { color: var(--txt-1); font-weight: 600; }
+
+    /* ── Disclaimer ── */
+    .disclaimer {
+      margin: 0 16px 90px; padding: 10px 14px;
+      background: rgba(255,69,97,0.06); border: 1px solid rgba(255,69,97,0.15);
+      border-radius: 10px; font-size: 11px; color: var(--txt-2); line-height: 1.5;
+    }
+    .disclaimer i { color: var(--red); margin-right: 4px; }
+  </style>
+
+  <!-- Auth guard — must be first script, protects this page -->
+  <script type="module" src="js/auth-guard.js"></script>
 </head>
 <body>
 <div id="app">
 
+  <!-- Top bar -->
   <div id="topbar">
     <div class="topbar-brand">
       <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
@@ -85,168 +281,233 @@
         <div class="predict-icon"><i class="fa-solid fa-brain"></i></div>
         <div>
           <h2>Market Signals</h2>
-          <p>Price prediction · Key levels · Sentiment</p>
+          <p>ATR-based forecast · Key levels · Sentiment</p>
         </div>
       </div>
     </div>
 
-    <!-- Algo note -->
+    <!-- Algo methodology note -->
     <div class="algo-note">
       <i class="fa-solid fa-microchip"></i>
-      Predictions are generated algorithmically using momentum, volatility, and mean-reversion weighting.
-      Confidence decreases as the timeframe extends. <strong style="color:var(--gold)">Not financial advice.</strong>
+      Forecasts use <strong style="color:var(--gold)">ATR × √(t/1440)</strong> —
+      the financial square-root-of-time volatility model. Short frames reflect
+      realistic micro-movement. Confidence degrades as timeframe extends.
+      <strong style="color:var(--red)">Not financial advice.</strong>
+    </div>
+
+    <!-- Live price strip -->
+    <div class="live-strip">
+      <div class="live-strip-left">
+        <div>
+          <div style="font-size:10px;color:var(--txt-2);margin-bottom:3px;font-family:'Space Mono',monospace;">XAU/USD SPOT</div>
+          <div class="live-price-big"><span class="sym">$</span><span id="strip-price">—</span></div>
+        </div>
+        <div class="live-change" id="strip-change"></div>
+      </div>
+      <div class="atr-badge">
+        <div>Daily ATR</div>
+        <div id="strip-atr" style="color:var(--txt-1);font-weight:700;">—</div>
+        <div id="strip-updated" style="margin-top:4px;font-size:9px;"></div>
+      </div>
+    </div>
+
+    <!-- Market session indicator -->
+    <div class="session-row" id="session-row">
+      <div class="session-chip" id="sess-asian">
+        <div class="dot"></div>Asian
+      </div>
+      <div class="session-chip" id="sess-london">
+        <div class="dot"></div>London
+      </div>
+      <div class="session-chip" id="sess-ny">
+        <div class="dot"></div>New York
+      </div>
+      <div class="session-chip" id="sess-vol" style="margin-left:auto;">
+        <i class="fa-solid fa-wave-square" style="font-size:9px;"></i>
+        <span id="sess-vol-label">—</span>
+      </div>
     </div>
 
     <!-- ══ PREDICTION TIMELINE ══ -->
-    <div class="timeline-card">
+    <div class="predict-card">
       <h3>
         <i class="fa-solid fa-clock-rotate-left" style="margin-right:8px;color:var(--gold)"></i>
         Price Prediction Timeline
       </h3>
 
-      <!-- NOW (current) -->
-      <div class="timeline-row">
-        <div class="timeline-dot-col">
-          <div class="timeline-dot active"></div>
-          <div class="timeline-line"></div>
-        </div>
-        <div class="timeline-body">
-          <div class="timeline-label"><i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px;color:var(--green)"></i>Now · Live Price</div>
-          <div class="timeline-price" id="pred-now">—</div>
-          <div class="timeline-range" id="pred-now-time"></div>
-        </div>
-        <div class="timeline-badge badge-flat" id="pred-now-badge">LIVE</div>
-      </div>
-<!-- 5 MINUTES -->
-<div class="timeline-row">
-  <div class="timeline-dot-col">
-    <div class="timeline-dot"></div>
-    <div class="timeline-line"></div>
-  </div>
-  <div class="timeline-body">
-    <div class="timeline-label">
-      <i class="fa-solid fa-bolt" style="font-size:9px;margin-right:4px;"></i>5 Minute Forecast
-    </div>
-    <div class="timeline-price" id="pred-5m">—</div>
-    <div class="timeline-change" id="pred-5m-chg"></div>
-    <div class="timeline-range"  id="pred-5m-range"></div>
-    <div class="timeline-confidence">
-      <div class="conf-bar"><div class="conf-fill" id="conf-5m" style="width:0%"></div></div>
-      <span class="conf-label" id="conf-5m-lbl">—</span>
-    </div>
-  </div>
-  <div class="timeline-badge" id="pred-5m-badge">—</div>
-</div>
+      <div class="timeline-container">
 
-<!-- 10 MINUTES -->
-<div class="timeline-row">
-  <div class="timeline-dot-col">
-    <div class="timeline-dot"></div>
-    <div class="timeline-line"></div>
-  </div>
-  <div class="timeline-body">
-    <div class="timeline-label">
-      <i class="fa-solid fa-gauge" style="font-size:9px;margin-right:4px;"></i>10 Minute Forecast
-    </div>
-    <div class="timeline-price" id="pred-10m">—</div>
-    <div class="timeline-change" id="pred-10m-chg"></div>
-    <div class="timeline-range"  id="pred-10m-range"></div>
-    <div class="timeline-confidence">
-      <div class="conf-bar"><div class="conf-fill" id="conf-10m" style="width:0%"></div></div>
-      <span class="conf-label" id="conf-10m-lbl">—</span>
-    </div>
-  </div>
-  <div class="timeline-badge" id="pred-10m-badge">—</div>
-</div>
-
-<!-- 15 MINUTES -->
-<div class="timeline-row">
-  <div class="timeline-dot-col">
-    <div class="timeline-dot"></div>
-    <div class="timeline-line"></div>
-  </div>
-  <div class="timeline-body">
-    <div class="timeline-label">
-      <i class="fa-solid fa-hourglass-start" style="font-size:9px;margin-right:4px;"></i>15 Minute Forecast
-    </div>
-    <div class="timeline-price" id="pred-15m">—</div>
-    <div class="timeline-change" id="pred-15m-chg"></div>
-    <div class="timeline-range"  id="pred-15m-range"></div>
-    <div class="timeline-confidence">
-      <div class="conf-bar"><div class="conf-fill" id="conf-15m" style="width:0%"></div></div>
-      <span class="conf-label" id="conf-15m-lbl">—</span>
-    </div>
-  </div>
-  <div class="timeline-badge" id="pred-15m-badge">—</div>
-</div>
-      <!-- 1 HOUR -->
-      <div class="timeline-row">
-        <div class="timeline-dot-col">
-          <div class="timeline-dot"></div>
-          <div class="timeline-line"></div>
-        </div>
-        <div class="timeline-body">
-          <div class="timeline-label"><i class="fa-solid fa-stopwatch" style="font-size:9px;margin-right:4px;"></i>1 Hour Forecast</div>
-          <div class="timeline-price" id="pred-1h">—</div>
-          <div class="timeline-change" id="pred-1h-chg"></div>
-          <div class="timeline-range" id="pred-1h-range"></div>
-          <div class="timeline-confidence">
-            <div class="conf-bar"><div class="conf-fill" id="conf-1h" style="width:0%"></div></div>
-            <span class="conf-label" id="conf-1h-lbl">—</span>
+        <!-- NOW -->
+        <div class="tl-group-label">Current Price</div>
+        <div class="timeline-row">
+          <div class="tl-dot-col">
+            <div class="tl-dot now"></div>
+            <div class="tl-line"></div>
           </div>
-        </div>
-        <div class="timeline-badge" id="pred-1h-badge">—</div>
-      </div>
-
-      <!-- 6 HOURS -->
-      <div class="timeline-row">
-        <div class="timeline-dot-col">
-          <div class="timeline-dot"></div>
-          <div class="timeline-line"></div>
-        </div>
-        <div class="timeline-body">
-          <div class="timeline-label"><i class="fa-solid fa-hourglass-half" style="font-size:9px;margin-right:4px;"></i>6 Hour Forecast</div>
-          <div class="timeline-price" id="pred-6h">—</div>
-          <div class="timeline-change" id="pred-6h-chg"></div>
-          <div class="timeline-range" id="pred-6h-range"></div>
-          <div class="timeline-confidence">
-            <div class="conf-bar"><div class="conf-fill" id="conf-6h" style="width:0%"></div></div>
-            <span class="conf-label" id="conf-6h-lbl">—</span>
+          <div class="tl-body">
+            <div class="tl-label"><i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px;color:var(--green)"></i>Live · Right Now</div>
+            <div class="tl-price" id="pred-now">—</div>
+            <div class="tl-range" id="pred-now-time"></div>
           </div>
+          <div class="tl-badge badge-live">LIVE</div>
         </div>
-        <div class="timeline-badge" id="pred-6h-badge">—</div>
-      </div>
 
-      <!-- 24 HOURS -->
-      <div class="timeline-row">
-        <div class="timeline-dot-col">
-          <div class="timeline-dot"></div>
-        </div>
-        <div class="timeline-body">
-          <div class="timeline-label"><i class="fa-solid fa-calendar-day" style="font-size:9px;margin-right:4px;"></i>24 Hour Forecast</div>
-          <div class="timeline-price" id="pred-24h">—</div>
-          <div class="timeline-change" id="pred-24h-chg"></div>
-          <div class="timeline-range" id="pred-24h-range"></div>
-          <div class="timeline-confidence">
-            <div class="conf-bar"><div class="conf-fill" id="conf-24h" style="width:0%"></div></div>
-            <span class="conf-label" id="conf-24h-lbl">—</span>
+        <!-- SHORT TERM GROUP -->
+        <div class="tl-group-label">Short-Term · Micro Moves</div>
+
+        <!-- 5 minutes -->
+        <div class="timeline-row">
+          <div class="tl-dot-col">
+            <div class="tl-dot done"></div>
+            <div class="tl-line"></div>
           </div>
+          <div class="tl-body">
+            <div class="tl-label"><i class="fa-solid fa-bolt" style="font-size:8px;margin-right:4px;"></i>5 Min Forecast</div>
+            <div class="tl-price" id="pred-5m">—</div>
+            <div class="tl-sub"  id="pred-5m-chg"></div>
+            <div class="tl-range" id="pred-5m-range"></div>
+            <div class="tl-conf-row">
+              <div class="conf-bar"><div class="conf-fill high" id="conf-5m" style="width:0%"></div></div>
+              <span class="conf-label" id="conf-5m-lbl">—</span>
+            </div>
+          </div>
+          <div class="tl-badge" id="pred-5m-badge">—</div>
         </div>
-        <div class="timeline-badge" id="pred-24h-badge">—</div>
+
+        <!-- 10 minutes -->
+        <div class="timeline-row">
+          <div class="tl-dot-col">
+            <div class="tl-dot done"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-label"><i class="fa-solid fa-gauge" style="font-size:8px;margin-right:4px;"></i>10 Min Forecast</div>
+            <div class="tl-price" id="pred-10m">—</div>
+            <div class="tl-sub"  id="pred-10m-chg"></div>
+            <div class="tl-range" id="pred-10m-range"></div>
+            <div class="tl-conf-row">
+              <div class="conf-bar"><div class="conf-fill high" id="conf-10m" style="width:0%"></div></div>
+              <span class="conf-label" id="conf-10m-lbl">—</span>
+            </div>
+          </div>
+          <div class="tl-badge" id="pred-10m-badge">—</div>
+        </div>
+
+        <!-- 15 minutes -->
+        <div class="timeline-row">
+          <div class="tl-dot-col">
+            <div class="tl-dot done"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-label"><i class="fa-solid fa-hourglass-start" style="font-size:8px;margin-right:4px;"></i>15 Min Forecast</div>
+            <div class="tl-price" id="pred-15m">—</div>
+            <div class="tl-sub"  id="pred-15m-chg"></div>
+            <div class="tl-range" id="pred-15m-range"></div>
+            <div class="tl-conf-row">
+              <div class="conf-bar"><div class="conf-fill medium" id="conf-15m" style="width:0%"></div></div>
+              <span class="conf-label" id="conf-15m-lbl">—</span>
+            </div>
+          </div>
+          <div class="tl-badge" id="pred-15m-badge">—</div>
+        </div>
+
+        <!-- MEDIUM TERM GROUP -->
+        <div class="tl-group-label">Medium-Term · Session Moves</div>
+
+        <!-- 1 hour -->
+        <div class="timeline-row">
+          <div class="tl-dot-col">
+            <div class="tl-dot done"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-label"><i class="fa-solid fa-stopwatch" style="font-size:8px;margin-right:4px;"></i>1 Hour Forecast</div>
+            <div class="tl-price" id="pred-1h">—</div>
+            <div class="tl-sub"  id="pred-1h-chg"></div>
+            <div class="tl-range" id="pred-1h-range"></div>
+            <div class="tl-conf-row">
+              <div class="conf-bar"><div class="conf-fill medium" id="conf-1h" style="width:0%"></div></div>
+              <span class="conf-label" id="conf-1h-lbl">—</span>
+            </div>
+          </div>
+          <div class="tl-badge" id="pred-1h-badge">—</div>
+        </div>
+
+        <!-- 6 hours -->
+        <div class="timeline-row">
+          <div class="tl-dot-col">
+            <div class="tl-dot done"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-label"><i class="fa-solid fa-hourglass-half" style="font-size:8px;margin-right:4px;"></i>6 Hour Forecast</div>
+            <div class="tl-price" id="pred-6h">—</div>
+            <div class="tl-sub"  id="pred-6h-chg"></div>
+            <div class="tl-range" id="pred-6h-range"></div>
+            <div class="tl-conf-row">
+              <div class="conf-bar"><div class="conf-fill low" id="conf-6h" style="width:0%"></div></div>
+              <span class="conf-label" id="conf-6h-lbl">—</span>
+            </div>
+          </div>
+          <div class="tl-badge" id="pred-6h-badge">—</div>
+        </div>
+
+        <!-- LONG TERM GROUP -->
+        <div class="tl-group-label">Long-Term · Daily View</div>
+
+        <!-- 24 hours -->
+        <div class="timeline-row">
+          <div class="tl-dot-col">
+            <div class="tl-dot done"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-label"><i class="fa-solid fa-calendar-day" style="font-size:8px;margin-right:4px;"></i>24 Hour Forecast</div>
+            <div class="tl-price" id="pred-24h">—</div>
+            <div class="tl-sub"  id="pred-24h-chg"></div>
+            <div class="tl-range" id="pred-24h-range"></div>
+            <div class="tl-conf-row">
+              <div class="conf-bar"><div class="conf-fill low" id="conf-24h" style="width:0%"></div></div>
+              <span class="conf-label" id="conf-24h-lbl">—</span>
+            </div>
+          </div>
+          <div class="tl-badge" id="pred-24h-badge">—</div>
+        </div>
+
+      </div><!-- /timeline-container -->
+    </div>
+
+    <!-- ══ MARKET SIGNALS ══ -->
+    <div class="predict-card">
+      <h3><i class="fa-solid fa-gauge-high" style="margin-right:8px;color:var(--gold)"></i>Market Signal</h3>
+      <div class="sig-gauge-row">
+        <span class="sig-name" style="color:var(--green)">BUY</span>
+        <div class="sig-gauge-bar"><div class="sig-gauge-fill buy" id="sig-buy" style="width:0%"></div></div>
+        <span class="sig-pct" id="sig-buy-pct" style="color:var(--green)">—</span>
+      </div>
+      <div class="sig-gauge-row">
+        <span class="sig-name" style="color:var(--gold)">HLD</span>
+        <div class="sig-gauge-bar"><div class="sig-gauge-fill hold" id="sig-hold" style="width:0%"></div></div>
+        <span class="sig-pct" id="sig-hold-pct" style="color:var(--gold)">—</span>
+      </div>
+      <div class="sig-gauge-row">
+        <span class="sig-name" style="color:var(--red)">SELL</span>
+        <div class="sig-gauge-bar"><div class="sig-gauge-fill sell" id="sig-sell" style="width:0%"></div></div>
+        <span class="sig-pct" id="sig-sell-pct" style="color:var(--red)">—</span>
       </div>
     </div>
 
-    <!-- Sentiment -->
-    <div class="card">
+    <!-- ══ SENTIMENT ══ -->
+    <div class="predict-card">
       <h3><i class="fa-solid fa-heart-pulse" style="margin-right:8px;color:var(--gold)"></i>Market Sentiment</h3>
       <div class="sentiment-arc">
         <div class="sentiment-big" id="sentiment-emoji">⚖️</div>
-        <div class="sentiment-label" id="sentiment-txt">Calculating...</div>
+        <div class="sentiment-lbl" id="sentiment-txt">Calculating...</div>
       </div>
     </div>
 
-    <!-- Key Levels -->
-    <div class="card">
+    <!-- ══ KEY LEVELS ══ -->
+    <div class="predict-card">
       <h3><i class="fa-solid fa-layer-group" style="margin-right:8px;color:var(--gold)"></i>Key Price Levels</h3>
       <div class="level-row">
         <span class="level-name">Strong Resistance</span>
@@ -258,8 +519,8 @@
         <span class="level-val" id="lvl-r1">—</span>
         <span class="level-badge badge-resist">R1</span>
       </div>
-      <div class="level-row" style="background:rgba(212,167,44,0.04);border-radius:8px;padding:8px 4px;">
-        <span class="level-name" style="font-weight:700;color:var(--txt-1)">Current Price</span>
+      <div class="level-row" style="background:rgba(212,167,44,0.04);border-radius:8px;padding:8px 6px;">
+        <span class="level-name" style="font-weight:700;color:var(--txt-1);">Current Price</span>
         <span class="level-val" id="lvl-curr" style="color:var(--gold)">—</span>
         <span class="level-badge badge-neutral">NOW</span>
       </div>
@@ -275,19 +536,30 @@
       </div>
     </div>
 
-    <!-- Prediction factors -->
-    <div class="factors-card">
-      <h3><i class="fa-solid fa-sliders" style="margin-right:8px;color:var(--gold)"></i>Prediction Inputs</h3>
+    <!-- ══ PREDICTION FACTORS ══ -->
+    <div class="predict-card">
+      <h3><i class="fa-solid fa-sliders" style="margin-right:8px;color:var(--gold)"></i>Model Inputs</h3>
 
       <div class="factor-row">
-        <div class="factor-icon bull" style="background:var(--green-dim);color:var(--green)">
+        <div class="factor-icon" style="background:var(--gold-glow);color:var(--gold)">
+          <i class="fa-solid fa-chart-simple"></i>
+        </div>
+        <div class="factor-text">
+          <div class="factor-name">Daily ATR</div>
+          <div class="factor-desc" id="f-atr-desc">Volatility anchor for all timeframe bands</div>
+        </div>
+        <div class="factor-sig" id="f-atr-sig" style="background:var(--gold-glow);color:var(--gold)">—</div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-icon" style="background:var(--green-dim);color:var(--green)">
           <i class="fa-solid fa-arrow-trend-up"></i>
         </div>
         <div class="factor-text">
           <div class="factor-name">Momentum</div>
-          <div class="factor-desc" id="factor-momentum">Based on current 24h price change direction</div>
+          <div class="factor-desc" id="f-mom-desc">24h directional bias</div>
         </div>
-        <div class="factor-signal" id="factor-momentum-sig" style="background:var(--green-dim);color:var(--green)">—</div>
+        <div class="factor-sig" id="f-mom-sig" style="background:var(--green-dim);color:var(--green)">—</div>
       </div>
 
       <div class="factor-row">
@@ -295,10 +567,10 @@
           <i class="fa-solid fa-wave-square"></i>
         </div>
         <div class="factor-text">
-          <div class="factor-name">Volatility</div>
-          <div class="factor-desc" id="factor-vol">Intraday price range vs historical average</div>
+          <div class="factor-name">Intraday Volatility</div>
+          <div class="factor-desc" id="f-vol-desc">High-low spread vs ATR baseline</div>
         </div>
-        <div class="factor-signal" id="factor-vol-sig" style="background:rgba(120,100,200,0.12);color:#a080ff">—</div>
+        <div class="factor-sig" id="f-vol-sig" style="background:rgba(120,100,200,0.12);color:#a080ff">—</div>
       </div>
 
       <div class="factor-row">
@@ -307,32 +579,35 @@
         </div>
         <div class="factor-text">
           <div class="factor-name">Mean Reversion</div>
-          <div class="factor-desc">Probability of price pulling back toward average</div>
+          <div class="factor-desc">Counter-trend pull probability</div>
         </div>
-        <div class="factor-signal" id="factor-mr-sig" style="background:var(--gold-glow);color:var(--gold)">—</div>
+        <div class="factor-sig" id="f-mr-sig" style="background:var(--gold-glow);color:var(--gold)">—</div>
       </div>
 
       <div class="factor-row" style="border:none;">
         <div class="factor-icon" style="background:var(--red-dim);color:var(--red)">
-          <i class="fa-solid fa-dollar-sign"></i>
+          <i class="fa-solid fa-building-columns"></i>
         </div>
         <div class="factor-text">
-          <div class="factor-name">USD Correlation</div>
-          <div class="factor-desc">Inverse relationship with dollar strength index</div>
+          <div class="factor-name">Market Session</div>
+          <div class="factor-desc" id="f-sess-desc">Active trading session multiplier</div>
         </div>
-        <div class="factor-signal" id="factor-usd-sig" style="background:var(--red-dim);color:var(--red)">—</div>
+        <div class="factor-sig" id="f-sess-sig" style="background:var(--red-dim);color:var(--red)">—</div>
       </div>
     </div>
 
-    
 
+    </div>
+
+    <!-- Disclaimer -->
     <div class="disclaimer">
       <i class="fa-solid fa-circle-exclamation"></i>
-      Not financial advice. Predictions are algorithmic estimates based on technical factors only. XAU/USD trading involves significant risk. Consult a licensed financial professional before any investment decision.
+      Not financial advice. Predictions are algorithmic estimates based on ATR volatility modelling and technical factors. XAU/USD carries significant market risk. Always consult a licensed financial professional before making any trading decision.
     </div>
 
   </div><!-- /content -->
 
+  <!-- Bottom nav -->
   <nav id="bottomnav">
     <a class="nav-btn" data-page="index.html"   href="index.html"><i class="fa-solid fa-house"></i>Home</a>
     <a class="nav-btn" data-page="news.html"    href="news.html"><i class="fa-solid fa-newspaper"></i>News</a>
@@ -345,270 +620,370 @@
 
 <script src="js/api.js"></script>
 <script>
-/* ═══════════════════════════════════════════
-   PREDICTION ENGINE
-   Inputs:  current price, 24h change %, intraday range
-   Outputs: target price + confidence for 1h / 6h / 24h
-═══════════════════════════════════════════ */
-function buildPrediction(price, chp, high, low) {
+/* ═══════════════════════════════════════════════════════════════════
+   REALISTIC GOLD PREDICTION ENGINE
+   ─────────────────────────────────────────────────────────────────
+   Core formula: σ(t) = ATR × √(t / 1440)
 
-  /* ── 1. Base factors ─────────────────────── */
-  const rangePct    = ((high - low) / price) * 100;       // intraday volatility %
-  const momentum    = chp;                                 // +/- % direction today
-  const isUp        = momentum >= 0;
+   ATR (Average True Range) is the standard measure of daily
+   gold volatility — typically $20–$40 for XAU/USD.
 
-  /* Volatility category */
-  const volCategory = rangePct < 0.4 ? 'LOW' : rangePct < 0.9 ? 'NORMAL' : 'HIGH';
+   The square-root-of-time rule (from Brownian motion theory)
+   scales that daily volatility down to any sub-day timeframe:
 
-  /* Mean reversion pull: the bigger today's move, the more likely a pullback */
-  const mrPull      = Math.min(Math.abs(momentum) * 0.3, 0.5); // 0–0.5% counter-pull
+     5 min:  ATR × √(5/1440)    = ATR × 0.0589  ≈ $1.2–$2.4
+     10 min: ATR × √(10/1440)   = ATR × 0.0833  ≈ $1.7–$3.3
+     15 min: ATR × √(15/1440)   = ATR × 0.1021  ≈ $2.0–$4.1
+     1 hour: ATR × √(60/1440)   = ATR × 0.2041  ≈ $4.1–$8.2
+     6 hour: ATR × √(360/1440)  = ATR × 0.5000  ≈ $10–$20
+     24 hour:ATR × √(1440/1440) = ATR × 1.0000  ≈ $20–$40
 
-  /* ── 2. Per-timeframe calculation ──────────
-     Each frame has:
-       drift     = expected directional move %
-       noise     = random ±band %
-       confidence = how sure we are (degrades with time)
-  ─────────────────────────────────────────── */
-  const seed = Math.random(); // single seed so all frames are coherent
-  /* ── Short-term frames: 5m / 10m / 15m ─────────────────────────
-     These frames are MUCH tighter than hourly.
-     Momentum influence is very small — price barely moves in minutes.
-     Noise is the dominant force at this scale.
-     Confidence is high because we're predicting almost no change.
+   Drift is calculated separately in dollar terms from:
+     - Momentum score (based on today's % change)
+     - Session multiplier (NY session is most volatile)
+     - Mean reversion pull (larger moves attract counter-pressure)
 
-     Formula per frame:
-       drift  = momentum effect scaled way down by timeframe fraction
-       noise  = random micro-fluctuation within the spread
-       band   = ±spread tightened for shorter timeframes
-  ─────────────────────────────────────────────────────────────────*/
+   Confidence degrades with time because uncertainty compounds.
+═══════════════════════════════════════════════════════════════════ */
 
-  /* Spread at this scale — gold typically moves $0.20–$1.50 in 5 mins */
-  const microSpread = Math.max((high - low) * 0.04, 0.25);
+/* ── Format helpers ── */
+const fmtP = v => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtD = v => (v >= 0 ? '+' : '') + v.toFixed(2);
 
-  /* 5 minutes */
-  const drift5m   = momentum * 0.008 * (seed > 0.5 ? 1 : 0.4);
-  const noise5m   = microSpread * (Math.random() - 0.5);
-  const adj5m     = drift5m + noise5m;
-  const price5m   = parseFloat((price * (1 + adj5m / 100)).toFixed(2));
-  const conf5m    = Math.round(Math.max(82, Math.min(96, 94 - rangePct * 2)));
-  const band5m    = {
-    low:  (price5m - microSpread * 0.8).toFixed(2),
-    high: (price5m + microSpread * 0.8).toFixed(2),
-  };
-
-  /* 10 minutes */
-  const drift10m  = momentum * 0.015 * (seed > 0.48 ? 1 : 0.5);
-  const noise10m  = microSpread * 1.4 * (Math.random() - 0.5);
-  const adj10m    = drift10m + noise10m;
-  const price10m  = parseFloat((price * (1 + adj10m / 100)).toFixed(2));
-  const conf10m   = Math.round(Math.max(75, Math.min(91, 88 - rangePct * 3)));
-  const band10m   = {
-    low:  (price10m - microSpread * 1.2).toFixed(2),
-    high: (price10m + microSpread * 1.2).toFixed(2),
-  };
-
-  /* 15 minutes */
-  const drift15m  = momentum * 0.024 * (seed > 0.46 ? 1 : 0.55);
-  const noise15m  = microSpread * 1.9 * (Math.random() - 0.5);
-  const adj15m    = drift15m + noise15m;
-  const price15m  = parseFloat((price * (1 + adj15m / 100)).toFixed(2));
-  const conf15m   = Math.round(Math.max(68, Math.min(86, 83 - rangePct * 4)));
-  const band15m   = {
-    low:  (price15m - microSpread * 1.6).toFixed(2),
-    high: (price15m + microSpread * 1.6).toFixed(2),
-  };
-
-  // 1-hour: mostly momentum, small noise
-  const drift1h    = momentum * 0.08 * (seed > 0.5 ? 1 : 0.6);
-  const noise1h    = rangePct * 0.15 * (Math.random() - 0.5);
-  const adj1h      = drift1h + noise1h - (isUp ? mrPull * 0.2 : -mrPull * 0.2);
-  const price1h    = price * (1 + adj1h / 100);
-  const conf1h     = Math.round(Math.max(55, Math.min(88, 82 - rangePct * 4)));
-
-  // 6-hour: momentum fades, reversion grows
-  const drift6h    = momentum * 0.22 * (seed > 0.45 ? 1 : 0.5);
-  const noise6h    = rangePct * 0.35 * (Math.random() - 0.5);
-  const adj6h      = drift6h + noise6h - (isUp ? mrPull * 0.5 : -mrPull * 0.5);
-  const price6h    = price * (1 + adj6h / 100);
-  const conf6h     = Math.round(Math.max(40, Math.min(72, 68 - rangePct * 5)));
-
-  // 24-hour: high uncertainty, wider bands
-  const drift24h   = momentum * 0.38 * (seed > 0.4 ? 1 : 0.3);
-  const noise24h   = rangePct * 0.75 * (Math.random() - 0.5);
-  const adj24h     = drift24h + noise24h - (isUp ? mrPull * 0.9 : -mrPull * 0.9);
-  const price24h   = price * (1 + adj24h / 100);
-  const conf24h    = Math.round(Math.max(28, Math.min(58, 52 - rangePct * 6)));
-
-  /* ── 3. Confidence bands (±range around target) ── */
-  const band = (targetPrice, confPct, tfHours) => {
-    const uncertainty = (1 - confPct / 100) * targetPrice * 0.015 * Math.sqrt(tfHours);
-    return {
-      low:  (targetPrice - uncertainty).toFixed(2),
-      high: (targetPrice + uncertainty).toFixed(2),
-    };
-  };
-
-  return {
-          /* Short-term */
-    price5m,  conf5m,  band5m,
-    price10m, conf10m, band10m,
-    price15m, conf15m, band15m,
-    price1h, conf1h, band1h:  band(price1h,  conf1h,  1),
-    price6h, conf6h, band6h:  band(price6h,  conf6h,  6),
-    price24h, conf24h, band24h: band(price24h, conf24h, 24),
-    momentum, volCategory, mrPull,
-  };
-}
-
-/* ── Helpers ── */
-function fmtP(v) { return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-function chgStr(target, base) {
+function chgHTML(target, base) {
   const diff = target - base;
-  const pct  = ((diff / base) * 100);
+  const pct  = (diff / base) * 100;
   const up   = diff >= 0;
   return `<span style="color:${up ? 'var(--green)' : 'var(--red)'}">`
-       + `${up ? '+' : ''}${diff.toFixed(2)} (${up ? '+' : ''}${pct.toFixed(2)}%)</span>`;
+       + `${fmtD(diff)} (${fmtD(pct)}%)</span>`;
 }
-function badgeClass(target, base) {
-  const d = target - base;
-  return d > 0.5 ? 'badge-bull' : d < -0.5 ? 'badge-bear' : 'badge-flat';
+
+function badgeInfo(target, base, thresholdDollar) {
+  /* threshold = min dollar move to count as bull/bear
+     For short frames: $0.30. For longer: $1.00+ */
+  const diff = target - base;
+  if (diff >  thresholdDollar) return { cls: 'badge-bull', txt: 'BULL' };
+  if (diff < -thresholdDollar) return { cls: 'badge-bear', txt: 'BEAR' };
+  return { cls: 'badge-flat', txt: 'FLAT' };
 }
-function badgeText(target, base) {
-  const d = target - base;
-  return d > 0.5 ? 'BULL' : d < -0.5 ? 'BEAR' : 'FLAT';
+
+/* ── Market session detection (UTC hours) ── */
+function getSessionInfo() {
+  const h = new Date().getUTCHours();
+
+  /* Session definitions in UTC:
+     Asian:  00:00–08:00  (Tokyo / Sydney)  — low volatility
+     London: 07:00–16:00  (Frankfurt / London) — medium-high
+     NY:     13:00–21:00  (New York)         — highest volatility
+     Overlap London+NY: 13:00–16:00          — peak volatility */
+
+  const asian  = h >= 0  && h < 8;
+  const london = h >= 7  && h < 16;
+  const ny     = h >= 13 && h < 21;
+  const overlap = london && ny;
+
+  let sessionMultiplier, sessionLabel, volLabel;
+
+  if (overlap) {
+    sessionMultiplier = 1.35;
+    sessionLabel = 'London + NY Overlap';
+    volLabel = 'PEAK';
+  } else if (ny) {
+    sessionMultiplier = 1.20;
+    sessionLabel = 'New York';
+    volLabel = 'HIGH';
+  } else if (london) {
+    sessionMultiplier = 1.10;
+    sessionLabel = 'London';
+    volLabel = 'MEDIUM';
+  } else if (asian) {
+    sessionMultiplier = 0.70;
+    sessionLabel = 'Asian';
+    volLabel = 'LOW';
+  } else {
+    /* Off-hours gap */
+    sessionMultiplier = 0.55;
+    sessionLabel = 'Off-Hours';
+    volLabel = 'MINIMAL';
+  }
+
+  return { asian, london, ny, overlap, sessionMultiplier, sessionLabel, volLabel };
+}
+
+/* ── ATR estimator ── */
+function estimateATR(high, low, price, chp) {
+  /* In live mode we only have today's high, low, and 24h change.
+     We use these to estimate ATR:
+       - True range = high - low (best available)
+       - Expand it slightly for ATR since we don't have yesterday's close
+       - Clamp to realistic gold range: $10–$80 */
+  const intradayRange = high - low;
+  const changeRange   = Math.abs(chp / 100 * price) * 2;
+  const rawATR        = Math.max(intradayRange, changeRange);
+  /* Gold average daily ATR is ~$25–$35, clamp to be realistic */
+  return Math.min(Math.max(rawATR, 10), 80);
+}
+
+/* ── Core prediction engine ── */
+function buildPredictions(price, chp, high, low) {
+
+  /* Step 1: Estimate daily ATR */
+  const atr = estimateATR(high, low, price, chp);
+
+  /* Step 2: Session context */
+  const session = getSessionInfo();
+
+  /* Step 3: Momentum in dollar terms
+     chp is % change for the day. We convert to a dollar directional bias.
+     Scale it to a reasonable hourly drift — a 0.5% day = $15 on $3000 gold,
+     meaning roughly $0.60/hour directional component. */
+  const dailyMomentumDollar = (chp / 100) * price;
+  const hourlyDrift         = dailyMomentumDollar / 24;
+
+  /* Step 4: Mean reversion pull
+     If price has moved far already today, counter-trend pressure builds.
+     We model this as a dampening factor on drift. */
+  const movePct    = Math.abs(chp);
+  const mrStrength = Math.min(movePct / 3.0, 0.80); /* 0–80% dampening */
+
+  /* Final effective drift per hour (dollar) — dampened by mean reversion */
+  const effectiveDrift = hourlyDrift * (1 - mrStrength * 0.6);
+
+  /* Step 5: σ(t) = ATR × √(minutes / 1440) × sessionMultiplier
+     This gives us the 1-sigma expected move for each timeframe. */
+  function sigma(minutes) {
+    return atr * Math.sqrt(minutes / 1440) * session.sessionMultiplier;
+  }
+
+  /* Step 6: Build each forecast
+     target = price + drift_for_timeframe + noise
+     noise  = small random perturbation within ±0.25σ
+     band   = ±1σ around the target (68% probability range) */
+  function forecast(minutes) {
+    const s         = sigma(minutes);
+    const driftFrac = minutes / 60;           /* scale hourly drift to this frame */
+    const drift     = effectiveDrift * driftFrac;
+    const noise     = s * (Math.random() * 0.5 - 0.25); /* ±0.25σ random noise */
+    const target    = parseFloat((price + drift + noise).toFixed(2));
+    const bandLow   = parseFloat((target - s).toFixed(2));
+    const bandHigh  = parseFloat((target + s).toFixed(2));
+
+    /* Confidence: starts high for short frames, degrades for longer ones.
+       Also degrades when volatility is high (wide ATR). */
+    const baseConf  = Math.max(30, 96 - (minutes / 1440) * 55);
+    const volPenalty = Math.min((atr - 20) / 2, 15); /* ATR > $20 reduces confidence */
+    const conf      = Math.round(Math.max(28, baseConf - volPenalty));
+
+    return { target, bandLow, bandHigh, conf, sigma: s };
+  }
+
+  return {
+    atr,
+    session,
+    mrStrength,
+    effectiveDrift,
+    f5m:  forecast(5),
+    f10m: forecast(10),
+    f15m: forecast(15),
+    f1h:  forecast(60),
+    f6h:  forecast(360),
+    f24h: forecast(1440),
+  };
+}
+
+/* ── Render a single timeline row ── */
+function renderRow(ids, target, base, bandLow, bandHigh, conf, delay, threshold) {
+  document.getElementById(ids.price).textContent   = '$' + fmtP(target);
+  document.getElementById(ids.chg).innerHTML       = chgHTML(target, base);
+  document.getElementById(ids.range).textContent   = `±1σ band  $${fmtP(bandLow)} – $${fmtP(bandHigh)}`;
+
+  const badge = badgeInfo(target, base, threshold);
+  const badgeEl = document.getElementById(ids.badge);
+  badgeEl.className   = 'tl-badge ' + badge.cls;
+  badgeEl.textContent = badge.txt;
+
+  /* Stagger confidence bar animation */
+  setTimeout(() => {
+    const fillEl = document.getElementById(ids.conf);
+    fillEl.style.width = conf + '%';
+    /* Colour by confidence level */
+    fillEl.className = 'conf-fill ' + (conf >= 80 ? 'high' : conf >= 55 ? 'medium' : 'low');
+    document.getElementById(ids.confLbl).textContent = conf + '% conf.';
+  }, delay);
 }
 
 /* ── Main render ── */
-function renderPredict(d) {
+function renderPredict(d, isDemo) {
   const { price, chp, high, low, ch } = d;
-
-  /* Sentiment */
   const isUp = ch >= 0;
-  const rng  = Math.random();
+
+  /* ── Live price strip ── */
+  document.getElementById('strip-price').textContent = fmtP(price);
+  const chgEl = document.getElementById('strip-change');
+  chgEl.textContent = `${isUp ? '+' : ''}${fmtD(ch)} (${fmtD(chp)}%)`;
+  chgEl.className   = 'live-change ' + (isUp ? 'up' : 'down');
+
+  /* ── Key levels
+     S1/S2 and R1/R2 are derived from today's range using floor pivot logic.
+     Pivot = (High + Low + Close) / 3
+     R1 = (2 × Pivot) − Low
+     R2 = Pivot + (High − Low)
+     S1 = (2 × Pivot) − High
+     S2 = Pivot − (High − Low) */
+  const pivot = (high + low + price) / 3;
+  const r1    = 2 * pivot - low;
+  const r2    = pivot + (high - low);
+  const s1    = 2 * pivot - high;
+  const s2    = pivot - (high - low);
+
+  document.getElementById('lvl-curr').textContent = '$' + fmtP(price);
+  document.getElementById('lvl-r1').textContent   = '$' + fmtP(r1);
+  document.getElementById('lvl-r2').textContent   = '$' + fmtP(r2);
+  document.getElementById('lvl-s1').textContent   = '$' + fmtP(s1);
+  document.getElementById('lvl-s2').textContent   = '$' + fmtP(s2);
+
+  /* ── Build all predictions ── */
+  const pred = buildPredictions(price, chp, high, low);
+  const atr  = pred.atr;
+  const sess = pred.session;
+
+  /* ── ATR badge ── */
+  document.getElementById('strip-atr').textContent    = '$' + atr.toFixed(2);
+  document.getElementById('strip-updated').textContent =
+    (isDemo ? '⚠ demo · ' : '') + 'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  /* ── Session chips ── */
+  document.getElementById('sess-asian').classList.toggle('active',  sess.asian && !sess.london);
+  document.getElementById('sess-london').classList.toggle('active', sess.london);
+  document.getElementById('sess-ny').classList.toggle('active',     sess.ny);
+  document.getElementById('sess-vol-label').textContent = sess.volLabel + ' VOL';
+
+  /* ── NOW ── */
+  document.getElementById('pred-now').textContent    = '$' + fmtP(price);
+  document.getElementById('pred-now-time').textContent =
+    new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  /* ── Timeline rows ── */
+  renderRow(
+    { price:'pred-5m',  chg:'pred-5m-chg',  range:'pred-5m-range',  badge:'pred-5m-badge',  conf:'conf-5m',  confLbl:'conf-5m-lbl'  },
+    pred.f5m.target, price, pred.f5m.bandLow, pred.f5m.bandHigh, pred.f5m.conf, 150, 0.30
+  );
+  renderRow(
+    { price:'pred-10m', chg:'pred-10m-chg', range:'pred-10m-range', badge:'pred-10m-badge', conf:'conf-10m', confLbl:'conf-10m-lbl' },
+    pred.f10m.target, price, pred.f10m.bandLow, pred.f10m.bandHigh, pred.f10m.conf, 250, 0.50
+  );
+  renderRow(
+    { price:'pred-15m', chg:'pred-15m-chg', range:'pred-15m-range', badge:'pred-15m-badge', conf:'conf-15m', confLbl:'conf-15m-lbl' },
+    pred.f15m.target, price, pred.f15m.bandLow, pred.f15m.bandHigh, pred.f15m.conf, 350, 0.75
+  );
+  renderRow(
+    { price:'pred-1h',  chg:'pred-1h-chg',  range:'pred-1h-range',  badge:'pred-1h-badge',  conf:'conf-1h',  confLbl:'conf-1h-lbl'  },
+    pred.f1h.target, price, pred.f1h.bandLow, pred.f1h.bandHigh, pred.f1h.conf, 450, 1.50
+  );
+  renderRow(
+    { price:'pred-6h',  chg:'pred-6h-chg',  range:'pred-6h-range',  badge:'pred-6h-badge',  conf:'conf-6h',  confLbl:'conf-6h-lbl'  },
+    pred.f6h.target, price, pred.f6h.bandLow, pred.f6h.bandHigh, pred.f6h.conf, 550, 4.00
+  );
+  renderRow(
+    { price:'pred-24h', chg:'pred-24h-chg', range:'pred-24h-range', badge:'pred-24h-badge', conf:'conf-24h', confLbl:'conf-24h-lbl' },
+    pred.f24h.target, price, pred.f24h.bandLow, pred.f24h.bandHigh, pred.f24h.conf, 650, 8.00
+  );
+
+  /* ── Signals
+     Built from: momentum direction, RSI-like overextension, session */
+  const extendedMove = Math.abs(chp) > 1.5; /* price has moved a lot today */
+  const rng          = 0.3 + Math.random() * 0.4; /* controlled randomness 0.3–0.7 */
+
   let buy, hold, sell;
-  if (isUp) { buy = 55 + Math.round(rng * 20); hold = Math.round((100-buy)*0.5); sell = 100-buy-hold; }
-  else       { sell = 55 + Math.round(rng * 20); hold = Math.round((100-sell)*0.5); buy = 100-sell-hold; }
+  if (extendedMove) {
+    /* Overextended — higher hold/sell regardless of direction */
+    if (isUp)  { buy = Math.round(30 + rng * 15); sell = Math.round(20 + rng * 15); }
+    else       { sell = Math.round(30 + rng * 15); buy  = Math.round(20 + rng * 15); }
+    hold = 100 - buy - sell;
+  } else {
+    /* Normal day — momentum-weighted */
+    if (isUp)  { buy = Math.round(45 + rng * 20); hold = Math.round((100 - buy) * 0.55); sell = 100 - buy - hold; }
+    else       { sell = Math.round(45 + rng * 20); hold = Math.round((100 - sell) * 0.55); buy = 100 - sell - hold; }
+  }
+  /* Clamp all to positive */
+  buy  = Math.max(buy,  5);
+  sell = Math.max(sell, 5);
+  hold = Math.max(100 - buy - sell, 5);
+
+  setTimeout(() => {
+    document.getElementById('sig-buy').style.width   = buy + '%';
+    document.getElementById('sig-hold').style.width  = hold + '%';
+    document.getElementById('sig-sell').style.width  = sell + '%';
+    document.getElementById('sig-buy-pct').textContent  = buy + '%';
+    document.getElementById('sig-hold-pct').textContent = hold + '%';
+    document.getElementById('sig-sell-pct').textContent = sell + '%';
+  }, 300);
+
+  /* ── Sentiment ── */
   const score = buy - sell;
   const [emoji, label] =
-    score > 25  ? ['🟢','BULLISH'] :
-    score > 5   ? ['🔼','MILDLY BULLISH'] :
-    score > -5  ? ['⚖️','NEUTRAL'] :
-    score > -25 ? ['🔽','MILDLY BEARISH'] :
-                  ['🔴','BEARISH'];
+    score > 25  ? ['🟢', 'BULLISH']        :
+    score > 10  ? ['🔼', 'MILDLY BULLISH'] :
+    score > -10 ? ['⚖️', 'NEUTRAL']        :
+    score > -25 ? ['🔽', 'MILDLY BEARISH'] :
+                  ['🔴', 'BEARISH'];
   document.getElementById('sentiment-emoji').textContent = emoji;
   document.getElementById('sentiment-txt').textContent   = label;
 
-  /* Key levels */
-  document.getElementById('lvl-curr').textContent = '$' + fmt(price);
-  document.getElementById('lvl-r1').textContent   = '$' + (price * 1.012).toFixed(2);
-  document.getElementById('lvl-r2').textContent   = '$' + (price * 1.025).toFixed(2);
-  document.getElementById('lvl-s1').textContent   = '$' + (price * 0.988).toFixed(2);
-  document.getElementById('lvl-s2').textContent   = '$' + (price * 0.975).toFixed(2);
+  /* ── Factor cards ── */
 
-  /* Prediction timeline */
-  const pred = buildPrediction(price, chp, high, low);
+  /* ATR factor */
+  const atrCat = atr < 20 ? 'LOW' : atr < 35 ? 'NORMAL' : 'HIGH';
+  document.getElementById('f-atr-desc').textContent =
+    `Daily range $${atr.toFixed(2)} — ${atrCat.toLowerCase()} volatility environment`;
+  document.getElementById('f-atr-sig').textContent  = '$' + atr.toFixed(2);
 
-  /* Now */
-  document.getElementById('pred-now').textContent    = '$' + fmtP(price);
-  document.getElementById('pred-now-time').textContent =
-    new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-    /* 5m */
-  document.getElementById('pred-5m').textContent       = '$' + fmtP(pred.price5m);
-  document.getElementById('pred-5m-chg').innerHTML     = chgStr(pred.price5m, price);
-  document.getElementById('pred-5m-range').textContent = `Range $${pred.band5m.low} – $${pred.band5m.high}`;
-  document.getElementById('pred-5m-badge').className   = 'timeline-badge ' + badgeClass(pred.price5m, price);
-  document.getElementById('pred-5m-badge').textContent = badgeText(pred.price5m, price);
-  setTimeout(() => {
-    document.getElementById('conf-5m').style.width     = pred.conf5m + '%';
-    document.getElementById('conf-5m-lbl').textContent = pred.conf5m + '% conf.';
-  }, 150);
+  /* Momentum factor */
+  const momStr  = Math.abs(chp) < 0.3 ? 'WEAK' : Math.abs(chp) < 0.8 ? 'MODERATE' : 'STRONG';
+  document.getElementById('f-mom-desc').textContent =
+    `${isUp ? 'Positive' : 'Negative'} ${Math.abs(chp).toFixed(2)}% move today`;
+  document.getElementById('f-mom-sig').textContent  = (isUp ? '+' : '') + chp.toFixed(2) + '%';
+  document.getElementById('f-mom-sig').style.background = isUp ? 'var(--green-dim)' : 'var(--red-dim)';
+  document.getElementById('f-mom-sig').style.color      = isUp ? 'var(--green)'     : 'var(--red)';
 
-  /* 10m */
-  document.getElementById('pred-10m').textContent       = '$' + fmtP(pred.price10m);
-  document.getElementById('pred-10m-chg').innerHTML     = chgStr(pred.price10m, price);
-  document.getElementById('pred-10m-range').textContent = `Range $${pred.band10m.low} – $${pred.band10m.high}`;
-  document.getElementById('pred-10m-badge').className   = 'timeline-badge ' + badgeClass(pred.price10m, price);
-  document.getElementById('pred-10m-badge').textContent = badgeText(pred.price10m, price);
-  setTimeout(() => {
-    document.getElementById('conf-10m').style.width     = pred.conf10m + '%';
-    document.getElementById('conf-10m-lbl').textContent = pred.conf10m + '% conf.';
-  }, 250);
+  /* Intraday volatility vs ATR */
+  const intradayRangePct = ((high - low) / atr * 100).toFixed(0);
+  const volCat = intradayRangePct < 40 ? 'QUIET' : intradayRangePct < 80 ? 'NORMAL' : 'WIDE';
+  document.getElementById('f-vol-desc').textContent =
+    `Today's range $${(high-low).toFixed(2)} = ${intradayRangePct}% of ATR`;
+  document.getElementById('f-vol-sig').textContent  = volCat;
 
-  /* 15m */
-  document.getElementById('pred-15m').textContent       = '$' + fmtP(pred.price15m);
-  document.getElementById('pred-15m-chg').innerHTML     = chgStr(pred.price15m, price);
-  document.getElementById('pred-15m-range').textContent = `Range $${pred.band15m.low} – $${pred.band15m.high}`;
-  document.getElementById('pred-15m-badge').className   = 'timeline-badge ' + badgeClass(pred.price15m, price);
-  document.getElementById('pred-15m-badge').textContent = badgeText(pred.price15m, price);
-  setTimeout(() => {
-    document.getElementById('conf-15m').style.width     = pred.conf15m + '%';
-    document.getElementById('conf-15m-lbl').textContent = pred.conf15m + '% conf.';
-  }, 350);
+  /* Mean reversion */
+  const mrLabel = pred.mrStrength < 0.2 ? 'LOW' : pred.mrStrength < 0.5 ? 'MODERATE' : 'HIGH';
+  document.getElementById('f-mr-sig').textContent   = mrLabel;
 
-  /* 1h */
-  document.getElementById('pred-1h').textContent      = '$' + fmtP(pred.price1h);
-  document.getElementById('pred-1h-chg').innerHTML    = chgStr(pred.price1h, price);
-  document.getElementById('pred-1h-range').textContent =
-    `Range $${pred.band1h.low} – $${pred.band1h.high}`;
-  document.getElementById('pred-1h-badge').className  = 'timeline-badge ' + badgeClass(pred.price1h, price);
-  document.getElementById('pred-1h-badge').textContent = badgeText(pred.price1h, price);
-  setTimeout(() => {
-    document.getElementById('conf-1h').style.width     = pred.conf1h + '%';
-    document.getElementById('conf-1h-lbl').textContent = pred.conf1h + '% conf.';
-  }, 400);
-
-  /* 6h */
-  document.getElementById('pred-6h').textContent      = '$' + fmtP(pred.price6h);
-  document.getElementById('pred-6h-chg').innerHTML    = chgStr(pred.price6h, price);
-  document.getElementById('pred-6h-range').textContent =
-    `Range $${pred.band6h.low} – $${pred.band6h.high}`;
-  document.getElementById('pred-6h-badge').className  = 'timeline-badge ' + badgeClass(pred.price6h, price);
-  document.getElementById('pred-6h-badge').textContent = badgeText(pred.price6h, price);
-  setTimeout(() => {
-    document.getElementById('conf-6h').style.width     = pred.conf6h + '%';
-    document.getElementById('conf-6h-lbl').textContent = pred.conf6h + '% conf.';
-  }, 600);
-
-  /* 24h */
-  document.getElementById('pred-24h').textContent      = '$' + fmtP(pred.price24h);
-  document.getElementById('pred-24h-chg').innerHTML    = chgStr(pred.price24h, price);
-  document.getElementById('pred-24h-range').textContent =
-    `Range $${pred.band24h.low} – $${pred.band24h.high}`;
-  document.getElementById('pred-24h-badge').className  = 'timeline-badge ' + badgeClass(pred.price24h, price);
-  document.getElementById('pred-24h-badge').textContent = badgeText(pred.price24h, price);
-  setTimeout(() => {
-    document.getElementById('conf-24h').style.width     = pred.conf24h + '%';
-    document.getElementById('conf-24h-lbl').textContent = pred.conf24h + '% conf.';
-  }, 800);
-
-  /* Factor signals */
-  const momLabel = Math.abs(chp) < 0.15 ? 'WEAK' : Math.abs(chp) < 0.5 ? 'MODERATE' : 'STRONG';
-  document.getElementById('factor-momentum').textContent =
-    `${isUp ? 'Positive' : 'Negative'} ${Math.abs(chp).toFixed(2)}% in last 24h`;
-  document.getElementById('factor-momentum-sig').textContent = momLabel;
-  document.getElementById('factor-momentum-sig').style.background = isUp ? 'var(--green-dim)' : 'var(--red-dim)';
-  document.getElementById('factor-momentum-sig').style.color      = isUp ? 'var(--green)' : 'var(--red)';
-
-  document.getElementById('factor-vol-sig').textContent = pred.volCategory;
-
-  const mrLabel = pred.mrPull < 0.15 ? 'LOW' : pred.mrPull < 0.35 ? 'MODERATE' : 'HIGH';
-  document.getElementById('factor-mr-sig').textContent = mrLabel;
-
-  /* USD correlation — inverse of gold momentum */
-  const usdSig = isUp ? 'WEAK USD' : 'STRONG USD';
-  document.getElementById('factor-usd-sig').textContent = usdSig;
+  /* Session factor */
+  document.getElementById('f-sess-desc').textContent =
+    `${sess.sessionLabel} session · ${sess.volLabel.toLowerCase()} activity`;
+  document.getElementById('f-sess-sig').textContent  = `×${sess.sessionMultiplier.toFixed(2)}`;
+  document.getElementById('f-sess-sig').style.background =
+    sess.sessionMultiplier >= 1.2 ? 'var(--red-dim)'   :
+    sess.sessionMultiplier >= 1.0 ? 'var(--gold-glow)' : 'var(--bg-muted)';
+  document.getElementById('f-sess-sig').style.color =
+    sess.sessionMultiplier >= 1.2 ? 'var(--red)'   :
+    sess.sessionMultiplier >= 1.0 ? 'var(--gold)'  : 'var(--txt-3)';
 }
 
+/* ── Refresh button ── */
 document.getElementById('refresh-btn').addEventListener('click', async function () {
   this.classList.add('spin');
   const d = await fetchGoldPrice();
-  if (d) { Object.assign(window.GOLD_STATE, d); renderPredict(d); showToast('✓ Signals refreshed via ' + d.source); }
+  if (d) { Object.assign(window.GOLD_STATE, d); renderPredict(d, false); showToast('✓ Updated via ' + d.source); }
   else     showToast('⚠ APIs unavailable');
   setTimeout(() => this.classList.remove('spin'), 700);
 });
 
+/* ── Nav ── */
 setActiveNav();
+
+/* ── Init ── */
 loadPrice(renderPredict);
+setInterval(() => loadPrice(renderPredict), 60000);
 </script>
 </body>
 </html>
