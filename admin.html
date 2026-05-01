@@ -378,7 +378,67 @@
       </div>
     </div>
   </div>
+<!-- ── User Access Management ── -->
+<div class="card">
+  <h2>
+    <i class="fa-solid fa-users-gear" style="margin-right:8px;color:var(--gold)"></i>
+    Grant / Revoke Access
+  </h2>
 
+  <label>User Email</label>
+  <input type="email" id="access-email" placeholder="user@email.com" />
+
+  <label style="margin-top:14px;">Action</label>
+  <select id="access-action" onchange="toggleDuration()">
+    <option value="grant">Grant timed access</option>
+    <option value="extend">Extend existing access</option>
+    <option value="permanent">Grant permanent access</option>
+    <option value="revoke">Revoke access</option>
+  </select>
+
+  <div id="duration-row" style="display:flex;gap:10px;margin-top:14px;">
+    <div style="flex:1;">
+      <label style="margin-top:0;">Duration</label>
+      <input type="number" id="access-duration" value="1" min="1" max="365" />
+    </div>
+    <div style="flex:1;">
+      <label style="margin-top:0;">Unit</label>
+      <select id="access-unit">
+        <option value="days">Days</option>
+        <option value="months" selected>Months</option>
+      </select>
+    </div>
+  </div>
+
+  <label>Note (internal only)</label>
+  <input type="text" id="access-note" placeholder="e.g. Influencer partnership, Beta tester..." />
+
+  <div class="btn-row" style="margin-top:16px;">
+    <button class="btn btn-gold" onclick="grantAccess()">
+      <i class="fa-solid fa-key"></i>
+      <span id="access-btn-label">Grant Access</span>
+    </button>
+  </div>
+  <p id="access-result"
+     style="font-size:12px;margin-top:12px;display:none;
+            padding:10px;border-radius:8px;"></p>
+</div>
+
+<!-- ── Active Manual Access List ── -->
+<div class="card">
+  <h2>
+    <i class="fa-solid fa-list-check" style="margin-right:8px;color:var(--gold)"></i>
+    Manual Access List
+    <span id="manual-count"
+          style="font-size:13px;color:var(--txt-2);font-weight:400;margin-left:8px;"></span>
+  </h2>
+  <div id="manual-access-list">
+    <div class="empty">
+      <i class="fa-solid fa-users"></i>
+      Loading...
+    </div>
+  </div>
+      </div>
 </div>
 
 <div id="toast"></div>
@@ -390,7 +450,7 @@
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, addDoc, updateDoc, deleteDoc,
-    doc, getDocs, orderBy, query, serverTimestamp, Timestamp
+    doc, getDocs, orderBy, query, serverTimestamp, where, Timestamp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   /* ── Firebase config ── */
@@ -648,6 +708,127 @@
     showToast('Link: ' + url);
   }
 };
+
+  /* ── Access Management ── */
+window.toggleDuration = () => {
+  const action = document.getElementById('access-action').value;
+  const row    = document.getElementById('duration-row');
+  const labels = { grant: 'Grant Access', extend: 'Extend Access',
+                   permanent: 'Grant Permanent', revoke: 'Revoke Access' };
+  row.style.display = (action === 'revoke' || action === 'permanent') ? 'none' : 'flex';
+  document.getElementById('access-btn-label').textContent = labels[action];
+};
+
+window.grantAccess = async () => {
+  const email    = document.getElementById('access-email').value.trim();
+  const action   = document.getElementById('access-action').value;
+  const duration = document.getElementById('access-duration').value;
+  const unit     = document.getElementById('access-unit').value;
+  const note     = document.getElementById('access-note').value.trim();
+  const resultEl = document.getElementById('access-result');
+
+  if (!email) { showToast('⚠ Enter a user email'); return; }
+
+  resultEl.style.display = 'none';
+
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const res   = await fetch('/api/grant-access', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        adminToken: token, targetEmail: email,
+        action, daysOrMonths: duration, unit, note,
+      }),
+    });
+    const data = await res.json();
+
+    resultEl.style.display    = 'block';
+    resultEl.style.background = data.success ? 'rgba(0,212,143,0.08)' : 'rgba(255,69,97,0.08)';
+    resultEl.style.color      = data.success ? 'var(--green)' : 'var(--red)';
+    resultEl.style.border     = data.success
+      ? '1px solid rgba(0,212,143,0.2)' : '1px solid rgba(255,69,97,0.2)';
+    resultEl.innerHTML = data.success
+      ? `<i class="fa-solid fa-check" style="margin-right:6px;"></i>${data.message}`
+      : `<i class="fa-solid fa-xmark" style="margin-right:6px;"></i>${data.error}`;
+
+    if (data.success) {
+      document.getElementById('access-email').value = '';
+      document.getElementById('access-note').value  = '';
+      loadManualAccessList();
+      showToast('✓ ' + data.message);
+    }
+  } catch (e) {
+    resultEl.style.display    = 'block';
+    resultEl.style.background = 'rgba(255,69,97,0.08)';
+    resultEl.style.color      = 'var(--red)';
+    resultEl.textContent      = '⚠ Request failed: ' + e.message;
+  }
+};
+
+/* ── Load manual access list ── */
+async function loadManualAccessList() {
+  try {
+    const snap  = await getDocs(
+      query(collection(db, 'users'), where('manualAccess', '==', true))
+    );
+    const listEl  = document.getElementById('manual-access-list');
+    const countEl = document.getElementById('manual-count');
+    countEl.textContent = `(${snap.size})`;
+
+    if (snap.empty) {
+      listEl.innerHTML = `<div class="empty"><i class="fa-solid fa-users"></i>No manual access granted yet.</div>`;
+      return;
+    }
+
+    const now = Date.now();
+    listEl.innerHTML = snap.docs.map(d => {
+      const u       = d.data();
+      const expires = u.manualAccessExpiresAt?.toDate?.();
+      const expired = expires && expires.getTime() < now;
+      const label   = !expires
+        ? '<span style="color:var(--gold)">Permanent</span>'
+        : expired
+          ? '<span style="color:var(--red)">Expired</span>'
+          : `<span style="color:var(--green)">Until ${expires.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})}</span>`;
+
+      return `
+        <div class="post-item">
+          <div class="post-thumb-placeholder">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="post-info">
+            <div class="post-title">${u.email || d.id}</div>
+            <div class="post-meta">
+              ${label}
+              ${u.manualAccessNote
+                ? `<span class="badge badge-cat">${u.manualAccessNote}</span>`
+                : ''}
+            </div>
+          </div>
+          <div class="post-actions">
+            <button class="btn btn-danger btn-sm"
+                    onclick="revokeFromList('${u.email}')">
+              <i class="fa-solid fa-ban"></i>
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch (e) {
+    console.error('Manual list error:', e);
+  }
+}
+
+window.revokeFromList = async (email) => {
+  if (!confirm(`Revoke access for ${email}?`)) return;
+  document.getElementById('access-email').value  = email;
+  document.getElementById('access-action').value = 'revoke';
+  await window.grantAccess();
+};
+
+/* Call on load */
+loadManualAccessList();
 </script>
 </body>
 </html>
