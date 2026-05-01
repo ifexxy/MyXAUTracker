@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#070c12" />
+  <title>Payment Successful · XAU Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    html, body {
+      min-height: 100%; background: var(--bg-deep);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 24px 16px; gap: 16px;
+    }
+    .card { background: var(--bg-card); border-radius: 20px; width: 100%; max-width: 420px; overflow: hidden; position: relative; }
+    .verifying { text-align: center; padding: 48px 24px; }
+    .spin-icon { font-size: 36px; color: var(--gold); display: block; margin-bottom: 16px; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .verifying h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .verifying p  { font-size: 13px; color: var(--txt-2); line-height: 1.6; }
+    .step-row { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--txt-2); padding: 6px 0; }
+    .step-row i { font-size: 13px; width: 18px; text-align: center; }
+    .step-row.done   { color: var(--green); }
+    .step-row.active { color: var(--gold); }
+    .step-row.wait   { color: var(--txt-3); }
+    .steps { margin: 20px auto 0; max-width: 260px; text-align: left; }
+    .success-top {
+      text-align: center; padding: 36px 24px 22px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(160deg, #001a0f, #0e1622); position: relative;
+    }
+    .success-top::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,212,143,0.1), transparent 65%);
+    }
+    .success-top::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+    }
+    .check-ring {
+      width: 76px; height: 76px; border-radius: 50%; background: var(--green-dim);
+      border: 2px solid rgba(0,212,143,0.3);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px; animation: ring-pulse 2.5s ease-in-out infinite; position: relative;
+    }
+    @keyframes ring-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(0,212,143,0.25); }
+      50%      { box-shadow: 0 0 0 16px rgba(0,212,143,0); }
+    }
+    .check-ring i {
+      font-size: 32px; color: var(--green); position: relative;
+      animation: pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes pop-in { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .success-top h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; position: relative; }
+    .success-top p  { font-size: 13px; color: var(--txt-2); line-height: 1.6; position: relative; }
+    .receipt { padding: 0 22px; border-bottom: 1px solid var(--border); }
+    .r-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 0; border-bottom: 1px solid var(--border); gap: 8px;
+    }
+    .r-row:last-child { border-bottom: none; }
+    .r-label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--txt-2); }
+    .r-label i { color: var(--gold); font-size: 11px; width: 14px; text-align: center; }
+    .r-val { font-size: 12px; font-weight: 700; font-family: 'Space Mono', monospace; color: var(--txt-1); text-align: right; }
+    .r-val.green { color: var(--green); }
+    .r-val.small { font-size: 10px; max-width: 160px; word-break: break-all; }
+    .unlocked { padding: 18px 22px; border-bottom: 1px solid var(--border); }
+    .unlocked h3 { font-size: 11px; color: var(--txt-2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+    .u-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+    .u-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .u-row span { font-size: 13px; color: var(--txt-1); }
+    .cta { padding: 18px 22px; }
+    .btn-predict {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 15px; background: var(--gold); color: #000; border: none;
+      border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
+      cursor: pointer; text-decoration: none; transition: opacity 0.2s; margin-bottom: 10px;
+    }
+    .btn-predict:hover { opacity: 0.88; }
+    .btn-home {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 12px; background: transparent; color: var(--txt-2);
+      border: 1px solid var(--border); border-radius: 12px; font-family: 'Syne', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-home:hover { border-color: var(--gold); color: var(--gold); }
+    .processing-top { text-align: center; padding: 36px 24px 22px; border-bottom: 1px solid var(--border); }
+    .clock-ring {
+      width: 76px; height: 76px; border-radius: 50%; background: var(--gold-glow);
+      border: 2px solid var(--gold-dim); display: flex; align-items: center;
+      justify-content: center; margin: 0 auto 20px;
+    }
+    .clock-ring i { font-size: 30px; color: var(--gold); }
+    .processing-top h1 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .processing-top p  { font-size: 13px; color: var(--txt-2); line-height: 1.6; }
+    .info-box {
+      margin: 0 22px 20px; padding: 12px 14px;
+      background: var(--gold-glow); border: 1px solid var(--gold-dim);
+      border-radius: 10px; font-size: 12px; color: var(--txt-2); line-height: 1.6;
+    }
+    .info-box i { color: var(--gold); margin-right: 5px; }
+    .powered { font-size: 11px; color: var(--txt-3); font-family: 'Space Mono', monospace; text-align: center; }
+    .powered i { color: var(--green); margin-right: 4px; }
+  </style>
+</head>
+<body>
+  <div class="card" id="main-card">
+    <div class="verifying" id="verifying-state">
+      <i class="fa-solid fa-circle-notch spin-icon"></i>
+      <h2>Verifying Payment</h2>
+      <p>Please wait while we confirm your payment with Flutterwave and activate your account.</p>
+      <div class="steps">
+        <div class="step-row done"><i class="fa-solid fa-check-circle"></i> Payment received</div>
+        <div class="step-row active"><i class="fa-solid fa-circle-notch" style="animation:spin 1s linear infinite;"></i> Activating account</div>
+        <div class="step-row wait"><i class="fa-regular fa-circle"></i> Redirecting</div>
+      </div>
+    </div>
+  </div>
+  <div class="powered"><i class="fa-solid fa-lock"></i> Payment secured by Flutterwave</div>
+
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+  authDomain: "xautracker.firebaseapp.com",
+  databaseURL: "https://xautracker-default-rtdb.firebaseio.com",
+  projectId: "xautracker",
+  storageBucket: "xautracker.firebasestorage.app",
+  messagingSenderId: "831752609455",
+  appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+
+  const app  = initializeApp(firebaseConfig, 'success');
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  /* Flutterwave appends ?status=successful&tx_ref=xxx&transaction_id=xxx */
+  const params    = new URLSearchParams(window.location.search);
+  const status    = params.get('status');
+  const txRef     = params.get('tx_ref');
+  const txId      = params.get('transaction_id');
+
+  onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href = 'login.html'; return; }
+
+    /* Step 1: Poll Firestore for up to 12 seconds */
+    const firestoreData = await pollFirestore(user.uid, 12);
+    if (firestoreData) { showSuccess(user, firestoreData); return; }
+
+    /* Step 2: Direct verify as fallback */
+    if (txRef && status === 'successful') {
+      try {
+        const token = await user.getIdToken();
+        const res   = await fetch('/api/verify-payment', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ token, uid: user.uid, txRef }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          showSuccess(user, snap.data());
+          return;
+        }
+      } catch (e) { console.error('[success] verify-payment error:', e.message); }
+    }
+
+    /* Step 3: Show processing state */
+    showProcessing(txRef, user.email);
+  });
+
+  async function pollFirestore(uid, maxSeconds) {
+    const deadline = Date.now() + maxSeconds * 1000;
+    while (Date.now() < deadline) {
+      try {
+        const snap = await getDoc(doc(db, 'users', uid));
+        if (snap.exists()) {
+          const d   = snap.data();
+          const now = Date.now();
+          const active = d.subscriptionStatus === 'active' && d.currentPeriodEnd && new Date(d.currentPeriodEnd).getTime() > now;
+          const manual = d.manualAccess && (!d.manualAccessExpiresAt || new Date(d.manualAccessExpiresAt).getTime() > now);
+          if (active || manual) return d;
+        }
+      } catch (e) { console.warn('[success] poll error:', e.message); }
+      await new Promise(r => setTimeout(r, 2000));
+    }
+    return null;
+  }
+
+  function fmtDate(d) {
+    return new Date(d).toLocaleDateString('en-US', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+  }
+
+  function showSuccess(user, d) {
+    const nextDate = d.currentPeriodEnd
+      ? (typeof d.currentPeriodEnd.toDate === 'function'
+          ? d.currentPeriodEnd.toDate()
+          : new Date(d.currentPeriodEnd))
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+    const amount = d.lastPaymentAmount
+      ? `₦${Number(d.lastPaymentAmount).toLocaleString('en-NG')}`
+      : '₦9,900';
+
+    document.getElementById('main-card').innerHTML = `
+      <div class="success-top">
+        <div class="check-ring"><i class="fa-solid fa-check"></i></div>
+        <h1>You're Pro!</h1>
+        <p>Payment confirmed. Full access to the Predict page is now active.</p>
+      </div>
+      <div class="receipt">
+        <div class="r-row">
+          <div class="r-label"><i class="fa-regular fa-envelope"></i> Account</div>
+          <div class="r-val small">${user.email}</div>
+        </div>
+        <div class="r-row">
+          <div class="r-label"><i class="fa-solid fa-box"></i> Plan</div>
+          <div class="r-val">XAU Tracker Pro</div>
+        </div>
+        <div class="r-row">
+          <div class="r-label"><i class="fa-solid fa-coins"></i> Amount</div>
+          <div class="r-val">${amount}</div>
+        </div>
+        <div class="r-row">
+          <div class="r-label"><i class="fa-solid fa-rotate"></i> Billing</div>
+          <div class="r-val">Monthly</div>
+        </div>
+        <div class="r-row">
+          <div class="r-label"><i class="fa-regular fa-calendar"></i> Next charge</div>
+          <div class="r-val">${fmtDate(nextDate)}</div>
+        </div>
+        ${txRef ? `
+        <div class="r-row">
+          <div class="r-label"><i class="fa-solid fa-hashtag"></i> Reference</div>
+          <div class="r-val small">${txRef}</div>
+        </div>` : ''}
+        <div class="r-row">
+          <div class="r-label"><i class="fa-solid fa-circle-check"></i> Status</div>
+          <div class="r-val green">Active ✓</div>
+        </div>
+      </div>
+      <div class="unlocked">
+        <h3><i class="fa-solid fa-unlock-keyhole" style="margin-right:6px;color:var(--gold)"></i>Now Unlocked</h3>
+        <div class="u-row"><div class="u-dot"></div><span>5m, 10m, 15m, 1h, 6h & 24h forecasts</span></div>
+        <div class="u-row"><div class="u-dot"></div><span>Key support & resistance levels</span></div>
+        <div class="u-row"><div class="u-dot"></div><span>Market sentiment score</span></div>
+        <div class="u-row"><div class="u-dot"></div><span>Analyst takes & trading signals</span></div>
+      </div>
+      <div class="cta">
+        <a href="predict.html" class="btn-predict">
+          <i class="fa-solid fa-brain"></i> Open Predict Page
+        </a>
+        <a href="index.html" class="btn-home">
+          <i class="fa-solid fa-house"></i> Go to Dashboard
+        </a>
+      </div>`;
+  }
+
+  function showProcessing(ref, email) {
+    document.getElementById('main-card').innerHTML = `
+      <div class="processing-top">
+        <div class="clock-ring"><i class="fa-solid fa-clock"></i></div>
+        <h1>Payment Received</h1>
+        <p>
+          Flutterwave confirmed your payment. Your account is being activated —
+          this usually takes under a minute.
+          ${ref ? `<br/><br/><span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--txt-3);">Ref: ${ref}</span>` : ''}
+        </p>
+      </div>
+      <div class="cta" style="padding-bottom:0;">
+        <a href="predict.html" class="btn-predict">
+          <i class="fa-solid fa-arrow-right"></i> Try Predict Page Now
+        </a>
+        <button class="btn-home" onclick="window.location.reload()">
+          <i class="fa-solid fa-rotate-right"></i> Refresh to Check Status
+        </button>
+      </div>
+      <div class="info-box">
+        <i class="fa-solid fa-circle-info"></i>
+        If access is not active within 5 minutes contact us at ifexxy9@gmail.com with your payment reference above.
+      </div>`;
+  }
+</script>
+</body>
+</html>
