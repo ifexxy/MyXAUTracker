@@ -105,6 +105,26 @@
 
   <div class="topbar">
     <div class="topbar-brand">
+      <!-- ── Dropdown trigger ── -->
+    <div class="menu-wrap">
+      <button class="menu-trigger" id="menu-trigger" onclick="toggleMenu()" title="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <div class="dropdown-menu" id="dropdown-menu">
+        
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="about.html">
+           About
+        </a>
+        <a class="dropdown-item" href="disclaimer.html">
+           Disclaimer
+        </a>
+        <a class="dropdown-item" href="contact.html">
+           Contact Us
+        </a>
+      </div>
+    </div>
       <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
       <span class="topbar-title">XAU<span>/USD</span></span>
     </div>
@@ -177,5 +197,23 @@
 
   </div>
 </div>
+  <script>/* ── Dropdown menu ── */
+function toggleMenu() {
+  const trigger  = document.getElementById('menu-trigger');
+  const dropdown = document.getElementById('dropdown-menu');
+  const isOpen   = dropdown.classList.contains('open');
+  dropdown.classList.toggle('open', !isOpen);
+  trigger.classList.toggle('open',  !isOpen);
+}
+
+/* Close when clicking outside */
+document.addEventListener('click', function(e) {
+  const wrap = document.querySelector('.menu-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('dropdown-menu')?.classList.remove('open');
+    document.getElementById('menu-trigger')?.classList.remove('open');
+  }
+});
+  </script>
 </body>
 </html>
