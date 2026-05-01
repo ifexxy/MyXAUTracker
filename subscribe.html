@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#070c12" />
+  <title>Subscribe · XAU Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    html, body { min-height: 100%; background: var(--bg-deep); }
+    .page { max-width: 480px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .topbar-brand { display: flex; align-items: center; gap: 8px; }
+    .topbar-logo  {
+      width: 30px; height: 30px; background: var(--gold); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px; color: #000;
+    }
+    .topbar-title { font-size: 17px; font-weight: 800; }
+    .topbar-title span { color: var(--gold); }
+    .user-pill {
+      display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--txt-2);
+      background: var(--bg-muted); border: 1px solid var(--border);
+      border-radius: 20px; padding: 5px 12px; font-family: 'Space Mono', monospace;
+    }
+    .body { flex: 1; overflow-y: auto; padding: 22px 16px 40px; }
+    .expired-notice {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(255,69,97,0.07); border: 1px solid rgba(255,69,97,0.18);
+      border-radius: 12px; padding: 14px 16px; margin-bottom: 18px;
+    }
+    .expired-notice i { color: var(--red); font-size: 18px; flex-shrink: 0; padding-top: 1px; }
+    .expired-notice p { font-size: 13px; color: var(--txt-2); line-height: 1.5; }
+    .expired-notice p strong { color: var(--txt-1); display: block; margin-bottom: 2px; }
+    .plan-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 14px; }
+    .plan-top {
+      background: linear-gradient(160deg, #1c1500, #0e1622);
+      border-bottom: 1px solid var(--border); padding: 26px 20px 20px;
+      text-align: center; position: relative;
+    }
+    .plan-top::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(212,167,44,0.15), transparent 65%);
+    }
+    .plan-badge {
+      position: relative; display: inline-flex; align-items: center; gap: 5px;
+      background: var(--gold); color: #000; font-size: 10px; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .plan-name   { position: relative; font-size: 20px; font-weight: 800; color: var(--txt-1); margin-bottom: 16px; }
+    .plan-price  { position: relative; display: flex; align-items: flex-start; justify-content: center; gap: 3px; }
+    .plan-sym    { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; color: var(--gold); margin-top: 8px; }
+    .plan-amount { font-family: 'Space Mono', monospace; font-size: 52px; font-weight: 700; color: var(--gold); line-height: 1; }
+    .plan-period { position: relative; font-size: 12px; color: var(--txt-2); margin-top: 8px; }
+    .feature-list { padding: 16px 18px; }
+    .feature-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .feature-item:last-child { border-bottom: none; }
+    .f-check {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--green-dim);
+      border: 1px solid rgba(0,212,143,0.2); display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0; margin-top: 1px;
+    }
+    .f-check i { color: var(--green); font-size: 10px; }
+    .f-title { font-size: 13px; font-weight: 600; color: var(--txt-1); }
+    .f-desc  { font-size: 11px; color: var(--txt-2); margin-top: 2px; line-height: 1.4; }
+    .btn-subscribe {
+      width: 100%; padding: 16px; background: var(--gold); color: #000; border: none;
+      border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      gap: 10px; transition: opacity 0.2s, transform 0.1s; margin-bottom: 12px;
+    }
+    .btn-subscribe:hover    { opacity: 0.88; }
+    .btn-subscribe:active   { transform: scale(0.98); }
+    .btn-subscribe:disabled { opacity: 0.5; cursor: not-allowed; }
+    .secure-note {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-size: 11px; color: var(--txt-3); margin-bottom: 16px;
+      font-family: 'Space Mono', monospace;
+    }
+    .secure-note i { color: var(--green); }
+    .pay-methods {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-bottom: 22px; flex-wrap: wrap;
+    }
+    .pay-chip {
+      display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--txt-3);
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px;
+    }
+    .faq-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin-bottom: 18px; }
+    .faq-hdr  { font-size: 11px; color: var(--txt-2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      font-size: 13px; font-weight: 600; color: var(--txt-1); padding: 12px 0;
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .faq-q i { color: var(--txt-3); font-size: 11px; transition: transform 0.2s; flex-shrink: 0; }
+    .faq-q.open i  { transform: rotate(180deg); }
+    .faq-a         { font-size: 12px; color: var(--txt-2); line-height: 1.65; padding-bottom: 12px; display: none; }
+    .faq-a.open    { display: block; }
+    .sign-out-row  { text-align: center; padding: 4px 0 20px; }
+    .sign-out-btn  {
+      background: none; border: none; color: var(--txt-3);
+      font-family: 'Syne', sans-serif; font-size: 12px; cursor: pointer; transition: color 0.2s;
+    }
+    .sign-out-btn:hover { color: var(--txt-2); }
+    .spinner { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="topbar-title">XAU<span>/USD</span></span>
+    </div>
+    <div class="user-pill">
+      <i class="fa-solid fa-circle-user" style="color:var(--gold)"></i>
+      <span id="user-email">Loading...</span>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <div class="expired-notice">
+      <i class="fa-solid fa-hourglass-end"></i>
+      <p>
+        <strong>Your free trial has ended</strong>
+        Subscribe to keep accessing gold price predictions and market signals.
+      </p>
+    </div>
+
+    <div class="plan-card">
+      <div class="plan-top">
+        <div class="plan-badge"><i class="fa-solid fa-star" style="font-size:9px;"></i> Pro Plan</div>
+        <div class="plan-name">XAU Tracker Pro</div>
+        <div class="plan-price">
+          <span class="plan-sym">₦</span>
+          <span class="plan-amount">9,900</span>
+        </div>
+        <div class="plan-period">per month · powered by Flutterwave · cancel anytime</div>
+      </div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="f-check"><i class="fa-solid fa-check"></i></div>
+          <div>
+            <div class="f-title">5m, 10m, 15m, 1h, 6h & 24h Price Forecasts</div>
+            <div class="f-desc">ATR-based algorithmic predictions with confidence bands</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="f-check"><i class="fa-solid fa-check"></i></div>
+          <div>
+            <div class="f-title">Key Support & Resistance Levels</div>
+            <div class="f-desc">Floor pivot S1, S2, R1, R2 from live price</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="f-check"><i class="fa-solid fa-check"></i></div>
+          <div>
+            <div class="f-title">Market Sentiment Score</div>
+            <div class="f-desc">Bullish / Neutral / Bearish reading updated every 60s</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="f-check"><i class="fa-solid fa-check"></i></div>
+          <div>
+            <div class="f-title">Analyst Takes & Trading Signals</div>
+            <div class="f-desc">Fed policy, ETF flows, central banks, USD correlation</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="f-check"><i class="fa-solid fa-check"></i></div>
+          <div>
+            <div class="f-title">Cancel Anytime</div>
+            <div class="f-desc">No lock-in. Access runs to end of billing period.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-subscribe" id="sub-btn" onclick="startCheckout()">
+      <i class="fa-solid fa-lock"></i> Subscribe Now — ₦9,900/month
+    </button>
+
+    <div class="secure-note">
+      <i class="fa-solid fa-shield-halved"></i>
+      Secured by Flutterwave · PCI DSS Certified
+    </div>
+
+    <div class="pay-methods">
+      <div class="pay-chip"><i class="fa-regular fa-credit-card"></i> Card</div>
+      <div class="pay-chip"><i class="fa-solid fa-mobile-screen"></i> USSD</div>
+      <div class="pay-chip"><i class="fa-solid fa-building-columns"></i> Bank Transfer</div>
+      <div class="pay-chip"><i class="fa-solid fa-wallet"></i> Mobile Money</div>
+    </div>
+
+    <div class="faq-card">
+      <div class="faq-hdr">
+        <i class="fa-solid fa-circle-question" style="margin-right:6px;color:var(--gold)"></i>Common Questions
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">When will I be charged?<i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-a">Immediately on subscribe, then automatically on the same date every month via Flutterwave.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How do I cancel?<i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-a">From the Account page after signing in. Access continues until the end of the billing period.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What payment methods are accepted?<i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-a">Debit/credit cards, bank transfers, USSD and mobile money — all via Flutterwave.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is my card information safe?<i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-a">Yes. XAU Tracker never sees your card details. All payments are handled directly by Flutterwave which is PCI DSS certified.</div>
+      </div>
+    </div>
+
+    <div class="sign-out-row">
+      <button class="sign-out-btn" onclick="doSignOut()">
+        <i class="fa-solid fa-right-from-bracket" style="margin-right:5px;"></i> Sign out
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+  authDomain: "xautracker.firebaseapp.com",
+  databaseURL: "https://xautracker-default-rtdb.firebaseio.com",
+  projectId: "xautracker",
+  storageBucket: "xautracker.firebasestorage.app",
+  messagingSenderId: "831752609455",
+  appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+
+  const app  = initializeApp(firebaseConfig, 'subscribe');
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    document.getElementById('user-email').textContent = user.email;
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) {
+        const d   = snap.data();
+        const now = Date.now();
+        const hasAccess =
+          (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
+          (d.subscriptionStatus === 'active' && d.currentPeriodEnd && new Date(d.currentPeriodEnd).getTime() > now) ||
+          (d.manualAccess && (!d.manualAccessExpiresAt || new Date(d.manualAccessExpiresAt).getTime() > now));
+        if (hasAccess) window.location.href = 'predict.html';
+      }
+    } catch { /* continue */ }
+  });
+
+  window.startCheckout = async () => {
+    const user = auth.currentUser;
+    if (!user) { window.location.href = 'login.html'; return; }
+    const btn = document.getElementById('sub-btn');
+    btn.disabled  = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner spinner"></i> Opening Flutterwave...';
+    try {
+      const token = await user.getIdToken();
+      const res   = await fetch('/api/create-checkout', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ token, email: user.email, uid: user.uid, name: user.displayName || '' }),
+      });
+      const data = await res.json();
+      if (data.url) { window.location.href = data.url; }
+      else           { throw new Error(data.error || 'No checkout URL returned'); }
+    } catch (e) {
+      console.error(e);
+      btn.disabled  = false;
+      btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Try Again';
+    }
+  };
+
+  window.doSignOut = () => signOut(auth).then(() => window.location.href = 'login.html');
+
+  window.toggleFaq = el => {
+    const answer = el.nextElementSibling;
+    const isOpen = el.classList.contains('open');
+    document.querySelectorAll('.faq-q').forEach(q => { q.classList.remove('open'); q.nextElementSibling.classList.remove('open'); });
+    if (!isOpen) { el.classList.add('open'); answer.classList.add('open'); }
+  };
+</script>
+</body>
+</html>
