@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#070c12" />
+  <title>About · XAU Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    html, body { min-height: 100%; background: var(--bg-deep); }
+
+    .page {
+      max-width: 480px; margin: 0 auto;
+      min-height: 100dvh; display: flex; flex-direction: column;
+    }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .topbar-brand { display: flex; align-items: center; gap: 8px; }
+    .topbar-logo {
+      width: 30px; height: 30px; background: var(--gold); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px; color: #000;
+    }
+    .topbar-title { font-size: 17px; font-weight: 800; color: #fff; }
+    .topbar-title span { color: var(--gold); }
+
+    .body { flex: 1; padding: 28px 20px 60px; }
+
+    .page-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--gold-glow); border: 1px solid var(--gold-dim);
+      color: var(--gold); font-size: 11px; padding: 5px 13px;
+      border-radius: 20px; text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 28px; font-weight: 800; color: #fff;
+      line-height: 1.25; margin-bottom: 6px;
+    }
+
+    .sub {
+      font-size: 13px; color: var(--txt-2); margin-bottom: 28px; line-height: 1.5;
+    }
+
+    .divider {
+      height: 1px; background: var(--border); margin-bottom: 28px;
+    }
+
+    .section { margin-bottom: 28px; }
+
+    .section-title {
+      font-size: 13px; font-weight: 700; color: var(--gold);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .section-body {
+      font-size: 14px; color: #fff; line-height: 1.8;
+    }
+
+    .algo-box {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-top: 14px;
+    }
+
+    .algo-formula {
+      font-family: 'Space Mono', monospace; font-size: 18px;
+      font-weight: 700; color: var(--gold);
+      text-align: center; padding: 12px 0; letter-spacing: 0.05em;
+    }
+
+    .algo-desc {
+      font-size: 12px; color: var(--txt-2);
+      text-align: center; margin-top: 6px; line-height: 1.6;
+    }
+
+    .api-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px;
+      display: flex; align-items: center; gap: 14px; margin-top: 14px;
+    }
+
+    .api-icon {
+      width: 40px; height: 40px; background: var(--gold-glow);
+      border: 1px solid var(--gold-dim); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); font-size: 17px; flex-shrink: 0;
+    }
+
+    .api-name  { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+    .api-desc  { font-size: 12px; color: var(--txt-2); line-height: 1.5; }
+
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--txt-2); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-btn:hover { color: var(--gold); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="topbar-title">XAU<span>/USD</span></span>
+    </div>
+    <a href="index.html" class="back-btn">
+      <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
+  </div>
+
+  <div class="body">
+
+    <div class="page-badge">
+      <i class="fa-solid fa-circle-info"></i> About
+    </div>
+
+    <h1>About XAU Tracker</h1>
+    <p class="sub">What we are, how we work, and where our data comes from.</p>
+
+    <div class="divider"></div>
+
+    <div class="section">
+      <div class="section-title">
+        <i class="fa-solid fa-globe"></i> What is XAU Tracker?
+      </div>
+      <div class="section-body">
+        XAU Tracker is a web-based app that tracks the real-time price movement of gold. It uses the <strong style="color:var(--gold);">ATR × √1440</strong> model to predict the price movement in a certain timeframe.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <i class="fa-solid fa-microchip"></i> The Algorithm
+      </div>
+      <div class="section-body">
+        ATR stands for Average True Range — a measure of how much gold's price typically moves in a single day. We multiply it by the square root of time to produce realistic price predictions across different timeframes. This is what drives everything you see on the Predict page.
+      </div>
+      <div class="algo-box">
+        <div class="algo-formula">ATR × √( t / 1440 )</div>
+        <div class="algo-desc">
+          ATR = Average True Range &nbsp;·&nbsp; t = minutes ahead &nbsp;·&nbsp; 1440 = minutes in a day<br />
+          Result = expected 1-sigma price move for that timeframe
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <i class="fa-solid fa-satellite-dish"></i> Data Source
+      </div>
+      <div class="section-body">
+        Live gold prices are fetched from the TwelveData API — a company providing real-time data for trading assets globally.
+      </div>
+      <div class="api-card">
+        <div class="api-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <div>
+          <div class="api-name">TwelveData API</div>
+          <div class="api-desc">
+            Real-time and historical financial data provider for stocks, forex, crypto and commodities including XAU/USD spot gold.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
