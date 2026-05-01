@@ -267,6 +267,24 @@
   setActiveNav();
   loadPrice(renderPrice);
   setInterval(() => loadPrice(renderPrice), 10000);
+
+  /* ── Dropdown menu ── */
+function toggleMenu() {
+  const trigger  = document.getElementById('menu-trigger');
+  const dropdown = document.getElementById('dropdown-menu');
+  const isOpen   = dropdown.classList.contains('open');
+  dropdown.classList.toggle('open', !isOpen);
+  trigger.classList.toggle('open',  !isOpen);
+}
+
+/* Close when clicking outside */
+document.addEventListener('click', function(e) {
+  const wrap = document.querySelector('.menu-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('dropdown-menu')?.classList.remove('open');
+    document.getElementById('menu-trigger')?.classList.remove('open');
+  }
+});
 </script>
 </body>
 </html>
