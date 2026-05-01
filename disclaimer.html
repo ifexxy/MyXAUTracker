@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#070c12" />
+  <title>Disclaimer · XAU Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    html, body { min-height: 100%; background: var(--bg-deep); }
+
+    .page {
+      max-width: 480px; margin: 0 auto;
+      min-height: 100dvh; display: flex; flex-direction: column;
+    }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .topbar-brand { display: flex; align-items: center; gap: 8px; }
+    .topbar-logo {
+      width: 30px; height: 30px; background: var(--gold); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px; color: #000;
+    }
+    .topbar-title { font-size: 17px; font-weight: 800; color: #fff; }
+    .topbar-title span { color: var(--gold); }
+
+    .body { flex: 1; padding: 28px 20px 60px; }
+
+    .page-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,69,97,0.08); border: 1px solid rgba(255,69,97,0.2);
+      color: var(--red); font-size: 11px; padding: 5px 13px;
+      border-radius: 20px; text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 28px; font-weight: 800; color: #fff;
+      line-height: 1.25; margin-bottom: 6px;
+    }
+
+    .sub {
+      font-size: 13px; color: var(--txt-2); margin-bottom: 28px; line-height: 1.5;
+    }
+
+    .divider {
+      height: 1px; background: var(--border); margin-bottom: 28px;
+    }
+
+    .warning-card {
+      background: rgba(255,69,97,0.06);
+      border: 1px solid rgba(255,69,97,0.18);
+      border-radius: 14px; padding: 18px;
+      display: flex; gap: 14px; margin-bottom: 24px;
+    }
+
+    .warning-card i {
+      font-size: 22px; color: var(--red); flex-shrink: 0; padding-top: 2px;
+    }
+
+    .warning-card p {
+      font-size: 14px; color: #fff; line-height: 1.75;
+    }
+
+    .clause-list { list-style: none; padding: 0; margin: 0; }
+
+    .clause-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px 0; border-bottom: 1px solid var(--border);
+    }
+    .clause-item:last-child { border-bottom: none; }
+
+    .clause-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(255,69,97,0.1); border: 1px solid rgba(255,69,97,0.2);
+      color: var(--red); font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-family: 'Space Mono', monospace;
+    }
+
+    .clause-text {
+      font-size: 14px; color: #fff; line-height: 1.75; flex: 1;
+    }
+
+    .last-updated {
+      font-size: 11px; color: var(--txt-3);
+      font-family: 'Space Mono', monospace;
+      margin-top: 28px;
+    }
+
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--txt-2); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-btn:hover { color: var(--gold); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="topbar-title">XAU<span>/USD</span></span>
+    </div>
+    <a href="index.html" class="back-btn">
+      <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
+  </div>
+
+  <div class="body">
+
+    <div class="page-badge">
+      <i class="fa-solid fa-triangle-exclamation"></i> Disclaimer
+    </div>
+
+    <h1>Risk Disclaimer</h1>
+    <p class="sub">Please read this carefully before using XAU Tracker.</p>
+
+    <div class="divider"></div>
+
+    <div class="warning-card">
+      
+      <p>
+        Trading gold involves high financial risk and you could lose your entire investment. Read the full disclaimer below before using this website.
+      </p>
+    </div>
+
+    <ul class="clause-list">
+
+      <li class="clause-item">
+        <div class="clause-num">01</div>
+        <div class="clause-text">
+          Trading gold involves high financial risk and you could lose your investment. Past price movements are not indicative of future results.
+        </div>
+      </li>
+
+      <li class="clause-item">
+        <div class="clause-num">02</div>
+        <div class="clause-text">
+          XAU Tracker is not liable for any loss incurred due to the use of this website, its predictions, data, or any content found on it.
+        </div>
+      </li>
+
+      <li class="clause-item">
+        <div class="clause-num">03</div>
+        <div class="clause-text">
+          XAU Tracker is not entitled to any profits made due to the use of this website. We have no claim over any financial gains from decisions made based on this platform.
+        </div>
+      </li>
+
+      <li class="clause-item">
+        <div class="clause-num">04</div>
+        <div class="clause-text">
+          The contents found on this website are for educational purposes only and do not constitute financial advice. Predictions are algorithmic and not guaranteed.
+        </div>
+      </li>
+
+      <li class="clause-item">
+        <div class="clause-num">05</div>
+        <div class="clause-text">
+          Users are solely responsible for their use of this website and any trading decisions made based on the information provided here.
+        </div>
+      </li>
+
+    </ul>
+
+    <div class="last-updated">
+      
+      Last updated: May 2026
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
