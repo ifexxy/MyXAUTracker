@@ -1,7 +1,7 @@
-import { adminAuth, db } from './_firebase.js';
-import { Timestamp }     from 'firebase-admin/firestore';
+const { adminAuth, db } = require('./_firebase.js');
+const { Timestamp }     = require('firebase-admin/firestore');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin',  'https://xautracker.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -23,11 +23,16 @@ export default async function handler(req, res) {
   try {
     const flwRes = await fetch(
       'https://api.flutterwave.com/v3/transactions?tx_ref=' + encodeURIComponent(txRef),
-      { headers: { 'Authorization': 'Bearer ' + process.env.FLUTTERWAVE_SECRET_KEY } }
+      {
+        headers: {
+          'Authorization': 'Bearer ' + process.env.FLUTTERWAVE_SECRET_KEY,
+          'Content-Type':  'application/json',
+        },
+      }
     );
     const data = await flwRes.json();
 
-    if (data.status !== 'success' || !data.data?.length) {
+    if (data.status !== 'success' || !data.data || !data.data.length) {
       return res.status(402).json({ success: false, message: 'Transaction not found yet' });
     }
 
@@ -61,4 +66,4 @@ export default async function handler(req, res) {
     console.error('[verify-payment]', e.message);
     return res.status(500).json({ error: e.message });
   }
-}
+};
