@@ -1,12 +1,3 @@
-/* api/verify-payment.js
-   POST /api/verify-payment
-   Body: { token, uid, txRef }
-
-   Called by success.html when the webhook hasn't updated
-   Firestore yet. Directly asks Flutterwave if the payment
-   succeeded and activates access immediately if yes.
-*/
-
 import { adminAuth, db } from './_firebase.js';
 import { Timestamp }     from 'firebase-admin/firestore';
 
@@ -18,9 +9,8 @@ export default async function handler(req, res) {
   if (req.method !== 'POST')   return res.status(405).json({ error: 'Method not allowed' });
 
   const { token, uid, txRef } = req.body || {};
-
   if (!token || !uid || !txRef) {
-    return res.status(400).json({ error: 'Missing: token, uid or txRef' });
+    return res.status(400).json({ error: 'Missing token, uid or txRef' });
   }
 
   try {
@@ -31,55 +21,39 @@ export default async function handler(req, res) {
   }
 
   try {
-    /* Search Flutterwave transactions by tx_ref */
     const flwRes = await fetch(
-      `https://api.flutterwave.com/v3/transactions?tx_ref=${encodeURIComponent(txRef)}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
-          'Content-Type':  'application/json',
-        },
-      }
+      'https://api.flutterwave.com/v3/transactions?tx_ref=' + encodeURIComponent(txRef),
+      { headers: { 'Authorization': 'Bearer ' + process.env.FLUTTERWAVE_SECRET_KEY } }
     );
-
     const data = await flwRes.json();
 
     if (data.status !== 'success' || !data.data?.length) {
-      return res.status(402).json({
-        success: false,
-        message: 'Transaction not found or not yet confirmed',
-      });
+      return res.status(402).json({ success: false, message: 'Transaction not found yet' });
     }
 
     const tx = data.data[0];
-
     if (tx.status !== 'successful') {
-      return res.status(402).json({
-        success: false,
-        status:  tx.status,
-        message: 'Payment not successful',
-      });
+      return res.status(402).json({ success: false, status: tx.status });
     }
 
     const periodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     await db.collection('users').doc(uid).set({
       subscriptionStatus:    'active',
+      manualAccess:          true,
+      manualAccessExpiresAt: Timestamp.fromDate(periodEnd),
+      manualAccessNote:      'Flutterwave subscription',
       flutterwaveTxRef:      txRef,
       flutterwaveTxId:       String(tx.id),
       currentPeriodEnd:      Timestamp.fromDate(periodEnd),
       activatedAt:           Timestamp.now(),
       lastPaymentAt:         Timestamp.now(),
-      lastPaymentAmount:     tx.amount        || 9900,
-      lastPaymentCurrency:   tx.currency      || 'NGN',
+      lastPaymentAmount:     tx.amount   || 9900,
+      lastPaymentCurrency:   tx.currency || 'NGN',
     }, { merge: true });
 
     return res.status(200).json({
       success:          true,
-      status:           tx.status,
-      txRef,
-      amount:           tx.amount,
-      currency:         tx.currency,
       currentPeriodEnd: periodEnd.toISOString(),
     });
 
