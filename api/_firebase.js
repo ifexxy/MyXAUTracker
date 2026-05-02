@@ -1,6 +1,6 @@
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore }                  from 'firebase-admin/firestore';
-import { getAuth }                       from 'firebase-admin/auth';
+const { initializeApp, cert, getApps } = require('firebase-admin/app');
+const { getFirestore }                  = require('firebase-admin/firestore');
+const { getAuth }                       = require('firebase-admin/auth');
 
 if (!getApps().length) {
   initializeApp({
@@ -12,5 +12,7 @@ if (!getApps().length) {
   });
 }
 
-export const db        = getFirestore();
-export const adminAuth = getAuth();
+const db        = getFirestore();
+const adminAuth = getAuth();
+
+module.exports = { db, adminAuth };
