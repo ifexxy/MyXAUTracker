@@ -1,6 +1,6 @@
-import { adminAuth } from './_firebase.js';
+const { adminAuth } = require('./_firebase.js');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin',  'https://xautracker.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -49,7 +49,7 @@ export default async function handler(req, res) {
     const flwRes = await fetch('https://api.flutterwave.com/v3/payments', {
       method:  'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
+        'Authorization': 'Bearer ' + process.env.FLUTTERWAVE_SECRET_KEY,
         'Content-Type':  'application/json',
       },
       body: JSON.stringify(payload),
@@ -67,4 +67,4 @@ export default async function handler(req, res) {
     console.error('[create-checkout]', e.message);
     return res.status(500).json({ error: e.message });
   }
-}
+};
