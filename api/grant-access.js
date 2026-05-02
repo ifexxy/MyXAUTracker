@@ -1,7 +1,7 @@
-import { adminAuth, db } from './_firebase.js';
-import { Timestamp }     from 'firebase-admin/firestore';
+const { adminAuth, db } = require('./_firebase.js');
+const { Timestamp }     = require('firebase-admin/firestore');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin',  'https://xautracker.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -10,9 +10,9 @@ export default async function handler(req, res) {
 
   const { adminToken, targetEmail, action, daysOrMonths, unit, note } = req.body || {};
 
-  if (!adminToken)   return res.status(400).json({ error: 'Missing adminToken' });
-  if (!targetEmail)  return res.status(400).json({ error: 'Missing targetEmail' });
-  if (!action)       return res.status(400).json({ error: 'Missing action' });
+  if (!adminToken)  return res.status(400).json({ error: 'Missing adminToken' });
+  if (!targetEmail) return res.status(400).json({ error: 'Missing targetEmail' });
+  if (!action)      return res.status(400).json({ error: 'Missing action' });
 
   let callerUid;
   try {
@@ -22,16 +22,24 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid token: ' + e.message });
   }
 
-  const adminDoc = await db.collection('admins').doc(callerUid).get();
+  let adminDoc;
+  try {
+    adminDoc = await db.collection('admins').doc(callerUid).get();
+  } catch (e) {
+    return res.status(500).json({ error: 'Firestore error: ' + e.message });
+  }
+
   if (!adminDoc.exists()) {
-    return res.status(403).json({ error: 'UID ' + callerUid + ' not in /admins collection' });
+    return res.status(403).json({
+      error: 'UID ' + callerUid + ' is not in the /admins collection',
+    });
   }
 
   let targetUser;
   try {
     targetUser = await adminAuth.getUserByEmail(targetEmail);
-  } catch {
-    return res.status(404).json({ error: 'No account found: ' + targetEmail });
+  } catch (e) {
+    return res.status(404).json({ error: 'No account found with email: ' + targetEmail });
   }
 
   const userRef = db.collection('users').doc(targetUser.uid);
@@ -95,4 +103,4 @@ export default async function handler(req, res) {
   return res.status(400).json({
     error: 'Unknown action: ' + action + '. Valid: grant, extend, permanent, revoke',
   });
-}
+};
