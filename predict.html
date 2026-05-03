@@ -20,7 +20,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
-<script type="module" src="js/auth-guard.js"></script>
+<style>
+  #content { visibility: hidden; }
+</style>
   <style>
     /* ── Predict-specific styles ── */
 
@@ -1022,6 +1024,78 @@ document.addEventListener('click', function(e) {
     document.getElementById('menu-trigger')?.classList.remove('open');
   }
 });
+</script>
+  <script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+
+  const app  = initializeApp(firebaseConfig, 'predict-guard');
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  let checked = false;
+
+  onAuthStateChanged(auth, async user => {
+    if (checked) return;
+    checked = true;
+
+    if (!user) {
+      window.location.replace('login.html');
+      return;
+    }
+
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+
+      if (!snap.exists()) {
+        window.location.replace('subscribe.html');
+        return;
+      }
+
+      const d   = snap.data();
+      const now = Date.now();
+
+      const trialActive =
+        d.trialEndsAt &&
+        new Date(d.trialEndsAt).getTime() > now;
+
+      const subscriptionActive =
+        d.subscriptionStatus === 'active' &&
+        d.currentPeriodEnd &&
+        new Date(d.currentPeriodEnd).getTime() > now;
+
+      const manualActive =
+        d.manualAccess === true &&
+        (!d.manualAccessExpiresAt ||
+          new Date(d.manualAccessExpiresAt).getTime() > now);
+
+      if (trialActive || subscriptionActive || manualActive) {
+        /* Access granted */
+        document.getElementById('content').style.visibility = 'visible';
+        return;
+      }
+
+      window.location.replace('subscribe.html');
+
+    } catch (e) {
+      console.error('Guard error:', e.message);
+      /* Show page on error to avoid lockout */
+      document.getElementById('content').style.visibility = 'visible';
+    }
+  });
 </script>
 </body>
 </html>
