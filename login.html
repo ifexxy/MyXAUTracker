@@ -181,6 +181,7 @@
   /* Already logged in — redirect */
   onAuthStateChanged(auth, async user => {
     if (!user) return;
+    if (!window.location.pathname.endsWith('login.html') && window.location.pathname !== '/') return;
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
       if (!snap.exists()) { window.location.href = 'predict.html'; return; }
