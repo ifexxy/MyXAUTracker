@@ -1,4 +1,4 @@
-import { initializeApp, getApp }
+import { initializeApp, getApps }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -14,28 +14,14 @@ const firebaseConfig = {
   appId: "1:831752609455:web:ea9be478691744afa73e5a"
 };
 
-let app;
-try {
-  app = getApp('auth-guard');
-} catch {
-  const { initializeApp } = await import(
-    "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
-  );
-  app = initializeApp(firebaseConfig, 'auth-guard');
-}
-
+/* Use default app — no name — so auth state is shared */
+const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
 document.documentElement.style.visibility = 'hidden';
 
-/* Wait for Firebase to restore session from local storage first */
-await new Promise(resolve => {
-  const unsub = onAuthStateChanged(auth, user => {
-    unsub();
-    resolve(user);
-  });
-}).then(async user => {
+onAuthStateChanged(auth, async user => {
   if (!user) {
     window.location.href = 'login.html';
     return;
