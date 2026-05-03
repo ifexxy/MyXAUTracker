@@ -14,16 +14,32 @@ const firebaseConfig = {
   appId: "1:831752609455:web:ea9be478691744afa73e5a"
 };
 
-/* Use default app — no name — so auth state is shared */
 const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
 document.documentElement.style.visibility = 'hidden';
 
+let redirected = false;
+
+function safeRedirect(url) {
+  if (redirected) return;
+  redirected = true;
+  window.location.href = url;
+}
+
+/* Give Firebase 3 seconds max to restore session */
+const timeout = setTimeout(() => {
+  if (!redirected) {
+    safeRedirect('login.html');
+  }
+}, 3000);
+
 onAuthStateChanged(auth, async user => {
+  clearTimeout(timeout);
+
   if (!user) {
-    window.location.href = 'login.html';
+    safeRedirect('login.html');
     return;
   }
 
@@ -31,7 +47,7 @@ onAuthStateChanged(auth, async user => {
     const snap = await getDoc(doc(db, 'users', user.uid));
 
     if (!snap.exists()) {
-      window.location.href = 'subscribe.html';
+      safeRedirect('subscribe.html');
       return;
     }
 
@@ -57,10 +73,10 @@ onAuthStateChanged(auth, async user => {
       return;
     }
 
-    window.location.href = 'subscribe.html';
+    safeRedirect('subscribe.html');
 
   } catch (e) {
-    console.error('Auth guard error:', e.message);
+    /* On any error show the page rather than loop */
     document.documentElement.style.visibility = 'visible';
   }
 });
