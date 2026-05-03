@@ -1038,7 +1038,7 @@ document.addEventListener('click', function(e) {
     appId: "1:831752609455:web:ea9be478691744afa73e5a"
   };
 
-  const app  = initializeApp(firebaseConfig, 'predict-guard');
+  const app  = initializeApp(firebaseConfig, 'login');
   const auth = getAuth(app);
 
   onAuthStateChanged(auth, user => {
