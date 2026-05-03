@@ -241,7 +241,7 @@
     appId: "1:831752609455:web:ea9be478691744afa73e5a"
   };
 
-  const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig, 'login');
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
