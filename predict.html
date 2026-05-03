@@ -320,7 +320,7 @@
     <div id="dash-access-text" style="font-size:13px;color:var(--txt-1);line-height:1.6;">—</div>
   </div>
 
-  <div style="display:flex;gap:10px;">
+ <div id="dash-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
     <a href="subscribe.html" style="flex:1;display:flex;align-items:center;justify-content:center;
                                      gap:7px;padding:11px;background:var(--gold);color:#000;
                                      border-radius:10px;font-family:'Syne',sans-serif;
@@ -1151,46 +1151,117 @@ return;
 
   const badgeEl      = document.getElementById('dash-status-badge');
   const accessTextEl = document.getElementById('dash-access-text');
+  const actionsEl    = document.getElementById('dash-actions');
 
   if (subscriptionActive) {
     const end  = new Date(d.currentPeriodEnd);
     const days = Math.ceil((end.getTime() - now) / (1000 * 60 * 60 * 24));
+    const cancelled = d.subscriptionStatus === 'cancelled';
+
     badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;
       background:var(--green-dim);color:var(--green);">
-      <i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px;"></i>ACTIVE</span>`;
-    accessTextEl.innerHTML = `Subscription active &nbsp;·&nbsp;
-      <strong style="color:var(--green);">${days} day${days !== 1 ? 's' : ''} remaining</strong><br>
-      <span style="font-size:11px;color:var(--txt-2);">Renews ${end.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})}</span>`;
+      <i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px;"></i>
+      ${cancelled ? 'CANCELLING' : 'ACTIVE'}</span>`;
+
+    accessTextEl.innerHTML = `Subscription ${cancelled ? 'cancels' : 'renews'} 
+      <strong style="color:var(--green);">${end.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})}</strong><br>
+      <span style="font-size:11px;color:var(--txt-2);">${days} day${days !== 1 ? 's' : ''} remaining</span>`;
+
+    actionsEl.innerHTML = `
+      <a href="subscribe.html" style="flex:1;display:flex;align-items:center;justify-content:center;
+        gap:7px;padding:11px;background:var(--gold);color:#000;border-radius:10px;
+        font-family:'Syne',sans-serif;font-size:13px;font-weight:800;text-decoration:none;">
+        <i class="fa-solid fa-crown"></i> Renew
+      </a>
+      ${!cancelled ? `
+      <button onclick="cancelSub()" style="flex:1;display:flex;align-items:center;
+        justify-content:center;gap:7px;padding:11px;background:transparent;
+        color:var(--red);border:1px solid rgba(255,69,97,0.3);border-radius:10px;
+        font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+        <i class="fa-solid fa-ban"></i> Cancel
+      </button>` : ''}
+      <button onclick="dashSignOut()" style="flex:1;display:flex;align-items:center;
+        justify-content:center;gap:7px;padding:11px;background:transparent;color:var(--txt-2);
+        border:1px solid var(--border);border-radius:10px;font-family:'Syne',sans-serif;
+        font-size:13px;font-weight:700;cursor:pointer;">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>`;
 
   } else if (trialActive) {
     const end  = new Date(d.trialEndsAt);
     const ms   = end.getTime() - now;
     const days = Math.floor(ms / (1000 * 60 * 60 * 24));
     const hrs  = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
     badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;
       background:var(--gold-glow);color:var(--gold);">
       <i class="fa-solid fa-clock" style="font-size:6px;margin-right:4px;"></i>TRIAL</span>`;
+
     accessTextEl.innerHTML = `Free trial &nbsp;·&nbsp;
       <strong style="color:var(--gold);">${days}d ${hrs}h remaining</strong><br>
       <span style="font-size:11px;color:var(--txt-2);">Subscribe before your trial ends to keep access</span>`;
+
+    actionsEl.innerHTML = `
+      <a href="subscribe.html" style="flex:1;display:flex;align-items:center;justify-content:center;
+        gap:7px;padding:11px;background:var(--gold);color:#000;border-radius:10px;
+        font-family:'Syne',sans-serif;font-size:13px;font-weight:800;text-decoration:none;">
+        <i class="fa-solid fa-crown"></i> Subscribe — ₦9,900/mo
+      </a>
+      <button onclick="dashSignOut()" style="flex:1;display:flex;align-items:center;
+        justify-content:center;gap:7px;padding:11px;background:transparent;color:var(--txt-2);
+        border:1px solid var(--border);border-radius:10px;font-family:'Syne',sans-serif;
+        font-size:13px;font-weight:700;cursor:pointer;">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>`;
 
   } else if (manualActive) {
     const expiry = d.manualAccessExpiresAt
       ? new Date(d.manualAccessExpiresAt).toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})
       : 'Permanent';
+
     badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;
       background:var(--green-dim);color:var(--green);">
       <i class="fa-solid fa-key" style="font-size:6px;margin-right:4px;"></i>GRANTED</span>`;
+
     accessTextEl.innerHTML = `Manual access granted<br>
       <span style="font-size:11px;color:var(--txt-2);">Expires: ${expiry}</span>`;
+
+    actionsEl.innerHTML = `
+      <button onclick="dashSignOut()" style="flex:1;display:flex;align-items:center;
+        justify-content:center;gap:7px;padding:11px;background:transparent;color:var(--txt-2);
+        border:1px solid var(--border);border-radius:10px;font-family:'Syne',sans-serif;
+        font-size:13px;font-weight:700;cursor:pointer;">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>`;
   }
 }
 
+window.cancelSub = async () => {
+  if (!confirm('Cancel your subscription? You keep access until your current period ends.')) return;
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const res   = await fetch('/api/cancel-subscription', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ userToken: token }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert('Subscription cancelled. You keep access until your period ends.');
+      window.location.reload();
+    } else {
+      alert('Failed: ' + data.error);
+    }
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+};
+
 window.dashSignOut = async () => {
-  const { getAuth, signOut } = await import(
+  const { signOut } = await import(
     "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
   );
-  await signOut(getAuth(app));
+  await signOut(auth);
   window.location.replace('login.html');
 };
 </script>
