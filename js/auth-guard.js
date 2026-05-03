@@ -1,4 +1,4 @@
-import { initializeApp, getApps, getApp }
+import { initializeApp, getApp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -18,6 +18,9 @@ let app;
 try {
   app = getApp('auth-guard');
 } catch {
+  const { initializeApp } = await import(
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+  );
   app = initializeApp(firebaseConfig, 'auth-guard');
 }
 
@@ -26,7 +29,13 @@ const db   = getFirestore(app);
 
 document.documentElement.style.visibility = 'hidden';
 
-onAuthStateChanged(auth, async user => {
+/* Wait for Firebase to restore session from local storage first */
+await new Promise(resolve => {
+  const unsub = onAuthStateChanged(auth, user => {
+    unsub();
+    resolve(user);
+  });
+}).then(async user => {
   if (!user) {
     window.location.href = 'login.html';
     return;
@@ -42,10 +51,6 @@ onAuthStateChanged(auth, async user => {
 
     const d   = snap.data();
     const now = Date.now();
-
-    console.log('trialEndsAt:', d.trialEndsAt);
-    console.log('now:', new Date(now).toISOString());
-    console.log('trial valid:', d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now);
 
     const trialActive =
       d.trialEndsAt &&
