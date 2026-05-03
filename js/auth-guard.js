@@ -1,4 +1,4 @@
-import { initializeApp, getApps }
+import { initializeApp, getApps, getApp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -14,7 +14,14 @@ const firebaseConfig = {
   appId: "1:831752609455:web:ea9be478691744afa73e5a"
 };
 
-const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+/* Use same app name as login.html so auth state is shared */
+let app;
+try {
+  app = getApp('login');
+} catch {
+  app = initializeApp(firebaseConfig, 'login');
+}
+
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
@@ -28,16 +35,7 @@ function safeRedirect(url) {
   window.location.href = url;
 }
 
-/* Give Firebase 3 seconds max to restore session */
-const timeout = setTimeout(() => {
-  if (!redirected) {
-    safeRedirect('login.html');
-  }
-}, 3000);
-
 onAuthStateChanged(auth, async user => {
-  clearTimeout(timeout);
-
   if (!user) {
     safeRedirect('login.html');
     return;
@@ -76,7 +74,7 @@ onAuthStateChanged(auth, async user => {
     safeRedirect('subscribe.html');
 
   } catch (e) {
-    /* On any error show the page rather than loop */
+    console.error('Auth guard error:', e.message);
     document.documentElement.style.visibility = 'visible';
   }
 });
