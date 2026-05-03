@@ -14,11 +14,14 @@ const firebaseConfig = {
   appId: "1:831752609455:web:ea9be478691744afa73e5a"
 };
 
-const app  = getApps().length
-  ? getApps()[0]
-  : initializeApp(firebaseConfig, 'auth-guard');
+const app = getApps().find(a => a.name === 'auth-guard') ||
+            initializeApp(firebaseConfig, 'auth-guard');
+
 const auth = getAuth(app);
 const db   = getFirestore(app);
+
+/* Hide page content until auth check completes — prevents flash */
+document.documentElement.style.visibility = 'hidden';
 
 onAuthStateChanged(auth, async user => {
   if (!user) {
@@ -28,6 +31,7 @@ onAuthStateChanged(auth, async user => {
 
   try {
     const snap = await getDoc(doc(db, 'users', user.uid));
+
     if (!snap.exists()) {
       window.location.href = 'subscribe.html';
       return;
@@ -37,7 +41,8 @@ onAuthStateChanged(auth, async user => {
     const now = Date.now();
 
     const trialActive =
-      d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now;
+      d.trialEndsAt &&
+      new Date(d.trialEndsAt).getTime() > now;
 
     const subscriptionActive =
       d.subscriptionStatus === 'active' &&
@@ -50,15 +55,17 @@ onAuthStateChanged(auth, async user => {
         new Date(d.manualAccessExpiresAt).getTime() > now);
 
     if (trialActive || subscriptionActive || manualActive) {
-      /* Access granted — do nothing, page loads normally */
+      /* Access granted — reveal the page */
+      document.documentElement.style.visibility = 'visible';
       return;
     }
 
-    /* No valid access — send to subscribe */
+    /* No valid access */
     window.location.href = 'subscribe.html';
 
   } catch (e) {
     console.error('Auth guard error:', e);
-    window.location.href = 'subscribe.html';
+    /* On error, still show the page to avoid permanent lockout */
+    document.documentElement.style.visibility = 'visible';
   }
 });
