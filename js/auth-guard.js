@@ -1,4 +1,4 @@
-import { initializeApp, getApps }
+import { initializeApp, getApps, getApp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -14,13 +14,16 @@ const firebaseConfig = {
   appId: "1:831752609455:web:ea9be478691744afa73e5a"
 };
 
-const app = getApps().find(a => a.name === 'auth-guard') ||
-            initializeApp(firebaseConfig, 'auth-guard');
+let app;
+try {
+  app = getApp('auth-guard');
+} catch {
+  app = initializeApp(firebaseConfig, 'auth-guard');
+}
 
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-/* Hide page content until auth check completes — prevents flash */
 document.documentElement.style.visibility = 'hidden';
 
 onAuthStateChanged(auth, async user => {
@@ -40,6 +43,10 @@ onAuthStateChanged(auth, async user => {
     const d   = snap.data();
     const now = Date.now();
 
+    console.log('trialEndsAt:', d.trialEndsAt);
+    console.log('now:', new Date(now).toISOString());
+    console.log('trial valid:', d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now);
+
     const trialActive =
       d.trialEndsAt &&
       new Date(d.trialEndsAt).getTime() > now;
@@ -55,17 +62,14 @@ onAuthStateChanged(auth, async user => {
         new Date(d.manualAccessExpiresAt).getTime() > now);
 
     if (trialActive || subscriptionActive || manualActive) {
-      /* Access granted — reveal the page */
       document.documentElement.style.visibility = 'visible';
       return;
     }
 
-    /* No valid access */
     window.location.href = 'subscribe.html';
 
   } catch (e) {
-    console.error('Auth guard error:', e);
-    /* On error, still show the page to avoid permanent lockout */
+    console.error('Auth guard error:', e.message);
     document.documentElement.style.visibility = 'visible';
   }
 });
