@@ -296,6 +296,49 @@
   <div id="content">
 
     <!-- Page header -->
+    <!-- ══ ACCOUNT DASHBOARD ══ -->
+<div class="predict-card" id="account-dashboard" style="display:none;">
+  <h3><i class="fa-solid fa-circle-user" style="margin-right:8px;color:var(--gold)"></i>My Account</h3>
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+    <div style="width:42px;height:42px;border-radius:50%;background:var(--gold-glow);
+                border:1px solid var(--gold-dim);display:flex;align-items:center;
+                justify-content:center;color:var(--gold);font-size:18px;flex-shrink:0;">
+      <i class="fa-solid fa-user"></i>
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div id="dash-email" style="font-size:13px;font-weight:700;color:var(--txt-1);
+                                   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
+      <div id="dash-status-badge" style="margin-top:4px;"></div>
+    </div>
+  </div>
+
+  <div id="dash-info" style="background:var(--bg-muted);border:1px solid var(--border);
+                              border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+    <div style="font-size:11px;color:var(--txt-2);margin-bottom:4px;text-transform:uppercase;
+                letter-spacing:0.08em;">Access Status</div>
+    <div id="dash-access-text" style="font-size:13px;color:var(--txt-1);line-height:1.6;">—</div>
+  </div>
+
+  <div style="display:flex;gap:10px;">
+    <a href="subscribe.html" style="flex:1;display:flex;align-items:center;justify-content:center;
+                                     gap:7px;padding:11px;background:var(--gold);color:#000;
+                                     border-radius:10px;font-family:'Syne',sans-serif;
+                                     font-size:13px;font-weight:800;text-decoration:none;">
+      <i class="fa-solid fa-crown"></i> Subscribe
+    </a>
+    <button onclick="dashSignOut()" style="flex:1;display:flex;align-items:center;
+                                           justify-content:center;gap:7px;padding:11px;
+                                           background:transparent;color:var(--txt-2);
+                                           border:1px solid var(--border);border-radius:10px;
+                                           font-family:'Syne',sans-serif;font-size:13px;
+                                           font-weight:700;cursor:pointer;transition:all 0.2s;"
+            onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--txt-2)'">
+      <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+    </button>
+  </div>
+</div>
     <div class="predict-hero">
       <div class="predict-header">
         <div class="predict-icon"><i class="fa-solid fa-brain"></i></div>
@@ -1076,8 +1119,8 @@ document.addEventListener('click', function(e) {
           new Date(d.manualAccessExpiresAt).getTime() > now);
 
       if (trialActive || subscriptionActive || manualActive) {
-        /* Access granted - do nothing, page stays */
-        return;
+        /* Access granted — render dashboard */
+renderDashboard(user, d, now);
       }
 
       window.location.replace('subscribe.html');
@@ -1086,6 +1129,69 @@ document.addEventListener('click', function(e) {
       console.error('Guard error:', e.message);
     }
   });
+
+  function renderDashboard(user, d, now) {
+  document.getElementById('account-dashboard').style.display = 'block';
+  document.getElementById('dash-email').textContent = user.email;
+
+  const trialActive =
+    d.trialEndsAt &&
+    new Date(d.trialEndsAt).getTime() > now;
+
+  const subscriptionActive =
+    d.subscriptionStatus === 'active' &&
+    d.currentPeriodEnd &&
+    new Date(d.currentPeriodEnd).getTime() > now;
+
+  const manualActive =
+    d.manualAccess === true &&
+    (!d.manualAccessExpiresAt ||
+      new Date(d.manualAccessExpiresAt).getTime() > now);
+
+  const badgeEl      = document.getElementById('dash-status-badge');
+  const accessTextEl = document.getElementById('dash-access-text');
+
+  if (subscriptionActive) {
+    const end  = new Date(d.currentPeriodEnd);
+    const days = Math.ceil((end.getTime() - now) / (1000 * 60 * 60 * 24));
+    badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;
+      background:var(--green-dim);color:var(--green);">
+      <i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px;"></i>ACTIVE</span>`;
+    accessTextEl.innerHTML = `Subscription active &nbsp;·&nbsp;
+      <strong style="color:var(--green);">${days} day${days !== 1 ? 's' : ''} remaining</strong><br>
+      <span style="font-size:11px;color:var(--txt-2);">Renews ${end.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})}</span>`;
+
+  } else if (trialActive) {
+    const end  = new Date(d.trialEndsAt);
+    const ms   = end.getTime() - now;
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+    const hrs  = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;
+      background:var(--gold-glow);color:var(--gold);">
+      <i class="fa-solid fa-clock" style="font-size:6px;margin-right:4px;"></i>TRIAL</span>`;
+    accessTextEl.innerHTML = `Free trial &nbsp;·&nbsp;
+      <strong style="color:var(--gold);">${days}d ${hrs}h remaining</strong><br>
+      <span style="font-size:11px;color:var(--txt-2);">Subscribe before your trial ends to keep access</span>`;
+
+  } else if (manualActive) {
+    const expiry = d.manualAccessExpiresAt
+      ? new Date(d.manualAccessExpiresAt).toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})
+      : 'Permanent';
+    badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;
+      background:var(--green-dim);color:var(--green);">
+      <i class="fa-solid fa-key" style="font-size:6px;margin-right:4px;"></i>GRANTED</span>`;
+    accessTextEl.innerHTML = `Manual access granted<br>
+      <span style="font-size:11px;color:var(--txt-2);">Expires: ${expiry}</span>`;
+  }
+}
+
+window.dashSignOut = async () => {
+  const { getAuth, signOut } = await import(
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+  );
+  await signOut(getAuth(app));
+  window.location.replace('login.html');
+};
 </script>
 </body>
 </html>
