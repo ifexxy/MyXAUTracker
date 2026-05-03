@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#070c12" />
+  <title>Subscribe · XAU Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    html, body {
+      min-height: 100%;
+      background: var(--bg-deep);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .sub-page {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sub-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sub-topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sub-logo {
+      width: 30px; height: 30px;
+      background: var(--gold); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: #000;
+    }
+
+    .sub-title { font-size: 17px; font-weight: 800; }
+    .sub-title span { color: var(--gold); }
+
+    .sub-body { flex: 1; padding: 28px 20px 60px; }
+
+    .page-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--gold-glow); border: 1px solid var(--gold-dim);
+      color: var(--gold); font-size: 11px; padding: 5px 13px;
+      border-radius: 20px; text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 16px;
+    }
+
+    h1 { font-size: 26px; font-weight: 800; line-height: 1.25; margin-bottom: 6px; }
+
+    .sub-desc {
+      font-size: 13px; color: var(--txt-2);
+      margin-bottom: 24px; line-height: 1.6;
+    }
+
+    /* Trial banner */
+    .trial-banner {
+      background: var(--green-dim);
+      border: 1px solid rgba(0,212,143,0.2);
+      border-radius: 14px; padding: 16px 18px;
+      display: flex; gap: 12px; align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .trial-banner i { color: var(--green); font-size: 18px; flex-shrink: 0; padding-top: 2px; }
+    .trial-banner-text { font-size: 13px; color: var(--txt-1); line-height: 1.6; }
+    .trial-banner-text strong { color: var(--green); }
+
+    /* Expired banner */
+    .expired-banner {
+      background: rgba(255,69,97,0.07);
+      border: 1px solid rgba(255,69,97,0.2);
+      border-radius: 14px; padding: 16px 18px;
+      display: flex; gap: 12px; align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .expired-banner i { color: var(--red); font-size: 18px; flex-shrink: 0; padding-top: 2px; }
+    .expired-banner-text { font-size: 13px; color: var(--txt-1); line-height: 1.6; }
+
+    /* Plan card */
+    .plan-card {
+      background: var(--bg-card);
+      border: 1px solid var(--gold-dim);
+      border-radius: 16px; padding: 22px;
+      margin-bottom: 16px; position: relative; overflow: hidden;
+    }
+    .plan-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .plan-name {
+      font-size: 11px; color: var(--gold); text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 10px;
+    }
+    .plan-price {
+      font-family: 'Space Mono', monospace;
+      font-size: 36px; font-weight: 700; color: var(--txt-1);
+      line-height: 1; margin-bottom: 4px;
+    }
+    .plan-price span { font-size: 16px; color: var(--txt-2); }
+    .plan-cycle {
+      font-size: 12px; color: var(--txt-2); margin-bottom: 18px;
+    }
+
+    .plan-features { list-style: none; padding: 0; margin: 0 0 20px; }
+    .plan-features li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--txt-1); padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .plan-features li:last-child { border-bottom: none; }
+    .plan-features li i { color: var(--green); font-size: 12px; flex-shrink: 0; }
+
+    .btn-pay {
+      width: 100%; padding: 15px;
+      background: var(--gold); color: #000;
+      border: none; border-radius: 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 15px; font-weight: 800;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: opacity 0.2s;
+    }
+    .btn-pay:hover   { opacity: 0.88; }
+    .btn-pay:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-signout {
+      width: 100%; padding: 12px; margin-top: 12px;
+      background: transparent; color: var(--txt-2);
+      border: 1px solid var(--border); border-radius: 12px;
+      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-signout:hover { border-color: var(--red); color: var(--red); }
+
+    .secure-note {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; font-size: 11px; color: var(--txt-3);
+      margin-top: 14px; text-align: center;
+    }
+    .secure-note i { color: var(--gold); }
+
+    .spinner { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="sub-page">
+
+  <div class="sub-topbar">
+    <div class="sub-topbar-brand">
+      <div class="sub-logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="sub-title">XAU<span>/USD</span></span>
+    </div>
+    <div style="font-size:11px;color:var(--txt-2);font-family:'Space Mono',monospace;">
+      PREDICT ACCESS
+    </div>
+  </div>
+
+  <div class="sub-body">
+
+    <div class="page-badge">
+      <i class="fa-solid fa-brain"></i> Predict Access
+    </div>
+
+    <h1>Unlock Market Predictions</h1>
+    <p class="sub-desc">
+      Get access to ATR-based price forecasts, key levels, market signals and sentiment — updated live.
+    </p>
+
+    <!-- Status banner — shown dynamically -->
+    <div id="status-banner" style="display:none;"></div>
+
+    <div class="plan-card">
+      <div class="plan-name"><i class="fa-solid fa-crown" style="margin-right:5px;"></i>Monthly Plan</div>
+      <div class="plan-price">₦9,900<span>/mo</span></div>
+      <div class="plan-cycle">Billed monthly · Cancel anytime</div>
+      <ul class="plan-features">
+        <li><i class="fa-solid fa-check"></i> Real-time XAU/USD price forecasts</li>
+        <li><i class="fa-solid fa-check"></i> 5m, 10m, 15m, 1h, 6h & 24h timeline</li>
+        <li><i class="fa-solid fa-check"></i> ATR-based volatility model</li>
+        <li><i class="fa-solid fa-check"></i> Key support & resistance levels</li>
+        <li><i class="fa-solid fa-check"></i> Market sentiment & signals</li>
+        <li><i class="fa-solid fa-check"></i> 3-day free trial for new users</li>
+      </ul>
+      <button class="btn-pay" id="pay-btn" onclick="startPayment()">
+        <i class="fa-solid fa-lock-open"></i> Subscribe — ₦9,900/month
+      </button>
+      <button class="btn-signout" onclick="doSignOut()">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>
+      <div class="secure-note">
+        <i class="fa-solid fa-shield-halved"></i>
+        Secured by Flutterwave · Payments are encrypted
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"
+     style="position:fixed;bottom:24px;left:50%;
+            transform:translateX(-50%) translateY(20px);
+            background:var(--bg-card);border:1px solid var(--border);
+            color:#fff;padding:10px 20px;border-radius:20px;
+            font-size:13px;opacity:0;transition:all 0.3s;
+            pointer-events:none;z-index:200;white-space:nowrap;">
+</div>
+
+<!-- Flutterwave inline script -->
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+
+<script type="module">
+  import { initializeApp, getApps }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+
+  const app  = getApps().length
+    ? getApps()[0]
+    : initializeApp(firebaseConfig, 'subscribe-page');
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  let currentUser = null;
+
+  onAuthStateChanged(auth, async user => {
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    currentUser = user;
+
+    /* Check if they already have access — redirect to predict */
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) {
+        const d   = snap.data();
+        const now = Date.now();
+
+        const trialActive =
+          d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now;
+
+        const subscriptionActive =
+          d.subscriptionStatus === 'active' &&
+          d.currentPeriodEnd &&
+          new Date(d.currentPeriodEnd).getTime() > now;
+
+        const manualActive =
+          d.manualAccess === true &&
+          (!d.manualAccessExpiresAt ||
+            new Date(d.manualAccessExpiresAt).getTime() > now);
+
+        if (trialActive || subscriptionActive || manualActive) {
+          window.location.href = 'predict.html';
+          return;
+        }
+
+        /* Show correct banner */
+        const banner = document.getElementById('status-banner');
+        if (d.trialEndsAt && new Date(d.trialEndsAt).getTime() < now) {
+          /* Trial expired */
+          banner.innerHTML = `
+            <div class="expired-banner">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <div class="expired-banner-text">
+                Your <strong>3-day free trial has ended.</strong>
+                Subscribe below to continue accessing gold market predictions.
+              </div>
+            </div>`;
+          banner.style.display = 'block';
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
+  window.startPayment = async () => {
+    if (!currentUser) {
+      showToast('⚠ Please wait, loading your account...');
+      return;
+    }
+
+    const btn = document.getElementById('pay-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner spinner"></i> Loading...';
+
+    let userToken;
+    try {
+      userToken = await currentUser.getIdToken();
+    } catch (e) {
+      showToast('⚠ Auth error, please refresh');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> Subscribe — ₦9,900/month';
+      return;
+    }
+
+    /* Reset button — Flutterwave handles the UI from here */
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> Subscribe — ₦9,900/month';
+
+    FlutterwaveCheckout({
+      public_key: 'FLWPUBK_TEST-a8050bdbca5d54c821af221df56f15ea-X',
+      tx_ref:     'xau-' + Date.now() + '-' + currentUser.uid.slice(0, 8),
+      amount:     9900,
+      currency:   'NGN',
+      payment_options: 'card,banktransfer,ussd',
+      customer: {
+        email: currentUser.email,
+        name:  currentUser.displayName || currentUser.email,
+      },
+      customizations: {
+        title:       'XAU Tracker',
+        description: 'Monthly Predict Access — ₦9,900',
+        logo:        'https://xautracker.vercel.app/og-image.png',
+      },
+      callback: async (response) => {
+        if (response.status === 'successful') {
+          showToast('✓ Payment received. Verifying...');
+          try {
+            const res = await fetch('/api/verify-payment', {
+              method:  'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body:    JSON.stringify({
+                transaction_id: response.transaction_id,
+                userToken,
+              }),
+            });
+            const data = await res.json();
+            if (data.success) {
+              showToast('✓ Access granted! Redirecting...');
+              setTimeout(() => { window.location.href = 'predict.html'; }, 1500);
+            } else {
+              showToast('⚠ Verification failed: ' + (data.error || 'Contact support'));
+            }
+          } catch (e) {
+            showToast('⚠ Network error during verification');
+          }
+        } else {
+          showToast('⚠ Payment was not completed');
+        }
+      },
+      onclose: () => {
+        /* User closed the popup — do nothing */
+      },
+    });
+  };
+
+  window.doSignOut = async () => {
+    await signOut(auth);
+    window.location.href = 'login.html';
+  };
+
+  window.showToast = (msg) => {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.opacity = '1';
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(() => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(-50%) translateY(20px)';
+    }, 3000);
+  };
+</script>
+</body>
+</html>
