@@ -2,6 +2,12 @@ const { db, adminAuth } = require('./_firebase');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://xautracker.vercel.app');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -14,28 +20,30 @@ module.exports = async function handler(req, res) {
     daysOrMonths,
     unit,
     note,
-  } = req.body;
+  } = req.body || {};
 
   if (!adminToken || !targetEmail || !action) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  /* 1. Verify the caller is a signed-in Firebase user */
+  /* 1. Verify Firebase ID token */
   let callerUid;
   try {
     const decoded = await adminAuth.verifyIdToken(adminToken);
     callerUid = decoded.uid;
   } catch (e) {
+    console.error('Token verify failed:', e.message);
     return res.status(401).json({ error: 'Invalid admin token' });
   }
 
-  /* 2. Check caller is an admin in Firestore */
+  /* 2. Check admin role in Firestore */
   try {
     const callerSnap = await db.collection('users').doc(callerUid).get();
     if (!callerSnap.exists || callerSnap.data().role !== 'admin') {
       return res.status(403).json({ error: 'Not authorised — admin role required' });
     }
   } catch (e) {
+    console.error('Admin check failed:', e.message);
     return res.status(500).json({ error: 'Failed to verify admin role' });
   }
 
@@ -45,6 +53,7 @@ module.exports = async function handler(req, res) {
     const targetUser = await adminAuth.getUserByEmail(targetEmail);
     targetUid = targetUser.uid;
   } catch (e) {
+    console.error('User lookup failed:', e.message);
     return res.status(404).json({ error: 'No user found with that email' });
   }
 
@@ -58,7 +67,10 @@ module.exports = async function handler(req, res) {
         manualAccessNote:      '',
         manualAccessExpiresAt: null,
       });
-      return res.status(200).json({ success: true, message: `Access revoked for ${targetEmail}` });
+      return res.status(200).json({
+        success: true,
+        message: `Access revoked for ${targetEmail}`,
+      });
     }
 
     if (action === 'permanent') {
@@ -67,16 +79,18 @@ module.exports = async function handler(req, res) {
         manualAccessNote:      note || '',
         manualAccessExpiresAt: null,
       });
-      return res.status(200).json({ success: true, message: `Permanent access granted to ${targetEmail}` });
+      return res.status(200).json({
+        success: true,
+        message: `Permanent access granted to ${targetEmail}`,
+      });
     }
 
-    /* grant or extend — calculate expiry */
+    /* grant or extend */
     const amount = parseInt(daysOrMonths, 10);
     if (!amount || amount < 1) {
       return res.status(400).json({ error: 'Invalid duration' });
     }
 
-    /* For extend, start from their current expiry if it's in the future */
     let baseDate = new Date();
     if (action === 'extend') {
       const snap = await userRef.get();
@@ -104,7 +118,7 @@ module.exports = async function handler(req, res) {
     });
 
     const readableDate = expiresAt.toLocaleDateString('en-US', {
-      day: 'numeric', month: 'long', year: 'numeric'
+      day: 'numeric', month: 'long', year: 'numeric',
     });
 
     return res.status(200).json({
@@ -113,7 +127,7 @@ module.exports = async function handler(req, res) {
     });
 
   } catch (e) {
-    console.error('Grant access error:', e);
+    console.error('Grant access error:', e.message);
     return res.status(500).json({ error: 'Failed to update user: ' + e.message });
   }
 };
