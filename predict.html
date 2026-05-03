@@ -1023,13 +1023,11 @@ document.addEventListener('click', function(e) {
   }
 });
 </script>
- <script type="module">
+<script type="module">
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
@@ -1042,55 +1040,9 @@ document.addEventListener('click', function(e) {
 
   const app  = initializeApp(firebaseConfig, 'predict-guard');
   const auth = getAuth(app);
-  const db   = getFirestore(app);
 
-  onAuthStateChanged(auth, async user => {
-    /* onAuthStateChanged fires once with null then again with user
-       if null AND no user ever comes, redirect to login */
-    if (user === null) {
-      /* Wait 2 seconds for session to restore before giving up */
-      await new Promise(r => setTimeout(r, 2000));
-      /* Check current user again after wait */
-      if (!auth.currentUser) {
-        window.location.replace('login.html');
-      }
-      return;
-    }
-
-    try {
-      const snap = await getDoc(doc(db, 'users', user.uid));
-
-      if (!snap.exists()) {
-        window.location.replace('subscribe.html');
-        return;
-      }
-
-      const d   = snap.data();
-      const now = Date.now();
-
-      const trialActive =
-        d.trialEndsAt &&
-        new Date(d.trialEndsAt).getTime() > now;
-
-      const subscriptionActive =
-        d.subscriptionStatus === 'active' &&
-        d.currentPeriodEnd &&
-        new Date(d.currentPeriodEnd).getTime() > now;
-
-      const manualActive =
-        d.manualAccess === true &&
-        (!d.manualAccessExpiresAt ||
-          new Date(d.manualAccessExpiresAt).getTime() > now);
-
-      if (trialActive || subscriptionActive || manualActive) {
-        return;
-      }
-
-      window.location.replace('subscribe.html');
-
-    } catch (e) {
-      console.error('Guard error:', e.message);
-    }
+  onAuthStateChanged(auth, user => {
+    alert('user is: ' + (user ? user.email : 'NULL'));
   });
 </script>
 </body>
