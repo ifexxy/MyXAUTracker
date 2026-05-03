@@ -1121,6 +1121,7 @@ document.addEventListener('click', function(e) {
       if (trialActive || subscriptionActive || manualActive) {
         /* Access granted — render dashboard */
 renderDashboard(user, d, now);
+return;
       }
 
       window.location.replace('subscribe.html');
