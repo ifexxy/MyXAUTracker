@@ -291,22 +291,20 @@
 
     try {
       /* Check if phone already used for a trial */
-      const phoneQuery = query(
-        collection(db, 'users'),
-        where('phone', '==', phone)
-      );
-      const existing = await getDocs(phoneQuery);
+      const checkRes  = await fetch('/api/check-phone', {
+  method:  'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body:    JSON.stringify({ phone }),
+});
+const checkData = await checkRes.json();
 
-      if (!existing.empty) {
-        /* Phone already registered — check if trial was used */
-        const userData = existing.docs[0].data();
-        if (userData.trialEndsAt || userData.subscriptionStatus) {
-          showErr('phone-err',
-            'This phone number has already been used for a free trial. Please sign in or subscribe.');
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
-          return;
-        }
+if (checkData.used) {
+  showErr('phone-err',
+    'This phone number has already been used for a free trial. Please sign in or subscribe.');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
+  return;
+}
       }
 
       confirmationResult = await signInWithPhoneNumber(
