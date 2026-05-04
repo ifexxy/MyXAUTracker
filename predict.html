@@ -790,61 +790,57 @@ function estimateATR(high, low, price, chp) {
 /* ── Core prediction engine ── */
 function buildPredictions(price, chp, high, low) {
 
-  /* Step 1: Estimate daily ATR */
-  const atr = estimateATR(high, low, price, chp);
-
-  /* Step 2: Session context */
   const session = getSessionInfo();
 
-  /* Step 3: Momentum in dollar terms
-     chp is % change for the day. We convert to a dollar directional bias.
-     Scale it to a reasonable hourly drift — a 0.5% day = $15 on $3000 gold,
-     meaning roughly $0.60/hour directional component. */
-  const dailyMomentumDollar = (chp / 100) * price;
-  const hourlyDrift         = dailyMomentumDollar / 24;
+  /* Percentage-based drift per minute
+     If gold is up 0.5% today over ~480 trading minutes,
+     that's roughly 0.5/480 = 0.00104% per minute */
+  const dailyChangePct  = chp / 100;
+  const perMinuteDrift  = dailyChangePct / 480;
 
-  /* Step 4: Mean reversion pull
-     If price has moved far already today, counter-trend pressure builds.
-     We model this as a dampening factor on drift. */
-  const movePct    = Math.abs(chp);
-  const mrStrength = Math.min(movePct / 3.0, 0.80); /* 0–80% dampening */
+  /* Session volatility multiplier affects spread width */
+  const sessionSpread = {
+    overlap: 0.0008,
+    ny:      0.0006,
+    london:  0.0005,
+    asian:   0.0003,
+    off:     0.0002,
+  };
 
-  /* Final effective drift per hour (dollar) — dampened by mean reversion */
-  const effectiveDrift = hourlyDrift * (1 - mrStrength * 0.6);
+  const spreadPct = session.overlap
+    ? sessionSpread.overlap : session.ny
+    ? sessionSpread.ny      : session.london
+    ? sessionSpread.london  : session.asian
+    ? sessionSpread.asian   : sessionSpread.off;
 
-  /* Step 5: σ(t) = ATR × √(minutes / 1440) × sessionMultiplier
-     This gives us the 1-sigma expected move for each timeframe. */
-  function sigma(minutes) {
-    return atr * Math.sqrt(minutes / 1440) * session.sessionMultiplier;
-  }
-
-  /* Step 6: Build each forecast
-     target = price + drift_for_timeframe + noise
-     noise  = small random perturbation within ±0.25σ
-     band   = ±1σ around the target (68% probability range) */
   function forecast(minutes) {
-    const s         = sigma(minutes);
-    const driftFrac = minutes / 60;           /* scale hourly drift to this frame */
-    const drift     = effectiveDrift * driftFrac;
-    const noise     = s * (Math.random() * 0.5 - 0.25); /* ±0.25σ random noise */
+    /* Expected drift over this timeframe */
+    const drift     = price * perMinuteDrift * minutes;
+
+    /* Spread widens with time — percentage of price */
+    const spread    = price * spreadPct * Math.sqrt(minutes);
+
+    /* Small noise within ±25% of spread */
+    const noise     = spread * (Math.random() * 0.5 - 0.25);
+
     const target    = parseFloat((price + drift + noise).toFixed(2));
-    const bandLow   = parseFloat((target - s).toFixed(2));
-    const bandHigh  = parseFloat((target + s).toFixed(2));
+    const bandLow   = parseFloat((target - spread).toFixed(2));
+    const bandHigh  = parseFloat((target + spread).toFixed(2));
 
-    /* Confidence: starts high for short frames, degrades for longer ones.
-       Also degrades when volatility is high (wide ATR). */
-    const baseConf  = Math.max(30, 96 - (minutes / 1440) * 55);
-    const volPenalty = Math.min((atr - 20) / 2, 15); /* ATR > $20 reduces confidence */
-    const conf      = Math.round(Math.max(28, baseConf - volPenalty));
+    /* Confidence: higher on short frames, degrades over time
+       Also lower when day's move is already large (overextended) */
+    const overextended = Math.min(Math.abs(chp) / 2, 20);
+    const baseConf     = Math.max(30, 92 - (minutes / 1440) * 50);
+    const conf         = Math.round(Math.max(28, baseConf - overextended));
 
-    return { target, bandLow, bandHigh, conf, sigma: s };
+    return { target, bandLow, bandHigh, conf };
   }
 
   return {
-    atr,
+    atr:            price * spreadPct * Math.sqrt(1440), /* estimated for display */
     session,
-    mrStrength,
-    effectiveDrift,
+    mrStrength:     Math.min(Math.abs(chp) / 3, 0.8),
+    effectiveDrift: perMinuteDrift * price * 60,
     f5m:  forecast(5),
     f10m: forecast(10),
     f15m: forecast(15),
