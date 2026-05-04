@@ -118,70 +118,101 @@
     </div>
   </div>
 
-  <!-- ══ SIGN UP ══ -->
-  <div id="form-signup" style="display:none;">
-    <div class="trial-pill">
-      <i class="fa-solid fa-gift"></i>
-      <span><strong>3 days free</strong> on first sign up — no card required to start</span>
-    </div>
+ <!-- ══ SIGN UP ══ -->
+<div id="form-signup" style="display:none;">
+  <div class="trial-pill">
+    <i class="fa-solid fa-gift"></i>
+    <span><strong>3 days free</strong> on first sign up — no card required to start</span>
+  </div>
+
+  <!-- Step 1: Email & Password -->
+  <div id="signup-step1">
     <label>Email</label>
-    <input type="email"    id="su-email"  placeholder="you@email.com" autocomplete="email" />
+    <input type="email" id="su-email" placeholder="you@email.com" autocomplete="email" />
     <label>Password</label>
-    <input type="password" id="su-pass"   placeholder="Minimum 6 characters" autocomplete="new-password" />
+    <input type="password" id="su-pass" placeholder="Minimum 6 characters" autocomplete="new-password" />
     <label>Confirm Password</label>
-    <input type="password" id="su-pass2"  placeholder="Repeat password" autocomplete="new-password" />
+    <input type="password" id="su-pass2" placeholder="Repeat password" autocomplete="new-password" />
     <div class="err-msg" id="su-err"></div>
-    <button class="btn-primary" id="su-btn" onclick="doSignUp()">
-      <i class="fa-solid fa-rocket"></i> Start Free Trial
+    <button class="btn-primary" id="su-next-btn" onclick="goToPhoneStep()">
+      <i class="fa-solid fa-arrow-right"></i> Continue
     </button>
     <div class="form-switch">
       Already have an account? <a onclick="show('form-signin')">Sign in</a>
     </div>
   </div>
 
-  <!-- ══ RESET ══ -->
-  <div id="form-reset" style="display:none;">
-    <p class="auth-sub">Enter your email and we'll send a reset link.</p>
-    <label>Email</label>
-    <input type="email" id="rs-email" placeholder="you@email.com" autocomplete="email" />
-    <div class="err-msg" id="rs-err"></div>
-    <div class="ok-msg"  id="rs-ok">Reset link sent — check your inbox.</div>
-    <button class="btn-primary" id="rs-btn" onclick="doReset()">
-      <i class="fa-solid fa-envelope"></i> Send Reset Link
+  <!-- Step 2: Phone Verification -->
+  <div id="signup-step2" style="display:none;">
+    <p class="auth-sub">Enter your phone number to verify your identity and claim your free trial.</p>
+    <label>Phone Number</label>
+    <input type="tel" id="su-phone" placeholder="+2348012345678" autocomplete="tel" />
+    <div class="err-msg" id="phone-err"></div>
+
+    <!-- reCAPTCHA container -->
+    <div id="recaptcha-container" style="margin-top:12px;"></div>
+
+    <button class="btn-primary" id="send-otp-btn" onclick="sendOTP()">
+      <i class="fa-solid fa-mobile-screen"></i> Send Verification Code
     </button>
-    <div class="form-switch"><a onclick="show('form-signin')">Back to sign in</a></div>
+
+    <!-- OTP input — hidden until code is sent -->
+    <div id="otp-section" style="display:none;margin-top:16px;">
+      <label>Verification Code</label>
+      <input type="number" id="su-otp" placeholder="Enter 6-digit code" />
+      <div class="err-msg" id="otp-err"></div>
+      <button class="btn-primary" id="su-btn" onclick="doSignUp()">
+        <i class="fa-solid fa-rocket"></i> Start Free Trial
+      </button>
+      <button class="btn-secondary" onclick="sendOTP()" style="margin-top:8px;">
+        <i class="fa-solid fa-rotate-right"></i> Resend Code
+      </button>
+    </div>
+
+    <button class="btn-secondary" onclick="backToStep1()" style="margin-top:10px;">
+      <i class="fa-solid fa-arrow-left"></i> Back
+    </button>
+    <div class="form-switch">
+      Already have an account? <a onclick="show('form-signin')">Sign in</a>
+    </div>
   </div>
 </div>
 
 <script type="module">
-  
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth, signInWithEmailAndPassword,
-    createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged
+    createUserWithEmailAndPassword, sendPasswordResetEmail,
+    onAuthStateChanged, PhoneAuthProvider,
+    RecaptchaVerifier, signInWithCredential
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
+  import { getFirestore, doc, setDoc, getDoc, getDocs,
+           collection, query, where, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
-  apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
-  authDomain: "xautracker.firebaseapp.com",
-  databaseURL: "https://xautracker-default-rtdb.firebaseio.com",
-  projectId: "xautracker",
-  storageBucket: "xautracker.firebasestorage.app",
-  messagingSenderId: "831752609455",
-  appId: "1:831752609455:web:ea9be478691744afa73e5a"
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    databaseURL: "https://xautracker-default-rtdb.firebaseio.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
   };
 
   const app  = initializeApp(firebaseConfig, 'login');
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-  /* Already logged in — redirect */
+  let confirmationResult = null;
+  let recaptchaVerifier  = null;
+
+  /* ── Already logged in — redirect ── */
   onAuthStateChanged(auth, async user => {
     if (!user) return;
-    if (!window.location.pathname.endsWith('login.html') && window.location.pathname !== '/') return;
+    if (!window.location.pathname.endsWith('login.html') &&
+         window.location.pathname !== '/') return;
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
       if (!snap.exists()) { window.location.href = 'predict.html'; return; }
@@ -189,57 +220,161 @@
       const now = Date.now();
       const hasAccess =
         (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
-        (d.subscriptionStatus === 'active' && d.currentPeriodEnd && new Date(d.currentPeriodEnd).getTime() > now) ||
-        (d.manualAccess && (!d.manualAccessExpiresAt || new Date(d.manualAccessExpiresAt).getTime() > now));
+        (d.subscriptionStatus === 'active' && d.currentPeriodEnd &&
+          new Date(d.currentPeriodEnd).getTime() > now) ||
+        (d.manualAccess && (!d.manualAccessExpiresAt ||
+          new Date(d.manualAccessExpiresAt).getTime() > now));
       window.location.href = hasAccess ? 'predict.html' : 'subscribe.html';
     } catch { window.location.href = 'predict.html'; }
   });
 
-  function setLoading(btnId, loading, loadText, origHTML) {
-    const btn = document.getElementById(btnId);
-    btn.disabled  = loading;
-    btn.innerHTML = loading ? `<i class="fa-solid fa-spinner spinner"></i> ${loadText}` : origHTML;
-  }
-
-  function showErr(id, msg) {
-    const el = document.getElementById(id);
-    el.textContent = msg; el.style.display = msg ? 'block' : 'none';
-  }
-
-  window.doSignIn = async () => {
-    const email = document.getElementById('si-email').value.trim();
-    const pass  = document.getElementById('si-pass').value;
-    showErr('si-err', '');
-    if (!email || !pass) { showErr('si-err', 'Enter your email and password.'); return; }
-    setLoading('si-btn', true, 'Signing in...', '<i class="fa-solid fa-right-to-bracket"></i> Sign In');
-    try {
-      await signInWithEmailAndPassword(auth, email, pass);
-    } catch (e) {
-      const msg =
-        e.code === 'auth/user-not-found'    ? 'No account found with this email.' :
-        e.code === 'auth/wrong-password'    ? 'Incorrect password.' :
-        e.code === 'auth/too-many-requests' ? 'Too many attempts. Try again later.' :
-        'Sign in failed. Check your details.';
-      showErr('si-err', msg);
-      setLoading('si-btn', false, '', '<i class="fa-solid fa-right-to-bracket"></i> Sign In');
-    }
-  };
-
-  window.doSignUp = async () => {
+  /* ── Step 1: validate email/pass then go to phone step ── */
+  window.goToPhoneStep = () => {
     const email = document.getElementById('su-email').value.trim();
     const pass  = document.getElementById('su-pass').value;
     const pass2 = document.getElementById('su-pass2').value;
     showErr('su-err', '');
+
     if (!email)          { showErr('su-err', 'Enter your email.');               return; }
     if (pass.length < 6) { showErr('su-err', 'Password must be 6+ characters.'); return; }
     if (pass !== pass2)  { showErr('su-err', 'Passwords do not match.');          return; }
-    setLoading('su-btn', true, 'Creating account...', '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+
+    document.getElementById('signup-step1').style.display = 'none';
+    document.getElementById('signup-step2').style.display = 'block';
+
+    /* Init reCAPTCHA when step 2 is shown */
+    initRecaptcha();
+  };
+
+  window.backToStep1 = () => {
+    document.getElementById('signup-step2').style.display = 'none';
+    document.getElementById('signup-step1').style.display = 'block';
+    /* Clear recaptcha */
+    if (recaptchaVerifier) {
+      recaptchaVerifier.clear();
+      recaptchaVerifier = null;
+    }
+    document.getElementById('recaptcha-container').innerHTML = '';
+    document.getElementById('otp-section').style.display = 'none';
+    showErr('phone-err', '');
+    showErr('otp-err', '');
+  };
+
+  /* ── Init reCAPTCHA ── */
+  function initRecaptcha() {
+    if (recaptchaVerifier) return;
+    recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      size: 'normal',
+      callback: () => {
+        /* reCAPTCHA solved — user can now send OTP */
+      },
+      'expired-callback': () => {
+        showErr('phone-err', 'reCAPTCHA expired. Please refresh.');
+      }
+    });
+    recaptchaVerifier.render();
+  }
+
+  /* ── Send OTP ── */
+  window.sendOTP = async () => {
+    const phone = document.getElementById('su-phone').value.trim();
+    showErr('phone-err', '');
+
+    if (!phone || !phone.startsWith('+')) {
+      showErr('phone-err', 'Enter phone number with country code e.g. +2348012345678');
+      return;
+    }
+
+    const btn = document.getElementById('send-otp-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner spinner"></i> Sending...';
+
     try {
+      /* Check if phone already used for a trial */
+      const phoneQuery = query(
+        collection(db, 'users'),
+        where('phone', '==', phone)
+      );
+      const existing = await getDocs(phoneQuery);
+
+      if (!existing.empty) {
+        /* Phone already registered — check if trial was used */
+        const userData = existing.docs[0].data();
+        if (userData.trialEndsAt || userData.subscriptionStatus) {
+          showErr('phone-err',
+            'This phone number has already been used for a free trial. Please sign in or subscribe.');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
+          return;
+        }
+      }
+
+      confirmationResult = await signInWithPhoneNumber(
+        auth, phone, recaptchaVerifier
+      );
+
+      document.getElementById('otp-section').style.display = 'block';
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Code Sent';
+      showErr('phone-err', '');
+
+    } catch (e) {
+      console.error('OTP error:', e);
+      const msg =
+        e.code === 'auth/invalid-phone-number'   ? 'Invalid phone number format.' :
+        e.code === 'auth/too-many-requests'       ? 'Too many attempts. Try again later.' :
+        e.code === 'auth/quota-exceeded'          ? 'SMS quota exceeded. Try again later.' :
+        'Failed to send code: ' + e.message;
+      showErr('phone-err', msg);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
+
+      /* Reset recaptcha on error */
+      if (recaptchaVerifier) {
+        recaptchaVerifier.clear();
+        recaptchaVerifier = null;
+        document.getElementById('recaptcha-container').innerHTML = '';
+        initRecaptcha();
+      }
+    }
+  };
+
+  /* ── Sign Up with OTP verification ── */
+  window.doSignUp = async () => {
+    const otp   = document.getElementById('su-otp').value.trim();
+    const email = document.getElementById('su-email').value.trim();
+    const pass  = document.getElementById('su-pass').value;
+    const phone = document.getElementById('su-phone').value.trim();
+    showErr('otp-err', '');
+
+    if (!otp || otp.length !== 6) {
+      showErr('otp-err', 'Enter the 6-digit code sent to your phone.');
+      return;
+    }
+
+    if (!confirmationResult) {
+      showErr('otp-err', 'Please request a verification code first.');
+      return;
+    }
+
+    setLoading('su-btn', true, 'Verifying...', '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+
+    try {
+      /* Verify OTP */
+      const credential = PhoneAuthProvider.credential(
+        confirmationResult.verificationId, otp
+      );
+
+      /* Verify succeeded — now create email/password account */
       const { user } = await createUserWithEmailAndPassword(auth, email, pass);
-      /* Trial ends 3 days from now — stored as ISO string for simplicity */
-      const trialEndsAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+
+      const trialEndsAt = new Date(
+        Date.now() + 3 * 24 * 60 * 60 * 1000
+      ).toISOString();
+
+      /* Store user with phone number to prevent trial abuse */
       await setDoc(doc(db, 'users', user.uid), {
         email,
+        phone,                          /* stored to block duplicate trials */
         createdAt:              serverTimestamp(),
         trialEndsAt,
         subscriptionStatus:     'trial',
@@ -252,38 +387,88 @@
         lastPaymentAt:          null,
         lastPaymentAmount:      null,
       });
+
       window.location.href = 'predict.html';
+
     } catch (e) {
+      console.error('Signup error:', e);
       const msg =
-        e.code === 'auth/email-already-in-use' ? 'An account with this email already exists.' :
-        e.code === 'auth/invalid-email'         ? 'Enter a valid email address.' :
+        e.code === 'auth/invalid-verification-code' ? 'Incorrect code. Try again.' :
+        e.code === 'auth/code-expired'              ? 'Code expired. Request a new one.' :
+        e.code === 'auth/email-already-in-use'      ? 'An account with this email already exists.' :
+        e.code === 'auth/invalid-email'             ? 'Enter a valid email address.' :
         'Sign up failed: ' + e.message;
-      showErr('su-err', msg);
-      setLoading('su-btn', false, '', '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+      showErr('otp-err', msg);
+      setLoading('su-btn', false, '',
+        '<i class="fa-solid fa-rocket"></i> Start Free Trial');
     }
   };
 
+  /* ── Sign In ── */
+  window.doSignIn = async () => {
+    const email = document.getElementById('si-email').value.trim();
+    const pass  = document.getElementById('si-pass').value;
+    showErr('si-err', '');
+    if (!email || !pass) { showErr('si-err', 'Enter your email and password.'); return; }
+    setLoading('si-btn', true, 'Signing in...',
+      '<i class="fa-solid fa-right-to-bracket"></i> Sign In');
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (e) {
+      const msg =
+        e.code === 'auth/user-not-found'    ? 'No account found with this email.' :
+        e.code === 'auth/wrong-password'    ? 'Incorrect password.' :
+        e.code === 'auth/too-many-requests' ? 'Too many attempts. Try again later.' :
+        'Sign in failed. Check your details.';
+      showErr('si-err', msg);
+      setLoading('si-btn', false, '',
+        '<i class="fa-solid fa-right-to-bracket"></i> Sign In');
+    }
+  };
+
+  /* ── Reset ── */
   window.doReset = async () => {
     const email = document.getElementById('rs-email').value.trim();
     showErr('rs-err', '');
     document.getElementById('rs-ok').style.display = 'none';
     if (!email) { showErr('rs-err', 'Enter your email address.'); return; }
-    setLoading('rs-btn', true, 'Sending...', '<i class="fa-solid fa-envelope"></i> Send Reset Link');
+    setLoading('rs-btn', true, 'Sending...',
+      '<i class="fa-solid fa-envelope"></i> Send Reset Link');
     try {
       await sendPasswordResetEmail(auth, email);
       document.getElementById('rs-ok').style.display = 'block';
     } catch {
       showErr('rs-err', 'Failed to send reset link. Check the email and try again.');
     } finally {
-      setLoading('rs-btn', false, '', '<i class="fa-solid fa-envelope"></i> Send Reset Link');
+      setLoading('rs-btn', false, '',
+        '<i class="fa-solid fa-envelope"></i> Send Reset Link');
     }
   };
+
+  /* ── Helpers ── */
+  function setLoading(btnId, loading, loadText, origHTML) {
+    const btn = document.getElementById(btnId);
+    btn.disabled  = loading;
+    btn.innerHTML = loading
+      ? `<i class="fa-solid fa-spinner spinner"></i> ${loadText}`
+      : origHTML;
+  }
+
+  function showErr(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent    = msg;
+    el.style.display  = msg ? 'block' : 'none';
+  }
 
   window.show = id => {
     ['form-signin','form-signup','form-reset'].forEach(f => {
       document.getElementById(f).style.display = f === id ? 'block' : 'none';
     });
     ['si-err','su-err','rs-err'].forEach(e => showErr(e, ''));
+    /* Reset signup steps when switching forms */
+    document.getElementById('signup-step1').style.display = 'block';
+    document.getElementById('signup-step2').style.display = 'none';
+    document.getElementById('otp-section').style.display  = 'none';
   };
 
   document.addEventListener('keydown', e => {
@@ -291,7 +476,6 @@
     const active = ['form-signin','form-signup','form-reset']
       .find(id => document.getElementById(id).style.display !== 'none');
     if (active === 'form-signin') window.doSignIn();
-    if (active === 'form-signup') window.doSignUp();
     if (active === 'form-reset')  window.doReset();
   });
 </script>
