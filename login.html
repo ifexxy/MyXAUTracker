@@ -432,16 +432,14 @@
     showErr('rs-err', '');
     document.getElementById('rs-ok').style.display = 'none';
     if (!email) { showErr('rs-err', 'Enter your email address.'); return; }
-    setLoading('rs-btn', true, 'Sending...',
-      '<i class="fa-solid fa-envelope"></i> Send Reset Link');
+    setLoading('rs-btn', true, 'Sending...', '<i class="fa-solid fa-envelope"></i> Send Reset Link');
     try {
       await sendPasswordResetEmail(auth, email);
       document.getElementById('rs-ok').style.display = 'block';
     } catch {
       showErr('rs-err', 'Failed to send reset link. Check the email and try again.');
     } finally {
-      setLoading('rs-btn', false, '',
-        '<i class="fa-solid fa-envelope"></i> Send Reset Link');
+      setLoading('rs-btn', false, '', '<i class="fa-solid fa-envelope"></i> Send Reset Link');
     }
   };
 
