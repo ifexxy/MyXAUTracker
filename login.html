@@ -177,7 +177,18 @@
     </div>
   </div>
 </div>
-
+<!-- ══ RESET ══ -->
+<div id="form-reset" style="display:none;">
+  <p class="auth-sub">Enter your email and we'll send a reset link.</p>
+  <label>Email</label>
+  <input type="email" id="rs-email" placeholder="you@email.com" autocomplete="email" />
+  <div class="err-msg" id="rs-err"></div>
+  <div class="ok-msg" id="rs-ok">Reset link sent — check your inbox.</div>
+  <button class="btn-primary" id="rs-btn" onclick="doReset()">
+    <i class="fa-solid fa-envelope"></i> Send Reset Link
+  </button>
+  <div class="form-switch"><a onclick="show('form-signin')">Back to sign in</a></div>
+</div>
 <script type="module">
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
