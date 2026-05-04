@@ -291,20 +291,22 @@
 
     try {
       /* Check if phone already used for a trial */
-      const checkRes  = await fetch('/api/check-phone', {
-  method:  'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body:    JSON.stringify({ phone }),
-});
-const checkData = await checkRes.json();
+      const phoneQuery = query(
+        collection(db, 'users'),
+        where('phone', '==', phone)
+      );
+      const existing = await getDocs(phoneQuery);
 
-if (checkData.used) {
-  showErr('phone-err',
-    'This phone number has already been used for a free trial. Please sign in or subscribe.');
-  btn.disabled = false;
-  btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
-  return;
-}
+      if (!existing.empty) {
+        /* Phone already registered — check if trial was used */
+        const userData = existing.docs[0].data();
+        if (userData.trialEndsAt || userData.subscriptionStatus) {
+          showErr('phone-err',
+            'This phone number has already been used for a free trial. Please sign in or subscribe.');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
+          return;
+        }
       }
 
       confirmationResult = await signInWithPhoneNumber(
@@ -430,14 +432,16 @@ if (checkData.used) {
     showErr('rs-err', '');
     document.getElementById('rs-ok').style.display = 'none';
     if (!email) { showErr('rs-err', 'Enter your email address.'); return; }
-    setLoading('rs-btn', true, 'Sending...', '<i class="fa-solid fa-envelope"></i> Send Reset Link');
+    setLoading('rs-btn', true, 'Sending...',
+      '<i class="fa-solid fa-envelope"></i> Send Reset Link');
     try {
       await sendPasswordResetEmail(auth, email);
       document.getElementById('rs-ok').style.display = 'block';
     } catch {
       showErr('rs-err', 'Failed to send reset link. Check the email and try again.');
     } finally {
-      setLoading('rs-btn', false, '', '<i class="fa-solid fa-envelope"></i> Send Reset Link');
+      setLoading('rs-btn', false, '',
+        '<i class="fa-solid fa-envelope"></i> Send Reset Link');
     }
   };
 
@@ -457,32 +461,15 @@ if (checkData.used) {
   }
 
   window.show = id => {
-  ['form-signin','form-signup','form-reset'].forEach(f => {
-    document.getElementById(f).style.display = f === id ? 'block' : 'none';
-  });
-
-  /* Clear all errors */
-  ['si-err','su-err','rs-err','phone-err','otp-err'].forEach(e => {
-    const el = document.getElementById(e);
-    if (el) { el.textContent = ''; el.style.display = 'none'; }
-  });
-
-  /* Reset ok message */
-  const rsOk = document.getElementById('rs-ok');
-  if (rsOk) rsOk.style.display = 'none';
-
-  /* Only reset signup steps if switching to signup form */
-  if (id === 'form-signup') {
+    ['form-signin','form-signup','form-reset'].forEach(f => {
+      document.getElementById(f).style.display = f === id ? 'block' : 'none';
+    });
+    ['si-err','su-err','rs-err'].forEach(e => showErr(e, ''));
+    /* Reset signup steps when switching forms */
     document.getElementById('signup-step1').style.display = 'block';
     document.getElementById('signup-step2').style.display = 'none';
     document.getElementById('otp-section').style.display  = 'none';
-    if (recaptchaVerifier) {
-      recaptchaVerifier.clear();
-      recaptchaVerifier = null;
-      document.getElementById('recaptcha-container').innerHTML = '';
-    }
-  }
-};
+  };
 
   document.addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
