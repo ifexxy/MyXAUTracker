@@ -292,7 +292,7 @@
     showErr('phone-err', '');
 
     if (!phone || !phone.startsWith('+')) {
-      showErr('phone-err', 'Enter phone number with country code e.g. +2348012345678');
+      showErr('phone-err', 'Enter phone number with country code e.g. +234810xxxxxx');
       return;
     }
 
@@ -320,9 +320,12 @@
         }
       }
 
-      confirmationResult = await signInWithPhoneNumber(
-        auth, phone, recaptchaVerifier
-      );
+      const { signInWithPhoneNumber } = await import(
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+);
+confirmationResult = await signInWithPhoneNumber(
+  auth, phone, recaptchaVerifier
+);
 
       document.getElementById('otp-section').style.display = 'block';
       btn.innerHTML = '<i class="fa-solid fa-check"></i> Code Sent';
