@@ -1,27 +1,50 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://xautracker.vercel.app');
 
-  /* ── Primary: Finnhub ── */
+  /* ── Primary: Metals.live (free, no key needed) ── */
   try {
-    const url = `https://finnhub.io/api/v1/quote?symbol=OANDA:XAU_USD&token=${process.env.FINNHUB_KEY}`;
+    const r = await fetch('https://metals.live/api/spot');
+    const d = await r.json();
+
+    const gold = d.find(item => item.symbol === 'XAU');
+    if (!gold || !gold.price) throw new Error('No gold data from Metals.live');
+
+    const price = parseFloat(gold.price);
+
+    return res.status(200).json({
+      price,
+      open:   gold.open   ? parseFloat(gold.open)  : price * 0.998,
+      high:   gold.high   ? parseFloat(gold.high)  : price * 1.007,
+      low:    gold.low    ? parseFloat(gold.low)   : price * 0.993,
+      bid:    price - 0.30,
+      ask:    price + 0.30,
+      ch:     gold.change ? parseFloat(gold.change): price * 0.002,
+      chp:    gold.changePercent ? parseFloat(gold.changePercent) : 0.20,
+      source: 'Metals.live'
+    });
+
+  } catch (e) {
+    console.warn('Metals.live failed:', e.message);
+  }
+
+  /* ── Fallback 1: Finnhub ── */
+  try {
+    const url = `https://finnhub.io/api/v1/quote?symbol=OANDA:XAUUSD&token=${process.env.FINNHUB_KEY}`;
     const r   = await fetch(url);
     const d   = await r.json();
 
     if (!d.c || d.c === 0) throw new Error('Finnhub returned no price');
 
-    const price = parseFloat(d.c);   /* c = current price */
-    const open  = parseFloat(d.o);   /* o = open price    */
-    const high  = parseFloat(d.h);   /* h = day high      */
-    const low   = parseFloat(d.l);   /* l = day low       */
-    const prev  = parseFloat(d.pc);  /* pc = prev close   */
+    const price = parseFloat(d.c);
+    const prev  = parseFloat(d.pc);
     const ch    = parseFloat((price - prev).toFixed(2));
     const chp   = parseFloat(((ch / prev) * 100).toFixed(2));
 
     return res.status(200).json({
       price,
-      open,
-      high,
-      low,
+      open:   parseFloat(d.o),
+      high:   parseFloat(d.h),
+      low:    parseFloat(d.l),
       bid:    price - 0.30,
       ask:    price + 0.30,
       ch,
@@ -33,7 +56,7 @@ export default async function handler(req, res) {
     console.warn('Finnhub failed:', e.message);
   }
 
-  /* ── Fallback: Alpha Vantage ── */
+  /* ── Fallback 2: Alpha Vantage ── */
   try {
     const url2 = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=XAU&to_currency=USD&apikey=${process.env.ALPHA_VANTAGE_KEY}`;
     const r2   = await fetch(url2);
@@ -58,5 +81,5 @@ export default async function handler(req, res) {
     console.warn('Alpha Vantage failed:', e.message);
   }
 
-  return res.status(500).json({ error: 'Both price APIs failed' });
-        }
+  return res.status(500).json({ error: 'All price APIs failed' });
+}
