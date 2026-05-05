@@ -346,7 +346,7 @@
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     }) || '';
 
-    const postUrl = `https://xautracker.vercel.app/post.html?id=${post.id}`;
+    const postUrl = `https://www.xautracker.com/post.html?id=${post.id}`;
 
     /* ── Dynamic meta tags for sharing ── */
     document.title = post.title + ' · XAU Tracker';
@@ -354,12 +354,12 @@
     setMeta('og:title',              post.title);
     setMeta('og:description',        post.body.slice(0, 155));
     setMeta('og:url',                postUrl);
-    setMeta('og:image',              post.imageUrl || 'https://xautracker.vercel.app/og-image.png');
+    setMeta('og:image',              post.imageUrl || 'https://www.xautracker.com/og-image.png');
     setMeta('og:type',               'article');
     setMeta('twitter:card',          'summary_large_image');
     setMeta('twitter:title',         post.title);
     setMeta('twitter:description',   post.body.slice(0, 155));
-    setMeta('twitter:image',         post.imageUrl || 'https://xautracker.vercel.app/og-image.png');
+    setMeta('twitter:image',         post.imageUrl || 'https://www.xautracker.com/og-image.png');
     setMeta('article:published_time', post.createdAt?.toDate?.()?.toISOString() || '');
 
     /* ── Format body into paragraphs ── */
