@@ -14,8 +14,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
  
   <!-- ── Primary SEO ── -->
-  <title>XAU/USD Live Price Tracker</title>
-  <meta name="description" content="Track live XAU/USD gold spot prices in real time. Real-time bid/ask, day high/low, market buy/sell signals and price chart. Updated every 60 seconds." />
+  <title>Welcome to XauTracker - RealTime Gold Forecasts</title>
+  <meta name="description" content="Track realtime-time gold prices and forecasts with our advanced ATR Models " />
   <meta name="keywords" content="XAU USD, gold price live, gold spot price, gold trading, gold tracker, gold market, XAU price today, live gold price" />
   <meta name="author" content="XAU Tracker" />
   <meta name="robots" content="index, follow" />
@@ -25,7 +25,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.xautracker.com/" />
   <meta property="og:title" content="XAU/USD Live Price Tracker" />
-  <meta property="og:description" content="Track live XAU/USD gold spot prices in real time. Real-time bid/ask, day high/low, market signals and price chart. Updated every 60 seconds." />
+  <meta property="og:description" content="Track realtime-time gold prices and forecasts with our advanced ATR Models " />
   <meta property="og:image" content="https://www.xautracker.com/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -37,7 +37,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://www.xautracker.com/" />
   <meta name="twitter:title" content="GOLD · XAU/USD Live Price Tracker" />
-  <meta name="twitter:description" content="Live XAU/USD gold spot prices, real-time bid/ask, market signals and buy/sell indicators. Updated every 60 seconds." />
+  <meta name="twitter:description" content="Track realtime-time gold prices and forecasts with our advanced ATR Models " />
   <meta name="twitter:image" content="https://www.xautracker.com/og-image.png" />
   <meta name="twitter:image:alt" content="XAU Tracker — Live Gold Price Dashboard" />
  
@@ -116,8 +116,51 @@
   </div>
 
   <div id="content">
+<!-- ── Landing Hero Section ── -->
+<div id="landing-section" style="padding: 32px 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 4px;">
 
-    <div class="price-hero">
+  <!-- Main headline -->
+  <div style="margin-bottom: 20px;">
+    <p style="color: #fff; font-size: 22px; font-weight: 800; line-height: 1.4; margin-bottom: 10px;">
+      Trade Gold with peace of mind like a Pro with our advanced algorithm and ATR based model prediction on the Forecast section.
+    </p>
+    <p style="color: #fff; font-size: 14px; line-height: 1.7; font-weight: 400;">
+      Join other traders like you, who use XauTracker and explore opportunities never seen before.
+    </p>
+  </div>
+
+  <!-- Auth-aware block -->
+  <div id="landing-auth-block" style="margin-bottom: 20px;">
+    <!-- Filled by JS below -->
+  </div>
+
+  <!-- Scroll to price -->
+  <div style="text-align: center; margin-bottom: 24px;">
+    <a href="#price-anchor" onclick="document.getElementById('price-anchor').scrollIntoView({behavior:'smooth'});return false;"
+       style="color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; display: inline-block;">
+      View Latest Gold Price
+    </a>
+  </div>
+
+  <!-- Contact -->
+  <div style="font-size: 13px; color: #fff; line-height: 1.9;">
+    <p>Got questions or enquiries? Send us a WhatsApp Messenger by clicking the button</p>
+    <a href="https://wa.me/2348131560586"
+       target="_blank"
+       style="display: inline-block; margin: 10px 0 16px;
+              background: #25D366; color: #000; font-weight: 800;
+              padding: 10px 22px; border-radius: 10px;
+              font-size: 13px; text-decoration: none;">
+      WhatsApp Us
+    </a>
+    <br />
+    <a href="contact.html"
+       style="color: #fff; font-size: 13px; font-weight: 600; text-decoration: underline;">
+      Send a mail by clicking here
+    </a>
+  </div>
+</div>
+  <div class="price-hero" id="price-anchor">
       <div class="price-pair"><i class="fa-solid fa-layer-group" style="font-size:9px;margin-right:4px;"></i>SPOT GOLD · XAU/USD · TROY OZ</div>
       <div id="price-display" class="price-main"><div class="skeleton skel-price"></div></div>
       <div id="price-change"></div>
@@ -284,6 +327,55 @@ document.addEventListener('click', function(e) {
     document.getElementById('menu-trigger')?.classList.remove('open');
   }
 });
+</script>
+<script type="module">
+/* ── Landing auth block ── */
+(async function() {
+  const { initializeApp, getApps } =
+    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const { getAuth, onAuthStateChanged } =
+    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+
+  const fbConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+
+  const fbApp = getApps().length
+    ? getApps()[0]
+    : initializeApp(fbConfig, 'landing');
+
+  const auth  = getAuth(fbApp);
+  const block = document.getElementById('landing-auth-block');
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      block.innerHTML = `
+        <p style="color:#fff;font-size:13px;margin-bottom:10px;">
+          You're logged in as <strong>${user.email}</strong>.
+        </p>
+        <a href="predict.html"
+           style="display:inline-block;background:#fff;color:#000;font-weight:800;
+                  padding:11px 24px;border-radius:10px;font-size:13px;text-decoration:none;">
+          Access XAUUSD Forecast
+        </a>`;
+    } else {
+      block.innerHTML = `
+        <p style="color:#fff;font-size:13px;line-height:1.7;margin-bottom:12px;">
+          Create an account easily in just two simple steps, all you need is a phone number for verification, get 3 days trial period.
+        </p>
+        <a href="login.html"
+           style="display:inline-block;background:#fff;color:#000;font-weight:800;
+                  padding:11px 24px;border-radius:10px;font-size:13px;text-decoration:none;">
+          Create Account
+        </a>`;
+    }
+  });
+})();
 </script>
 </body>
 </html>
