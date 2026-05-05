@@ -339,6 +339,147 @@
     </button>
   </div>
 </div>
+
+    <!-- ══ CHAT BOARD ══ -->
+<div class="predict-card" id="chat-section">
+  <h3><i class="fa-solid fa-comments" style="margin-right:8px;color:var(--gold)"></i>Community Board</h3>
+
+  <!-- Username setup screen -->
+  <div id="chat-setup" style="display:none;">
+    <div style="text-align:center;padding:8px 0 16px;">
+      <div style="width:52px;height:52px;border-radius:50%;background:var(--gold-glow);
+                  border:1px solid var(--gold-dim);display:flex;align-items:center;
+                  justify-content:center;color:var(--gold);font-size:22px;margin:0 auto 12px;">
+        <i class="fa-solid fa-user-tag"></i>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:var(--txt-1);margin-bottom:4px;">Set Your Chat Username</div>
+      <div style="font-size:11px;color:var(--txt-2);line-height:1.5;">
+        Choose a permanent username for the community board.<br>Usernames cannot be changed later.
+      </div>
+    </div>
+
+    <!-- Avatar upload -->
+    <div style="text-align:center;margin-bottom:14px;">
+      <div id="avatar-preview-wrap" style="position:relative;width:64px;height:64px;margin:0 auto 10px;cursor:pointer;" onclick="document.getElementById('avatar-file').click()">
+        <div id="avatar-preview-circle" style="width:64px;height:64px;border-radius:50%;
+             background:var(--bg-muted);border:2px dashed var(--border);
+             display:flex;align-items:center;justify-content:center;
+             color:var(--txt-3);font-size:24px;overflow:hidden;">
+          <i class="fa-solid fa-camera"></i>
+        </div>
+        <div style="position:absolute;bottom:0;right:0;width:20px;height:20px;
+                    background:var(--gold);border-radius:50%;display:flex;align-items:center;
+                    justify-content:center;font-size:9px;color:#000;">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+      </div>
+      <input type="file" id="avatar-file" accept="image/*" style="display:none;" onchange="handleAvatarSelect(event)" />
+      <div style="font-size:10px;color:var(--txt-3);">Profile photo (optional)</div>
+    </div>
+
+    <div style="margin-bottom:10px;">
+      <label style="display:block;font-size:10px;color:var(--txt-2);text-transform:uppercase;
+                    letter-spacing:0.08em;margin-bottom:6px;">Username</label>
+      <input type="text" id="chat-username-input"
+             placeholder="e.g. GoldTrader99"
+             maxlength="20"
+             style="width:100%;background:var(--bg-muted);border:1px solid var(--border);
+                    border-radius:10px;color:var(--txt-1);font-family:'Syne',sans-serif;
+                    font-size:14px;padding:11px 14px;outline:none;transition:border-color 0.2s;"
+             onfocus="this.style.borderColor='var(--gold)'"
+             onblur="this.style.borderColor='var(--border)'"
+             oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'')" />
+      <div style="font-size:10px;color:var(--txt-3);margin-top:5px;">Letters, numbers and underscores only · Max 20 chars</div>
+    </div>
+
+    <div id="setup-err" style="display:none;font-size:12px;color:var(--red);
+         padding:8px 12px;background:rgba(255,69,97,0.07);border-radius:8px;
+         border:1px solid rgba(255,69,97,0.15);margin-bottom:10px;"></div>
+
+    <button id="setup-btn" onclick="registerUsername()"
+            style="width:100%;padding:12px;background:var(--gold);color:#000;border:none;
+                   border-radius:10px;font-family:'Syne',sans-serif;font-size:14px;
+                   font-weight:800;cursor:pointer;display:flex;align-items:center;
+                   justify-content:center;gap:8px;transition:opacity 0.2s;">
+      <i class="fa-solid fa-check"></i> Confirm Username
+    </button>
+  </div>
+
+  <!-- Chat not logged in -->
+  <div id="chat-login-prompt" style="display:none;text-align:center;padding:20px 0;">
+    <i class="fa-solid fa-lock" style="font-size:28px;color:var(--txt-3);display:block;margin-bottom:10px;"></i>
+    <div style="font-size:13px;color:var(--txt-2);margin-bottom:14px;">Sign in to join the community board</div>
+    <a href="login.html" style="display:inline-flex;align-items:center;gap:7px;
+       padding:10px 20px;background:var(--gold);color:#000;border-radius:10px;
+       font-family:'Syne',sans-serif;font-size:13px;font-weight:800;text-decoration:none;">
+      <i class="fa-solid fa-right-to-bracket"></i> Sign In
+    </a>
+  </div>
+
+  <!-- Chat board -->
+  <div id="chat-board" style="display:none;">
+    <!-- User chip -->
+    <div id="chat-user-chip" style="display:flex;align-items:center;gap:8px;
+         padding:8px 12px;background:var(--bg-muted);border:1px solid var(--border);
+         border-radius:10px;margin-bottom:12px;">
+      <div id="chip-avatar" style="width:28px;height:28px;border-radius:50%;
+           background:var(--gold-glow);border:1px solid var(--gold-dim);
+           display:flex;align-items:center;justify-content:center;
+           font-size:12px;color:var(--gold);overflow:hidden;flex-shrink:0;">
+        <i class="fa-solid fa-user"></i>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <span id="chip-name" style="font-size:12px;font-weight:700;color:var(--txt-1);"></span>
+        <span style="font-size:10px;color:var(--txt-3);margin-left:6px;">· You</span>
+      </div>
+      <span id="chat-online-count" style="font-size:10px;color:var(--green);
+            font-family:'Space Mono',monospace;"></span>
+    </div>
+
+    <!-- Messages -->
+    <div id="chat-messages" style="height:320px;overflow-y:auto;
+         border:1px solid var(--border);border-radius:10px;padding:10px;
+         background:var(--bg-muted);margin-bottom:10px;
+         scroll-behavior:smooth;">
+      <div id="chat-loading" style="text-align:center;padding:20px;
+           font-size:12px;color:var(--txt-3);">
+        <i class="fa-solid fa-spinner" style="animation:spin 1s linear infinite;margin-right:6px;"></i>
+        Loading messages...
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div style="display:flex;gap:8px;align-items:flex-end;">
+      <textarea id="chat-input"
+                placeholder="Share your gold market thoughts..."
+                maxlength="300"
+                rows="1"
+                style="flex:1;background:var(--bg-muted);border:1px solid var(--border);
+                       border-radius:10px;color:var(--txt-1);font-family:'Syne',sans-serif;
+                       font-size:13px;padding:10px 13px;outline:none;resize:none;
+                       transition:border-color 0.2s;line-height:1.5;max-height:90px;
+                       overflow-y:auto;"
+                onfocus="this.style.borderColor='var(--gold)'"
+                onblur="this.style.borderColor='var(--border)'"
+                oninput="autoGrow(this)"
+                onkeydown="handleChatKey(event)"></textarea>
+      <button id="chat-send-btn" onclick="sendChatMessage()"
+              style="width:42px;height:42px;background:var(--gold);color:#000;
+                     border:none;border-radius:10px;cursor:pointer;font-size:15px;
+                     display:flex;align-items:center;justify-content:center;
+                     flex-shrink:0;transition:opacity 0.2s;">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:5px;">
+      <div id="chat-cooldown-msg" style="font-size:10px;color:var(--red);display:none;">
+        <i class="fa-solid fa-clock" style="margin-right:3px;"></i>
+        <span id="cooldown-secs">15</span>s cooldown
+      </div>
+      <div id="chat-char-count" style="font-size:10px;color:var(--txt-3);margin-left:auto;">0/300</div>
+    </div>
+  </div>
+</div>
     <div class="predict-hero">
       <div class="predict-header">
         <div class="predict-icon"><i class="fa-solid fa-brain"></i></div>
@@ -1264,6 +1405,316 @@ window.dashSignOut = async () => {
   await signOut(auth);
   window.location.replace('login.html');
 };
+</script>
+  <script type="module">
+  import { initializeApp, getApps }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, collection, addDoc, getDocs, getDoc,
+    doc, setDoc, query, orderBy, limit, onSnapshot,
+    serverTimestamp, where
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+
+  const chatApp  = getApps().find(a => a.name === 'chat') ||
+                   initializeApp(firebaseConfig, 'chat');
+  const auth     = getAuth(chatApp);
+  const db       = getFirestore(chatApp);
+  const storage  = getStorage(chatApp);
+
+  let currentUser     = null;
+  let chatProfile     = null;
+  let avatarDataUrl   = null;
+  let cooldownActive  = false;
+  let unsubMessages   = null;
+
+  /* ── URL detector ── */
+  function linkify(text) {
+    const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return escaped.replace(
+      /(https?:\/\/[^\s<>"']+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer" '
+      + 'style="color:var(--gold);text-decoration:underline;word-break:break-all;">$1</a>'
+    );
+  }
+
+  /* ── Avatar select ── */
+  window.handleAvatarSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Image must be under 2MB'); return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      avatarDataUrl = ev.target.result;
+      const circle  = document.getElementById('avatar-preview-circle');
+      circle.innerHTML = `<img src="${avatarDataUrl}" style="width:100%;height:100%;object-fit:cover;" />`;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  /* ── Auto-grow textarea ── */
+  window.autoGrow = (el) => {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 90) + 'px';
+    document.getElementById('chat-char-count').textContent = el.value.length + '/300';
+  };
+
+  /* ── Enter to send ── */
+  window.handleChatKey = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendChatMessage();
+    }
+  };
+
+  /* ── Show error in setup ── */
+  function setupErr(msg) {
+    const el = document.getElementById('setup-err');
+    el.textContent    = msg;
+    el.style.display  = msg ? 'block' : 'none';
+  }
+
+  /* ── Register username ── */
+  window.registerUsername = async () => {
+    const raw  = document.getElementById('chat-username-input').value.trim();
+    const name = raw;
+    if (!name) { setupErr('Enter a username.'); return; }
+    if (name.length < 3) { setupErr('Username must be at least 3 characters.'); return; }
+
+    const btn = document.getElementById('setup-btn');
+    btn.disabled   = true;
+    btn.innerHTML  = '<i class="fa-solid fa-spinner" style="animation:spin 1s linear infinite"></i> Checking...';
+    setupErr('');
+
+    try {
+      /* Check uniqueness */
+      const snap = await getDocs(
+        query(collection(db, 'chatUsernames'), where('usernameLower', '==', name.toLowerCase()))
+      );
+      if (!snap.empty) {
+        setupErr('That username is already taken. Try another.');
+        btn.disabled  = false;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Confirm Username';
+        return;
+      }
+
+      /* Upload avatar if provided */
+      let photoURL = null;
+      if (avatarDataUrl) {
+        btn.innerHTML = '<i class="fa-solid fa-spinner" style="animation:spin 1s linear infinite"></i> Uploading photo...';
+        const blob    = await fetch(avatarDataUrl).then(r => r.blob());
+        const imgRef  = ref(storage, `chatAvatars/${currentUser.uid}`);
+        await uploadBytes(imgRef, blob);
+        photoURL = await getDownloadURL(imgRef);
+      }
+
+      /* Save username doc (for uniqueness index) */
+      await setDoc(doc(db, 'chatUsernames', name.toLowerCase()), {
+        uid:           currentUser.uid,
+        username:      name,
+        usernameLower: name.toLowerCase(),
+        createdAt:     serverTimestamp()
+      });
+
+      /* Save profile on user doc */
+      await setDoc(doc(db, 'chatProfiles', currentUser.uid), {
+        uid:      currentUser.uid,
+        username: name,
+        photoURL: photoURL || null,
+        createdAt: serverTimestamp()
+      });
+
+      chatProfile = { username: name, photoURL };
+      showChatBoard();
+
+    } catch (e) {
+      setupErr('Error: ' + e.message);
+      btn.disabled  = false;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Confirm Username';
+    }
+  };
+
+  /* ── Avatar HTML helper ── */
+  function avatarHTML(photoURL, username, size = 32) {
+    const letter = (username || '?')[0].toUpperCase();
+    if (photoURL) {
+      return `<img src="${photoURL}" style="width:${size}px;height:${size}px;
+              border-radius:50%;object-fit:cover;display:block;" />`;
+    }
+    const colors = ['#d4a72c','#00d48f','#a080ff','#ff6b35','#00b4d8'];
+    const idx    = username.charCodeAt(0) % colors.length;
+    return `<div style="width:${size}px;height:${size}px;border-radius:50%;
+            background:${colors[idx]}22;border:1px solid ${colors[idx]}44;
+            display:flex;align-items:center;justify-content:center;
+            font-size:${Math.round(size*0.4)}px;font-weight:800;color:${colors[idx]};
+            flex-shrink:0;">${letter}</div>`;
+  }
+
+  /* ── Show chat board ── */
+  function showChatBoard() {
+    document.getElementById('chat-setup').style.display    = 'none';
+    document.getElementById('chat-board').style.display    = 'block';
+
+    /* User chip */
+    document.getElementById('chip-name').textContent = chatProfile.username;
+    const chipAv = document.getElementById('chip-avatar');
+    chipAv.innerHTML = avatarHTML(chatProfile.photoURL, chatProfile.username, 28);
+
+    /* Start listener */
+    startMessageListener();
+  }
+
+  /* ── Render one message ── */
+  function renderMessage(msgData, msgId) {
+    const isMe   = currentUser && msgData.uid === currentUser.uid;
+    const time   = msgData.createdAt?.toDate
+      ? msgData.createdAt.toDate().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
+      : 'now';
+
+    return `
+      <div id="msg-${msgId}" style="display:flex;gap:8px;margin-bottom:12px;
+           ${isMe ? 'flex-direction:row-reverse;' : ''}">
+        <div style="flex-shrink:0;margin-top:2px;">
+          ${avatarHTML(msgData.photoURL || null, msgData.username, 30)}
+        </div>
+        <div style="max-width:78%;${isMe ? 'align-items:flex-end;' : ''}display:flex;flex-direction:column;">
+          <div style="font-size:10px;color:var(--txt-3);margin-bottom:3px;
+               ${isMe ? 'text-align:right;' : ''}">
+            <span style="font-weight:700;color:${isMe ? 'var(--gold)' : 'var(--txt-2)'};">
+              ${msgData.username}
+            </span>
+            &nbsp;·&nbsp;${time}
+          </div>
+          <div style="background:${isMe ? 'var(--gold-glow)' : 'var(--bg-card)'};
+               border:1px solid ${isMe ? 'var(--gold-dim)' : 'var(--border)'};
+               border-radius:${isMe ? '12px 2px 12px 12px' : '2px 12px 12px 12px'};
+               padding:9px 12px;font-size:13px;color:var(--txt-1);line-height:1.55;
+               word-break:break-word;">
+            ${linkify(msgData.text)}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /* ── Live message listener ── */
+  function startMessageListener() {
+    if (unsubMessages) unsubMessages();
+    const q = query(
+      collection(db, 'chatMessages'),
+      orderBy('createdAt', 'desc'),
+      limit(60)
+    );
+
+    const container = document.getElementById('chat-messages');
+    let firstLoad   = true;
+
+    unsubMessages = onSnapshot(q, snap => {
+      document.getElementById('chat-loading').style.display = 'none';
+
+      const msgs = [];
+      snap.forEach(d => msgs.push({ id: d.id, ...d.data() }));
+      msgs.reverse(); /* oldest first */
+
+      const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
+
+      container.innerHTML = msgs.length
+        ? msgs.map(m => renderMessage(m, m.id)).join('')
+        : `<div style="text-align:center;padding:30px;font-size:12px;color:var(--txt-3);">
+             No messages yet — be the first to post!
+           </div>`;
+
+      if (firstLoad || atBottom) {
+        container.scrollTop = container.scrollHeight;
+        firstLoad = false;
+      }
+    });
+  }
+
+  /* ── Cooldown timer ── */
+  function startCooldown() {
+    cooldownActive = true;
+    let secs = 15;
+    const btn      = document.getElementById('chat-send-btn');
+    const msgDiv   = document.getElementById('chat-cooldown-msg');
+    const secsEl   = document.getElementById('cooldown-secs');
+    btn.disabled   = true;
+    btn.style.opacity = '0.4';
+    msgDiv.style.display = 'block';
+    secsEl.textContent   = secs;
+
+    const t = setInterval(() => {
+      secs--;
+      secsEl.textContent = secs;
+      if (secs <= 0) {
+        clearInterval(t);
+        cooldownActive        = false;
+        btn.disabled          = false;
+        btn.style.opacity     = '1';
+        msgDiv.style.display  = 'none';
+      }
+    }, 1000);
+  }
+
+  /* ── Send message ── */
+  window.sendChatMessage = async () => {
+    if (cooldownActive || !currentUser || !chatProfile) return;
+    const input = document.getElementById('chat-input');
+    const text  = input.value.trim();
+    if (!text) return;
+
+    input.value       = '';
+    input.style.height = 'auto';
+    document.getElementById('chat-char-count').textContent = '0/300';
+
+    try {
+      await addDoc(collection(db, 'chatMessages'), {
+        uid:      currentUser.uid,
+        username: chatProfile.username,
+        photoURL: chatProfile.photoURL || null,
+        text,
+        createdAt: serverTimestamp()
+      });
+      startCooldown();
+    } catch (e) {
+      showToast('⚠ Could not send: ' + e.message);
+    }
+  };
+
+  /* ── Auth state ── */
+  onAuthStateChanged(auth, async user => {
+    if (!user) {
+      document.getElementById('chat-login-prompt').style.display = 'block';
+      return;
+    }
+    currentUser = user;
+
+    /* Check for existing chat profile */
+    try {
+      const profileSnap = await getDoc(doc(db, 'chatProfiles', user.uid));
+      if (profileSnap.exists()) {
+        chatProfile = profileSnap.data();
+        showChatBoard();
+      } else {
+        document.getElementById('chat-setup').style.display = 'block';
+      }
+    } catch (e) {
+      document.getElementById('chat-setup').style.display = 'block';
+    }
+  });
 </script>
 </body>
 </html>
