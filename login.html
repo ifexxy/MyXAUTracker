@@ -154,21 +154,20 @@
   /* ── Already logged in — redirect ── */
   onAuthStateChanged(auth, async user => {
     if (!user) return;
+    const params   = new URLSearchParams(window.location.search);
+    const fromPage = params.get('from') || 'predict.html';
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
-      if (!snap.exists()) { window.location.href = 'predict.html'; return; }
+      if (!snap.exists()) { window.location.href = fromPage; return; }
       const d   = snap.data();
       const now = Date.now();
       const hasAccess =
         (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
-        (d.subscriptionStatus === 'active' && d.currentPeriodEnd &&
-          new Date(d.currentPeriodEnd).getTime() > now) ||
-        (d.manualAccess && (!d.manualAccessExpiresAt ||
-          new Date(d.manualAccessExpiresAt).getTime() > now));
-      window.location.href = hasAccess ? 'predict.html' : 'subscribe.html';
-    } catch { window.location.href = 'predict.html'; }
+        (d.subscriptionStatus === 'active' && d.currentPeriodEnd && new Date(d.currentPeriodEnd).getTime() > now) ||
+        (d.manualAccess && (!d.manualAccessExpiresAt || new Date(d.manualAccessExpiresAt).getTime() > now));
+      window.location.href = hasAccess ? fromPage : 'subscribe.html';
+    } catch { window.location.href = fromPage; }
   });
-
   /* ── Sign In ── */
   window.doSignIn = async () => {
     const email = document.getElementById('si-email').value.trim();
