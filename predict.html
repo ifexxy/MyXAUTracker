@@ -1614,10 +1614,10 @@ window.dashSignOut = async () => {
   function startMessageListener() {
     if (unsubMessages) unsubMessages();
     const q = query(
-      collection(db, 'chatMessages'),
-      orderBy('createdAt', 'desc'),
-      limit(60)
-    );
+  collection(db, 'chatMessages'),
+  orderBy('createdAt', 'asc'),
+  limit(60)
+);
 
     const container = document.getElementById('chat-messages');
     let firstLoad   = true;
@@ -1625,9 +1625,8 @@ window.dashSignOut = async () => {
     unsubMessages = onSnapshot(q, snap => {
       document.getElementById('chat-loading').style.display = 'none';
 
-      const msgs = [];
-      snap.forEach(d => msgs.push({ id: d.id, ...d.data() }));
-      msgs.reverse(); /* oldest first */
+     const msgs = [];
+snap.forEach(d => msgs.push({ id: d.id, ...d.data() }));
 
       const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
 
