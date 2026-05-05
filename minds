@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#070c12" />
+  <title>Minds · XAU Tracker</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Page layout ── */
+    html, body { height: 100%; background: var(--bg-deep); }
+
+    #app {
+      display: flex; flex-direction: column;
+      min-height: 100dvh; max-width: 480px; margin: 0 auto;
+    }
+
+    #content {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: calc(var(--nav-h) + 80px);
+    }
+
+    /* ── Page header ── */
+    .minds-header {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .minds-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--txt-1);
+      line-height: 1.2;
+    }
+
+    .minds-title span { color: var(--gold); }
+
+    .minds-sub {
+      font-size: 13px;
+      color: var(--txt-2);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .minds-stats {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .minds-stat {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--txt-2);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .minds-stat i { color: var(--gold); font-size: 11px; }
+
+    /* ── Access wall ── */
+    #access-wall {
+      display: none;
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .wall-icon {
+      width: 72px; height: 72px;
+      border-radius: 20px;
+      background: var(--gold-glow);
+      border: 1px solid var(--gold-dim);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px; color: var(--gold);
+      margin: 0 auto 20px;
+    }
+
+    .wall-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--txt-1);
+      margin-bottom: 8px;
+    }
+
+    .wall-sub {
+      font-size: 14px;
+      color: var(--txt-2);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .wall-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 14px 28px;
+      background: var(--gold);
+      color: #000;
+      border-radius: 14px;
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .wall-btn:hover { opacity: 0.88; }
+
+    /* ── Username setup ── */
+    #setup-screen {
+      display: none;
+      padding: 24px 20px;
+    }
+
+    .setup-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 24px;
+    }
+
+    .setup-card-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--txt-1);
+      margin-bottom: 6px;
+    }
+
+    .setup-card-sub {
+      font-size: 13px;
+      color: var(--txt-2);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    /* ── Avatar picker ── */
+    .avatar-picker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .avatar-ring {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .avatar-circle {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: var(--bg-muted);
+      border: 2px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .avatar-ring:hover .avatar-circle {
+      border-color: var(--gold);
+    }
+
+    .avatar-circle i {
+      font-size: 32px;
+      color: var(--txt-3);
+    }
+
+    .avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 26px;
+      height: 26px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #000;
+      border: 2px solid var(--bg-deep);
+    }
+
+    .avatar-hint {
+      font-size: 11px;
+      color: var(--txt-3);
+    }
+
+    /* ── Form fields ── */
+    .field-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--txt-2);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .field-input {
+      width: 100%;
+      background: var(--bg-muted);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      color: var(--txt-1);
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .field-input:focus { border-color: var(--gold); }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--txt-3);
+      margin-top: 6px;
+    }
+
+    .setup-err {
+      display: none;
+      font-size: 13px;
+      color: var(--red);
+      padding: 12px 16px;
+      background: rgba(255,69,97,0.07);
+      border-radius: 12px;
+      border: 1px solid rgba(255,69,97,0.2);
+      margin: 16px 0 0;
+    }
+
+    .setup-btn {
+      width: 100%;
+      padding: 16px;
+      margin-top: 20px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: opacity 0.2s;
+    }
+
+    .setup-btn:hover { opacity: 0.88; }
+    .setup-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Chat board ── */
+    #chat-screen { display: none; }
+
+    /* ── Compose box (fixed above nav) ── */
+    .compose-wrap {
+      position: fixed;
+      bottom: var(--nav-h);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      background: rgba(7,12,18,0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      padding: 10px 16px 12px;
+      z-index: 90;
+    }
+
+    .compose-inner {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .compose-textarea {
+      flex: 1;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      color: var(--txt-1);
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      padding: 12px 16px;
+      outline: none;
+      resize: none;
+      line-height: 1.5;
+      max-height: 100px;
+      overflow-y: auto;
+      transition: border-color 0.2s;
+    }
+
+    .compose-textarea:focus { border-color: var(--gold); }
+
+    .compose-textarea::placeholder { color: var(--txt-3); }
+
+    .compose-send {
+      width: 48px;
+      height: 48px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 14px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.2s;
+    }
+
+    .compose-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .compose-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      padding: 0 2px;
+    }
+
+    .cooldown-bar-wrap {
+      display: none;
+      flex: 1;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cooldown-bar-track {
+      flex: 1;
+      height: 3px;
+      background: var(--bg-muted);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .cooldown-bar-fill {
+      height: 100%;
+      background: var(--red);
+      border-radius: 2px;
+      transition: width 1s linear;
+    }
+
+    .cooldown-txt {
+      font-size: 11px;
+      color: var(--red);
+      font-family: 'Space Mono', monospace;
+      white-space: nowrap;
+    }
+
+    .char-counter {
+      font-size: 11px;
+      color: var(--txt-3);
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* ── Messages feed ── */
+    .feed-wrap {
+      padding: 16px 16px 0;
+    }
+
+    .feed-empty {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .feed-empty i {
+      font-size: 40px;
+      color: var(--txt-3);
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .feed-empty-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--txt-1);
+      margin-bottom: 6px;
+    }
+
+    .feed-empty-sub {
+      font-size: 13px;
+      color: var(--txt-2);
+    }
+
+    /* ── Message card ── */
+    .msg-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .msg-card.own {
+      border-color: rgba(212,167,44,0.2);
+      background: rgba(212,167,44,0.04);
+    }
+
+    .msg-card-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .msg-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .msg-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .msg-meta { flex: 1; min-width: 0; }
+
+    .msg-username {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--txt-1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .msg-username.own-name { color: var(--gold); }
+
+    .msg-time {
+      font-size: 11px;
+      color: var(--txt-3);
+      font-family: 'Space Mono', monospace;
+      margin-top: 2px;
+    }
+
+    .msg-own-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      background: var(--gold-glow);
+      color: var(--gold);
+      border-radius: 8px;
+      font-family: 'Space Mono', monospace;
+      flex-shrink: 0;
+    }
+
+    .msg-text {
+      font-size: 15px;
+      color: var(--txt-1);
+      line-height: 1.7;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .msg-text a {
+      color: var(--gold);
+      text-decoration: underline;
+      word-break: break-all;
+    }
+
+    /* ── Loading skeleton ── */
+    .msg-skel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .skel-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .skel-circle {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+    }
+
+    .skel-line {
+      height: 14px;
+      border-radius: 6px;
+    }
+
+    .skel-block {
+      height: 50px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Top bar ── -->
+  <div id="topbar">
+    <div class="topbar-brand">
+      <div class="menu-wrap">
+        <button class="menu-trigger" id="menu-trigger" onclick="toggleMenu()" title="Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="dropdown-menu" id="dropdown-menu">
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="about.html">About</a>
+          <a class="dropdown-item" href="disclaimer.html">Disclaimer</a>
+          <a class="dropdown-item" href="contact.html">Contact Us</a>
+        </div>
+      </div>
+      <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="topbar-title">XAU<span>/USD</span></span>
+    </div>
+    <div class="live-dot">LIVE</div>
+  </div>
+
+  <!-- ── Scrollable content ── -->
+  <div id="content">
+
+    <!-- Page header -->
+    <div class="minds-header">
+      <div class="minds-title">Community <span>Minds</span></div>
+      <div class="minds-sub">What's on your mind? Share your gold market thoughts.</div>
+      <div class="minds-stats">
+        <div class="minds-stat">
+          <i class="fa-solid fa-message"></i>
+          <span id="msg-count">— messages</span>
+        </div>
+        <div class="minds-stat">
+          <i class="fa-solid fa-circle" style="font-size:7px;color:var(--green);"></i>
+          <span id="online-count">— online</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Access wall -->
+    <div id="access-wall">
+      <div class="wall-icon"><i class="fa-solid fa-comments"></i></div>
+      <div class="wall-title">Join the Conversation</div>
+      <div class="wall-sub">
+        Sign in with an active trial or subscription to access the community board.
+      </div>
+      <a href="login.html" class="wall-btn">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+      </a>
+    </div>
+
+    <!-- Username setup -->
+    <div id="setup-screen">
+      <div class="setup-card">
+        <div class="setup-card-title">Pick Your Username</div>
+        <div class="setup-card-sub">
+          This is your permanent identity on Minds. Choose wisely — it cannot be changed later.
+        </div>
+
+        <div class="avatar-picker">
+          <div class="avatar-ring" onclick="document.getElementById('avatar-file').click()">
+            <div class="avatar-circle" id="avatar-circle">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <div class="avatar-badge"><i class="fa-solid fa-plus"></i></div>
+          </div>
+          <input type="file" id="avatar-file" accept="image/*" style="display:none;" onchange="handleAvatarSelect(event)" />
+          <div class="avatar-hint">Tap to add profile photo (optional)</div>
+        </div>
+
+        <label class="field-label" for="username-input">Username</label>
+        <input type="text" id="username-input" class="field-input"
+               placeholder="e.g. GoldBull2024"
+               maxlength="20"
+               oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'')" />
+        <div class="field-hint">Letters, numbers and underscores only · 3–20 characters</div>
+
+        <div class="setup-err" id="setup-err"></div>
+
+        <button class="setup-btn" id="setup-btn" onclick="registerUsername()">
+          <i class="fa-solid fa-check"></i> Set Username & Enter
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat feed -->
+    <div id="chat-screen">
+      <!-- Skeletons shown while loading -->
+      <div class="feed-wrap" id="feed-skeletons">
+        <div class="msg-skel">
+          <div class="skel-row">
+            <div class="skel-circle skeleton"></div>
+            <div style="flex:1;">
+              <div class="skel-line skeleton" style="width:40%;margin-bottom:6px;"></div>
+              <div class="skel-line skeleton" style="width:25%;height:10px;"></div>
+            </div>
+          </div>
+          <div class="skel-block skeleton"></div>
+        </div>
+        <div class="msg-skel">
+          <div class="skel-row">
+            <div class="skel-circle skeleton"></div>
+            <div style="flex:1;">
+              <div class="skel-line skeleton" style="width:50%;margin-bottom:6px;"></div>
+              <div class="skel-line skeleton" style="width:20%;height:10px;"></div>
+            </div>
+          </div>
+          <div class="skel-block skeleton" style="height:36px;"></div>
+        </div>
+      </div>
+
+      <!-- Actual feed -->
+      <div class="feed-wrap" id="feed"></div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ── Compose box ── -->
+  <div class="compose-wrap" id="compose-wrap" style="display:none;">
+    <div class="compose-inner">
+      <textarea class="compose-textarea" id="compose-input"
+                placeholder="What's on your mind?"
+                maxlength="300"
+                rows="1"
+                oninput="onComposeInput(this)"
+                onkeydown="onComposeKey(event)"></textarea>
+      <button class="compose-send" id="compose-send" onclick="sendMessage()">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+    <div class="compose-meta">
+      <div class="cooldown-bar-wrap" id="cooldown-wrap">
+        <div class="cooldown-bar-track">
+          <div class="cooldown-bar-fill" id="cooldown-fill" style="width:100%;"></div>
+        </div>
+        <span class="cooldown-txt" id="cooldown-txt">15s</span>
+      </div>
+      <div class="char-counter" id="char-counter">0 / 300</div>
+    </div>
+  </div>
+
+  <!-- ── Bottom nav ── -->
+  <nav id="bottomnav">
+    <a class="nav-btn" data-page="index.html"   href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+    <a class="nav-btn" data-page="news.html"    href="news.html"><i class="fa-solid fa-newspaper"></i>News</a>
+    <a class="nav-btn" data-page="trends.html"  href="trends.html"><i class="fa-solid fa-chart-area"></i>Trends</a>
+    <a class="nav-btn" data-page="predict.html" href="predict.html"><i class="fa-solid fa-brain"></i>Predict</a>
+    <a class="nav-btn" data-page="minds.html"   href="minds.html"><i class="fa-solid fa-comments"></i>Minds</a>
+  </nav>
+
+</div>
+<div id="toast"></div>
+
+<script src="js/api.js"></script>
+<script>
+/* ── Dropdown ── */
+function toggleMenu() {
+  const trigger  = document.getElementById('menu-trigger');
+  const dropdown = document.getElementById('dropdown-menu');
+  const isOpen   = dropdown.classList.contains('open');
+  dropdown.classList.toggle('open', !isOpen);
+  trigger.classList.toggle('open',  !isOpen);
+}
+document.addEventListener('click', function(e) {
+  const wrap = document.querySelector('.menu-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('dropdown-menu')?.classList.remove('open');
+    document.getElementById('menu-trigger')?.classList.remove('open');
+  }
+});
+
+/* ── Compose helpers ── */
+function onComposeInput(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+  document.getElementById('char-counter').textContent = el.value.length + ' / 300';
+}
+
+function onComposeKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+setActiveNav();
+</script>
+
+<script type="module">
+  import { initializeApp, getApps }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, collection, addDoc, getDocs, getDoc,
+    doc, setDoc, query, orderBy, limit,
+    onSnapshot, serverTimestamp, where, getCountFromServer
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+
+  const app     = getApps().find(a => a.name === 'login') ||
+                  initializeApp(firebaseConfig, 'login');
+  const auth    = getAuth(app);
+  const db      = getFirestore(app);
+  const storage = getStorage(app);
+
+  let currentUser    = null;
+  let chatProfile    = null;
+  let avatarDataUrl  = null;
+  let cooldownActive = false;
+  let unsubMessages  = null;
+
+  /* ── Avatar colour from username ── */
+  function avatarColor(username) {
+    const palette = ['#d4a72c','#00d48f','#a080ff','#ff6b35','#00b4d8','#ff4561'];
+    return palette[(username || '?').charCodeAt(0) % palette.length];
+  }
+
+  /* ── Avatar HTML ── */
+  function avatarHTML(photoURL,
