@@ -342,7 +342,7 @@
 
     <!-- ══ CHAT BOARD ══ -->
 <div class="predict-card" id="chat-section">
-  <h3><i class="fa-solid fa-comments" style="margin-right:8px;color:var(--gold)"></i>Community Board</h3>
+  <h3>Talk</h3>
 
   <!-- Username setup screen -->
   <div id="chat-setup" style="display:none;">
@@ -352,9 +352,9 @@
                   justify-content:center;color:var(--gold);font-size:22px;margin:0 auto 12px;">
         <i class="fa-solid fa-user-tag"></i>
       </div>
-      <div style="font-size:14px;font-weight:700;color:var(--txt-1);margin-bottom:4px;">Set Your Chat Username</div>
+      <div style="font-size:14px;font-weight:700;color:var(--txt-1);margin-bottom:4px;">Set Your Username</div>
       <div style="font-size:11px;color:var(--txt-2);line-height:1.5;">
-        Choose a permanent username for the community board.<br>Usernames cannot be changed later.
+        Choose a permanent username<br>Usernames cannot be changed later.
       </div>
     </div>
 
@@ -374,14 +374,14 @@
         </div>
       </div>
       <input type="file" id="avatar-file" accept="image/*" style="display:none;" onchange="handleAvatarSelect(event)" />
-      <div style="font-size:10px;color:var(--txt-3);">Profile photo (optional)</div>
+      <div style="font-size:10px;color:var(--txt-1);">Profile photo (optional)</div>
     </div>
 
     <div style="margin-bottom:10px;">
-      <label style="display:block;font-size:10px;color:var(--txt-2);text-transform:uppercase;
+      <label style="display:block;font-size:10px;color:var(--txt-1);text-transform:uppercase;
                     letter-spacing:0.08em;margin-bottom:6px;">Username</label>
       <input type="text" id="chat-username-input"
-             placeholder="e.g. GoldTrader99"
+             placeholder=""
              maxlength="20"
              style="width:100%;background:var(--bg-muted);border:1px solid var(--border);
                     border-radius:10px;color:var(--txt-1);font-family:'Syne',sans-serif;
@@ -389,7 +389,7 @@
              onfocus="this.style.borderColor='var(--gold)'"
              onblur="this.style.borderColor='var(--border)'"
              oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'')" />
-      <div style="font-size:10px;color:var(--txt-3);margin-top:5px;">Letters, numbers and underscores only · Max 20 chars</div>
+      <div style="font-size:10px;color:var(--txt-1);margin-top:5px;">Letters, numbers and underscores only · Max 20 chars</div>
     </div>
 
     <div id="setup-err" style="display:none;font-size:12px;color:var(--red);
@@ -401,7 +401,7 @@
                    border-radius:10px;font-family:'Syne',sans-serif;font-size:14px;
                    font-weight:800;cursor:pointer;display:flex;align-items:center;
                    justify-content:center;gap:8px;transition:opacity 0.2s;">
-      <i class="fa-solid fa-check"></i> Confirm Username
+       Confirm Username
     </button>
   </div>
 
