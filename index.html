@@ -11,8 +11,8 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>XAU/USD Live Price Tracker</title>
-  <meta name="description" content="Track live XAU/USD gold spot prices in real time. Real-time bid/ask, day high/low, market buy/sell signals and price chart. Updated every 60 seconds." />
+  <title>Welcome to XauTracker - Trqcack Real-time Gold Prices</title>
+  <meta name="description" content="Track live XAU/USD gold spot prices in real time, use our advanced model to forecast gold price" />
   <meta name="keywords" content="XAU USD, gold price live, gold spot price, gold trading, gold tracker, gold market, XAU price today, live gold price" />
   <meta name="author" content="XAU Tracker" />
   <meta name="robots" content="index, follow" />
@@ -457,16 +457,12 @@
     ══════════════════════════════════════ -->
     <section id="landing">
 
-      <!-- Eyebrow -->
-      <div class="landing-eyebrow">
-        <span class="landing-eyebrow-dot"></span>
-        ATR-Powered Gold Intelligence
-      </div>
+
 
       <!-- Headline -->
-      <h1 class="landing-headline">
-        Trade Gold with peace of mind <em>like a Pro</em> with our advanced algorithm and ATR based model prediction on the Forecast section.
-      </h1>
+    <p class="landing-sub"><center><b>
+        Trade Gold with peace of mind <em>like a Pro</em> with our advanced algorithm and ATR based model prediction on the Forecast section.</b></center>
+      </p>
 
       <!-- Sub -->
       <p class="landing-sub">
@@ -514,9 +510,7 @@
 
     </section>
 
-    <!-- ══════════════════════════════════════
-         PRICE DASHBOARD (existing)
-    ══════════════════════════════════════ -->
+
     <div class="price-hero" id="price-anchor">
       <div class="price-pair"><i class="fa-solid fa-layer-group" style="font-size:9px;margin-right:4px;"></i>SPOT GOLD · XAU/USD · TROY OZ</div>
       <div id="price-display" class="price-main"><div class="skeleton skel-price"></div></div>
@@ -701,7 +695,7 @@
     appId:             "1:831752609455:web:ea9be478691744afa73e5a"
   };
 
-  const fbApp = getApps().length ? getApps()[0] : initializeApp(fbConfig, 'landing');
+  const fbApp = getApps().length ? getApps()[0] : initializeApp(fbConfig);
   const auth  = getAuth(fbApp);
   const inner = document.getElementById('landing-auth-inner');
 
