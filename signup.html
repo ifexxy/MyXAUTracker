@@ -100,7 +100,7 @@
 
   <div class="trial-pill">
     <i class="fa-solid fa-gift"></i>
-    <span><strong>3 days free</strong> on first sign up — no card required to start</span>
+    <span><strong>3 days free</strong> on sign up</span>
   </div>
 
   <!-- Step indicators -->
@@ -128,7 +128,7 @@
 
   <!-- ══ STEP 2: Phone Verification ══ -->
   <div id="signup-step2" style="display:none;">
-    <p class="auth-sub">Verify your phone number to claim your free trial. One trial per number.</p>
+    <p class="auth-sub">Verify your phone number to create your account.</p>
     <label>Phone Number</label>
     <input type="tel" id="su-phone" placeholder="+234xxxxxxx" autocomplete="tel" />
     <div class="err-msg" id="phone-err"></div>
@@ -136,7 +136,7 @@
     <div id="recaptcha-container" style="margin-top:12px;"></div>
 
     <button class="btn-primary" id="send-otp-btn" onclick="sendOTP()">
-      <i class="fa-solid fa-mobile-screen"></i> Send Verification Code
+      <i class="fa-solid fa-mobile-screen"></i> Send OTP
     </button>
 
     <!-- OTP section — hidden until code sent -->
@@ -145,7 +145,7 @@
       <input type="number" id="su-otp" placeholder="Enter 6-digit code" />
       <div class="err-msg" id="otp-err"></div>
       <button class="btn-primary" id="su-btn" onclick="doSignUp()">
-        <i class="fa-solid fa-rocket"></i> Start Free Trial
+        <i class="fa-solid fa-rocket"></i> Create Account
       </button>
       <button class="btn-secondary" onclick="sendOTP()" style="margin-top:8px;">
         <i class="fa-solid fa-rotate-right"></i> Resend Code
