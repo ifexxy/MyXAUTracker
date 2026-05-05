@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1T072J6769"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1T072J6769');
+</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="theme-color" content="#070c12" />
@@ -754,4 +763,332 @@ setActiveNav();
   }
 
   /* ── Avatar HTML ── */
-  function avatarHTML(photoURL,
+  function avatarHTML(photoURL, username, size) {
+    if (photoURL) {
+      return `<img src="${photoURL}"
+                style="width:${size}px;height:${size}px;border-radius:50%;
+                       object-fit:cover;display:block;" />`;
+    }
+    const color  = avatarColor(username);
+    const letter = (username || '?')[0].toUpperCase();
+    return `<div style="width:${size}px;height:${size}px;border-radius:50%;
+                background:${color}22;border:2px solid ${color}55;
+                display:flex;align-items:center;justify-content:center;
+                font-size:${Math.round(size * 0.42)}px;font-weight:800;
+                color:${color};">${letter}</div>`;
+  }
+
+  /* ── Linkify ── */
+  function linkify(raw) {
+    const esc = raw
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;');
+    return esc.replace(
+      /(https?:\/\/[^\s<>"']+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+  }
+
+  /* ── Relative time ── */
+  function relTime(date) {
+    if (!date) return 'just now';
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff <  5)  return 'just now';
+    if (diff < 60)  return diff + 's ago';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    return date.toLocaleDateString('en-US', { day:'numeric', month:'short' });
+  }
+
+  /* ── Show section ── */
+  function show(id) {
+    ['access-wall','setup-screen','chat-screen'].forEach(s => {
+      document.getElementById(s).style.display = s === id ? (id === 'chat-screen' ? 'block' : 'block') : 'none';
+    });
+    if (id === 'chat-screen') {
+      document.getElementById('compose-wrap').style.display = 'block';
+    }
+  }
+
+  /* ── Avatar file select ── */
+  window.handleAvatarSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 3 * 1024 * 1024) { alert('Image must be under 3MB'); return; }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      avatarDataUrl = ev.target.result;
+      const circle  = document.getElementById('avatar-circle');
+      circle.innerHTML = `<img src="${avatarDataUrl}" style="width:100%;height:100%;object-fit:cover;" />`;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  /* ── Register username ── */
+  window.registerUsername = async () => {
+    const name   = document.getElementById('username-input').value.trim();
+    const errEl  = document.getElementById('setup-err');
+    const btn    = document.getElementById('setup-btn');
+    errEl.style.display = 'none';
+
+    if (!name || name.length < 3) {
+      errEl.textContent   = 'Username must be at least 3 characters.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled   = true;
+    btn.innerHTML  = '<i class="fa-solid fa-spinner" style="animation:spin 1s linear infinite"></i> Checking...';
+
+    try {
+      /* Uniqueness check */
+      const taken = await getDocs(
+        query(collection(db, 'chatUsernames'),
+              where('usernameLower', '==', name.toLowerCase()))
+      );
+      if (!taken.empty) {
+        errEl.textContent   = 'That username is already taken.';
+        errEl.style.display = 'block';
+        btn.disabled  = false;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Set Username & Enter';
+        return;
+      }
+
+      /* Upload avatar */
+      let photoURL = null;
+      if (avatarDataUrl) {
+        btn.innerHTML = '<i class="fa-solid fa-spinner" style="animation:spin 1s linear infinite"></i> Uploading photo...';
+        const blob   = await fetch(avatarDataUrl).then(r => r.blob());
+        const imgRef = ref(storage, `chatAvatars/${currentUser.uid}`);
+        await uploadBytes(imgRef, blob);
+        photoURL = await getDownloadURL(imgRef);
+      }
+
+      /* Save username index */
+      await setDoc(doc(db, 'chatUsernames', name.toLowerCase()), {
+        uid: currentUser.uid, username: name,
+        usernameLower: name.toLowerCase(), createdAt: serverTimestamp()
+      });
+
+      /* Save profile */
+      await setDoc(doc(db, 'chatProfiles', currentUser.uid), {
+        uid: currentUser.uid, username: name,
+        photoURL: photoURL || null, createdAt: serverTimestamp()
+      });
+
+      chatProfile = { username: name, photoURL };
+      enterChat();
+
+    } catch (e) {
+      errEl.textContent   = 'Error: ' + e.message;
+      errEl.style.display = 'block';
+      btn.disabled  = false;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Set Username & Enter';
+    }
+  };
+
+  /* ── Enter chat ── */
+  function enterChat() {
+    show('chat-screen');
+    startFeed();
+    loadMessageCount();
+  }
+
+  /* ── Message count ── */
+  async function loadMessageCount() {
+    try {
+      const snap = await getCountFromServer(collection(db, 'chatMessages'));
+      document.getElementById('msg-count').textContent =
+        snap.data().count.toLocaleString() + ' messages';
+    } catch { /* silent */ }
+  }
+
+  /* ── Render one message ── */
+  function renderMsg(data, id) {
+    const isOwn = currentUser && data.uid === currentUser.uid;
+    const time  = data.createdAt?.toDate ? relTime(data.createdAt.toDate()) : 'just now';
+
+    return `
+      <div class="msg-card ${isOwn ? 'own' : ''}" id="msg-${id}">
+        <div class="msg-card-top">
+          <div class="msg-avatar">
+            ${avatarHTML(data.photoURL || null, data.username, 42)}
+          </div>
+          <div class="msg-meta">
+            <div class="msg-username ${isOwn ? 'own-name' : ''}">${data.username}</div>
+            <div class="msg-time">${time}</div>
+          </div>
+          ${isOwn ? '<div class="msg-own-badge">You</div>' : ''}
+        </div>
+        <div class="msg-text">${linkify(data.text)}</div>
+      </div>`;
+  }
+
+  /* ── Start live feed ── */
+  function startFeed() {
+    if (unsubMessages) unsubMessages();
+
+    const q = query(
+      collection(db, 'chatMessages'),
+      orderBy('createdAt', 'desc'),
+      limit(80)
+    );
+
+    const feed      = document.getElementById('feed');
+    const skeletons = document.getElementById('feed-skeletons');
+    let   firstLoad = true;
+
+    unsubMessages = onSnapshot(q, snap => {
+      skeletons.style.display = 'none';
+
+      const msgs = [];
+      snap.forEach(d => msgs.push({ id: d.id, ...d.data() }));
+
+      /* Sort: null timestamps (pending) go to top */
+      msgs.sort((a, b) => {
+        const ta = a.createdAt?.toMillis?.() ?? Number.MAX_SAFE_INTEGER;
+        const tb = b.createdAt?.toMillis?.() ?? Number.MAX_SAFE_INTEGER;
+        return tb - ta;
+      });
+
+      if (!msgs.length) {
+        feed.innerHTML = `
+          <div class="feed-empty">
+            <i class="fa-solid fa-comments"></i>
+            <div class="feed-empty-title">No messages yet</div>
+            <div class="feed-empty-sub">Be the first to share your thoughts!</div>
+          </div>`;
+        return;
+      }
+
+      feed.innerHTML = msgs.map(m => renderMsg(m, m.id)).join('');
+
+      if (firstLoad) {
+        document.getElementById('content').scrollTop = 0;
+        firstLoad = false;
+      }
+
+      /* Update count */
+      document.getElementById('msg-count').textContent =
+        msgs.length + (msgs.length === 80 ? '+' : '') + ' messages';
+    });
+  }
+
+  /* ── Cooldown ── */
+  function startCooldown() {
+    cooldownActive = true;
+    const sendBtn  = document.getElementById('compose-send');
+    const wrap     = document.getElementById('cooldown-wrap');
+    const fill     = document.getElementById('cooldown-fill');
+    const txt      = document.getElementById('cooldown-txt');
+
+    sendBtn.disabled    = true;
+    wrap.style.display  = 'flex';
+    fill.style.width    = '100%';
+    let secs = 15;
+    txt.textContent = secs + 's';
+
+    /* Animate bar */
+    requestAnimationFrame(() => {
+      fill.style.transition = 'width 15s linear';
+      fill.style.width      = '0%';
+    });
+
+    const interval = setInterval(() => {
+      secs--;
+      txt.textContent = secs + 's';
+      if (secs <= 0) {
+        clearInterval(interval);
+        cooldownActive       = false;
+        sendBtn.disabled     = false;
+        wrap.style.display   = 'none';
+        fill.style.transition = 'none';
+        fill.style.width      = '100%';
+      }
+    }, 1000);
+  }
+
+  /* ── Send message ── */
+  window.sendMessage = async () => {
+    if (cooldownActive || !currentUser || !chatProfile) return;
+    const input = document.getElementById('compose-input');
+    const text  = input.value.trim();
+    if (!text) return;
+
+    const sendBtn    = document.getElementById('compose-send');
+    sendBtn.disabled = true;
+    input.value      = '';
+    input.style.height = 'auto';
+    document.getElementById('char-counter').textContent = '0 / 300';
+
+    try {
+      await addDoc(collection(db, 'chatMessages'), {
+        uid:      currentUser.uid,
+        username: chatProfile.username,
+        photoURL: chatProfile.photoURL || null,
+        text,
+        createdAt: serverTimestamp()
+      });
+      startCooldown();
+      /* Scroll to top to see new message */
+      document.getElementById('content').scrollTop = 0;
+    } catch (e) {
+      showToast('⚠ Could not send: ' + e.message);
+      sendBtn.disabled = false;
+    }
+  };
+
+  /* ── Access check ── */
+  async function checkAccess(user) {
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (!snap.exists()) return false;
+      const d   = snap.data();
+      const now = Date.now();
+      return (
+        (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
+        (d.subscriptionStatus === 'active' && d.currentPeriodEnd &&
+          new Date(d.currentPeriodEnd).getTime() > now) ||
+        (d.manualAccess === true &&
+          (!d.manualAccessExpiresAt ||
+            new Date(d.manualAccessExpiresAt).getTime() > now))
+      );
+    } catch { return false; }
+  }
+
+  /* ── Auth state ── */
+  onAuthStateChanged(auth, async user => {
+    if (!user) { show('access-wall'); return; }
+    currentUser = user;
+
+    const hasAccess = await checkAccess(user);
+    if (!hasAccess) { show('access-wall'); return; }
+
+    /* Check for chat profile */
+    try {
+      const profileSnap = await getDoc(doc(db, 'chatProfiles', user.uid));
+      if (profileSnap.exists()) {
+        chatProfile = profileSnap.data();
+        enterChat();
+      } else {
+        show('setup-screen');
+      }
+    } catch {
+      show('setup-screen');
+    }
+  });
+
+  /* ── Refresh relative times every minute ── */
+  setInterval(() => {
+    if (!unsubMessages) return;
+    document.querySelectorAll('.msg-time').forEach(el => {
+      const card = el.closest('.msg-card');
+      if (!card) return;
+      const id   = card.id.replace('msg-','');
+      /* times update on next snapshot — good enough */
+    });
+  }, 60000);
+</script>
+</body>
+</html>
