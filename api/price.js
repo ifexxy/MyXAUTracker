@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', 'https://xautracker.vercel.app');
+  res.setHeader('Access-Control-Allow-Origin', 'https://www.xautracker.com');
 
   try {
     const url = `https://api.twelvedata.com/quote?symbol=XAU/USD&apikey=${process.env.TWELVE_DATA_KEY}`;
