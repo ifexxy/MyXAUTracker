@@ -7,41 +7,32 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-1T072J6769');
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
- 
-  <!-- ── Primary SEO ── -->
-  <title>Welcome to XauTracker - RealTime Gold Forecasts</title>
-  <meta name="description" content="Track realtime-time gold prices and forecasts with our advanced ATR Models " />
+  <title>XAU/USD Live Price Tracker</title>
+  <meta name="description" content="Track live XAU/USD gold spot prices in real time. Real-time bid/ask, day high/low, market buy/sell signals and price chart. Updated every 60 seconds." />
   <meta name="keywords" content="XAU USD, gold price live, gold spot price, gold trading, gold tracker, gold market, XAU price today, live gold price" />
   <meta name="author" content="XAU Tracker" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://www.xautracker.com/" />
- 
-  <!-- ── Open Graph (WhatsApp, Facebook, LinkedIn) ── -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.xautracker.com/" />
   <meta property="og:title" content="XAU/USD Live Price Tracker" />
-  <meta property="og:description" content="Track realtime-time gold prices and forecasts with our advanced ATR Models " />
+  <meta property="og:description" content="Track live XAU/USD gold spot prices in real time. Real-time bid/ask, day high/low, market signals and price chart. Updated every 60 seconds." />
   <meta property="og:image" content="https://www.xautracker.com/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="XAU Tracker — Live Gold Price Dashboard" />
   <meta property="og:site_name" content="XAU Tracker" />
   <meta property="og:locale" content="en_US" />
- 
-  <!-- ── Twitter / X Card ── -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://www.xautracker.com/" />
   <meta name="twitter:title" content="GOLD · XAU/USD Live Price Tracker" />
-  <meta name="twitter:description" content="Track realtime-time gold prices and forecasts with our advanced ATR Models " />
+  <meta name="twitter:description" content="Live XAU/USD gold spot prices, real-time bid/ask, market signals and buy/sell indicators. Updated every 60 seconds." />
   <meta name="twitter:image" content="https://www.xautracker.com/og-image.png" />
   <meta name="twitter:image:alt" content="XAU Tracker — Live Gold Price Dashboard" />
- 
-  <!-- ── PWA & Mobile ── -->
   <meta name="theme-color" content="#070c12" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -49,8 +40,6 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="XAU Tracker" />
   <meta name="msapplication-TileColor" content="#070c12" />
- 
-  <!-- ── Structured Data (Google Rich Results) ── -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -61,51 +50,397 @@
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Any",
     "browserRequirements": "Requires JavaScript",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "XAU Tracker",
-      "url": "https://www.xautracker.com"
-    }
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "publisher": { "@type": "Organization", "name": "XAU Tracker", "url": "https://www.xautracker.com" }
   }
   </script>
- 
-  <!-- ── Fonts & Libs (keep these after meta) ── -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* ══════════════════════════════════════
+       LANDING SECTION STYLES
+    ══════════════════════════════════════ */
+
+    #landing {
+      position: relative;
+      overflow: hidden;
+      padding: 40px 22px 36px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Animated radial glow behind content */
+    #landing::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(212,167,44,0.13) 0%, transparent 70%);
+      pointer-events: none;
+      border-radius: 50%;
+      animation: glowPulse 4s ease-in-out infinite;
+    }
+
+    #landing::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: -40px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(212,167,44,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      border-radius: 50%;
+      animation: glowPulse 4s ease-in-out infinite reverse;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(1.1); }
+    }
+
+    /* ── Eyebrow label ── */
+    .landing-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--gold-glow);
+      border: 1px solid rgba(212,167,44,0.25);
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .landing-eyebrow-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* ── Headline ── */
+    .landing-headline {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.3;
+      color: #fff;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+      letter-spacing: -0.3px;
+    }
+
+    .landing-headline em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--gold), #f0c84a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Subtext ── */
+    .landing-sub {
+      font-size: 14px;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Horizontal rule ── */
+    .landing-rule {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0 0 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Auth card ── */
+    .landing-auth-card {
+      background: rgba(14,22,34,0.8);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(8px);
+    }
+
+    /* Gold top accent line */
+    .landing-auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 20px; right: 20px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      border-radius: 1px;
+    }
+
+    .auth-card-label {
+      font-size: 10px;
+      color: var(--txt-2);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 10px;
+    }
+
+    /* Signed-out state */
+    .auth-guest-text {
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .auth-guest-text strong {
+      color: #fff;
+    }
+
+    /* Trial pill */
+    .trial-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,212,143,0.1);
+      border: 1px solid rgba(0,212,143,0.2);
+      color: var(--green);
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    .trial-pill-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    /* CTA button — primary white */
+    .btn-landing-primary {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: #fff;
+      color: #000;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      padding: 14px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: opacity 0.2s, transform 0.15s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-landing-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .btn-landing-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Signed-in state */
+    .auth-user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .auth-user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--gold-glow);
+      border: 1px solid var(--gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .auth-user-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .auth-user-status {
+      font-size: 10px;
+      color: var(--green);
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 2px;
+    }
+
+    .auth-user-email {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Scroll CTA ── */
+    .landing-scroll-cta {
+      text-align: center;
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .landing-scroll-btn {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: opacity 0.2s;
+    }
+
+    .landing-scroll-btn:hover { opacity: 0.75; }
+
+    .scroll-arrow {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #fff;
+      animation: bounceDown 2s ease-in-out infinite;
+    }
+
+    @keyframes bounceDown {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(5px); }
+    }
+
+    /* ── Contact strip ── */
+    .landing-contact {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding-top: 22px;
+    }
+
+    .landing-contact-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .landing-contact-btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-whatsapp {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 14px;
+      background: #25D366;
+      color: #000;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-whatsapp:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-mail {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 14px;
+      background: transparent;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.18);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-mail:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── Skeleton pulse for auth loading ── */
+    .auth-skel {
+      height: 48px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-muted) 50%, var(--bg-card) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+  </style>
 </head>
 <body>
 <div id="app">
 
   <div id="topbar">
     <div class="topbar-brand">
-      <!-- ── Dropdown trigger ── -->
-    <div class="menu-wrap">
-      <button class="menu-trigger" id="menu-trigger" onclick="toggleMenu()" title="Menu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-
-      <div class="dropdown-menu" id="dropdown-menu">
-        
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="about.html">
-           About
-        </a>
-        <a class="dropdown-item" href="disclaimer.html">
-           Disclaimer
-        </a>
-        <a class="dropdown-item" href="contact.html">
-           Contact Us
-        </a>
+      <div class="menu-wrap">
+        <button class="menu-trigger" id="menu-trigger" onclick="toggleMenu()" title="Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="dropdown-menu" id="dropdown-menu">
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="about.html">About</a>
+          <a class="dropdown-item" href="disclaimer.html">Disclaimer</a>
+          <a class="dropdown-item" href="contact.html">Contact Us</a>
+        </div>
       </div>
-    </div>
       <div class="topbar-logo"><i class="fa-solid fa-coins"></i></div>
       <span class="topbar-title">XAU<span>/USD</span></span>
     </div>
@@ -116,51 +451,73 @@
   </div>
 
   <div id="content">
-<!-- ── Landing Hero Section ── -->
-<div id="landing-section" style="padding: 32px 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 4px;">
 
-  <!-- Main headline -->
-  <div style="margin-bottom: 20px;">
-    <p style="color: #fff; font-size: 22px; font-weight: 800; line-height: 1.4; margin-bottom: 10px;">
-      Trade Gold with peace of mind like a Pro with our advanced algorithm and ATR based model prediction on the Forecast section.
-    </p>
-    <p style="color: #fff; font-size: 14px; line-height: 1.7; font-weight: 400;">
-      Join other traders like you, who use XauTracker and explore opportunities never seen before.
-    </p>
-  </div>
+    <!-- ══════════════════════════════════════
+         LANDING SECTION
+    ══════════════════════════════════════ -->
+    <section id="landing">
 
-  <!-- Auth-aware block -->
-  <div id="landing-auth-block" style="margin-bottom: 20px;">
-    <!-- Filled by JS below -->
-  </div>
+      <!-- Eyebrow -->
+      <div class="landing-eyebrow">
+        <span class="landing-eyebrow-dot"></span>
+        ATR-Powered Gold Intelligence
+      </div>
 
-  <!-- Scroll to price -->
-  <div style="text-align: center; margin-bottom: 24px;">
-    <a href="#price-anchor" onclick="document.getElementById('price-anchor').scrollIntoView({behavior:'smooth'});return false;"
-       style="color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; display: inline-block;">
-      View Latest Gold Price
-    </a>
-  </div>
+      <!-- Headline -->
+      <h1 class="landing-headline">
+        Trade Gold with peace of mind <em>like a Pro</em> with our advanced algorithm and ATR based model prediction on the Forecast section.
+      </h1>
 
-  <!-- Contact -->
-  <div style="font-size: 13px; color: #fff; line-height: 1.9;">
-    <p>Got questions or enquiries? Send us a WhatsApp Messenger by clicking the button</p>
-    <a href="https://wa.me/2348131560586"
-       target="_blank"
-       style="display: inline-block; margin: 10px 0 16px;
-              background: #25D366; color: #000; font-weight: 800;
-              padding: 10px 22px; border-radius: 10px;
-              font-size: 13px; text-decoration: none;">
-      WhatsApp Us
-    </a>
-    <br />
-    <a href="contact.html"
-       style="color: #fff; font-size: 13px; font-weight: 600; text-decoration: underline;">
-      Send a mail by clicking here
-    </a>
-  </div>
-</div>
-  <div class="price-hero" id="price-anchor">
+      <!-- Sub -->
+      <p class="landing-sub">
+        Join other traders like you, who use XauTracker and explore opportunities never seen before.
+      </p>
+
+      <div class="landing-rule"></div>
+
+      <!-- Auth-aware card -->
+      <div class="landing-auth-card">
+        <div class="auth-card-label">Your Account</div>
+        <div id="landing-auth-inner">
+          <div class="auth-skel"></div>
+        </div>
+      </div>
+
+      <!-- Scroll CTA -->
+      <div class="landing-scroll-cta">
+        <a href="#price-anchor"
+           class="landing-scroll-btn"
+           onclick="document.getElementById('price-anchor').scrollIntoView({behavior:'smooth'});return false;">
+          View Latest Gold Price
+          <span class="scroll-arrow">
+            <i class="fa-solid fa-chevron-down"></i>
+          </span>
+        </a>
+      </div>
+
+      <!-- Contact strip -->
+      <div class="landing-contact">
+        <p class="landing-contact-label">
+          Got questions or enquiries? Reach us directly.
+        </p>
+        <div class="landing-contact-btns">
+          <a href="https://wa.me/2348131560586"
+             target="_blank"
+             class="btn-whatsapp">
+            WhatsApp Us
+          </a>
+          <a href="contact.html" class="btn-mail">
+            Send a Mail
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══════════════════════════════════════
+         PRICE DASHBOARD (existing)
+    ══════════════════════════════════════ -->
+    <div class="price-hero" id="price-anchor">
       <div class="price-pair"><i class="fa-solid fa-layer-group" style="font-size:9px;margin-right:4px;"></i>SPOT GOLD · XAU/USD · TROY OZ</div>
       <div id="price-display" class="price-main"><div class="skeleton skel-price"></div></div>
       <div id="price-change"></div>
@@ -228,7 +585,7 @@
       </div>
     </div>
 
-  </div>
+  </div><!-- /content -->
 
   <nav id="bottomnav">
     <a class="nav-btn" data-page="index.html"   href="index.html"><i class="fa-solid fa-house"></i>Home</a>
@@ -243,6 +600,7 @@
 
 <script src="js/api.js"></script>
 <script src="js/charts.js"></script>
+
 <script>
   let activeRange = '1D';
   let homeChart   = null;
@@ -311,71 +669,74 @@
   setInterval(() => loadPrice(renderPrice), 10000);
 
   /* ── Dropdown menu ── */
-function toggleMenu() {
-  const trigger  = document.getElementById('menu-trigger');
-  const dropdown = document.getElementById('dropdown-menu');
-  const isOpen   = dropdown.classList.contains('open');
-  dropdown.classList.toggle('open', !isOpen);
-  trigger.classList.toggle('open',  !isOpen);
-}
-
-/* Close when clicking outside */
-document.addEventListener('click', function(e) {
-  const wrap = document.querySelector('.menu-wrap');
-  if (wrap && !wrap.contains(e.target)) {
-    document.getElementById('dropdown-menu')?.classList.remove('open');
-    document.getElementById('menu-trigger')?.classList.remove('open');
+  function toggleMenu() {
+    const trigger  = document.getElementById('menu-trigger');
+    const dropdown = document.getElementById('dropdown-menu');
+    const isOpen   = dropdown.classList.contains('open');
+    dropdown.classList.toggle('open', !isOpen);
+    trigger.classList.toggle('open',  !isOpen);
   }
-});
+  document.addEventListener('click', function(e) {
+    const wrap = document.querySelector('.menu-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+      document.getElementById('dropdown-menu')?.classList.remove('open');
+      document.getElementById('menu-trigger')?.classList.remove('open');
+    }
+  });
 </script>
+
+<!-- ── Landing auth block (Firebase) ── -->
 <script type="module">
-/* ── Landing auth block ── */
-(async function() {
-  const { initializeApp, getApps } =
-    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-  const { getAuth, onAuthStateChanged } =
-    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  import { initializeApp, getApps }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   const fbConfig = {
-    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
-    authDomain: "xautracker.firebaseapp.com",
-    projectId: "xautracker",
-    storageBucket: "xautracker.firebasestorage.app",
+    apiKey:            "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain:        "xautracker.firebaseapp.com",
+    projectId:         "xautracker",
+    storageBucket:     "xautracker.firebasestorage.app",
     messagingSenderId: "831752609455",
-    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+    appId:             "1:831752609455:web:ea9be478691744afa73e5a"
   };
 
-  const fbApp = getApps().length
-    ? getApps()[0]
-    : initializeApp(fbConfig, 'landing');
-
+  const fbApp = getApps().length ? getApps()[0] : initializeApp(fbConfig, 'landing');
   const auth  = getAuth(fbApp);
-  const block = document.getElementById('landing-auth-block');
+  const inner = document.getElementById('landing-auth-inner');
 
   onAuthStateChanged(auth, user => {
     if (user) {
-      block.innerHTML = `
-        <p style="color:#fff;font-size:13px;margin-bottom:10px;">
-          You're logged in as <strong>${user.email}</strong>.
-        </p>
-        <a href="predict.html"
-           style="display:inline-block;background:#fff;color:#000;font-weight:800;
-                  padding:11px 24px;border-radius:10px;font-size:13px;text-decoration:none;">
+      /* ── Signed in ── */
+      inner.innerHTML = `
+        <div class="auth-user-row">
+          <div class="auth-user-avatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="auth-user-info">
+            <div class="auth-user-status">Logged in</div>
+            <div class="auth-user-email">${user.email}</div>
+          </div>
+        </div>
+        <a href="predict.html" class="btn-landing-primary">
           Access XAUUSD Forecast
         </a>`;
     } else {
-      block.innerHTML = `
-        <p style="color:#fff;font-size:13px;line-height:1.7;margin-bottom:12px;">
-          Create an account easily in just two simple steps, all you need is a phone number for verification, get 3 days trial period.
+      /* ── Guest ── */
+      inner.innerHTML = `
+        <div class="trial-pill">
+          <span class="trial-pill-dot"></span>
+          3 Days Free Trial · No Card Required
+        </div>
+        <p class="auth-guest-text">
+          Create an account easily in just <strong>two simple steps</strong> — all you need is a phone number for verification and get a <strong>3 days trial period</strong>.
         </p>
-        <a href="login.html"
-           style="display:inline-block;background:#fff;color:#000;font-weight:800;
-                  padding:11px 24px;border-radius:10px;font-size:13px;text-decoration:none;">
+        <a href="login.html" class="btn-landing-primary">
           Create Account
         </a>`;
     }
   });
-})();
 </script>
+
 </body>
 </html>
