@@ -1428,8 +1428,8 @@ window.dashSignOut = async () => {
     appId: "1:831752609455:web:ea9be478691744afa73e5a"
   };
 
-  const chatApp  = getApps().find(a => a.name === 'chat') ||
-                   initializeApp(firebaseConfig, 'chat');
+  const chatApp  = getApps().find(a => a.name === 'login') ||
+                   initializeApp(firebaseConfig, 'login');
   const auth     = getAuth(chatApp);
   const db       = getFirestore(chatApp);
   const storage  = getStorage(chatApp);
