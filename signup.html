@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#070c12" />
+  <title>Create New Account</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    html, body {
+      min-height: 100%; background: var(--bg-deep);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .auth-box {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px 28px; width: 100%; max-width: 380px;
+      position: relative; overflow: hidden;
+    }
+    .auth-box::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .auth-logo {
+      width: 52px; height: 52px; background: var(--gold); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: #000; margin: 0 auto 16px;
+    }
+    .auth-title { text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .auth-sub {
+      text-align: center; font-size: 12px; color: var(--txt-2);
+      margin-bottom: 22px; line-height: 1.5;
+    }
+    .trial-pill {
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      background: var(--gold-glow); border: 1px solid var(--gold-dim);
+      border-radius: 10px; padding: 10px 14px;
+      font-size: 12px; color: var(--gold); margin-bottom: 20px;
+      text-align: center; line-height: 1.5;
+    }
+    label {
+      display: block; font-size: 11px; color: var(--txt-2);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 6px; margin-top: 14px;
+    }
+    label:first-of-type { margin-top: 0; }
+    input {
+      width: 100%; background: var(--bg-muted); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--txt-1); font-family: 'Syne', sans-serif;
+      font-size: 14px; padding: 11px 14px; outline: none; transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--gold); }
+    .err-msg {
+      color: var(--red); font-size: 12px; margin-top: 8px; display: none;
+      padding: 8px 12px; background: rgba(255,69,97,0.07);
+      border-radius: 8px; border: 1px solid rgba(255,69,97,0.15);
+    }
+    .btn-primary {
+      width: 100%; padding: 13px; margin-top: 18px; background: var(--gold);
+      color: #000; border: none; border-radius: 10px; font-family: 'Syne', sans-serif;
+      font-size: 14px; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover    { opacity: 0.88; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary {
+      width: 100%; padding: 12px; margin-top: 10px; background: transparent;
+      color: var(--txt-2); border: 1px solid var(--border); border-radius: 10px;
+      font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      gap: 8px; transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+    .form-switch {
+      text-align: center; font-size: 12px; color: var(--txt-2); margin-top: 18px;
+    }
+    .form-switch a {
+      color: var(--gold); font-weight: 600; text-decoration: none;
+    }
+    .step-indicator {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-bottom: 20px;
+    }
+    .step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border); transition: background 0.2s;
+    }
+    .step-dot.active { background: var(--gold); }
+    .spinner { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="auth-box">
+  <div class="auth-logo"><i class="fa-solid fa-coins"></i></div>
+  <div class="auth-title">XAU Tracker</div>
+
+  <div class="trial-pill">
+    <i class="fa-solid fa-gift"></i>
+    <span><strong>3 days free</strong> on first sign up — no card required to start</span>
+  </div>
+
+  <!-- Step indicators -->
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+  </div>
+
+  <!-- ══ STEP 1: Email & Password ══ -->
+  <div id="signup-step1">
+    <label>Email</label>
+    <input type="email" id="su-email" placeholder="you@email.com" autocomplete="email" />
+    <label>Password</label>
+    <input type="password" id="su-pass" placeholder="Minimum 6 characters" autocomplete="new-password" />
+    <label>Confirm Password</label>
+    <input type="password" id="su-pass2" placeholder="Repeat password" autocomplete="new-password" />
+    <div class="err-msg" id="su-err"></div>
+    <button class="btn-primary" id="su-next-btn" onclick="goToPhoneStep()">
+      <i class="fa-solid fa-arrow-right"></i> Continue
+    </button>
+    <div class="form-switch">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2: Phone Verification ══ -->
+  <div id="signup-step2" style="display:none;">
+    <p class="auth-sub">Verify your phone number to claim your free trial. One trial per number.</p>
+    <label>Phone Number</label>
+    <input type="tel" id="su-phone" placeholder="+234xxxxxxx" autocomplete="tel" />
+    <div class="err-msg" id="phone-err"></div>
+
+    <div id="recaptcha-container" style="margin-top:12px;"></div>
+
+    <button class="btn-primary" id="send-otp-btn" onclick="sendOTP()">
+      <i class="fa-solid fa-mobile-screen"></i> Send Verification Code
+    </button>
+
+    <!-- OTP section — hidden until code sent -->
+    <div id="otp-section" style="display:none;margin-top:16px;">
+      <label>Verification Code</label>
+      <input type="number" id="su-otp" placeholder="Enter 6-digit code" />
+      <div class="err-msg" id="otp-err"></div>
+      <button class="btn-primary" id="su-btn" onclick="doSignUp()">
+        <i class="fa-solid fa-rocket"></i> Start Free Trial
+      </button>
+      <button class="btn-secondary" onclick="sendOTP()" style="margin-top:8px;">
+        <i class="fa-solid fa-rotate-right"></i> Resend Code
+      </button>
+    </div>
+
+    <button class="btn-secondary" onclick="backToStep1()" style="margin-top:10px;">
+      <i class="fa-solid fa-arrow-left"></i> Back
+    </button>
+    <div class="form-switch">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth, createUserWithEmailAndPassword,
+    onAuthStateChanged, PhoneAuthProvider, RecaptchaVerifier
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc,
+           getDocs, collection, query, where, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+
+  const app  = initializeApp(firebaseConfig, 'signup');
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  let confirmationResult = null;
+  let recaptchaVerifier  = null;
+
+  /* ── Already logged in — redirect ── */
+  onAuthStateChanged(auth, async user => {
+    if (!user) return;
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (!snap.exists()) { window.location.href = 'predict.html'; return; }
+      const d   = snap.data();
+      const now = Date.now();
+      const hasAccess =
+        (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
+        (d.subscriptionStatus === 'active' && d.currentPeriodEnd &&
+          new Date(d.currentPeriodEnd).getTime() > now) ||
+        (d.manualAccess && (!d.manualAccessExpiresAt ||
+          new Date(d.manualAccessExpiresAt).getTime() > now));
+      window.location.href = hasAccess ? 'predict.html' : 'subscribe.html';
+    } catch { window.location.href = 'predict.html'; }
+  });
+
+  /* ── Step 1 validation ── */
+  window.goToPhoneStep = () => {
+    const email = document.getElementById('su-email').value.trim();
+    const pass  = document.getElementById('su-pass').value;
+    const pass2 = document.getElementById('su-pass2').value;
+    showErr('su-err', '');
+
+    if (!email)          { showErr('su-err', 'Enter your email.');               return; }
+    if (pass.length < 6) { showErr('su-err', 'Password must be 6+ characters.'); return; }
+    if (pass !== pass2)  { showErr('su-err', 'Passwords do not match.');          return; }
+
+    document.getElementById('signup-step1').style.display = 'none';
+    document.getElementById('signup-step2').style.display = 'block';
+    document.getElementById('dot-1').classList.remove('active');
+    document.getElementById('dot-2').classList.add('active');
+    initRecaptcha();
+  };
+
+  window.backToStep1 = () => {
+    document.getElementById('signup-step2').style.display = 'none';
+    document.getElementById('signup-step1').style.display = 'block';
+    document.getElementById('dot-2').classList.remove('active');
+    document.getElementById('dot-1').classList.add('active');
+    if (recaptchaVerifier) {
+      recaptchaVerifier.clear();
+      recaptchaVerifier = null;
+    }
+    document.getElementById('recaptcha-container').innerHTML = '';
+    document.getElementById('otp-section').style.display = 'none';
+    showErr('phone-err', '');
+    showErr('otp-err', '');
+  };
+
+  /* ── reCAPTCHA ── */
+  function initRecaptcha() {
+    if (recaptchaVerifier) return;
+    recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      size: 'normal',
+      'expired-callback': () => {
+        showErr('phone-err', 'reCAPTCHA expired. Please try again.');
+      }
+    });
+    recaptchaVerifier.render();
+  }
+
+  /* ── Send OTP ── */
+  window.sendOTP = async () => {
+    const phone = document.getElementById('su-phone').value.trim();
+    showErr('phone-err', '');
+
+    if (!phone || !phone.startsWith('+')) {
+      showErr('phone-err', 'Enter phone number with country code e.g. +234810xxxxxx');
+      return;
+    }
+
+    const btn = document.getElementById('send-otp-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner spinner"></i> Sending...';
+
+    try {
+      /* Check if phone already used */
+      const phoneQuery = query(
+        collection(db, 'users'),
+        where('phone', '==', phone)
+      );
+      const existing = await getDocs(phoneQuery);
+
+      if (!existing.empty) {
+        const userData = existing.docs[0].data();
+        if (userData.trialEndsAt || userData.subscriptionStatus) {
+          showErr('phone-err',
+            'This phone number has already been used for a free trial. Please sign in or subscribe.');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
+          return;
+        }
+      }
+
+      const { signInWithPhoneNumber } = await import(
+        "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+      );
+      confirmationResult = await signInWithPhoneNumber(auth, phone, recaptchaVerifier);
+
+      document.getElementById('otp-section').style.display = 'block';
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Code Sent';
+
+    } catch (e) {
+      console.error('OTP error:', e);
+      const msg =
+        e.code === 'auth/invalid-phone-number' ? 'Invalid phone number format.' :
+        e.code === 'auth/too-many-requests'    ? 'Too many attempts. Try again later.' :
+        e.code === 'auth/quota-exceeded'       ? 'SMS quota exceeded. Try again later.' :
+        'Failed to send code: ' + e.message;
+      showErr('phone-err', msg);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
+      if (recaptchaVerifier) {
+        recaptchaVerifier.clear();
+        recaptchaVerifier = null;
+        document.getElementById('recaptcha-container').innerHTML = '';
+        initRecaptcha();
+      }
+    }
+  };
+
+  /* ── Complete Sign Up ── */
+  window.doSignUp = async () => {
+    const otp   = document.getElementById('su-otp').value.trim();
+    const email = document.getElementById('su-email').value.trim();
+    const pass  = document.getElementById('su-pass').value;
+    const phone = document.getElementById('su-phone').value.trim();
+    showErr('otp-err', '');
+
+    if (!otp || otp.length !== 6) {
+      showErr('otp-err', 'Enter the 6-digit code sent to your phone.');
+      return;
+    }
+    if (!confirmationResult) {
+      showErr('otp-err', 'Please request a verification code first.');
+      return;
+    }
+
+    setLoading('su-btn', true, 'Verifying...',
+      '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+
+    try {
+      /* Verify OTP — just checks it's valid, we don't sign in with phone */
+      PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
+
+      /* Create email/password account */
+      const { user } = await createUserWithEmailAndPassword(auth, email, pass);
+
+      const trialEndsAt = new Date(
+        Date.now() + 3 * 24 * 60 * 60 * 1000
+      ).toISOString();
+
+      await setDoc(doc(db, 'users', user.uid), {
+        email,
+        phone,
+        createdAt:             serverTimestamp(),
+        trialEndsAt,
+        subscriptionStatus:    'trial',
+        flutterwaveTxRef:      null,
+        flutterwaveTxId:       null,
+        currentPeriodEnd:      null,
+        manualAccess:          false,
+        manualAccessNote:      '',
+        manualAccessExpiresAt: null,
+        lastPaymentAt:         null,
+        lastPaymentAmount:     null,
+      });
+
+      window.location.href = 'predict.html';
+
+    } catch (e) {
+      console.error('Signup error:', e);
+      const msg =
+        e.code === 'auth/invalid-verification-code' ? 'Incorrect code. Try again.' :
+        e.code === 'auth/code-expired'              ? 'Code expired. Request a new one.' :
+        e.code === 'auth/email-already-in-use'      ? 'An account with this email already exists.' :
+        e.code === 'auth/invalid-email'             ? 'Enter a valid email address.' :
+        'Sign up failed: ' + e.message;
+      showErr('otp-err', msg);
+      setLoading('su-btn', false, '',
+        '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+    }
+  };
+
+  /* ── Helpers ── */
+  function setLoading(btnId, loading, loadText, origHTML) {
+    const btn = document.getElementById(btnId);
+    btn.disabled  = loading;
+    btn.innerHTML = loading
+      ? `<i class="fa-solid fa-spinner spinner"></i> ${loadText}`
+      : origHTML;
+  }
+
+  function showErr(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent   = msg;
+    el.style.display = msg ? 'block' : 'none';
+  }
+</script>
+</body>
+</html>
