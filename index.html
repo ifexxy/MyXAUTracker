@@ -695,7 +695,7 @@
     appId:             "1:831752609455:web:ea9be478691744afa73e5a"
   };
 
-  const fbApp = getApps().length ? getApps()[0] : initializeApp(fbConfig);
+  const app  = initializeApp(firebaseConfig, 'login');
   const auth  = getAuth(fbApp);
   console.log('Apps:', getApps().map(a => a.name));
 console.log('Current user:', auth.currentUser);
