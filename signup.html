@@ -709,6 +709,7 @@ const COUNTRIES = [
 ];
 
 let selectedCountry = COUNTRIES[0];
+window.selectedCountry = COUNTRIES[0];
 
 function renderCountryList(list) {
   const el = document.getElementById('country-list');
@@ -723,6 +724,7 @@ function renderCountryList(list) {
 
 function selectCountry(idx) {
   selectedCountry = COUNTRIES[idx];
+  window.selectedCountry = COUNTRIES[idx];
   document.getElementById('selected-flag').textContent = selectedCountry.flag;
   document.getElementById('selected-code').textContent = selectedCountry.code;
   closeCountryDropdown();
