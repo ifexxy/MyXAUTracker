@@ -1,145 +1,71 @@
-const ALLOWED_ORIGINS = new Set([
-  'https://www.xautracker.com',
-  'https://xautracker.com',
-]);
-
-function setCors(req, res) {
-  const origin = req.headers.origin;
-
-  if (origin && ALLOWED_ORIGINS.has(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  } else {
-    res.setHeader('Access-Control-Allow-Origin', 'https://www.xautracker.com');
-  }
-
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-}
-
 function toNumber(value) {
   const num = Number.parseFloat(value);
   return Number.isFinite(num) ? num : null;
 }
 
-function roundPrice(value) {
+function round(value, decimals = 2) {
   const num = toNumber(value);
-  return num === null ? null : Number(num.toFixed(2));
+  if (num === null) return null;
+  return Number(num.toFixed(decimals));
 }
 
-function makeSyntheticFields(price) {
-  return {
-    open: roundPrice(price * 0.998),
-    high: roundPrice(price * 1.007),
-    low: roundPrice(price * 0.993),
-    bid: roundPrice(price - 0.30),
-    ask: roundPrice(price + 0.30),
-    ch: roundPrice(price * 0.002),
-    chp: 0.20,
-  };
-}
-
-function normalizeGoldApiResponse(data) {
-  const price = roundPrice(
-    data?.price ??
-    data?.close ??
-    data?.rate ??
-    data?.value
-  );
-
-  if (price === null) {
-    throw new Error('Gold API response did not include a valid price');
-  }
-
-  const synthetic = makeSyntheticFields(price);
-
-  return {
-    price,
-    open: roundPrice(data?.open ?? data?.open_price) ?? synthetic.open,
-    high: roundPrice(data?.high ?? data?.high_price) ?? synthetic.high,
-    low: roundPrice(data?.low ?? data?.low_price) ?? synthetic.low,
-    bid: roundPrice(data?.bid) ?? synthetic.bid,
-    ask: roundPrice(data?.ask) ?? synthetic.ask,
-    ch: roundPrice(data?.ch ?? data?.change) ?? synthetic.ch,
-    chp: roundPrice(data?.chp ?? data?.percent_change ?? data?.change_percent) ?? synthetic.chp,
-    source: 'Gold API',
-    updatedAt: data?.updatedAt ?? data?.updated_at ?? data?.timestamp ?? null,
-  };
-}
-
-function normalizeTwelveDataResponse(data) {
-  if (data?.status === 'error') {
-    throw new Error(data?.message || 'Twelve Data returned an error');
-  }
-
-  const price = roundPrice(data?.close);
-
-  if (price === null) {
-    throw new Error('Twelve Data response did not include a valid close price');
-  }
-
-  return {
-    price,
-    open: roundPrice(data?.open) ?? roundPrice(price * 0.998),
-    high: roundPrice(data?.high) ?? roundPrice(price * 1.007),
-    low: roundPrice(data?.low) ?? roundPrice(price * 0.993),
-    bid: roundPrice(data?.bid) ?? roundPrice(price - 0.30),
-    ask: roundPrice(data?.ask) ?? roundPrice(price + 0.30),
-    ch: roundPrice(data?.change) ?? roundPrice(price * 0.002),
-    chp: roundPrice(data?.percent_change) ?? 0.20,
-    source: 'Twelve Data',
-  };
-}
-
-async function fetchJson(url, options = {}) {
+async function fetchJson(url) {
   const response = await fetch(url, {
-    ...options,
     headers: {
       Accept: 'application/json',
-      ...(options.headers || {}),
     },
   });
 
-  const text = await response.text();
-
-  let data;
-  try {
-    data = text ? JSON.parse(text) : {};
-  } catch {
-    throw new Error(`Bad JSON from ${url}`);
-  }
+  const data = await response.json();
 
   if (!response.ok) {
-    const message =
-      data?.message ||
-      data?.error ||
-      data?.errors?.[0]?.message ||
-      `HTTP ${response.status}`;
-
-    throw new Error(message);
+    throw new Error(data?.message || data?.error || `HTTP ${response.status}`);
   }
 
   return data;
 }
 
-async function getGoldApiPrice() {
-  const headers = {};
-
-  if (process.env.GOLD_API_KEY) {
-    headers['x-api-key'] = process.env.GOLD_API_KEY;
+async function fetchMetalsDevPrice() {
+  if (!process.env.METALS_DEV_KEY) {
+    throw new Error('Missing METALS_DEV_KEY');
   }
 
-  if (process.env.GOLD_API_BEARER_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GOLD_API_BEARER_TOKEN}`;
-  }
-
-  const data = await fetchJson('https://api.gold-api.com/price/XAU', {
-    headers,
+  const params = new URLSearchParams({
+    api_key: process.env.METALS_DEV_KEY,
+    metal: 'gold',
+    currency: 'USD',
   });
 
-  return normalizeGoldApiResponse(data);
+  const data = await fetchJson(
+    `https://api.metals.dev/v1/metal/spot?${params}`
+  );
+
+  if (data?.status !== 'success' || !data?.rate) {
+    throw new Error('Bad Metals.Dev response');
+  }
+
+  const rate = data.rate;
+  const price = round(rate.price);
+
+  if (price === null) {
+    throw new Error('Metals.Dev did not return a valid price');
+  }
+
+  return {
+    price,
+    open: null,
+    high: round(rate.high),
+    low: round(rate.low),
+    bid: round(rate.bid),
+    ask: round(rate.ask),
+    ch: round(rate.change),
+    chp: round(rate.change_percent),
+    source: 'Metals.Dev',
+    updatedAt: data.timestamp || null,
+  };
 }
 
-async function getTwelveDataPrice() {
+async function fetchTwelveDataPrice() {
   if (!process.env.TWELVE_DATA_KEY) {
     throw new Error('Missing TWELVE_DATA_KEY');
   }
@@ -151,11 +77,28 @@ async function getTwelveDataPrice() {
 
   const data = await fetchJson(`https://api.twelvedata.com/quote?${params}`);
 
-  return normalizeTwelveDataResponse(data);
+  if (data?.status === 'error' || !data?.close) {
+    throw new Error(data?.message || 'Bad Twelve Data response');
+  }
+
+  const price = round(data.close);
+
+  return {
+    price,
+    open: round(data.open),
+    high: round(data.high),
+    low: round(data.low),
+    bid: round(data.bid) ?? round(price - 0.30),
+    ask: round(data.ask) ?? round(price + 0.30),
+    ch: round(data.change),
+    chp: round(data.percent_change),
+    source: 'Twelve Data',
+  };
 }
 
 export default async function handler(req, res) {
-  setCors(req, res);
+  res.setHeader('Access-Control-Allow-Origin', 'https://www.xautracker.com');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
@@ -168,34 +111,34 @@ export default async function handler(req, res) {
   }
 
   try {
-    const result = await getGoldApiPrice();
+    const result = await fetchMetalsDevPrice();
 
-    res.setHeader('Cache-Control', 's-maxage=10, stale-while-revalidate=30');
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
     return res.status(200).json(result);
-  } catch (goldApiError) {
-    console.error('Gold API failed:', goldApiError.message);
+  } catch (primaryError) {
+    console.error('Metals.Dev failed:', primaryError.message);
 
     try {
-      const fallback = await getTwelveDataPrice();
+      const fallback = await fetchTwelveDataPrice();
 
-      res.setHeader('Cache-Control', 's-maxage=10, stale-while-revalidate=30');
+      res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
       return res.status(200).json({
         ...fallback,
         fallback: true,
-        primaryError: goldApiError.message,
+        primaryError: primaryError.message,
       });
-    } catch (twelveDataError) {
-      console.error('Twelve Data fallback failed:', twelveDataError.message);
+    } catch (fallbackError) {
+      console.error('Twelve Data failed:', fallbackError.message);
 
       return res.status(500).json({
         error: 'Both price APIs failed',
         primary: {
-          source: 'Gold API',
-          message: goldApiError.message,
+          source: 'Metals.Dev',
+          message: primaryError.message,
         },
         fallback: {
           source: 'Twelve Data',
-          message: twelveDataError.message,
+          message: fallbackError.message,
         },
       });
     }
