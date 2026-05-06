@@ -262,6 +262,200 @@
       border-radius: 10px; font-size: 11px; color: var(--txt-2); line-height: 1.5;
     }
     .disclaimer i { color: var(--red); margin-right: 4px; }
+
+    /* ── Forecast access wall ── */
+#predict-access-wall {
+  display: none;
+  margin: 0 16px 14px;
+  padding: 28px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#predict-access-wall::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.predict-wall-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: var(--gold-glow);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin: 0 auto 16px;
+}
+
+.predict-wall-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--txt-1);
+  margin-bottom: 8px;
+}
+
+.predict-wall-sub {
+  font-size: 13px;
+  color: var(--txt-2);
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+
+.predict-auth-form {
+  text-align: left;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+.predict-auth-form label {
+  display: block;
+  font-size: 11px;
+  color: var(--txt-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  margin-top: 14px;
+}
+
+.predict-auth-form label:first-of-type {
+  margin-top: 0;
+}
+
+.predict-auth-form input {
+  width: 100%;
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--txt-1);
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.predict-auth-form input:focus {
+  border-color: var(--gold);
+}
+
+.predict-auth-error,
+.predict-auth-ok {
+  font-size: 12px;
+  margin-top: 8px;
+  display: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.predict-auth-error {
+  color: var(--red);
+  background: rgba(255,69,97,0.07);
+  border: 1px solid rgba(255,69,97,0.15);
+}
+
+.predict-auth-ok {
+  color: var(--green);
+  background: var(--green-dim);
+}
+
+.predict-auth-btn {
+  width: 100%;
+  padding: 13px;
+  margin-top: 18px;
+  background: var(--gold);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.predict-auth-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.predict-auth-secondary {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background: transparent;
+  color: var(--txt-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.predict-auth-secondary:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.predict-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+  color: var(--txt-3);
+  font-size: 12px;
+}
+
+.predict-auth-divider::before,
+.predict-auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.predict-auth-switch {
+  text-align: center;
+  font-size: 12px;
+  color: var(--txt-2);
+  margin-top: 18px;
+}
+
+.predict-auth-switch a {
+  color: var(--gold);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
   </style>
 
   <!-- Auth guard — must be first script, protects this page -->
@@ -348,8 +542,65 @@
     </button>
   </div>
 </div>
+<div id="content">
+    <!-- Forecast access wall -->
+<div id="predict-access-wall">
+  <div class="predict-wall-icon">
+    <i class="fa-solid fa-lock"></i>
+  </div>
 
-    
+  <div class="predict-wall-title">Access Forecast</div>
+
+  <div class="predict-wall-sub">
+    Sign in with an active trial or subscription to view the XAU/USD forecast.
+  </div>
+
+  <!-- Sign in form -->
+  <div id="predict-form-signin" class="predict-auth-form">
+    <label>Email</label>
+    <input type="email" id="predict-si-email" placeholder="you@email.com" autocomplete="email" />
+
+    <label>Password</label>
+    <input type="password" id="predict-si-pass" placeholder="••••••••" autocomplete="current-password" />
+
+    <div class="predict-auth-error" id="predict-si-err"></div>
+
+    <button class="predict-auth-btn" id="predict-si-btn" onclick="predictDoSignIn()">
+      <i class="fa-solid fa-right-to-bracket"></i> Sign In
+    </button>
+
+    <div class="predict-auth-divider">or</div>
+
+    <a href="signup.html" class="predict-auth-secondary">
+      <i class="fa-solid fa-user-plus"></i> Create Account — 7 Days Free
+    </a>
+
+    <div class="predict-auth-switch">
+      <a onclick="predictShowReset()">Forgot password?</a>
+    </div>
+  </div>
+
+  <!-- Reset form -->
+  <div id="predict-form-reset" class="predict-auth-form" style="display:none;">
+    <div class="predict-wall-sub" style="margin-bottom:16px;">
+      Enter your email and we'll send a password reset link.
+    </div>
+
+    <label>Email</label>
+    <input type="email" id="predict-rs-email" placeholder="you@email.com" autocomplete="email" />
+
+    <div class="predict-auth-error" id="predict-rs-err"></div>
+    <div class="predict-auth-ok" id="predict-rs-ok">Reset link sent. Check your inbox or spam folder.</div>
+
+    <button class="predict-auth-btn" id="predict-rs-btn" onclick="predictDoReset()">
+      <i class="fa-solid fa-envelope"></i> Send Reset Link
+    </button>
+
+    <div class="predict-auth-switch">
+      <a onclick="predictShowSignIn()">Back to sign in</a>
+    </div>
+  </div>
+</div>
     <div class="predict-hero">
       <div class="predict-header">
         <div class="predict-icon"><i class="fa-solid fa-brain"></i></div>
@@ -1081,8 +1332,11 @@ document.addEventListener('click', function(e) {
 <script type="module">
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, onAuthStateChanged }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+  getAuth, onAuthStateChanged,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, getDoc }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -1099,49 +1353,193 @@ document.addEventListener('click', function(e) {
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
+  function showPredictAccessWall(message) {
+  const wall = document.getElementById('predict-access-wall');
+  const dashboard = document.getElementById('account-dashboard');
+
+  if (wall) wall.style.display = 'block';
+  if (dashboard) dashboard.style.display = 'none';
+
+  if (message) {
+    showPredictErr('predict-si-err', message);
+  }
+}
+
+function hidePredictAccessWall() {
+  const wall = document.getElementById('predict-access-wall');
+
+  if (wall) {
+    wall.style.display = 'none';
+  }
+}
+
+function showPredictErr(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+function setPredictLoading(btnId, loading, loadText, originalHTML) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? `<i class="fa-solid fa-spinner spinner"></i> ${loadText}`
+    : originalHTML;
+}
+
+window.predictShowReset = () => {
+  document.getElementById('predict-form-signin').style.display = 'none';
+  document.getElementById('predict-form-reset').style.display = 'block';
+  showPredictErr('predict-si-err', '');
+  showPredictErr('predict-rs-err', '');
+  document.getElementById('predict-rs-ok').style.display = 'none';
+};
+
+window.predictShowSignIn = () => {
+  document.getElementById('predict-form-reset').style.display = 'none';
+  document.getElementById('predict-form-signin').style.display = 'block';
+  showPredictErr('predict-si-err', '');
+  showPredictErr('predict-rs-err', '');
+  document.getElementById('predict-rs-ok').style.display = 'none';
+};
+
+window.predictDoSignIn = async () => {
+  const email = document.getElementById('predict-si-email').value.trim();
+  const pass = document.getElementById('predict-si-pass').value;
+
+  showPredictErr('predict-si-err', '');
+
+  if (!email || !pass) {
+    showPredictErr('predict-si-err', 'Enter your email and password.');
+    return;
+  }
+
+  setPredictLoading(
+    'predict-si-btn',
+    true,
+    'Signing in...',
+    '<i class="fa-solid fa-right-to-bracket"></i> Sign In'
+  );
+
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+
+    /*
+      Do not redirect. onAuthStateChanged will fire, check access,
+      hide the access wall, and render the dashboard.
+    */
+  } catch (e) {
+    const msg =
+      e.code === 'auth/user-not-found' ? 'No account found with this email.' :
+      e.code === 'auth/wrong-password' ? 'Incorrect password.' :
+      e.code === 'auth/invalid-credential' ? 'Incorrect email or password.' :
+      e.code === 'auth/too-many-requests' ? 'Too many attempts. Try again later.' :
+      'Sign in failed. Check your details.';
+
+    showPredictErr('predict-si-err', msg);
+
+    setPredictLoading(
+      'predict-si-btn',
+      false,
+      '',
+      '<i class="fa-solid fa-right-to-bracket"></i> Sign In'
+    );
+  }
+};
+
+window.predictDoReset = async () => {
+  const email = document.getElementById('predict-rs-email').value.trim();
+
+  showPredictErr('predict-rs-err', '');
+  document.getElementById('predict-rs-ok').style.display = 'none';
+
+  if (!email) {
+    showPredictErr('predict-rs-err', 'Enter your email address.');
+    return;
+  }
+
+  setPredictLoading(
+    'predict-rs-btn',
+    true,
+    'Sending...',
+    '<i class="fa-solid fa-envelope"></i> Send Reset Link'
+  );
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    document.getElementById('predict-rs-ok').style.display = 'block';
+  } catch {
+    showPredictErr('predict-rs-err', 'Failed to send reset link. Check the email and try again.');
+  } finally {
+    setPredictLoading(
+      'predict-rs-btn',
+      false,
+      '',
+      '<i class="fa-solid fa-envelope"></i> Send Reset Link'
+    );
+  }
+};
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+
+  const wall = document.getElementById('predict-access-wall');
+  if (!wall || wall.style.display === 'none') return;
+
+  const signin = document.getElementById('predict-form-signin');
+  const reset = document.getElementById('predict-form-reset');
+
+  if (signin.style.display !== 'none') window.predictDoSignIn();
+  if (reset.style.display !== 'none') window.predictDoReset();
+});
+
   onAuthStateChanged(auth, async user => {
-    if (!user) {
-      window.location.replace('login.html');
+  if (!user) {
+    showPredictAccessWall();
+    return;
+  }
+
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+
+    if (!snap.exists()) {
+      showPredictAccessWall('Your account profile was not found. Please create an account or contact support.');
       return;
     }
 
-    try {
-      const snap = await getDoc(doc(db, 'users', user.uid));
+    const d = snap.data();
+    const now = Date.now();
 
-      if (!snap.exists()) {
-        window.location.replace('subscribe.html');
-        return;
-      }
+    const trialActive =
+      d.trialEndsAt &&
+      new Date(d.trialEndsAt).getTime() > now;
 
-      const d   = snap.data();
-      const now = Date.now();
+    const subscriptionActive =
+      d.subscriptionStatus === 'active' &&
+      d.currentPeriodEnd &&
+      new Date(d.currentPeriodEnd).getTime() > now;
 
-      const trialActive =
-        d.trialEndsAt &&
-        new Date(d.trialEndsAt).getTime() > now;
+    const manualActive =
+      d.manualAccess === true &&
+      (!d.manualAccessExpiresAt ||
+        new Date(d.manualAccessExpiresAt).getTime() > now);
 
-      const subscriptionActive =
-        d.subscriptionStatus === 'active' &&
-        d.currentPeriodEnd &&
-        new Date(d.currentPeriodEnd).getTime() > now;
-
-      const manualActive =
-        d.manualAccess === true &&
-        (!d.manualAccessExpiresAt ||
-          new Date(d.manualAccessExpiresAt).getTime() > now);
-
-      if (trialActive || subscriptionActive || manualActive) {
-        /* Access granted — render dashboard */
-renderDashboard(user, d, now);
-return;
-      }
-
-      window.location.replace('subscribe.html');
-
-    } catch (e) {
-      console.error('Guard error:', e.message);
+    if (trialActive || subscriptionActive || manualActive) {
+      hidePredictAccessWall();
+      renderDashboard(user, d, now);
+      return;
     }
-  });
+
+    showPredictAccessWall('Your trial or subscription has ended. Please subscribe to continue.');
+  } catch (e) {
+    console.error('Guard error:', e.message);
+    showPredictAccessWall('Unable to check your access right now. Please try again.');
+  }
+});
 
   function renderDashboard(user, d, now) {
   document.getElementById('account-dashboard').style.display = 'block';
