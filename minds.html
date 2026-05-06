@@ -740,7 +740,7 @@ setActiveNav();
   };
 
   const app     = getApps().find(a => a.name === 'login') ||
-                  const app = initializeApp(firebaseConfig);
+                  initializeApp(firebaseConfig, 'login');
   const auth    = getAuth(app);
   const db      = getFirestore(app);
   const storage = getStorage(app);
