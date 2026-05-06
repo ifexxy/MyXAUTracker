@@ -897,7 +897,7 @@ renderCountryList(COUNTRIES);
       const { signInWithPhoneNumber } = await import(
         "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
       );
-      confirmationResult = await signInWithPhoneNumber(auth, phone, recaptchaVerifier);
+      confirmationResult = await signInWithPhoneNumber(auth, fullPhone, recaptchaVerifier);
 
       document.getElementById('otp-section').style.display = 'block';
       btn.innerHTML = '<i class="fa-solid fa-check"></i> Code Sent';
