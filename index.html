@@ -702,6 +702,7 @@ console.log('Current user:', auth.currentUser);
   const inner = document.getElementById('landing-auth-inner');
 
   onAuthStateChanged(auth, user => {
+    console.log('Auth state fired. User:', user);
     if (user) {
       /* ── Signed in ── */
       inner.innerHTML = `
