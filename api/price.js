@@ -45,26 +45,39 @@ async function fetchMetalsDevPrice() {
   }
 
   const rate = data.rate;
+
   const price = round(rate.price);
 
   if (price === null) {
     throw new Error('Metals.Dev did not return a valid price');
   }
 
+  const ch = round(rate.change) ?? 0;
+  const chp = round(rate.change_percent) ?? 0;
+
+  /*
+    Metals.Dev spot response may not include "open".
+    If change is current price minus previous/open reference,
+    then open/reference price can be derived as price - change.
+  */
+  const open = round(rate.open) ?? round(rate.open_price) ?? round(price - ch);
+
+  const high = round(rate.high) ?? Math.max(price, open);
+  const low = round(rate.low) ?? Math.min(price, open);
+
   return {
     price,
-    open: null,
-    high: round(rate.high),
-    low: round(rate.low),
-    bid: round(rate.bid),
-    ask: round(rate.ask),
-    ch: round(rate.change),
-    chp: round(rate.change_percent),
+    open,
+    high,
+    low,
+    bid: round(rate.bid) ?? round(price - 0.30),
+    ask: round(rate.ask) ?? round(price + 0.30),
+    ch,
+    chp,
     source: 'Metals.Dev',
     updatedAt: data.timestamp || null,
   };
 }
-
 async function fetchTwelveDataPrice() {
   if (!process.env.TWELVE_DATA_KEY) {
     throw new Error('Missing TWELVE_DATA_KEY');
