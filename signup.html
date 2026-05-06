@@ -394,7 +394,7 @@
     <h1 class="page-title">Create Account</h1>
     <p class="page-sub">Sign up to access gold price predictions and market signals.</p>
 
-    <div class="trial-badge">3 Days Free Trial · No payment Required</div>
+    <div class="trial-badge">7 Days Free Trial · No payment Required</div>
 
     <div class="step-row">
       <div class="step-item">
@@ -968,8 +968,8 @@ renderCountryList(COUNTRIES);
       const { user } = await createUserWithEmailAndPassword(auth, email, pass);
 
       const trialEndsAt = new Date(
-        Date.now() + 3 * 24 * 60 * 60 * 1000
-      ).toISOString();
+  Date.now() + 7 * 24 * 60 * 60 * 1000
+).toISOString();
 
       await setDoc(doc(db, 'users', user.uid), {
         email,
