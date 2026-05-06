@@ -879,8 +879,7 @@ renderCountryList(COUNTRIES);
       /* Check if phone already used */
       const phoneQuery = query(
         collection(db, 'users'),
-        where('phone', '==', phone)
-      );
+        where('phone', '==', fullPhone));
       const existing = await getDocs(phoneQuery);
 
       if (!existing.empty) {
