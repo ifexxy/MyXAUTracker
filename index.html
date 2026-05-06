@@ -11,9 +11,9 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Welcome to XauTracker - Trqcack Real-time Gold Prices</title>
-  <meta name="description" content="Track live XAU/USD gold spot prices in real time, use our advanced model to forecast gold price" />
-  <meta name="keywords" content="XAU USD, gold price live, gold spot price, gold trading, gold tracker, gold market, XAU price today, live gold price" />
+  <title>Welcome to XauTracker - Traack Real-time Gold Prices</title>
+  <meta name="description" content="Track live XAU/USD gold spot prices in real time, using our advanced model to forecast gold price" />
+  <meta name="keywords" content="XAUUSD, gold price live, gold spot price, gold trading, gold tracker, gold market, XAU price today, live gold price" />
   <meta name="author" content="XAU Tracker" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://www.xautracker.com/" />
@@ -697,6 +697,8 @@
 
   const fbApp = getApps().length ? getApps()[0] : initializeApp(fbConfig);
   const auth  = getAuth(fbApp);
+  console.log('Apps:', getApps().map(a => a.name));
+console.log('Current user:', auth.currentUser);
   const inner = document.getElementById('landing-auth-inner');
 
   onAuthStateChanged(auth, user => {
@@ -723,7 +725,7 @@
           3 Days Free Trial · No Card Required
         </div>
         <p class="auth-guest-text">
-          Create an account easily in just <strong>two simple steps</strong> — all you need is a phone number for verification and get a <strong>3 days trial period</strong>.
+          Create an account easily in just <strong>two simple steps</strong>, all you need is a phone number for verification and get a <strong>3 days trial period</strong>.
         </p>
         <a href="login.html" class="btn-landing-primary">
           Create Account
