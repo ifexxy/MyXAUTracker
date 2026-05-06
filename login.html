@@ -137,7 +137,6 @@
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, getDoc }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { browserLocalPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
@@ -178,7 +177,6 @@
     setLoading('si-btn', true, 'Signing in...',
       '<i class="fa-solid fa-right-to-bracket"></i> Sign In');
     try {
-      await setPersistence(auth, browserLocalPersistence);
       await signInWithEmailAndPassword(auth, email, pass);
     } catch (e) {
       const msg =
