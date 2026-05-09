@@ -945,7 +945,7 @@ function computeEntrySignals(price, chp, high, low, atr, sess) {
   } else {
     sig1h   = 'NO SIGNAL';
     dir1h   = 'Momentum too weak for a 1h trade';
-    reason1h = `Only ${absMom.toFixed(2)}% daily move. Insufficient directional conviction. Stand aside.`;
+    
     conf1h  = 40;
     badge1h = { cls: 'badge-flat', txt: 'SKIP' };
   }
