@@ -425,64 +425,64 @@
           <div class="tl-badge badge-live">LIVE</div>
         </div>
 
-        <!-- SHORT TERM GROUP -->
-        <div class="tl-group-label">Short-Term · Micro Moves</div>
+       <!-- ENTRY TIMING GROUP -->
+        <div class="tl-group-label">Best Entry Windows</div>
 
-        <!-- 5 minutes -->
+        <!-- 1H Trade Entry -->
         <div class="timeline-row">
           <div class="tl-dot-col">
             <div class="tl-dot done"></div>
             <div class="tl-line"></div>
           </div>
           <div class="tl-body">
-            <div class="tl-label"><i class="fa-solid fa-bolt" style="font-size:8px;margin-right:4px;"></i>5 Min Forecast</div>
-            <div class="tl-price" id="pred-5m">—</div>
-            <div class="tl-sub"  id="pred-5m-chg"></div>
-            <div class="tl-range" id="pred-5m-range"></div>
+            <div class="tl-label"><i class="fa-solid fa-stopwatch" style="font-size:8px;margin-right:4px;"></i>1-Hour Trade · Best Entry</div>
+            <div class="tl-price" id="entry-1h-time">—</div>
+            <div class="tl-sub"  id="entry-1h-window"></div>
+            <div class="tl-range" id="entry-1h-reason"></div>
             <div class="tl-conf-row">
-              <div class="conf-bar"><div class="conf-fill high" id="conf-5m" style="width:0%"></div></div>
-              <span class="conf-label" id="conf-5m-lbl">—</span>
+              <div class="conf-bar"><div class="conf-fill high" id="conf-entry-1h" style="width:0%"></div></div>
+              <span class="conf-label" id="conf-entry-1h-lbl">—</span>
             </div>
           </div>
-          <div class="tl-badge" id="pred-5m-badge">—</div>
+          <div class="tl-badge" id="entry-1h-badge">—</div>
         </div>
 
-        <!-- 10 minutes -->
+        <!-- 4H Trade Entry -->
         <div class="timeline-row">
           <div class="tl-dot-col">
             <div class="tl-dot done"></div>
             <div class="tl-line"></div>
           </div>
           <div class="tl-body">
-            <div class="tl-label"><i class="fa-solid fa-gauge" style="font-size:8px;margin-right:4px;"></i>10 Min Forecast</div>
-            <div class="tl-price" id="pred-10m">—</div>
-            <div class="tl-sub"  id="pred-10m-chg"></div>
-            <div class="tl-range" id="pred-10m-range"></div>
+            <div class="tl-label"><i class="fa-solid fa-hourglass-half" style="font-size:8px;margin-right:4px;"></i>4-Hour Trade · Best Entry</div>
+            <div class="tl-price" id="entry-4h-time">—</div>
+            <div class="tl-sub"  id="entry-4h-window"></div>
+            <div class="tl-range" id="entry-4h-reason"></div>
             <div class="tl-conf-row">
-              <div class="conf-bar"><div class="conf-fill high" id="conf-10m" style="width:0%"></div></div>
-              <span class="conf-label" id="conf-10m-lbl">—</span>
+              <div class="conf-bar"><div class="conf-fill medium" id="conf-entry-4h" style="width:0%"></div></div>
+              <span class="conf-label" id="conf-entry-4h-lbl">—</span>
             </div>
           </div>
-          <div class="tl-badge" id="pred-10m-badge">—</div>
+          <div class="tl-badge" id="entry-4h-badge">—</div>
         </div>
 
-        <!-- 15 minutes -->
+        <!-- 24H Trade Entry -->
         <div class="timeline-row">
           <div class="tl-dot-col">
             <div class="tl-dot done"></div>
             <div class="tl-line"></div>
           </div>
           <div class="tl-body">
-            <div class="tl-label"><i class="fa-solid fa-hourglass-start" style="font-size:8px;margin-right:4px;"></i>15 Min Forecast</div>
-            <div class="tl-price" id="pred-15m">—</div>
-            <div class="tl-sub"  id="pred-15m-chg"></div>
-            <div class="tl-range" id="pred-15m-range"></div>
+            <div class="tl-label"><i class="fa-solid fa-calendar-day" style="font-size:8px;margin-right:4px;"></i>24-Hour Trade · Best Entry</div>
+            <div class="tl-price" id="entry-24h-time">—</div>
+            <div class="tl-sub"  id="entry-24h-window"></div>
+            <div class="tl-range" id="entry-24h-reason"></div>
             <div class="tl-conf-row">
-              <div class="conf-bar"><div class="conf-fill medium" id="conf-15m" style="width:0%"></div></div>
-              <span class="conf-label" id="conf-15m-lbl">—</span>
+              <div class="conf-bar"><div class="conf-fill low" id="conf-entry-24h" style="width:0%"></div></div>
+              <span class="conf-label" id="conf-entry-24h-lbl">—</span>
             </div>
           </div>
-          <div class="tl-badge" id="pred-15m-badge">—</div>
+          <div class="tl-badge" id="entry-24h-badge">—</div>
         </div>
 
         <!-- MEDIUM TERM GROUP -->
@@ -865,6 +865,174 @@ function buildPredictions(price, chp, high, low) {
   };
 }
 
+  /* ── Entry timing engine ── */
+function computeEntryWindows(sess, chp, atr, price) {
+  const now       = new Date();
+  const localHour = now.getHours();
+  const localMin  = now.getMinutes();
+
+  /* Helper: format a future local time given offset in minutes */
+  function futureTime(offsetMinutes) {
+    const d = new Date(now.getTime() + offsetMinutes * 60000);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  /* Helper: format a date if it's tomorrow */
+  function futureLabel(offsetMinutes) {
+    const d   = new Date(now.getTime() + offsetMinutes * 60000);
+    const isToday = d.toDateString() === now.toDateString();
+    return isToday
+      ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      : d.toLocaleDateString([], { weekday: 'short' }) + ' '
+        + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  const isUp     = chp >= 0;
+  const volatile = atr > 35;
+
+  /* ── 1-Hour Trade ──
+     Best 1h entries align with session opens or momentum confirmations.
+     - London open (local): best if user is in session
+     - NY open: second best
+     - If currently in overlap (peak vol): enter at next round hour
+     - Avoid Asian session for 1h trades (low vol = tight ranges) */
+  let entry1h, window1h, reason1h, conf1h, badge1h;
+
+  const utcH = new Date().getUTCHours();
+
+  if (sess.overlap) {
+    /* Already in peak — next clean entry is next round hour */
+    const minsToNextHour = 60 - localMin;
+    entry1h  = futureTime(minsToNextHour);
+    window1h = `Window: ${futureTime(minsToNextHour)} – ${futureTime(minsToNextHour + 60)}`;
+    reason1h = 'London/NY overlap · peak liquidity · wait for next hour candle';
+    conf1h   = 82;
+    badge1h  = { cls: 'badge-bull', txt: 'NOW' };
+  } else if (sess.ny && !sess.overlap) {
+    /* NY session, no overlap — good for 1h */
+    const minsToNextHour = 60 - localMin;
+    entry1h  = futureTime(minsToNextHour);
+    window1h = `Window: ${futureTime(minsToNextHour)} – ${futureTime(minsToNextHour + 60)}`;
+    reason1h = 'NY session active · strong directional moves expected';
+    conf1h   = 75;
+    badge1h  = { cls: 'badge-bull', txt: 'GOOD' };
+  } else if (sess.london && !sess.overlap) {
+    /* London only */
+    const minsToNextHour = 60 - localMin;
+    entry1h  = futureTime(minsToNextHour);
+    window1h = `Window: ${futureTime(minsToNextHour)} – ${futureTime(minsToNextHour + 60)}`;
+    reason1h = 'London session · moderate liquidity · watch for breakout';
+    conf1h   = 70;
+    badge1h  = { cls: 'badge-flat', txt: 'OK' };
+  } else {
+    /* Asian or off-hours — recommend waiting for London open */
+    /* London opens at 07:00 UTC. Calculate minutes until then. */
+    const londonOpenUTC = 7;
+    let minsToLondon = ((londonOpenUTC - utcH) * 60) - localMin;
+    if (minsToLondon < 0) minsToLondon += 24 * 60;
+    entry1h  = futureLabel(minsToLondon);
+    window1h = `Window: ${futureLabel(minsToLondon)} – ${futureLabel(minsToLondon + 60)}`;
+    reason1h = 'Avoid low-vol Asian hours · wait for London open for best 1h setup';
+    conf1h   = 55;
+    badge1h  = { cls: 'badge-bear', txt: 'WAIT' };
+  }
+
+  /* ── 4-Hour Trade ──
+     4h trades need session transitions as catalysts.
+     Best windows: London open (07:00 UTC), NY open (13:00 UTC), London close (16:00 UTC).
+     Identify the next major session event. */
+  let entry4h, window4h, reason4h, conf4h, badge4h;
+
+  const sessions4h = [
+    { utcHour: 7,  label: 'London Open',    reason: 'London open sets the AM trend · high institutional flow', conf: 84 },
+    { utcHour: 13, label: 'NY Open',        reason: 'NY/London overlap · highest daily volume · trend confirmation', conf: 88 },
+    { utcHour: 16, label: 'London Close',   reason: 'London close triggers positioning shifts · reversal risk', conf: 72 },
+    { utcHour: 21, label: 'NY Close / Asia Open', reason: 'NY close + Asia session begin · lower vol, range trades', conf: 60 },
+  ];
+
+  let nextEvent4h = null;
+  let minMins4h   = Infinity;
+
+  for (const s of sessions4h) {
+    let minsAway = ((s.utcHour - utcH) * 60) - localMin;
+    if (minsAway < 0) minsAway += 24 * 60;
+    if (minsAway < minMins4h) {
+      minMins4h   = minsAway;
+      nextEvent4h = { ...s, minsAway };
+    }
+  }
+
+  entry4h  = futureLabel(nextEvent4h.minsAway);
+  window4h = `Window: ${futureLabel(nextEvent4h.minsAway)} – ${futureLabel(nextEvent4h.minsAway + 240)}`;
+  reason4h = nextEvent4h.reason;
+  conf4h   = nextEvent4h.conf;
+  badge4h  = nextEvent4h.minsAway < 30
+    ? { cls: 'badge-bull', txt: 'NOW' }
+    : nextEvent4h.minsAway < 120
+      ? { cls: 'badge-flat', txt: 'SOON' }
+      : { cls: 'badge-bear', txt: 'WAIT' };
+
+  /* ── 24-Hour Trade ──
+     Daily entries should align with the start of a new UTC trading day,
+     ideally timed at London open for max context.
+     Recommend entering after the first hourly candle of London confirms direction. */
+  let entry24h, window24h, reason24h, conf24h, badge24h;
+
+  /* Best 24h entry: London open of the next trading day (07:00 UTC) */
+  let minsToNextLondon = ((7 - utcH) * 60) - localMin;
+  /* If we're already past 07:00 UTC, add a day but also check if we're before 09:00 — still usable */
+  const inMorningWindow = utcH >= 7 && utcH < 9;
+
+  if (inMorningWindow) {
+    /* Currently in the ideal 24h entry window */
+    entry24h  = 'Now · ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    window24h = `Window closes ~${futureTime((9 - utcH) * 60 - localMin)}`;
+    reason24h = 'Prime 24h entry window: London open confirmed · first candle direction setting';
+    conf24h   = 80;
+    badge24h  = { cls: 'badge-bull', txt: 'PRIME' };
+  } else {
+    if (minsToNextLondon < 0) minsToNextLondon += 24 * 60;
+    entry24h  = futureLabel(minsToNextLondon);
+    window24h = `Window: ${futureLabel(minsToNextLondon)} – ${futureLabel(minsToNextLondon + 120)}`;
+    reason24h = 'Enter after London open candle confirms direction · avoid overnight gaps';
+    conf24h   = minsToNextLondon < 3 * 60 ? 75 : 65;
+    badge24h  = minsToNextLondon < 60
+      ? { cls: 'badge-flat', txt: 'SOON' }
+      : { cls: 'badge-bear', txt: 'WAIT' };
+  }
+
+  return {
+    entry1h:  { time: entry1h,  window: window1h,  reason: reason1h,  conf: conf1h,  badge: badge1h  },
+    entry4h:  { time: entry4h,  window: window4h,  reason: reason4h,  conf: conf4h,  badge: badge4h  },
+    entry24h: { time: entry24h, window: window24h, reason: reason24h, conf: conf24h, badge: badge24h },
+  };
+}
+
+function renderEntryWindows(sess, chp, atr, price) {
+  const e = computeEntryWindows(sess, chp, atr, price);
+
+  function applyEntry(timeId, windowId, reasonId, badgeId, confId, confLblId, data, delay) {
+    document.getElementById(timeId).textContent   = data.time;
+    document.getElementById(windowId).textContent = data.window;
+    document.getElementById(reasonId).textContent = data.reason;
+
+    const badgeEl = document.getElementById(badgeId);
+    badgeEl.className   = 'tl-badge ' + data.badge.cls;
+    badgeEl.textContent = data.badge.txt;
+
+    setTimeout(() => {
+      const fill = document.getElementById(confId);
+      fill.style.width = data.conf + '%';
+      fill.className   = 'conf-fill ' + (data.conf >= 80 ? 'high' : data.conf >= 65 ? 'medium' : 'low');
+      document.getElementById(confLblId).textContent = data.conf + '% conf.';
+    }, delay);
+  }
+
+  applyEntry('entry-1h-time',  'entry-1h-window',  'entry-1h-reason',  'entry-1h-badge',  'conf-entry-1h',  'conf-entry-1h-lbl',  e.entry1h,  150);
+  applyEntry('entry-4h-time',  'entry-4h-window',  'entry-4h-reason',  'entry-4h-badge',  'conf-entry-4h',  'conf-entry-4h-lbl',  e.entry4h,  250);
+  applyEntry('entry-24h-time', 'entry-24h-window', 'entry-24h-reason', 'entry-24h-badge', 'conf-entry-24h', 'conf-entry-24h-lbl', e.entry24h, 350);
+}
+
 /* ── Render a single timeline row ── */
 function renderRow(ids, target, base, bandLow, bandHigh, conf, delay, threshold) {
   document.getElementById(ids.price).textContent   = '$' + fmtP(target);
@@ -920,6 +1088,7 @@ function renderPredict(d, isDemo) {
   const pred = buildPredictions(price, chp, high, low);
   const atr  = pred.atr;
   const sess = pred.session;
+  renderEntryWindows(sess, chp, atr, price);
 
   /* ── ATR badge ── */
   document.getElementById('strip-atr').textContent    = '$' + atr.toFixed(2);
@@ -938,18 +1107,7 @@ function renderPredict(d, isDemo) {
     new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   /* ── Timeline rows ── */
-  renderRow(
-    { price:'pred-5m',  chg:'pred-5m-chg',  range:'pred-5m-range',  badge:'pred-5m-badge',  conf:'conf-5m',  confLbl:'conf-5m-lbl'  },
-    pred.f5m.target, price, pred.f5m.bandLow, pred.f5m.bandHigh, pred.f5m.conf, 150, 0.30
-  );
-  renderRow(
-    { price:'pred-10m', chg:'pred-10m-chg', range:'pred-10m-range', badge:'pred-10m-badge', conf:'conf-10m', confLbl:'conf-10m-lbl' },
-    pred.f10m.target, price, pred.f10m.bandLow, pred.f10m.bandHigh, pred.f10m.conf, 250, 0.50
-  );
-  renderRow(
-    { price:'pred-15m', chg:'pred-15m-chg', range:'pred-15m-range', badge:'pred-15m-badge', conf:'conf-15m', confLbl:'conf-15m-lbl' },
-    pred.f15m.target, price, pred.f15m.bandLow, pred.f15m.bandHigh, pred.f15m.conf, 350, 0.75
-  );
+  
   renderRow(
     { price:'pred-1h',  chg:'pred-1h-chg',  range:'pred-1h-range',  badge:'pred-1h-badge',  conf:'conf-1h',  confLbl:'conf-1h-lbl'  },
     pred.f1h.target, price, pred.f1h.bandLow, pred.f1h.bandHigh, pred.f1h.conf, 450, 1.50
