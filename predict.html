@@ -1000,7 +1000,7 @@ function computeEntrySignals(price, chp, high, low, atr, sess) {
   } else {
     sig4h   = 'NO SIGNAL';
     dir4h   = 'Insufficient momentum for a 4h trade';
-    reason4h = `${absMom.toFixed(2)}% daily move is too small for a meaningful 4h position. Wait for volatility.`;
+   
     conf4h  = 35;
     badge4h = { cls: 'badge-flat', txt: 'SKIP' };
   }
@@ -1019,43 +1019,43 @@ function computeEntrySignals(price, chp, high, low, atr, sess) {
   if (trendingBull) {
     sig24h   = 'ENTER LONG';
     dir24h   = `Strong bullish trend · +${absMom.toFixed(2)}%`;
-    reason24h = `Daily momentum strong, price in healthy uptrend zone (RSI≈${pseudoRSI.toFixed(0)}). High conviction 24h long.`;
+   
     conf24h  = highVol ? 72 : 80;
     badge24h = { cls: 'badge-bull', txt: 'LONG' };
   } else if (trendingBear) {
     sig24h   = 'ENTER SHORT';
     dir24h   = `Strong bearish trend · ${chp.toFixed(2)}%`;
-    reason24h = `Daily momentum strong, price in healthy downtrend zone (RSI≈${pseudoRSI.toFixed(0)}). High conviction 24h short.`;
+    
     conf24h  = highVol ? 72 : 80;
     badge24h = { cls: 'badge-bear', txt: 'SHORT' };
   } else if (extremeOversold) {
     sig24h   = 'LONG (REVERSAL)';
     dir24h   = `Extreme oversold · RSI≈${pseudoRSI.toFixed(0)} · mean reversion`;
-    reason24h = `Price deeply oversold on daily range. Counter-trend 24h long has statistical edge. Manage risk carefully.`;
+    
     conf24h  = 60;
     badge24h = { cls: 'badge-bull', txt: 'LONG' };
   } else if (extremeOverbought) {
     sig24h   = 'SHORT (REVERSAL)';
     dir24h   = `Extreme overbought · RSI≈${pseudoRSI.toFixed(0)} · mean reversion`;
-    reason24h = `Price deeply overbought on daily range. Counter-trend 24h short has statistical edge. Manage risk carefully.`;
+    
     conf24h  = 60;
     badge24h = { cls: 'badge-bear', txt: 'SHORT' };
   } else if (absMom >= 0.6 && isUp && overbought) {
     sig24h   = 'WAIT';
     dir24h   = 'Bullish but 24h entry overextended';
-    reason24h = `+${absMom.toFixed(2)}% with RSI≈${pseudoRSI.toFixed(0)}. Entering now risks chasing. Wait for daily pullback.`;
+    
     conf24h  = 45;
     badge24h = { cls: 'badge-flat', txt: 'WAIT' };
   } else if (absMom >= 0.6 && !isUp && oversold) {
     sig24h   = 'WAIT';
     dir24h   = 'Bearish but 24h entry overextended';
-    reason24h = `${chp.toFixed(2)}% with RSI≈${pseudoRSI.toFixed(0)}. Entering now risks catching a reversal. Wait for pullback.`;
+    
     conf24h  = 45;
     badge24h = { cls: 'badge-flat', txt: 'WAIT' };
   } else {
     sig24h   = 'NO SIGNAL';
     dir24h   = 'No clear daily trend to trade';
-    reason24h = `Only ${absMom.toFixed(2)}% daily move. No directional conviction for a 24h position. Stay flat.`;
+    
     conf24h  = 32;
     badge24h = { cls: 'badge-flat', txt: 'SKIP' };
   }
@@ -1142,6 +1142,8 @@ function renderRow(ids, target, base, bandLow, bandHigh, conf, delay, threshold)
 /* ── Main render ── */
 function renderPredict(d, isDemo) {
   const { price, chp, high, low, ch } = d;
+  updatePageTitle(price, ch);
+  checkMarketStatus();
   const isUp = ch >= 0;
 
   /* ── Live price strip ── */
@@ -1297,6 +1299,7 @@ document.getElementById('refresh-btn').addEventListener('click', async function 
 
 /* ── Nav ── */
 setActiveNav();
+checkMarketStatus();
 
 /* ── Init ── */
 loadPrice(renderPredict);
@@ -1319,6 +1322,113 @@ document.addEventListener('click', function(e) {
     document.getElementById('menu-trigger')?.classList.remove('open');
   }
 });
+
+  /* ── Market closed check ── */
+function isMarketClosed() {
+  const now     = new Date();
+  const utcDay  = now.getUTCDay();    /* 0=Sun, 1=Mon ... 6=Sat */
+  const utcHour = now.getUTCHours();
+  const utcMin  = now.getUTCMinutes();
+
+  /* Market closes Friday 22:00 UTC, reopens Sunday 22:00 UTC */
+  if (utcDay === 6) return true;                                      /* all Saturday */
+  if (utcDay === 5 && utcHour >= 22) return true;                    /* Friday after 22:00 UTC */
+  if (utcDay === 0 && (utcHour < 22 || (utcHour === 22 && utcMin === 0))) return true; /* Sunday before 22:00 UTC */
+
+  return false;
+}
+
+function showMarketClosedBanner() {
+  /* Don't add twice */
+  if (document.getElementById('market-closed-banner')) return;
+
+  const now       = new Date();
+  const utcDay    = now.getUTCDay();
+  const utcHour   = now.getUTCHours();
+
+  /* Calculate minutes until Sunday 22:00 UTC */
+  let minsUntilOpen;
+  if (utcDay === 6) {
+    /* Saturday — opens in ~(22 + 24 - utcHour) hours roughly */
+    minsUntilOpen = ((0 - utcDay + 7) * 24 * 60) + (22 * 60) - (utcHour * 60) - now.getUTCMinutes();
+    /* Simpler: minutes from now to next Sunday 22:00 UTC */
+    const nextOpen = new Date(now);
+    nextOpen.setUTCDate(now.getUTCDate() + (7 - utcDay));
+    nextOpen.setUTCHours(22, 0, 0, 0);
+    minsUntilOpen = Math.round((nextOpen - now) / 60000);
+  } else if (utcDay === 5) {
+    /* Friday after close */
+    const nextOpen = new Date(now);
+    nextOpen.setUTCDate(now.getUTCDate() + 2);
+    nextOpen.setUTCHours(22, 0, 0, 0);
+    minsUntilOpen = Math.round((nextOpen - now) / 60000);
+  } else {
+    /* Sunday before 22:00 */
+    const nextOpen = new Date(now);
+    nextOpen.setUTCHours(22, 0, 0, 0);
+    minsUntilOpen = Math.round((nextOpen - now) / 60000);
+  }
+
+  const hoursLeft = Math.floor(minsUntilOpen / 60);
+  const minsLeft  = minsUntilOpen % 60;
+  const countdown = hoursLeft > 0
+    ? `${hoursLeft}h ${minsLeft}m`
+    : `${minsLeft}m`;
+
+  const banner = document.createElement('div');
+  banner.id = 'market-closed-banner';
+  banner.innerHTML = `
+    <div style="margin:0 16px 12px;padding:20px 18px;
+                background:rgba(110,127,153,0.08);
+                border:1px solid rgba(110,127,153,0.2);
+                border-radius:14px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:10px;">🌿</div>
+      <div style="font-size:16px;font-weight:800;color:var(--txt-1);margin-bottom:6px;">
+        Market is Closed
+      </div>
+      <div style="font-size:12px;color:var(--txt-2);line-height:1.7;margin-bottom:14px;">
+        Gold market is closed for the weekend.<br>
+        Go touch some grass — it reopens in
+        <strong style="color:var(--gold);">${countdown}</strong>.
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;
+                  font-size:11px;color:var(--txt-3);font-family:'Space Mono',monospace;">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--txt-3);display:inline-block;"></span>
+        MARKET CLOSED · Opens Sunday 22:00 UTC
+      </div>
+    </div>`;
+
+  /* Insert right after the live-strip */
+  const liveStrip = document.querySelector('.live-strip');
+  if (liveStrip) {
+    liveStrip.insertAdjacentElement('afterend', banner);
+  }
+}
+
+function checkMarketStatus() {
+  if (isMarketClosed()) {
+    showMarketClosedBanner();
+    /* Dim the signals to show they're stale */
+    document.querySelectorAll('.predict-card, .live-strip, .session-row').forEach(el => {
+      el.style.opacity = '0.45';
+      el.style.pointerEvents = 'none';
+    });
+    /* Keep banner itself fully visible */
+    const banner = document.getElementById('market-closed-banner');
+    if (banner) { banner.style.opacity = '1'; banner.style.pointerEvents = 'all'; }
+
+    /* Update page title */
+    document.title = 'Market Closed · XAUTracker.com';
+  }
+}
+
+  /* ── Live price in page title ── */
+function updatePageTitle(price, ch) {
+  if (isMarketClosed()) return; /* don't overwrite closed banner title */
+  const isUp  = ch >= 0;
+  const arrow = isUp ? '▲' : '▼';
+  document.title = `${arrow} $${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} · XAU/USD`;
+}
 </script>
 <script type="module">
   import { initializeApp }
