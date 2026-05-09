@@ -168,9 +168,7 @@
         (d.subscriptionStatus === 'active' && d.currentPeriodEnd && new Date(d.currentPeriodEnd).getTime() > now) ||
         (d.manualAccess && (!d.manualAccessExpiresAt || new Date(d.manualAccessExpiresAt).getTime() > now));
 
-      if (nextPage === 'index.html') {
-        window.location.href = 'index.html';
-      } else {
+      else {
         window.location.href = hasAccess ? nextPage : 'subscribe.html';
       }
     } catch { window.location.href = nextPage; }
