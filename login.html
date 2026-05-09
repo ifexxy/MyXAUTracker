@@ -165,6 +165,9 @@
         (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
         (d.subscriptionStatus === 'active' && d.currentPeriodEnd && new Date(d.currentPeriodEnd).getTime() > now) ||
         (d.manualAccess && (!d.manualAccessExpiresAt || new Date(d.manualAccessExpiresAt).getTime() > now));
+      if (nextPage === 'index.html') {
+        window.location.href = 'index.html';
+      } else {
       window.location.href = hasAccess ? fromPage : 'subscribe.html';
     } catch { window.location.href = fromPage; }
   });
