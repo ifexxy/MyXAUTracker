@@ -11,8 +11,8 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Welcome to XauTracker - Track Real-time Gold Price</title>
-  <meta name="description" content="Track live XAU/USD gold spot prices in real time, using our advanced model to forecast gold price" />
+  <title>Welcome to XauTracker - Forecast Real-time Gold Price</title>
+  <meta name="description" content="Forecast live XAU/USD gold spot prices in real time using ATR advanced method" />
   <meta name="keywords" content="XAUUSD, gold price live, gold spot price, gold trading, gold tracker, gold market, XAU price today, live gold price" />
   <meta name="author" content="XAU Tracker" />
   <meta name="robots" content="index, follow" />
@@ -20,7 +20,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.xautracker.com/" />
   <meta property="og:title" content="XAU/USD Live Price Tracker" />
-  <meta property="og:description" content="Track live XAU/USD gold spot prices in real time. Real-time bid/ask, day high/low, market signals and price chart. Updated every 60 seconds." />
+  <meta property="og:description" content="Forecast live XAU/USD gold spot prices in real time using ATR advanced method, Updated every 60 seconds." />
   <meta property="og:image" content="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -653,86 +653,10 @@
   document.getElementById('refresh-btn').addEventListener('click', async function() {
     this.classList.add('spin');
     const d = await fetchGoldPrice();
-    if (d) { Object.assign(window.GOLD_STATE, d); renderPrice(d, false); showToast('✓ Updated via ' + d.source); }
+    if (d) { Object.assign(window.GOLD_STATE, d); renderPrice(d, false); showToast('Updated via ' + d.source); }
     else     showToast('⚠ Both APIs unavailable');
     setTimeout(() => this.classList.remove('spin'), 700);
   });
-
-  function lockPriceSection() {
-  const priceAnchor = document.getElementById('price-anchor');
-  if (!priceAnchor) return;
-
-  const toHide = [];
-  let el = priceAnchor;
-  while (el) {
-    toHide.push(el);
-    el = el.nextElementSibling;
-  }
-
-  const wrapper = document.createElement('div');
-  wrapper.id = 'locked-section';
-  wrapper.style.cssText = `
-    position: relative;
-    pointer-events: none;
-    user-select: none;
-  `;
-
-  const parent = priceAnchor.parentNode;
-  parent.insertBefore(wrapper, priceAnchor);
-  toHide.forEach(node => wrapper.appendChild(node));
-
-  const overlay = document.createElement('div');
-  overlay.id = 'lock-overlay';
-  overlay.innerHTML = `
-    <div style="
-      position:sticky;
-      top:50%;
-      transform:translateY(-50%);
-      text-align:center;
-      padding:32px 24px;
-      z-index:10;
-    ">
-      <div style="font-size:38px;margin-bottom:14px;">🔒</div>
-      <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:8px;">
-        Sign in to view live prices
-      </div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:22px;line-height:1.6;">
-        Create a free account and get a<br>
-        <strong style="color:var(--gold);">7-day free trial</strong>, no payment needed.
-      </div>
-      <a href="login.html?next=index.html"
-         style="
-           display:inline-flex;align-items:center;gap:8px;
-           padding:13px 28px;background:#fff;color:#000;
-           font-family:'Syne',sans-serif;font-size:14px;font-weight:800;
-           border-radius:12px;text-decoration:none;
-           pointer-events:all;
-         ">
-        <i class="fa-solid fa-right-to-bracket"></i>
-        Sign In / Create Account
-      </a>
-    </div>`;
-
-  overlay.style.cssText = `
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to bottom,
-      rgba(7,12,18,0.55) 0%,
-      rgba(7,12,18,0.92) 30%,
-      rgba(7,12,18,0.98) 100%
-    );
-    z-index: 9;
-    pointer-events: none;
-    display: flex;
-    align-items: flex-start;
-    padding-top: 60px;
-  `;
-
-  wrapper.style.filter = 'blur(3px)';
-  wrapper.appendChild(overlay);
-  overlay.style.pointerEvents = 'all';
-}
 
   setActiveNav();
   loadPrice(renderPrice);
@@ -795,19 +719,18 @@ console.log('Current user:', auth.currentUser);
           Access XAUUSD Forecast
         </a>`;
     } else {
+      /* ── Guest ── */
       inner.innerHTML = `
         <div class="trial-pill">
           <span class="trial-pill-dot"></span>
-          Get 7 Days Free Trial · No Payment Required
+         Get 7 Days Free Trial · No Payment Required
         </div>
         <p class="auth-guest-text">
           Create an account easily in just <strong>two simple steps</strong>, all you need is a phone number for verification and get a <strong>7-day trial period</strong>.
         </p>
-        <a href="login.html?next=index.html" class="btn-landing-primary">
-          Sign In / Create Account
+        <a href="signup.html" class="btn-landing-primary">
+          Create Account
         </a>`;
-
-      lockPriceSection();
     }
   });
 </script>
