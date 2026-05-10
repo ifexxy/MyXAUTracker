@@ -13,7 +13,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="theme-color" content="#070c12" />
-  <title>Gold Predict · XAU/USD Price Forecast & Market Signals — XAUTracker</title>
+  <title>XAU/USD Price Forecast & Market Signals — XAUTracker</title>
   <meta name="description" content="Algorithmic XAU/USD gold price predictions for 5m, 10m, 15m, 1h, 6h and 24h. Key levels, sentiment and market signals." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://www.xautracker.com/predict.html" />
@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
-
+ <link rel="icon" type="image/png" sizes="192x192" href="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
   <style>
     /* ── Predict-specific styles ── */
 
@@ -271,33 +271,43 @@
 <div id="app">
 
   <!-- Top bar -->
-  <div id="topbar">
-   <div class="topbar-brand">
-      <!-- ── Dropdown trigger ── -->
+   <div id="topbar">
+    <div class="topbar-brand">
     <div class="menu-wrap">
-      <button class="menu-trigger" id="menu-trigger" onclick="toggleMenu()" title="Menu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
+  <button class="menu-trigger" id="menu-trigger" onclick="toggleMenu()" title="Menu">
+    <i class="fa-solid fa-bars"></i>
+  </button>
 
-      <div class="dropdown-menu" id="dropdown-menu">
-        
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="about.html">
-           About
-        </a>
-        <a class="dropdown-item" href="disclaimer.html">
-           Disclaimer
-        </a>
-        <a class="dropdown-item" href="contact.html">
-           Contact Us
-        </a>
+  <div class="dropdown-menu" id="dropdown-menu">
+    <!-- Header -->
+    <div class="dropdown-menu-header">
+      <div class="dropdown-menu-brand">
+        <img src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" width="30" height="30"/>
+        <span class="topbar-title">AU<span>/USD</span></span>
       </div>
+      <button class="dropdown-menu-close" onclick="toggleMenu()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
+
+    <!-- Items -->
+    <div class="dropdown-menu-items">
+      <a class="dropdown-item" href="/">Home</a>
+      <a class="dropdown-item" href="/news">News</a>
+      <a class="dropdown-item" href="/trends">Trends</a>
+      <a class="dropdown-item" href="/predict">Forecast</a>
+      <a class="dropdown-item" href="/about">About</a>
+      <a class="dropdown-item" href="/disclaimer">Disclaimer</a>
+      <a class="dropdown-item" href="/contact">Contact Us</a>
+    </div>
+  </div>
+</div>
+      
       <img src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" width="30" height="30"/><span class="topbar-title">AU<span>/USD</span></span>
     </div>
-    <div class="live-dot">LIVE</div>
+    
     <button class="refresh-btn" id="refresh-btn" title="Refresh">
-      <i class="fa-solid fa-rotate-right"></i>
+      
     </button>
   </div>
 
@@ -664,14 +674,7 @@
 
   </div><!-- /content -->
 
-  <!-- Bottom nav -->
-  <nav id="bottomnav">
-    <a class="nav-btn" data-page="index.html"   href="index.html"><i class="fa-solid fa-house"></i>Home</a>
-    <a class="nav-btn" data-page="news.html"    href="news.html"><i class="fa-solid fa-newspaper"></i>News</a>
-    <a class="nav-btn" data-page="trends.html"  href="trends.html"><i class="fa-solid fa-chart-area"></i>Trends</a>
-    <a class="nav-btn" data-page="predict.html" href="predict.html"><i class="fa-solid fa-arrow-trend-up"></i>Forecast</a>
-    <a class="nav-btn" data-page="minds.html"   href="minds.html"><i class="fa-solid fa-comment"></i>Minds</a>
-  </nav>
+  
 
 </div><!-- /app -->
 <div id="toast"></div>
@@ -1297,17 +1300,19 @@ function toggleMenu() {
   const isOpen   = dropdown.classList.contains('open');
   dropdown.classList.toggle('open', !isOpen);
   trigger.classList.toggle('open',  !isOpen);
+  /* Prevent body scroll when menu is open */
+  document.body.style.overflow = isOpen ? '' : 'hidden';
 }
 
-/* Close when clicking outside */
+/* Close on outside click — not needed for fullscreen but keep for safety */
 document.addEventListener('click', function(e) {
   const wrap = document.querySelector('.menu-wrap');
   if (wrap && !wrap.contains(e.target)) {
     document.getElementById('dropdown-menu')?.classList.remove('open');
     document.getElementById('menu-trigger')?.classList.remove('open');
+    document.body.style.overflow = '';
   }
 });
-
   /* ── Market closed check ── */
 function isMarketClosed() {
   const now     = new Date();
