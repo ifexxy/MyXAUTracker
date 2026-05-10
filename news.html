@@ -89,7 +89,7 @@
     <!-- Items -->
     <div class="dropdown-menu-items">
       <a class="dropdown-item" href="/">Home</a>
-      <a class="dropdown-item" href="/news">News</a>
+     
       <a class="dropdown-item" href="/trends">Trends</a>
       <a class="dropdown-item" href="/predict">Forecast</a>
       <a class="dropdown-item" href="/about">About</a>
@@ -240,7 +240,11 @@
   loadBlogPosts();
   fetchNews();
 
-  /* ── Dropdown menu ── */
+
+  
+</script>
+  <script> 
+    /* ── Dropdown menu ── */
 function toggleMenu() {
   const trigger  = document.getElementById('menu-trigger');
   const dropdown = document.getElementById('dropdown-menu');
@@ -260,7 +264,6 @@ document.addEventListener('click', function(e) {
     document.body.style.overflow = '';
   }
 });
-  
-</script>
+  </script>
 </body>
 </html>
