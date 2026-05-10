@@ -210,14 +210,17 @@ function toggleMenu() {
   const isOpen   = dropdown.classList.contains('open');
   dropdown.classList.toggle('open', !isOpen);
   trigger.classList.toggle('open',  !isOpen);
+  /* Prevent body scroll when menu is open */
+  document.body.style.overflow = isOpen ? '' : 'hidden';
 }
 
-/* Close when clicking outside */
+/* Close on outside click — not needed for fullscreen but keep for safety */
 document.addEventListener('click', function(e) {
   const wrap = document.querySelector('.menu-wrap');
   if (wrap && !wrap.contains(e.target)) {
     document.getElementById('dropdown-menu')?.classList.remove('open');
     document.getElementById('menu-trigger')?.classList.remove('open');
+    document.body.style.overflow = '';
   }
 });
   </script>
