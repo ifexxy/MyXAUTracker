@@ -619,7 +619,77 @@
 
 </div>
 <div id="toast"></div>
+<script src="js/api.js"></script>
+<script src="js/charts.js"></script>
 
+<script>
+  let activeRange = '1D';
+  let homeChart   = null;
+
+  function renderPrice(d, isDemo) {
+    const isUp = d.ch >= 0;
+    document.getElementById('price-display').innerHTML = `<span class="currency">$</span>${fmt(d.price)}`;
+    document.getElementById('price-change').innerHTML  = `
+      <div class="price-change ${isUp ? 'up' : 'down'}">
+        <i class="fa-solid fa-caret-${isUp ? 'up' : 'down'}"></i>
+        ${isUp ? '+' : ''}${d.ch.toFixed(2)} (${isUp ? '+' : ''}${d.chp.toFixed(2)}%)
+      </div>`;
+    document.getElementById('last-update').textContent =
+      (isDemo ? '⚠ Demo · ' : '') + 'Updated ' + new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+
+    document.getElementById('stat-high').textContent = '$' + fmt(d.high);
+    document.getElementById('stat-low').textContent  = '$' + fmt(d.low);
+    document.getElementById('stat-open').textContent = '$' + fmt(d.open);
+    document.getElementById('stat-chg').innerHTML    = `<span style="color:${isUp?'var(--green)':'var(--red)'}">${isUp?'+':''}${d.ch.toFixed(2)}</span>`;
+    document.getElementById('stat-bid').textContent  = '$' + fmt(d.bid);
+    document.getElementById('stat-ask').textContent  = '$' + fmt(d.ask);
+
+    const rng = Math.random();
+    let buy, hold, sell;
+    if (isUp) { buy = 55 + Math.round(rng * 20); hold = Math.round((100 - buy) * 0.5); sell = 100 - buy - hold; }
+    else       { sell = 55 + Math.round(rng * 20); hold = Math.round((100 - sell) * 0.5); buy = 100 - sell - hold; }
+    setTimeout(() => {
+      document.getElementById('sig-buy').style.width   = buy + '%';
+      document.getElementById('sig-hold').style.width  = hold + '%';
+      document.getElementById('sig-sell').style.width  = sell + '%';
+      document.getElementById('sig-buy-pct').textContent  = buy + '%';
+      document.getElementById('sig-hold-pct').textContent = hold + '%';
+      document.getElementById('sig-sell-pct').textContent = sell + '%';
+    }, 300);
+
+    renderHomeChart(d.price);
+    if (isDemo) showToast('Gold Price is currently in demo mode, please reload page');
+  }
+
+  function renderHomeChart(price) {
+    const days   = activeRange === '1D' ? 1 : activeRange === '1W' ? 7 : 30;
+    const points = buildHistory(price, days, days === 1 ? 3 : days === 7 ? 10 : 18);
+    const labels = buildLabels(days, points.length);
+    const color  = points[points.length - 1] >= points[0] ? '#00d48f' : '#ff4561';
+    if (homeChart) homeChart.destroy();
+    homeChart = makeChart('homeChart', labels, points, color);
+  }
+
+  function setRange(range, btn) {
+    activeRange = range;
+    document.querySelectorAll('.range-pills .pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    if (window.GOLD_STATE.price) renderHomeChart(window.GOLD_STATE.price);
+  }
+
+  document.getElementById('refresh-btn').addEventListener('click', async function() {
+    this.classList.add('spin');
+    const d = await fetchGoldPrice();
+    if (d) { Object.assign(window.GOLD_STATE, d); renderPrice(d, false); showToast('Updated via ' + d.source); }
+    else     showToast('Both APIs unavailable');
+    setTimeout(() => this.classList.remove('spin'), 700);
+  });
+
+  setActiveNav();
+  loadPrice(renderPrice);
+  setInterval(() => loadPrice(renderPrice), 10000);
+
+</script>
 
 <script>
 
@@ -692,77 +762,7 @@
   loadTVWidget(TV_INTERVALS[activeRange]);
 </script>
 
-<script src="js/api.js"></script>
-<script src="js/charts.js"></script>
 
-<script>
-  let activeRange = '1D';
-  let homeChart   = null;
-
-  function renderPrice(d, isDemo) {
-    const isUp = d.ch >= 0;
-    document.getElementById('price-display').innerHTML = `<span class="currency">$</span>${fmt(d.price)}`;
-    document.getElementById('price-change').innerHTML  = `
-      <div class="price-change ${isUp ? 'up' : 'down'}">
-        <i class="fa-solid fa-caret-${isUp ? 'up' : 'down'}"></i>
-        ${isUp ? '+' : ''}${d.ch.toFixed(2)} (${isUp ? '+' : ''}${d.chp.toFixed(2)}%)
-      </div>`;
-    document.getElementById('last-update').textContent =
-      (isDemo ? '⚠ Demo · ' : '') + 'Updated ' + new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-
-    document.getElementById('stat-high').textContent = '$' + fmt(d.high);
-    document.getElementById('stat-low').textContent  = '$' + fmt(d.low);
-    document.getElementById('stat-open').textContent = '$' + fmt(d.open);
-    document.getElementById('stat-chg').innerHTML    = `<span style="color:${isUp?'var(--green)':'var(--red)'}">${isUp?'+':''}${d.ch.toFixed(2)}</span>`;
-    document.getElementById('stat-bid').textContent  = '$' + fmt(d.bid);
-    document.getElementById('stat-ask').textContent  = '$' + fmt(d.ask);
-
-    const rng = Math.random();
-    let buy, hold, sell;
-    if (isUp) { buy = 55 + Math.round(rng * 20); hold = Math.round((100 - buy) * 0.5); sell = 100 - buy - hold; }
-    else       { sell = 55 + Math.round(rng * 20); hold = Math.round((100 - sell) * 0.5); buy = 100 - sell - hold; }
-    setTimeout(() => {
-      document.getElementById('sig-buy').style.width   = buy + '%';
-      document.getElementById('sig-hold').style.width  = hold + '%';
-      document.getElementById('sig-sell').style.width  = sell + '%';
-      document.getElementById('sig-buy-pct').textContent  = buy + '%';
-      document.getElementById('sig-hold-pct').textContent = hold + '%';
-      document.getElementById('sig-sell-pct').textContent = sell + '%';
-    }, 300);
-
-    renderHomeChart(d.price);
-    if (isDemo) showToast('Gold Price is currently in demo mode, please reload page');
-  }
-
-  function renderHomeChart(price) {
-    const days   = activeRange === '1D' ? 1 : activeRange === '1W' ? 7 : 30;
-    const points = buildHistory(price, days, days === 1 ? 3 : days === 7 ? 10 : 18);
-    const labels = buildLabels(days, points.length);
-    const color  = points[points.length - 1] >= points[0] ? '#00d48f' : '#ff4561';
-    if (homeChart) homeChart.destroy();
-    homeChart = makeChart('homeChart', labels, points, color);
-  }
-
-  function setRange(range, btn) {
-    activeRange = range;
-    document.querySelectorAll('.range-pills .pill').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    if (window.GOLD_STATE.price) renderHomeChart(window.GOLD_STATE.price);
-  }
-
-  document.getElementById('refresh-btn').addEventListener('click', async function() {
-    this.classList.add('spin');
-    const d = await fetchGoldPrice();
-    if (d) { Object.assign(window.GOLD_STATE, d); renderPrice(d, false); showToast('Updated via ' + d.source); }
-    else     showToast('Both APIs unavailable');
-    setTimeout(() => this.classList.remove('spin'), 700);
-  });
-
-  setActiveNav();
-  loadPrice(renderPrice);
-  setInterval(() => loadPrice(renderPrice), 10000);
-
-    </script>
   <script>
   /* ── Dropdown menu ── */
   function toggleMenu() {
