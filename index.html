@@ -607,8 +607,7 @@
 </div>
 <div id="toast"></div>
 
-<script src="js/api.js"></script>
-  
+
 <script>
 
   
@@ -680,16 +679,12 @@
   loadTVWidget(TV_INTERVALS[activeRange]);
 </script>
 
+<script src="js/api.js"></script>
+<script src="js/charts.js"></script>
+
 <script>
   let activeRange = '1D';
   let homeChart   = null;
-
-  function fmt(v) {
-  return v.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-  }
 
   function renderPrice(d, isDemo) {
     const isUp = d.ch >= 0;
@@ -722,14 +717,10 @@
       document.getElementById('sig-sell-pct').textContent = sell + '%';
     }, 300);
 
-    
-
-  
-renderHomeChart(d.price);
+    renderHomeChart(d.price);
     if (isDemo) showToast('Gold Price is currently in demo mode, please reload page');
   }
 
-  
   function renderHomeChart(price) {
     const days   = activeRange === '1D' ? 1 : activeRange === '1W' ? 7 : 30;
     const points = buildHistory(price, days, days === 1 ? 3 : days === 7 ? 10 : 18);
@@ -757,6 +748,7 @@ renderHomeChart(d.price);
   setActiveNav();
   loadPrice(renderPrice);
   setInterval(() => loadPrice(renderPrice), 10000);
+
     </script>
   <script>
   /* ── Dropdown menu ── */
