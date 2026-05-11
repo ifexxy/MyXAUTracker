@@ -681,6 +681,13 @@
   let activeRange = '1D';
   let homeChart   = null;
 
+  function fmt(v) {
+  return v.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  }
+
   function renderPrice(d, isDemo) {
     const isUp = d.ch >= 0;
     document.getElementById('price-display').innerHTML = `<span class="currency">$</span>${fmt(d.price)}`;
