@@ -105,6 +105,9 @@
       <i class="fa-solid fa-right-to-bracket"></i> Sign In
     </button>
     <div class="divider">or</div>
+    <button class="btn-secondary" onclick="doGoogleSignIn()">
+  <i class="fa-brands fa-google"></i> Continue with Google
+</button>
     <a href="signup.html" class="btn-secondary" style="text-decoration:none;">
       <i class="fa-solid fa-user-plus"></i> Create Account, 7 Days Free
     </a>
@@ -135,7 +138,7 @@
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth, signInWithEmailAndPassword,
-    sendPasswordResetEmail, onAuthStateChanged
+    sendPasswordResetEmail, onAuthStateChanged, GoogleAuthProvider, signInWithPopup
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, getDoc }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -170,6 +173,40 @@
       window.location.href = hasAccess ? fromPage : 'subscribe.html';
     } catch { window.location.href = fromPage; }
   });
+  
+    /* ── Google Sign In ── */
+  window.doGoogleSignIn = async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user   = result.user;
+
+    const snap = await getDoc(doc(db, 'users', user.uid));
+
+    if (!snap.exists() || !snap.data().trialEndsAt) {
+      sessionStorage.setItem('googleUid',   user.uid);
+      sessionStorage.setItem('googleEmail', user.email);
+      window.location.href = 'signup.html';
+      return;
+    }
+
+    const d   = snap.data();
+    const now = Date.now();
+    const hasAccess =
+      (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
+      (d.subscriptionStatus === 'active' && d.currentPeriodEnd &&
+        new Date(d.currentPeriodEnd).getTime() > now) ||
+      (d.manualAccess && (!d.manualAccessExpiresAt ||
+        new Date(d.manualAccessExpiresAt).getTime() > now));
+    window.location.href = hasAccess ? 'predict.html' : 'subscribe.html';
+
+  } catch (e) {
+    if (e.code !== 'auth/popup-closed-by-user') {
+      showErr('si-err', 'Google sign-in failed. Please try again.');
+    }
+  }
+};
+
   /* ── Sign In ── */
   window.doSignIn = async () => {
     const email = document.getElementById('si-email').value.trim();
