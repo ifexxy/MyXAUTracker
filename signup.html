@@ -433,7 +433,14 @@
       <button class="btn-primary" id="su-next-btn" onclick="goToPhoneStep()">
         Continue
       </button>
-
+<div class="divider" style="display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--txt-3);font-size:12px;">
+  <span style="flex:1;height:1px;background:var(--border);display:block;"></span>
+  or
+  <span style="flex:1;height:1px;background:var(--border);display:block;"></span>
+</div>
+<button class="btn-secondary" onclick="doGoogleSignIn()">
+  <i class="fa-brands fa-google"></i> Sign up with Google
+</button>
       <div class="form-switch">
         Already have an account? <a href="login.html">Sign in</a>
       </div>
@@ -450,7 +457,7 @@
             <div class="country-trigger" id="country-trigger" onclick="toggleCountryDropdown()">
               <span class="flag" id="selected-flag">🇳🇬</span>
               <span class="code" id="selected-code">+234</span>
-              <span class="arrow">▼</span>
+              <span class="arrow">▄1�7</span>
             </div>
             <div class="country-dropdown" id="country-dropdown">
               <div class="country-search-wrap">
@@ -533,7 +540,7 @@
       <i class="fa-solid fa-mobile-screen"></i> Send OTP
     </button>
 
-    <!-- OTP section — hidden until code sent -->
+    <!-- OTP section  1�7 hidden until code sent -->
     <div id="otp-section" style="display:none;margin-top:16px;">
       <label>Verification Code</label>
       <input type="number" id="su-otp" placeholder="Enter 6-digit code" />
@@ -790,7 +797,7 @@ renderCountryList(COUNTRIES);
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth, createUserWithEmailAndPassword,
-    onAuthStateChanged, PhoneAuthProvider, RecaptchaVerifier
+    onAuthStateChanged, PhoneAuthProvider, RecaptchaVerifier, GoogleAuthProvider, signInWithPopup
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc,
            getDocs, collection, query, where, serverTimestamp }
@@ -812,9 +819,27 @@ renderCountryList(COUNTRIES);
   let confirmationResult = null;
   let recaptchaVerifier  = null;
 
-  /* ── Already logged in — redirect ── */
+const storedGoogleUid   = sessionStorage.getItem('googleUid');
+const storedGoogleEmail = sessionStorage.getItem('googleEmail');
+
+if (storedGoogleUid) {
+  window._googleUser = { uid: storedGoogleUid, email: storedGoogleEmail };
+  sessionStorage.removeItem('googleUid');
+  sessionStorage.removeItem('googleEmail');
+
+  document.getElementById('signup-step1').style.display = 'none';
+  document.getElementById('signup-step2').style.display = 'block';
+  document.getElementById('dot-1').classList.remove('active');
+  document.getElementById('dot-2').classList.add('active');
+
+  const backBtn = document.querySelector('#signup-step2 .btn-secondary:last-of-type');
+  if (backBtn) backBtn.style.display = 'none';
+}
+
+  /* ┄1�7┄1�7 Already logged in  1�7 redirect ┄1�7┄1�7 */
   onAuthStateChanged(auth, async user => {
     if (!user) return;
+    if (window._googleUser) return;
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
       if (!snap.exists()) { window.location.href = 'predict.html'; return; }
@@ -830,7 +855,46 @@ renderCountryList(COUNTRIES);
     } catch { window.location.href = 'predict.html'; }
   });
 
-  /* ── Step 1 validation ── */
+window.doGoogleSignIn = async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user   = result.user;
+
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (snap.exists() && snap.data().trialEndsAt) {
+      const d   = snap.data();
+      const now = Date.now();
+      const hasAccess =
+        (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
+        (d.subscriptionStatus === 'active' && d.currentPeriodEnd &&
+          new Date(d.currentPeriodEnd).getTime() > now) ||
+        (d.manualAccess && (!d.manualAccessExpiresAt ||
+          new Date(d.manualAccessExpiresAt).getTime() > now));
+      window.location.href = hasAccess ? 'predict.html' : 'subscribe.html';
+      return;
+    }
+
+    window._googleUser = user;
+
+    document.getElementById('signup-step1').style.display = 'none';
+    document.getElementById('signup-step2').style.display = 'block';
+    document.getElementById('dot-1').classList.remove('active');
+    document.getElementById('dot-2').classList.add('active');
+
+    const backBtn = document.querySelector('#signup-step2 .btn-secondary:last-of-type');
+    if (backBtn) backBtn.style.display = 'none';
+
+    initRecaptcha();
+
+  } catch (e) {
+    if (e.code !== 'auth/popup-closed-by-user') {
+      showErr('su-err', 'Google sign-in failed. Please try again.');
+    }
+  }
+};
+
+  /* ┄1�7┄1�7 Step 1 validation ┄1�7┄1�7 */
   window.goToPhoneStep = () => {
     const email = document.getElementById('su-email').value.trim();
     const pass  = document.getElementById('su-pass').value;
@@ -863,7 +927,7 @@ renderCountryList(COUNTRIES);
     showErr('otp-err', '');
   };
 
-  /* ── reCAPTCHA ── */
+  /* ┄1�7┄1�7 reCAPTCHA ┄1�7┄1�7 */
   function initRecaptcha() {
     if (recaptchaVerifier) return;
     recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
@@ -882,7 +946,7 @@ renderCountryList(COUNTRIES);
   }
   
 
-  /* ── Send OTP ── */
+  /* ┄1�7┄1�7 Send OTP ┄1�7┄1�7 */
   window.sendOTP = async () => {
     const fullPhone = getFullPhone();
     showErr('phone-err', '');
@@ -940,7 +1004,7 @@ renderCountryList(COUNTRIES);
     }
   };
 
-  /* ── Complete Sign Up ── */
+  /* ┄1�7┄1�7 Complete Sign Up ┄1�7┄1�7 */
   window.doSignUp = async () => {
     const otp   = document.getElementById('su-otp').value.trim();
     const email = document.getElementById('su-email').value.trim();
@@ -961,18 +1025,27 @@ renderCountryList(COUNTRIES);
       '<i class="fa-solid fa-rocket"></i> Start Free Trial');
 
     try {
-      /* Verify OTP — just checks it's valid, we don't sign in with phone */
+      /* Verify OTP  1�7 just checks it's valid, we don't sign in with phone */
       PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
 
       /* Create email/password account */
-      const { user } = await createUserWithEmailAndPassword(auth, email, pass);
+      let user;
+
+if (window._googleUser) {
+  user = window._googleUser;
+} else {
+  const email = document.getElementById('su-email').value.trim();
+  const pass  = document.getElementById('su-pass').value;
+  const result = await createUserWithEmailAndPassword(auth, email, pass);
+  user = result.user;
+}
 
       const trialEndsAt = new Date(
   Date.now() + 7 * 24 * 60 * 60 * 1000
 ).toISOString();
 
       await setDoc(doc(db, 'users', user.uid), {
-        email,
+        email: user.email,
         phone,
         createdAt:             serverTimestamp(),
         trialEndsAt,
@@ -1009,7 +1082,7 @@ renderCountryList(COUNTRIES);
     else if (document.getElementById('otp-section').style.display !== 'none') window.doSignUp();
   });
 
-  /* ── Helpers ── */
+  /* ┄1�7┄1�7 Helpers ┄1�7┄1�7 */
   function setLoading(btnId, loading, loadText, origHTML) {
     const btn = document.getElementById(btnId);
     btn.disabled  = loading;
