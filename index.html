@@ -29,10 +29,10 @@
   <meta property="og:locale" content="en_US" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://www.xautracker.com/" />
-  <meta name="twitter:title" content="GOLD · XAU/USD Live Price Tracker" />
+  <meta name="twitter:title" content="Welcome to XauTracker - Forecast Real-time Gold Price" />
   <meta name="twitter:description" content="Live XAU/USD gold spot prices, real-time bid/ask, market signals and buy/sell indicators. Updated every 60 seconds." />
-  <meta name="twitter:image" content="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
-  <meta name="twitter:image:alt" content="XAU Tracker — Live Gold Price Dashboard" />
+  <meta name="twitter:image" content="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png"/>
+  <meta name="twitter:image:alt" content="Welcome to XauTracker - Forecast Real-time Gold Price" />
   <meta name="theme-color" content="#070c12" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -619,75 +619,7 @@
 
 </div>
 <div id="toast"></div>
-  <script>
   
-  /* ── TradingView widget loader ── */
-  let tvWidget = null;
-
-  const TV_INTERVALS = { '1D': '60', '1W': '240', '1M': 'D' };
-  let activeRange = '1D';
-
-  function loadTVWidget(interval) {
-    const container = document.getElementById('tv-widget-container');
-    container.innerHTML = ''; // clear previous
-
-    const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/tv.js';
-    script.async = true;
-    script.onload = () => {
-      new TradingView.widget({
-        container_id:   'tv-widget-container',
-        symbol:         'OANDA:XAUUSD',
-        interval:       interval,
-        timezone:       'Etc/UTC',
-        theme:          'dark',
-        style:          '1',          /* 1 = candlestick */
-        locale:         'en',
-        toolbar_bg:     '#0e1622',
-        enable_publishing: false,
-        hide_top_toolbar:  false,
-        hide_legend:       true,
-        hide_side_toolbar: true,
-        allow_symbol_change: false,
-        save_image:        false,
-        height:            300,
-        width:             '100%',
-        withdateranges:    false,
-        details:           false,
-        hotlist:           false,
-        calendar:          false,
-        studies:           [],
-        overrides: {
-          'paneProperties.background':          '#070c12',
-          'paneProperties.backgroundType':       'solid',
-          'paneProperties.vertGridProperties.color': 'rgba(255,255,255,0.03)',
-          'paneProperties.horzGridProperties.color': 'rgba(255,255,255,0.03)',
-          'scalesProperties.textColor':          '#6e7f99',
-          'scalesProperties.fontSize':           10,
-          /* Candlestick colours */
-          'mainSeriesProperties.candleStyle.upColor':         '#00d48f',
-          'mainSeriesProperties.candleStyle.downColor':       '#ff4561',
-          'mainSeriesProperties.candleStyle.borderUpColor':   '#00d48f',
-          'mainSeriesProperties.candleStyle.borderDownColor': '#ff4561',
-          'mainSeriesProperties.candleStyle.wickUpColor':     '#00d48f',
-          'mainSeriesProperties.candleStyle.wickDownColor':   '#ff4561',
-        },
-      });
-    };
-    document.head.appendChild(script);
-  }
-
-  function setTVRange(range, btn) {
-    activeRange = range;
-    document.querySelectorAll('.range-pills .pill')
-            .forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    loadTVWidget(TV_INTERVALS[range]);
-  }
-
-  /* Init on page load */
-  loadTVWidget(TV_INTERVALS[activeRange]);
-</script>
 <script src="js/api.js"></script>
 <script src="js/charts.js"></script>
 
@@ -838,6 +770,74 @@ console.log('Current user:', auth.currentUser);
     }
   });
 </script>
+<script>
+  
+  /* ── TradingView widget loader ── */
+  let tvWidget = null;
 
+  const TV_INTERVALS = { '1D': '60', '1W': '240', '1M': 'D' };
+  let activeRange = '1D';
+
+  function loadTVWidget(interval) {
+    const container = document.getElementById('tv-widget-container');
+    container.innerHTML = ''; // clear previous
+
+    const script = document.createElement('script');
+    script.src = 'https://s3.tradingview.com/tv.js';
+    script.async = true;
+    script.onload = () => {
+      new TradingView.widget({
+        container_id:   'tv-widget-container',
+        symbol:         'OANDA:XAUUSD',
+        interval:       interval,
+        timezone:       'Etc/UTC',
+        theme:          'dark',
+        style:          '1',          /* 1 = candlestick */
+        locale:         'en',
+        toolbar_bg:     '#0e1622',
+        enable_publishing: false,
+        hide_top_toolbar:  false,
+        hide_legend:       true,
+        hide_side_toolbar: true,
+        allow_symbol_change: false,
+        save_image:        false,
+        height:            300,
+        width:             '100%',
+        withdateranges:    false,
+        details:           false,
+        hotlist:           false,
+        calendar:          false,
+        studies:           [],
+        overrides: {
+          'paneProperties.background':          '#070c12',
+          'paneProperties.backgroundType':       'solid',
+          'paneProperties.vertGridProperties.color': 'rgba(255,255,255,0.03)',
+          'paneProperties.horzGridProperties.color': 'rgba(255,255,255,0.03)',
+          'scalesProperties.textColor':          '#6e7f99',
+          'scalesProperties.fontSize':           10,
+          /* Candlestick colours */
+          'mainSeriesProperties.candleStyle.upColor':         '#00d48f',
+          'mainSeriesProperties.candleStyle.downColor':       '#ff4561',
+          'mainSeriesProperties.candleStyle.borderUpColor':   '#00d48f',
+          'mainSeriesProperties.candleStyle.borderDownColor': '#ff4561',
+          'mainSeriesProperties.candleStyle.wickUpColor':     '#00d48f',
+          'mainSeriesProperties.candleStyle.wickDownColor':   '#ff4561',
+        },
+      });
+    };
+    document.head.appendChild(script);
+  }
+
+  function setTVRange(range, btn) {
+    activeRange = range;
+    document.querySelectorAll('.range-pills .pill')
+            .forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    loadTVWidget(TV_INTERVALS[range]);
+  }
+
+  /* Init on page load */
+  loadTVWidget(TV_INTERVALS[activeRange]);
+</script>
 </body>
 </html>
