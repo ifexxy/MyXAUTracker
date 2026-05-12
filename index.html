@@ -529,6 +529,20 @@
       </div>
 
     </section>
+<div class="chart-card" style="padding: 0; overflow: hidden;">
+  <div class="chart-card-header" style="padding: 16px 16px 0;">
+    <span class="chart-card-title">
+      <i class="fa-solid fa-chart-candlestick" style="margin-right:6px;color:var(--gold)"></i>
+      Price Chart
+    </span>
+    <div class="range-pills">
+      <button class="pill active" onclick="setTVRange('1D', this)">1D</button>
+      <button class="pill" onclick="setTVRange('1W', this)">1W</button>
+      <button class="pill" onclick="setTVRange('1M', this)">1M</button>
+    </div>
+  </div>
+  <div id="tv-widget-container" style="height: 300px; width: 100%;"></div>
+</div>
 
 
     <div class="price-hero" id="price-anchor">
@@ -568,21 +582,7 @@
       </div>
     </div>
 
-    <div class="chart-card" style="padding: 0; overflow: hidden;">
-  <div class="chart-card-header" style="padding: 16px 16px 0;">
-    <span class="chart-card-title">
-      <i class="fa-solid fa-chart-candlestick" style="margin-right:6px;color:var(--gold)"></i>
-      Price Chart
-    </span>
-    <div class="range-pills">
-      <button class="pill active" onclick="setTVRange('1D', this)">1D</button>
-      <button class="pill" onclick="setTVRange('1W', this)">1W</button>
-      <button class="pill" onclick="setTVRange('1M', this)">1M</button>
-    </div>
-  </div>
-  <div id="tv-widget-container" style="height: 300px; width: 100%;"></div>
-</div>
-
+    
 
       <div class="chart-card">
       <div class="chart-card-header">
