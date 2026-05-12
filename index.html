@@ -739,12 +739,7 @@
     homeChart = makeChart('homeChart', labels, points, color);
   }
 
-  function setRange(range, btn) {
-    activeRange = range;
-    document.querySelectorAll('.range-pills .pill').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    if (window.GOLD_STATE.price) renderHomeChart(window.GOLD_STATE.price);
-  }
+  
 
   document.getElementById('refresh-btn').addEventListener('click', async function() {
     this.classList.add('spin');
