@@ -529,20 +529,6 @@
       </div>
 
     </section>
-<div class="chart-card" style="padding: 0; overflow: hidden;">
-  <div class="chart-card-header" style="padding: 16px 16px 0;">
-    <span class="chart-card-title">
-      <i class="fa-solid fa-chart-candlestick" style="margin-right:6px;color:var(--gold)"></i>
-      Price Chart
-    </span>
-    <div class="range-pills">
-      <button class="pill active" onclick="setTVRange('1D', this)">1D</button>
-      <button class="pill" onclick="setTVRange('1W', this)">1W</button>
-      <button class="pill" onclick="setTVRange('1M', this)">1M</button>
-    </div>
-  </div>
-  <div id="tv-widget-container" style="height: 300px; width: 100%;"></div>
-</div>
 
 
     <div class="price-hero" id="price-anchor">
@@ -628,72 +614,6 @@
   let homeChart   = null;
 
   
-  /* ── TradingView widget loader ── */
-  let tvWidget = null;
-
-  const TV_INTERVALS = { '1D': '60', '1W': '240', '1M': 'D' };
-  let activeRange = '1D';
-
-  function loadTVWidget(interval) {
-    const container = document.getElementById('tv-widget-container');
-    container.innerHTML = ''; // clear previous
-
-    const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/tv.js';
-    script.async = true;
-    script.onload = () => {
-      new TradingView.widget({
-        container_id:   'tv-widget-container',
-        symbol:         'OANDA:XAUUSD',
-        interval:       interval,
-        timezone:       'Etc/UTC',
-        theme:          'dark',
-        style:          '1',          /* 1 = candlestick */
-        locale:         'en',
-        toolbar_bg:     '#0e1622',
-        enable_publishing: false,
-        hide_top_toolbar:  false,
-        hide_legend:       true,
-        hide_side_toolbar: true,
-        allow_symbol_change: false,
-        save_image:        false,
-        height:            300,
-        width:             '100%',
-        withdateranges:    false,
-        details:           false,
-        hotlist:           false,
-        calendar:          false,
-        studies:           [],
-        overrides: {
-          'paneProperties.background':          '#070c12',
-          'paneProperties.backgroundType':       'solid',
-          'paneProperties.vertGridProperties.color': 'rgba(255,255,255,0.03)',
-          'paneProperties.horzGridProperties.color': 'rgba(255,255,255,0.03)',
-          'scalesProperties.textColor':          '#6e7f99',
-          'scalesProperties.fontSize':           10,
-          /* Candlestick colours */
-          'mainSeriesProperties.candleStyle.upColor':         '#00d48f',
-          'mainSeriesProperties.candleStyle.downColor':       '#ff4561',
-          'mainSeriesProperties.candleStyle.borderUpColor':   '#00d48f',
-          'mainSeriesProperties.candleStyle.borderDownColor': '#ff4561',
-          'mainSeriesProperties.candleStyle.wickUpColor':     '#00d48f',
-          'mainSeriesProperties.candleStyle.wickDownColor':   '#ff4561',
-        },
-      });
-    };
-    document.head.appendChild(script);
-  }
-
-  function setTVRange(range, btn) {
-    activeRange = range;
-    document.querySelectorAll('.range-pills .pill')
-            .forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    loadTVWidget(TV_INTERVALS[range]);
-  }
-
-  /* Init on page load */
-  loadTVWidget(TV_INTERVALS[activeRange]);
 
   function renderPrice(d, isDemo) {
     const isUp = d.ch >= 0;
@@ -739,7 +659,12 @@
     homeChart = makeChart('homeChart', labels, points, color);
   }
 
-  
+  function setRange(range, btn) {
+    activeRange = range;
+    document.querySelectorAll('.range-pills .pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    if (window.GOLD_STATE.price) renderHomeChart(window.GOLD_STATE.price);
+  }
 
   document.getElementById('refresh-btn').addEventListener('click', async function() {
     this.classList.add('spin');
