@@ -475,60 +475,556 @@
     <!--
          LANDING SECTION
 -->
-    <section id="landing">
+
+<section id="landing">
+
+  <style>
+    #landing {
+      position: relative;
+      overflow: hidden;
+      background: #070c12;
+      padding: 0;
+    }
+
+    /* ── Atmospheric background ── */
+    #landing-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Grain overlay via SVG filter */
+    #landing-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+
+    /* Gold radial glow — top right */
+    #landing-bg::after {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 340px;
+      height: 340px;
+      background: radial-gradient(ellipse, rgba(212,167,44,0.18) 0%, transparent 65%);
+      border-radius: 50%;
+    }
+
+    /* Subtle bottom-left glow */
+    .landing-glow-bl {
+      position: absolute;
+      bottom: -60px;
+      left: -60px;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(ellipse, rgba(212,167,44,0.07) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    /* Horizontal rule — gold gradient */
+    .landing-hr {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(212,167,44,0.4) 30%, rgba(212,167,44,0.4) 70%, transparent 100%);
+      margin: 0;
+    }
+
+    /* ── Top strip ── */
+    .landing-strip {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 22px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .landing-strip-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(212,167,44,0.7);
+    }
+
+    .landing-strip-live {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #00d48f;
+    }
+
+    .landing-strip-live-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #00d48f;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* ── Hero price block ── */
+    .landing-hero-price {
+      position: relative;
+      z-index: 1;
+      padding: 32px 22px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .landing-pair-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 10px;
+    }
+
+    /* The massive price number */
+    .landing-price-number {
+      font-family: 'Space Mono', monospace;
+      font-size: 54px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 10px;
+      /* Subtle gold shimmer on the number */
+      background: linear-gradient(135deg, #fff 60%, rgba(212,167,44,0.8) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .landing-price-sym {
+      font-size: 26px;
+      letter-spacing: 0;
+      opacity: 0.5;
+    }
+
+    .landing-price-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .landing-change-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .landing-change-pill.up   { background: rgba(0,212,143,0.12); color: #00d48f; border: 1px solid rgba(0,212,143,0.2); }
+    .landing-change-pill.down { background: rgba(255,69,97,0.12);  color: #ff4561; border: 1px solid rgba(255,69,97,0.2); }
+
+    .landing-updated {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.2);
+      text-transform: uppercase;
+    }
+
+    /* ── Stat bar ── */
+    .landing-stat-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .landing-stat-item {
+      padding: 14px 16px;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .landing-stat-item:last-child { border-right: none; }
+
+    .landing-stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      margin-bottom: 5px;
+    }
+
+    .landing-stat-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .landing-stat-val.green { color: #00d48f; }
+    .landing-stat-val.red   { color: #ff4561; }
+    .landing-stat-val.gold  { color: #d4a72c; }
+
+    /* ── CTA block ── */
+    .landing-cta-block {
+      position: relative;
+      z-index: 1;
+      padding: 24px 22px 28px;
+    }
+
+    /* Tagline */
+    .landing-tagline {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.3;
+      color: #fff;
+      letter-spacing: -0.3px;
+      margin-bottom: 10px;
+    }
+
+    .landing-tagline-gold {
+      color: #d4a72c;
+    }
+
+    .landing-tagline-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.7;
+      margin-bottom: 22px;
+      max-width: 320px;
+    }
+
+    /* Auth card */
+    .landing-auth {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Gold top line accent */
+    .landing-auth::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212,167,44,0.6), transparent);
+    }
+
+    .landing-trial-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #00d48f;
+      background: rgba(0,212,143,0.08);
+      border: 1px solid rgba(0,212,143,0.18);
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .landing-trial-dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: #00d48f;
+    }
+
+    .landing-auth-copy {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+
+    .landing-auth-copy strong { color: #fff; font-weight: 700; }
+
+    /* Primary CTA button */
+    .landing-btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 15px 20px;
+      background: #d4a72c;
+      color: #000;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      border-radius: 10px;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Shimmer sweep on hover */
+    .landing-btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      transition: left 0.4s ease;
+    }
+
+    .landing-btn-primary:hover::after { left: 150%; }
+    .landing-btn-primary:hover { opacity: 0.93; transform: translateY(-1px); }
+    .landing-btn-primary:active { transform: translateY(0); }
+
+    /* Signed-in state */
+    .landing-user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .landing-user-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(212,167,44,0.12);
+      border: 1px solid rgba(212,167,44,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d4a72c;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .landing-user-status {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #00d48f;
+      margin-bottom: 2px;
+    }
+
+    .landing-user-email {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+
+    /* Contact row */
+    .landing-contact-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .landing-btn-wa {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 12px;
+      background: #1a1a1a;
+      color: #25D366;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 10px;
+      text-decoration: none;
+      border: 1px solid rgba(37,211,102,0.2);
+      transition: all 0.2s;
+    }
+
+    .landing-btn-wa:hover {
+      background: rgba(37,211,102,0.08);
+      border-color: rgba(37,211,102,0.4);
+    }
+
+    .landing-btn-mail {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 12px;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 10px;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.2s;
+    }
+
+    .landing-btn-mail:hover {
+      border-color: rgba(212,167,44,0.4);
+      color: #d4a72c;
+    }
+
+    /* ── Scroll anchor ── */
+    .landing-scroll-anchor {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 0 20px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .landing-scroll-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .landing-scroll-link:hover { color: rgba(212,167,44,0.7); }
+
+    .landing-scroll-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      animation: bounceDown 2.5s ease-in-out infinite;
+    }
+
+    @keyframes bounceDown {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(4px); }
+    }
+
+    /* Auth skeleton */
+    .landing-auth-skel {
+      height: 46px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+  </style>
+
+  <div id="landing-bg">
+    <div class="landing-glow-bl"></div>
+  </div>
+
+  <!-- ── Top strip ── -->
+  <div class="landing-strip">
+    <span class="landing-strip-label">XAU / USD · Spot Gold</span>
+    <span class="landing-strip-live">
+      <span class="landing-strip-live-dot"></span>
+      Markets Live
+    </span>
+  </div>
+
+  <!-- ── Hero price ── -->
+  <div class="landing-hero-price">
+    <div class="landing-pair-label">Troy Ounce · USD · Real-Time</div>
+    <div class="landing-price-number">
+      <span class="landing-price-sym">$</span><span id="hero-price">——</span>
+    </div>
+    <div class="landing-price-row">
+      <span class="landing-change-pill" id="hero-change-pill">— —</span>
+      <span class="landing-updated" id="hero-updated">Fetching price...</span>
+    </div>
+  </div>
+
+  <!-- ── Stat bar ── -->
+  <div class="landing-stat-bar">
+    <div class="landing-stat-item">
+      <div class="landing-stat-label">High</div>
+      <div class="landing-stat-val green" id="hero-high">—</div>
+    </div>
+    <div class="landing-stat-item">
+      <div class="landing-stat-label">Low</div>
+      <div class="landing-stat-val red" id="hero-low">—</div>
+    </div>
+    <div class="landing-stat-item">
+      <div class="landing-stat-label">Open</div>
+      <div class="landing-stat-val gold" id="hero-open">—</div>
+    </div>
+  </div>
+
+  <!-- ── CTA block ── -->
+  <div class="landing-cta-block">
+
+    <h1 class="landing-tagline">
+      Trade Gold<br>
+      <span class="landing-tagline-gold">like a Pro.</span>
+    </h1>
+    <p class="landing-tagline-sub">
+      Trade Gold with peace of mind like a Pro with our advanced algorithm and ATR based model prediction on the Forecast section.
+      <br>
+      <br>
+      Join other traders like you, who use XauTracker and explore opportunities never seen before.
 
 
+    </p>
 
-      <!-- Headline -->
-    <p class="landing-sub"><center><b>
-        Trade Gold with peace of mind <em>like a Pro</em> with our advanced algorithm and ATR based model prediction on the Forecast section.</b></center>
-      </p>
-
-      <!-- Sub -->
-      <p class="landing-sub">
-        Join other traders like you, who use XauTracker and explore opportunities never seen before.
-      </p>
-
-      <div class="landing-rule"></div>
-
-      <!-- Auth-aware card -->
-      <div class="landing-auth-card">
-        <div class="auth-card-label">Your Account</div>
-        <div id="landing-auth-inner">
-          <div class="auth-skel"></div>
-        </div>
+    <!-- Auth-aware panel -->
+    <div class="landing-auth">
+      <div id="landing-auth-inner">
+        <div class="landing-auth-skel"></div>
       </div>
+    </div>
 
-      <!-- Scroll CTA -->
-      <div class="landing-scroll-cta">
-        <a href="#price-anchor"
-           class="landing-scroll-btn"
-           onclick="document.getElementById('price-anchor').scrollIntoView({behavior:'smooth'});return false;">
-          View Latest Gold Price
-          <span class="scroll-arrow">
-            <i class="fa-solid fa-chevron-down"></i>
-          </span>
-        </a>
-      </div>
+    <!-- Contact -->
+    <div class="landing-contact-row">
+      <a href="https://wa.me/2348131560586" target="_blank" class="landing-btn-wa">
+        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+      </a>
+      <a href="contact.html" class="landing-btn-mail">
+        <i class="fa-solid fa-envelope" style="font-size:11px;"></i> Email Us
+      </a>
+    </div>
 
-      <!-- Contact strip -->
-      <div class="landing-contact">
-        <p class="landing-contact-label">
-          Got questions or enquiries? Reach us directly.
-        </p>
-        <div class="landing-contact-btns">
-          <a href="https://wa.me/2348131560586"
-             target="_blank"
-             class="btn-whatsapp">
-            WhatsApp Us
-          </a>
-          <a href="contact.html" class="btn-mail">
-            Send a Mail
-          </a>
-        </div>
-      </div>
+  </div>
 
-    </section>
+  <!-- ── Scroll down ── -->
+  <div class="landing-scroll-anchor">
+    <a href="#price-anchor"
+       class="landing-scroll-link"
+       onclick="document.getElementById('price-anchor').scrollIntoView({behavior:'smooth'});return false;">
+      Todays's Stats
+      <span class="landing-scroll-icon">
+        <i class="fa-solid fa-chevron-down"></i>
+      </span>
+    </a>
+  </div>
+
+</section>
 
 
     <div class="price-hero" id="price-anchor">
@@ -600,7 +1096,89 @@
         <span class="gauge-pct" id="sig-sell-pct" style="color:var(--red)">—</span>
       </div>
     </div>
+<!-- ── Footer Section ── -->
+<div id="footer-section" style="margin-top:8px;">
 
+  <!-- How it Works (scroll-reveal) -->
+  <div id="how-it-works" style="
+    margin: 0 16px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  ">
+    <div style="font-size:11px;color:var(--txt-2);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:16px;font-family:'Space Mono',monospace;">
+      <i class="fa-solid fa-circle-question" style="color:var(--gold);margin-right:6px;"></i>How It Works
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:11px;font-family:'Space Mono',monospace;font-weight:700;flex-shrink:0;">1</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;">Live Price Feed</div>
+          <div style="font-size:12px;color:var(--txt-2);line-height:1.6;">We pull real-time XAU/USD spot prices from TwelveData API, refreshed every 60 seconds so you always see the latest market data.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:11px;font-family:'Space Mono',monospace;font-weight:700;flex-shrink:0;">2</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;">ATR Volatility Model</div>
+          <div style="font-size:12px;color:var(--txt-2);line-height:1.6;">Our forecast engine uses <span style="color:var(--gold);font-family:'Space Mono',monospace;">ATR × √(t/1440)</span>, the financial square-root-of-time formula to predict realistic price ranges across multiple timeframes.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:11px;font-family:'Space Mono',monospace;font-weight:700;flex-shrink:0;">3</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;">Market Session Awareness</div>
+          <div style="font-size:12px;color:var(--txt-2);line-height:1.6;">The model adjusts for Asian, London, and New York trading sessions, peak overlap hours get a higher volatility multiplier for more accurate short-term bands.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:11px;font-family:'Space Mono',monospace;font-weight:700;flex-shrink:0;">4</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;">Momentum & Reversion</div>
+          <div style="font-size:12px;color:var(--txt-2);line-height:1.6;">Directional drift is weighted by today's momentum score and dampened by mean-reversion pressure, so big moves attract proportional counter-trend probability.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer links -->
+  <div style="
+    margin: 0 16px;
+    padding: 20px 0 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  ">
+    <a href="/about" style="font-size:12px;color:var(--txt-2);text-decoration:none;padding:6px 12px;border-radius:20px;border:1px solid var(--border);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--txt-2)'">
+About
+    </a>
+    <a href="/contact" style="font-size:12px;color:var(--txt-2);text-decoration:none;padding:6px 12px;border-radius:20px;border:1px solid var(--border);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--txt-2)'">
+  Contact
+    </a>
+    <a href="/disclaimer" style="font-size:12px;color:var(--txt-2);text-decoration:none;padding:6px 12px;border-radius:20px;border:1px solid var(--border);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--txt-2)'">
+Disclaimer
+    </a>
+  </div>
+
+  <!-- Copyright -->
+  <div style="text-align:center;padding:0 16px 100px;font-size:11px;color:var(--txt-3);font-family:'Space Mono',monospace;line-height:1.7;">
+    © 2026 XauTracker.com
+  </div>
+
+</div>
   </div><!-- /content -->
 
 </div>
@@ -721,43 +1299,92 @@ document.addEventListener('click', function(e) {
 
   const fbApp = getApps().length ? getApps()[0] : initializeApp(fbConfig);
   const auth  = getAuth(fbApp);
-  console.log('Apps:', getApps().map(a => a.name));
-console.log('Current user:', auth.currentUser);
   const inner = document.getElementById('landing-auth-inner');
 
   onAuthStateChanged(auth, user => {
-    console.log('Auth state fired. User:', user);
     if (user) {
-      /* ── Signed in ── */
       inner.innerHTML = `
-        <div class="auth-user-row">
-          <div class="auth-user-avatar">
+        <div class="landing-user-row">
+          <div class="landing-user-avatar">
             <i class="fa-solid fa-user"></i>
           </div>
-          <div class="auth-user-info">
-            <div class="auth-user-status">Logged in</div>
-            <div class="auth-user-email">${user.email}</div>
+          <div>
+            <div class="landing-user-status">Signed In</div>
+            <div class="landing-user-email">${user.email}</div>
           </div>
         </div>
-        <a href="predict.html" class="btn-landing-primary">
-          Access XAUUSD Forecast
+        <a href="/predict" class="landing-btn-primary">
+
+          Open Gold Forecast
         </a>`;
     } else {
-      /* ── Guest ── */
       inner.innerHTML = `
-        <div class="trial-pill">
-          <span class="trial-pill-dot"></span>
-         Get 7 Days Free Trial · No Payment Required
+        <div class="landing-trial-badge">
+          <span class="landing-trial-dot"></span>
+          7-Day Free Trial · No Payment Required
         </div>
-        <p class="auth-guest-text">
-          Create an account easily in just <strong>two simple steps</strong>, all you need is a phone number for verification and get a <strong>7-day trial period</strong>.
+        <p class="landing-auth-copy">
+          <strong>Two steps</strong> to get started, just an email and password.
+          Access the full forecast dashboard free for 7 days.
         </p>
-        <a href="signup.html" class="btn-landing-primary">
+        <a href="/signup" class="landing-btn-primary">
+          <i class="fa-solid fa-rocket" style="font-size:12px;"></i>
           Create Account
         </a>`;
     }
   });
-</script>
 
+  /* ── Populate hero price from GOLD_STATE once api.js has loaded ── */
+  function populateHero(d) {
+    if (!d || !d.price) return;
+    const isUp = d.ch >= 0;
+    document.getElementById('hero-price').textContent =
+      d.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const pill = document.getElementById('hero-change-pill');
+    pill.textContent = `${isUp ? '+' : ''}${d.ch.toFixed(2)}  (${isUp ? '+' : ''}${d.chp.toFixed(2)}%)`;
+    pill.className   = 'landing-change-pill ' + (isUp ? 'up' : 'down');
+    document.getElementById('hero-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    document.getElementById('hero-high').textContent =
+      '$' + d.high.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('hero-low').textContent =
+      '$' + d.low.toLocaleString('en-US',  { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('hero-open').textContent =
+      '$' + d.open.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  /* Poll until api.js has loaded GOLD_STATE */
+  const heroTimer = setInterval(() => {
+    if (window.GOLD_STATE?.price) {
+      populateHero(window.GOLD_STATE);
+      clearInterval(heroTimer);
+    }
+  }, 300);
+
+  /* Also update on every subsequent price refresh */
+  const _origLoad = window.loadPrice;
+  if (typeof _origLoad === 'function') {
+    window.loadPrice = function(cb) {
+      return _origLoad(function(d, isDemo) {
+        populateHero(d);
+        if (cb) cb(d, isDemo);
+      });
+    };
+  }
+</script>
+<script>
+  /* ── How it Works scroll reveal ── */
+  const hiw = document.getElementById('how-it-works');
+  const hiwObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        hiw.style.opacity = '1';
+        hiw.style.transform = 'translateY(0)';
+        
+      }
+    });
+  }, { threshold: 0.15 });
+  hiwObserver.observe(hiw);
+</script>
 </body>
 </html>
