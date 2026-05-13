@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1T072J6769"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-1T072J6769');
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1T072J6769"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1T072J6769');
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
@@ -18,357 +17,370 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
-   <link rel="icon" type="image/png" sizes="192x192" href="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
   <style>
     html, body {
-  min-height: 100%;
-  background: var(--bg-deep);
-}
+      min-height: 100%;
+      background: var(--bg-deep);
+    }
 
-#app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100dvh;
-  max-width: 480px;
-  margin: 0 auto;
-}
+    #app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      max-width: 480px;
+      margin: 0 auto;
+    }
 
-#topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px 10px;
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
-}
-.topbar-brand { display: flex; align-items: center; gap: 8px; }
-.topbar-logo {
-  width: 30px; height: 30px;
-  background: var(--gold); border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: #000; font-weight: 800;
-}
-.topbar-title { font-size: 17px; font-weight: 800; letter-spacing: 0.04em; }
-.topbar-title span { color: var(--gold); }
+    #topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px 10px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar-brand { display: flex; align-items: center; gap: 8px; }
+    .topbar-logo {
+      width: 30px; height: 30px;
+      background: var(--gold); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: #000; font-weight: 800;
+    }
+    .topbar-title { font-size: 17px; font-weight: 800; letter-spacing: 0.04em; }
+    .topbar-title span { color: var(--gold); }
 
-#content {
-  flex: 1;
-  padding: 32px 20px calc(var(--nav-h) + 32px);
-  overflow-x: hidden;
-}
+    #content {
+      flex: 1;
+      padding: 32px 20px calc(var(--nav-h) + 32px);
+      overflow-x: hidden;
+    }
 
-.page-title {
-  font-size: 28px;
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.25;
-  margin-bottom: 6px;
-}
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
 
-.page-sub {
-  font-size: 13px;
-  color: var(--txt-2);
-  line-height: 1.6;
-  margin-bottom: 28px;
-}
+    .page-sub {
+      font-size: 13px;
+      color: var(--txt-2);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
 
-.trial-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--gold-glow);
-  border: 1px solid var(--gold-dim);
-  color: var(--gold);
-  font-size: 11px;
-  font-family: 'Space Mono', monospace;
-  padding: 5px 13px;
-  border-radius: 20px;
-  margin-bottom: 24px;
-  letter-spacing: 0.06em;
-}
+    .trial-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--gold-glow);
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      padding: 5px 13px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      letter-spacing: 0.06em;
+    }
 
-.step-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 28px;
-}
+    .step-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 28px;
+    }
 
-.step-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.step-num {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700;
-  font-family: 'Space Mono', monospace;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  color: var(--txt-3);
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--txt-3);
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
 
-.step-num.active {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: #000;
-}
+    .step-num.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #000;
+    }
 
-.step-num.done {
-  background: var(--green-dim);
-  border-color: var(--green);
-  color: var(--green);
-}
+    .step-num.done {
+      background: var(--green-dim);
+      border-color: var(--green);
+      color: var(--green);
+    }
 
-.step-label {
-  font-size: 12px;
-  color: var(--txt-3);
-  font-weight: 600;
-  transition: color 0.2s;
-}
+    .step-label {
+      font-size: 12px;
+      color: var(--txt-3);
+      font-weight: 600;
+      transition: color 0.2s;
+    }
 
-.step-label.active { color: var(--txt-1); }
+    .step-label.active { color: var(--txt-1); }
 
-.step-line {
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-  margin: 0 10px;
-}
+    .step-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      margin: 0 10px;
+    }
 
-.field-group { margin-bottom: 20px; }
+    .field-group { margin-bottom: 20px; }
 
-.field-label {
-  display: block;
-  font-size: 11px;
-  color: var(--txt-2);
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  margin-bottom: 8px;
-  font-family: 'Space Mono', monospace;
-}
+    .field-label {
+      display: block;
+      font-size: 11px;
+      color: var(--txt-2);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      margin-bottom: 8px;
+      font-family: 'Space Mono', monospace;
+    }
 
-.field-input {
-  display: block;
-  width: 100%;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--txt-1);
-  font-family: 'Syne', sans-serif;
-  font-size: 15px;
-  padding: 14px 16px;
-  outline: none;
-  transition: border-color 0.2s;
-  -webkit-appearance: none;
-}
+    .field-input {
+      display: block;
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--txt-1);
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
 
-.field-input:focus { border-color: var(--gold); }
-.field-input::placeholder { color: var(--txt-3); }
+    .field-input:focus { border-color: var(--gold); }
+    .field-input::placeholder { color: var(--txt-3); }
 
-.phone-row { display: flex; gap: 10px; }
+    .phone-row { display: flex; gap: 10px; }
 
-.country-select-wrap { position: relative; flex-shrink: 0; }
+    .country-select-wrap { position: relative; flex-shrink: 0; }
 
-.country-trigger {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px 14px;
-  cursor: pointer;
-  transition: border-color 0.2s;
-  white-space: nowrap;
-  min-width: 110px;
-  font-family: 'Space Mono', monospace;
-  font-size: 14px;
-  color: var(--txt-1);
-  user-select: none;
-}
+    .country-trigger {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      white-space: nowrap;
+      min-width: 110px;
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      color: var(--txt-1);
+      user-select: none;
+    }
 
-.country-trigger:hover,
-.country-trigger.open { border-color: var(--gold); }
+    .country-trigger:hover,
+    .country-trigger.open { border-color: var(--gold); }
 
-.country-trigger .arrow {
-  font-size: 10px;
-  color: var(--txt-3);
-  transition: transform 0.2s;
-}
+    .country-trigger .arrow {
+      font-size: 10px;
+      color: var(--txt-3);
+      transition: transform 0.2s;
+    }
 
-.country-trigger.open .arrow { transform: rotate(180deg); }
+    .country-trigger.open .arrow { transform: rotate(180deg); }
 
-.country-dropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  width: 300px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  z-index: 500;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-  opacity: 0;
-  transform: translateY(-6px) scale(0.97);
-  pointer-events: none;
-  transition: all 0.18s ease;
-  overflow: hidden;
-}
+    .country-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 300px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      z-index: 500;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(-6px) scale(0.97);
+      pointer-events: none;
+      transition: all 0.18s ease;
+      overflow: hidden;
+    }
 
-.country-dropdown.open {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: all;
-}
+    .country-dropdown.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+    }
 
-.country-search-wrap {
-  padding: 10px;
-  border-bottom: 1px solid var(--border);
-}
+    .country-search-wrap {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+    }
 
-.country-search {
-  width: 100%;
-  background: var(--bg-muted);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--txt-1);
-  font-family: 'Syne', sans-serif;
-  font-size: 13px;
-  padding: 9px 12px;
-  outline: none;
-  transition: border-color 0.2s;
-}
+    .country-search {
+      width: 100%;
+      background: var(--bg-muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--txt-1);
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
 
-.country-search:focus { border-color: var(--gold); }
-.country-search::placeholder { color: var(--txt-3); }
+    .country-search:focus { border-color: var(--gold); }
+    .country-search::placeholder { color: var(--txt-3); }
 
-.country-list {
-  max-height: 240px;
-  overflow-y: auto;
-  padding: 6px;
-}
+    .country-list {
+      max-height: 240px;
+      overflow-y: auto;
+      padding: 6px;
+    }
 
-.country-list::-webkit-scrollbar { width: 4px; }
-.country-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .country-list::-webkit-scrollbar { width: 4px; }
+    .country-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-.country-option {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.12s;
-  font-size: 13px;
-  color: var(--txt-1);
-}
+    .country-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.12s;
+      font-size: 13px;
+      color: var(--txt-1);
+    }
 
-.country-option:hover,
-.country-option.selected { background: var(--bg-muted); }
-.country-option.selected { color: var(--gold); }
+    .country-option:hover,
+    .country-option.selected { background: var(--bg-muted); }
+    .country-option.selected { color: var(--gold); }
 
-.country-option .opt-flag { font-size: 18px; line-height: 1; flex-shrink: 0; }
-.country-option .opt-name { flex: 1; font-size: 13px; }
-.country-option .opt-code { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--txt-2); flex-shrink: 0; }
+    .country-option .opt-flag { font-size: 18px; line-height: 1; flex-shrink: 0; }
+    .country-option .opt-name { flex: 1; font-size: 13px; }
+    .country-option .opt-code { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--txt-2); flex-shrink: 0; }
 
-.phone-input-wrap { flex: 1; }
+    .phone-input-wrap { flex: 1; }
 
-.otp-section {
-  display: none;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-}
+    .err-msg {
+      font-size: 13px;
+      color: var(--red);
+      margin-top: 10px;
+      display: none;
+      padding: 10px 14px;
+      background: rgba(255,69,97,0.07);
+      border-radius: 10px;
+      border: 1px solid rgba(255,69,97,0.15);
+      line-height: 1.5;
+    }
 
-.err-msg {
-  font-size: 13px;
-  color: var(--red);
-  margin-top: 10px;
-  display: none;
-  padding: 10px 14px;
-  background: rgba(255,69,97,0.07);
-  border-radius: 10px;
-  border: 1px solid rgba(255,69,97,0.15);
-  line-height: 1.5;
-}
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 15px 20px;
+      margin-top: 24px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
 
-.btn-primary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 15px 20px;
-  margin-top: 24px;
-  background: var(--gold);
-  color: #000;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Syne', sans-serif;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
 
-.btn-primary:hover { opacity: 0.88; }
-.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 20px;
+      margin-top: 10px;
+      background: transparent;
+      color: var(--txt-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
 
-.btn-secondary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 14px 20px;
-  margin-top: 10px;
-  background: transparent;
-  color: var(--txt-2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  font-family: 'Syne', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
 
-.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0;
+      color: var(--txt-3);
+      font-size: 12px;
+    }
 
-.form-switch {
-  text-align: center;
-  font-size: 13px;
-  color: var(--txt-2);
-  margin-top: 24px;
-  line-height: 1.6;
-}
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
 
-.form-switch a { color: var(--gold); font-weight: 700; text-decoration: none; }
+    .form-switch {
+      text-align: center;
+      font-size: 13px;
+      color: var(--txt-2);
+      margin-top: 24px;
+      line-height: 1.6;
+    }
 
-.spinner {
-  display: inline-block;
-  width: 14px; height: 14px;
-  border: 2px solid rgba(0,0,0,0.3);
-  border-top-color: #000;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
+    .form-switch a { color: var(--gold); font-weight: 700; text-decoration: none; }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
 
-.section-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 28px 0;
-}
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    .otp-section {
+      display: none;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
   </style>
 </head>
-<body>
 <body>
 <div id="app">
 
@@ -385,7 +397,8 @@
           <a class="dropdown-item" href="contact.html">Contact Us</a>
         </div>
       </div>
-      <img src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" width="30" height="30"/><span class="topbar-title">AU<span>/USD</span></span>
+      <img src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" width="30" height="30" alt="logo" />
+      <span class="topbar-title">XAU<span>/USD</span></span>
     </div>
   </div>
 
@@ -394,7 +407,10 @@
     <h1 class="page-title">Create Account</h1>
     <p class="page-sub">Sign up to access gold price predictions and market signals.</p>
 
-    <div class="trial-badge">7 Days Free Trial · No payment Required</div>
+    <div class="trial-badge">
+      <i class="fa-solid fa-gift"></i>
+      7 Days Free Trial · No Payment Required
+    </div>
 
     <div class="step-row">
       <div class="step-item">
@@ -408,6 +424,7 @@
       </div>
     </div>
 
+    <!-- ══ STEP 1 ══ -->
     <div id="signup-step1">
 
       <div class="field-group">
@@ -431,22 +448,22 @@
       <div class="err-msg" id="su-err"></div>
 
       <button class="btn-primary" id="su-next-btn" onclick="goToPhoneStep()">
-        Continue
+        Continue <i class="fa-solid fa-arrow-right"></i>
       </button>
-<div class="divider" style="display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--txt-3);font-size:12px;">
-  <span style="flex:1;height:1px;background:var(--border);display:block;"></span>
-  or
-  <span style="flex:1;height:1px;background:var(--border);display:block;"></span>
-</div>
-<button class="btn-secondary" onclick="doGoogleSignIn()">
-  <i class="fa-brands fa-google"></i> Sign up with Google
-</button>
+
+      <div class="divider">or</div>
+
+      <button class="btn-secondary" onclick="doGoogleSignIn()">
+        <i class="fa-brands fa-google"></i> Continue with Google
+      </button>
+
       <div class="form-switch">
         Already have an account? <a href="login.html">Sign in</a>
       </div>
 
     </div>
 
+    <!-- ══ STEP 2 ══ -->
     <div id="signup-step2" style="display:none;">
 
       <div class="field-group">
@@ -457,7 +474,7 @@
             <div class="country-trigger" id="country-trigger" onclick="toggleCountryDropdown()">
               <span class="flag" id="selected-flag">🇳🇬</span>
               <span class="code" id="selected-code">+234</span>
-              <span class="arrow">▄1�7</span>
+              <span class="arrow">▼</span>
             </div>
             <div class="country-dropdown" id="country-dropdown">
               <div class="country-search-wrap">
@@ -481,7 +498,7 @@
       <div id="recaptcha-container" style="margin-top:4px;"></div>
 
       <button class="btn-primary" id="send-otp-btn" onclick="sendOTP()">
-        Send Verification Code
+        <i class="fa-solid fa-mobile-screen"></i> Send Verification Code
       </button>
 
       <div class="otp-section" id="otp-section">
@@ -495,19 +512,19 @@
         <div class="err-msg" id="otp-err"></div>
 
         <button class="btn-primary" id="su-btn" onclick="doSignUp()">
-          Create Account
+          <i class="fa-solid fa-rocket"></i> Create Account
         </button>
 
         <button class="btn-secondary" onclick="sendOTP()">
-          Resend Code
+          <i class="fa-solid fa-rotate-right"></i> Resend Code
         </button>
 
       </div>
 
       <div class="section-divider"></div>
 
-      <button class="btn-secondary" onclick="backToStep1()">
-        Back to Step 1
+      <button class="btn-secondary" id="back-btn" onclick="backToStep1()">
+        <i class="fa-solid fa-arrow-left"></i> Back to Step 1
       </button>
 
       <div class="form-switch">
@@ -519,49 +536,14 @@
   </div>
 
   <nav id="bottomnav">
-    <a class="nav-btn" data-page="index.html"   href="index.html"><i class="fa-solid fa-house"></i>Home</a>
-    <a class="nav-btn" data-page="news.html"    href="news.html"><i class="fa-solid fa-newspaper"></i>News</a>
-    <a class="nav-btn" data-page="trends.html"  href="trends.html"><i class="fa-solid fa-chart-area"></i>Trends</a>
-    <a class="nav-btn" data-page="predict.html" href="predict.html"><i class="fa-solid fa-arrow-trend-up"></i>Forecast</a>
+    <a class="nav-btn" data-page="index.html"    href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+    <a class="nav-btn" data-page="news.html"     href="news.html"><i class="fa-solid fa-newspaper"></i>News</a>
+    <a class="nav-btn" data-page="trends.html"   href="trends.html"><i class="fa-solid fa-chart-area"></i>Trends</a>
+    <a class="nav-btn" data-page="predict.html"  href="predict.html"><i class="fa-solid fa-arrow-trend-up"></i>Forecast</a>
   </nav>
 
 </div>
 
-  <!-- ══ STEP 2: Phone Verification ══ -->
-  <div id="signup-step2" style="display:none;">
-    <p class="auth-sub">Verify your phone number to create your account.</p>
-    <label>Phone Number</label>
-    <input type="tel" id="su-phone" placeholder="" autocomplete="tel" />
-    <div class="err-msg" id="phone-err"></div>
-
-    <div id="recaptcha-container" style="margin-top:12px;"></div>
-
-    <button class="btn-primary" id="send-otp-btn" onclick="sendOTP()">
-      <i class="fa-solid fa-mobile-screen"></i> Send OTP
-    </button>
-
-    <!-- OTP section  1�7 hidden until code sent -->
-    <div id="otp-section" style="display:none;margin-top:16px;">
-      <label>Verification Code</label>
-      <input type="number" id="su-otp" placeholder="Enter 6-digit code" />
-      <div class="err-msg" id="otp-err"></div>
-      <button class="btn-primary" id="su-btn" onclick="doSignUp()">
-        <i class="fa-solid fa-rocket"></i> Create Account
-      </button>
-      <button class="btn-secondary" onclick="sendOTP()" style="margin-top:8px;">
-        <i class="fa-solid fa-rotate-right"></i> Resend Code
-      </button>
-    </div>
-
-    <button class="btn-secondary" onclick="backToStep1()" style="margin-top:10px;">
-      <i class="fa-solid fa-arrow-left"></i> Back
-    </button>
-    <div class="form-switch">
-      Already have an account? <a href="login.html">Sign in</a>
-    </div>
-  </div>
-
-</div>
 <script>
 const COUNTRIES = [
   { name: "Nigeria",              code: "+234", flag: "🇳🇬" },
@@ -790,18 +772,38 @@ document.addEventListener('click', function(e) {
   if (wrap && !wrap.contains(e.target)) closeCountryDropdown();
 });
 
+function toggleMenu() {
+  const trigger  = document.getElementById('menu-trigger');
+  const dropdown = document.getElementById('dropdown-menu');
+  const isOpen   = dropdown.classList.contains('open');
+  dropdown.classList.toggle('open', !isOpen);
+  trigger.classList.toggle('open',  !isOpen);
+}
+
+document.addEventListener('click', function(e) {
+  const wrap = document.querySelector('.menu-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('dropdown-menu')?.classList.remove('open');
+    document.getElementById('menu-trigger')?.classList.remove('open');
+  }
+});
+
 renderCountryList(COUNTRIES);
 </script>
+
 <script type="module">
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth, createUserWithEmailAndPassword,
-    onAuthStateChanged, PhoneAuthProvider, RecaptchaVerifier, GoogleAuthProvider, signInWithPopup
+    onAuthStateChanged, PhoneAuthProvider,
+    RecaptchaVerifier, signInWithPhoneNumber,
+    GoogleAuthProvider, signInWithPopup
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc,
-           getDocs, collection, query, where, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getFirestore, doc, setDoc, getDoc,
+    getDocs, collection, query, where, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
@@ -819,24 +821,26 @@ renderCountryList(COUNTRIES);
   let confirmationResult = null;
   let recaptchaVerifier  = null;
 
-const storedGoogleUid   = sessionStorage.getItem('googleUid');
-const storedGoogleEmail = sessionStorage.getItem('googleEmail');
+  /* ── Pick up Google user redirected from login.html ── */
+  const storedGoogleUid   = sessionStorage.getItem('googleUid');
+  const storedGoogleEmail = sessionStorage.getItem('googleEmail');
 
-if (storedGoogleUid) {
-  window._googleUser = { uid: storedGoogleUid, email: storedGoogleEmail };
-  sessionStorage.removeItem('googleUid');
-  sessionStorage.removeItem('googleEmail');
+  if (storedGoogleUid) {
+    window._googleUser = { uid: storedGoogleUid, email: storedGoogleEmail };
+    sessionStorage.removeItem('googleUid');
+    sessionStorage.removeItem('googleEmail');
+    document.getElementById('signup-step1').style.display = 'none';
+    document.getElementById('signup-step2').style.display = 'block';
+    document.getElementById('dot-1').classList.remove('active');
+    document.getElementById('dot-1').classList.add('done');
+    document.getElementById('dot-2').classList.add('active');
+    document.getElementById('label-2').classList.add('active');
+    document.getElementById('back-btn').style.display = 'none';
+    // init recaptcha after DOM is ready
+    setTimeout(() => initRecaptcha(), 100);
+  }
 
-  document.getElementById('signup-step1').style.display = 'none';
-  document.getElementById('signup-step2').style.display = 'block';
-  document.getElementById('dot-1').classList.remove('active');
-  document.getElementById('dot-2').classList.add('active');
-
-  const backBtn = document.querySelector('#signup-step2 .btn-secondary:last-of-type');
-  if (backBtn) backBtn.style.display = 'none';
-}
-
-  /* ┄1�7┄1�7 Already logged in  1�7 redirect ┄1�7┄1�7 */
+  /* ── Auth state — don't redirect if mid Google+phone flow ── */
   onAuthStateChanged(auth, async user => {
     if (!user) return;
     if (window._googleUser) return;
@@ -855,52 +859,12 @@ if (storedGoogleUid) {
     } catch { window.location.href = 'predict.html'; }
   });
 
-window.doGoogleSignIn = async () => {
-  const provider = new GoogleAuthProvider();
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user   = result.user;
-
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (snap.exists() && snap.data().trialEndsAt) {
-      const d   = snap.data();
-      const now = Date.now();
-      const hasAccess =
-        (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
-        (d.subscriptionStatus === 'active' && d.currentPeriodEnd &&
-          new Date(d.currentPeriodEnd).getTime() > now) ||
-        (d.manualAccess && (!d.manualAccessExpiresAt ||
-          new Date(d.manualAccessExpiresAt).getTime() > now));
-      window.location.href = hasAccess ? 'predict.html' : 'subscribe.html';
-      return;
-    }
-
-    window._googleUser = user;
-
-    document.getElementById('signup-step1').style.display = 'none';
-    document.getElementById('signup-step2').style.display = 'block';
-    document.getElementById('dot-1').classList.remove('active');
-    document.getElementById('dot-2').classList.add('active');
-
-    const backBtn = document.querySelector('#signup-step2 .btn-secondary:last-of-type');
-    if (backBtn) backBtn.style.display = 'none';
-
-    initRecaptcha();
-
-  } catch (e) {
-    if (e.code !== 'auth/popup-closed-by-user') {
-      showErr('su-err', 'Google sign-in failed. Please try again.');
-    }
-  }
-};
-
-  /* ┄1�7┄1�7 Step 1 validation ┄1�7┄1�7 */
+  /* ── Step 1 validation ── */
   window.goToPhoneStep = () => {
     const email = document.getElementById('su-email').value.trim();
     const pass  = document.getElementById('su-pass').value;
     const pass2 = document.getElementById('su-pass2').value;
     showErr('su-err', '');
-
     if (!email)          { showErr('su-err', 'Enter your email.');               return; }
     if (pass.length < 6) { showErr('su-err', 'Password must be 6+ characters.'); return; }
     if (pass !== pass2)  { showErr('su-err', 'Passwords do not match.');          return; }
@@ -908,7 +872,10 @@ window.doGoogleSignIn = async () => {
     document.getElementById('signup-step1').style.display = 'none';
     document.getElementById('signup-step2').style.display = 'block';
     document.getElementById('dot-1').classList.remove('active');
+    document.getElementById('dot-1').classList.add('done');
     document.getElementById('dot-2').classList.add('active');
+    document.getElementById('label-1').classList.remove('active');
+    document.getElementById('label-2').classList.add('active');
     initRecaptcha();
   };
 
@@ -916,7 +883,10 @@ window.doGoogleSignIn = async () => {
     document.getElementById('signup-step2').style.display = 'none';
     document.getElementById('signup-step1').style.display = 'block';
     document.getElementById('dot-2').classList.remove('active');
+    document.getElementById('dot-1').classList.remove('done');
     document.getElementById('dot-1').classList.add('active');
+    document.getElementById('label-2').classList.remove('active');
+    document.getElementById('label-1').classList.add('active');
     if (recaptchaVerifier) {
       recaptchaVerifier.clear();
       recaptchaVerifier = null;
@@ -927,7 +897,47 @@ window.doGoogleSignIn = async () => {
     showErr('otp-err', '');
   };
 
-  /* ┄1�7┄1�7 reCAPTCHA ┄1�7┄1�7 */
+  /* ── Google Sign In ── */
+  window.doGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user   = result.user;
+
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists() && snap.data().trialEndsAt) {
+        const d   = snap.data();
+        const now = Date.now();
+        const hasAccess =
+          (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
+          (d.subscriptionStatus === 'active' && d.currentPeriodEnd &&
+            new Date(d.currentPeriodEnd).getTime() > now) ||
+          (d.manualAccess && (!d.manualAccessExpiresAt ||
+            new Date(d.manualAccessExpiresAt).getTime() > now));
+        window.location.href = hasAccess ? 'predict.html' : 'subscribe.html';
+        return;
+      }
+
+      // New Google user — go to phone step
+      window._googleUser = user;
+      document.getElementById('signup-step1').style.display = 'none';
+      document.getElementById('signup-step2').style.display = 'block';
+      document.getElementById('dot-1').classList.remove('active');
+      document.getElementById('dot-1').classList.add('done');
+      document.getElementById('dot-2').classList.add('active');
+      document.getElementById('label-1').classList.remove('active');
+      document.getElementById('label-2').classList.add('active');
+      document.getElementById('back-btn').style.display = 'none';
+      initRecaptcha();
+
+    } catch (e) {
+      if (e.code !== 'auth/popup-closed-by-user') {
+        showErr('su-err', 'Google sign-in failed. Please try again.');
+      }
+    }
+  };
+
+  /* ── reCAPTCHA ── */
   function initRecaptcha() {
     if (recaptchaVerifier) return;
     recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
@@ -940,13 +950,12 @@ window.doGoogleSignIn = async () => {
   }
 
   function getFullPhone() {
-    const local = document.getElementById('su-phone').value.trim();
+    const local    = document.getElementById('su-phone').value.trim();
     const stripped = local.startsWith('0') ? local.slice(1) : local;
     return window.selectedCountry.code + stripped;
   }
-  
 
-  /* ┄1�7┄1�7 Send OTP ┄1�7┄1�7 */
+  /* ── Send OTP ── */
   window.sendOTP = async () => {
     const fullPhone = getFullPhone();
     showErr('phone-err', '');
@@ -956,32 +965,28 @@ window.doGoogleSignIn = async () => {
     }
 
     const btn = document.getElementById('send-otp-btn');
-    btn.disabled = true;
+    btn.disabled  = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner spinner"></i> Sending...';
 
     try {
       /* Check if phone already used */
       const phoneQuery = query(
         collection(db, 'users'),
-        where('phone', '==', fullPhone));
+        where('phone', '==', fullPhone)
+      );
       const existing = await getDocs(phoneQuery);
-
       if (!existing.empty) {
         const userData = existing.docs[0].data();
         if (userData.trialEndsAt || userData.subscriptionStatus) {
           showErr('phone-err',
             'This phone number has already been used for a free trial. Please sign in or subscribe.');
-          btn.disabled = false;
+          btn.disabled  = false;
           btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
           return;
         }
       }
 
-      const { signInWithPhoneNumber } = await import(
-        "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
-      );
       confirmationResult = await signInWithPhoneNumber(auth, fullPhone, recaptchaVerifier);
-
       document.getElementById('otp-section').style.display = 'block';
       btn.innerHTML = '<i class="fa-solid fa-check"></i> Code Sent';
 
@@ -993,7 +998,7 @@ window.doGoogleSignIn = async () => {
         e.code === 'auth/quota-exceeded'       ? 'SMS quota exceeded. Try again later.' :
         'Failed to send code: ' + e.message;
       showErr('phone-err', msg);
-      btn.disabled = false;
+      btn.disabled  = false;
       btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
       if (recaptchaVerifier) {
         recaptchaVerifier.clear();
@@ -1004,12 +1009,9 @@ window.doGoogleSignIn = async () => {
     }
   };
 
-  /* ┄1�7┄1�7 Complete Sign Up ┄1�7┄1�7 */
+  /* ── Complete Sign Up ── */
   window.doSignUp = async () => {
-    const otp   = document.getElementById('su-otp').value.trim();
-    const email = document.getElementById('su-email').value.trim();
-    const pass  = document.getElementById('su-pass').value;
-    const phone = document.getElementById('su-phone').value.trim();
+    const otp = document.getElementById('su-otp').value.trim();
     showErr('otp-err', '');
 
     if (!otp || otp.length !== 6) {
@@ -1022,30 +1024,31 @@ window.doGoogleSignIn = async () => {
     }
 
     setLoading('su-btn', true, 'Verifying...',
-      '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+      '<i class="fa-solid fa-rocket"></i> Create Account');
 
     try {
-      /* Verify OTP  1�7 just checks it's valid, we don't sign in with phone */
+      /* Verify OTP */
       PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
 
-      /* Create email/password account */
+      const phone       = getFullPhone();
+      const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
       let user;
 
-if (window._googleUser) {
-  user = window._googleUser;
-} else {
-  const email = document.getElementById('su-email').value.trim();
-  const pass  = document.getElementById('su-pass').value;
-  const result = await createUserWithEmailAndPassword(auth, email, pass);
-  user = result.user;
-}
+      if (window._googleUser) {
+        /* Google flow — user already exists in Firebase Auth */
+        user = window._googleUser;
+      } else {
+        /* Email/password flow */
+        const email  = document.getElementById('su-email').value.trim();
+        const pass   = document.getElementById('su-pass').value;
+        const result = await createUserWithEmailAndPassword(auth, email, pass);
+        user = result.user;
+      }
 
-      const trialEndsAt = new Date(
-  Date.now() + 7 * 24 * 60 * 60 * 1000
-).toISOString();
-
+      /* Write Firestore doc — this is what grants trial access */
       await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
+        email:                 user.email,
         phone,
         createdAt:             serverTimestamp(),
         trialEndsAt,
@@ -1060,6 +1063,9 @@ if (window._googleUser) {
         lastPaymentAmount:     null,
       });
 
+      /* Clear the guard so onAuthStateChanged works normally after this */
+      window._googleUser = null;
+
       window.location.href = 'predict.html';
 
     } catch (e) {
@@ -1072,7 +1078,7 @@ if (window._googleUser) {
         'Sign up failed: ' + e.message;
       showErr('otp-err', msg);
       setLoading('su-btn', false, '',
-        '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+        '<i class="fa-solid fa-rocket"></i> Create Account');
     }
   };
 
@@ -1082,9 +1088,8 @@ if (window._googleUser) {
     else if (document.getElementById('otp-section').style.display !== 'none') window.doSignUp();
   });
 
-  /* ┄1�7┄1�7 Helpers ┄1�7┄1�7 */
   function setLoading(btnId, loading, loadText, origHTML) {
-    const btn = document.getElementById(btnId);
+    const btn     = document.getElementById(btnId);
     btn.disabled  = loading;
     btn.innerHTML = loading
       ? `<i class="fa-solid fa-spinner spinner"></i> ${loadText}`
@@ -1092,7 +1097,7 @@ if (window._googleUser) {
   }
 
   function showErr(id, msg) {
-    const el = document.getElementById(id);
+    const el         = document.getElementById(id);
     el.textContent   = msg;
     el.style.display = msg ? 'block' : 'none';
   }
