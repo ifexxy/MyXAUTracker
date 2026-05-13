@@ -940,14 +940,7 @@
     <div class="landing-glow-bl"></div>
   </div>
 
-  <!-- ── Top strip ── -->
-  <div class="landing-strip">
-    <span class="landing-strip-label">XAU / USD · Spot Gold</span>
-    <span class="landing-strip-live">
-      <span class="landing-strip-live-dot"></span>
-      Markets Live
-    </span>
-  </div>
+
 
   <!-- ── Hero price ── -->
   <div class="landing-hero-price">
@@ -1012,12 +1005,90 @@
 
   </div>
 
-
+  <!-- ── Scroll down ── -->
+  <div class="landing-scroll-anchor">
+    <a href="#price-anchor"
+       class="landing-scroll-link"
+       onclick="document.getElementById('price-anchor').scrollIntoView({behavior:'smooth'});return false;">
+      Todays's Stats
+      <span class="landing-scroll-icon">
+        <i class="fa-solid fa-chevron-down"></i>
+      </span>
+    </a>
+  </div>
 
 </section>
 
 
+    <div class="price-hero" id="price-anchor">
+      <div class="price-pair"><i class="fa-solid fa-layer-group" style="font-size:9px;margin-right:4px;"></i>SPOT GOLD · XAU/USD · TROY OZ</div>
+      <div id="price-display" class="price-main"><div class="skeleton skel-price"></div></div>
+      <div id="price-change"></div>
+      <div class="update-time" id="last-update"></div>
+    </div>
 
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-arrow-up stat-icon" style="color:var(--green)"></i>Day High</div>
+        <div class="stat-val" id="stat-high">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-arrow-down stat-icon" style="color:var(--red)"></i>Day Low</div>
+        <div class="stat-val" id="stat-low">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-door-open stat-icon" style="color:var(--gold)"></i>Open</div>
+        <div class="stat-val" id="stat-open">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-chart-bar stat-icon" style="color:var(--txt-2)"></i>24h Change</div>
+        <div class="stat-val" id="stat-chg">—</div>
+      </div>
+    </div>
+
+    <div class="stats-grid" style="margin-top:-4px;">
+      <div class="stat-card" style="border-color:rgba(0,212,143,0.2)">
+        <div class="stat-label"><i class="fa-solid fa-circle stat-icon" style="color:var(--green)"></i>Bid</div>
+        <div class="stat-val" id="stat-bid" style="color:var(--green)">—</div>
+      </div>
+      <div class="stat-card" style="border-color:rgba(255,69,97,0.2)">
+        <div class="stat-label"><i class="fa-solid fa-circle stat-icon" style="color:var(--red)"></i>Ask</div>
+        <div class="stat-val" id="stat-ask" style="color:var(--red)">—</div>
+      </div>
+    </div>
+
+    
+
+      <div class="chart-card">
+      <div class="chart-card-header">
+        <span class="chart-card-title"><i class="fa-solid fa-chart-line" style="margin-right:6px;color:var(--gold)"></i>Price Chart</span>
+        <div class="range-pills">
+          <button class="pill active" onclick="setRange('1D',this)">1D</button>
+          <button class="pill" onclick="setRange('1W',this)">1W</button>
+          <button class="pill" onclick="setRange('1M',this)">1M</button>
+        </div>
+      </div>
+      <canvas id="homeChart" height="160"></canvas>
+  </div>
+    
+    <div class="signal-card">
+      <div class="signal-label"><i class="fa-solid fa-gauge-high" style="margin-right:6px;color:var(--gold)"></i>Market Signal</div>
+      <div class="gauge-row">
+        <span class="gauge-name" style="color:var(--green)">BUY</span>
+        <div class="gauge-bar"><div class="gauge-fill buy" id="sig-buy" style="width:0%"></div></div>
+        <span class="gauge-pct" id="sig-buy-pct" style="color:var(--green)">—</span>
+      </div>
+      <div class="gauge-row">
+        <span class="gauge-name" style="color:var(--gold)">HLD</span>
+        <div class="gauge-bar"><div class="gauge-fill hold" id="sig-hold" style="width:0%"></div></div>
+        <span class="gauge-pct" id="sig-hold-pct" style="color:var(--gold)">—</span>
+      </div>
+      <div class="gauge-row">
+        <span class="gauge-name" style="color:var(--red)">SELL</span>
+        <div class="gauge-bar"><div class="gauge-fill sell" id="sig-sell" style="width:0%"></div></div>
+        <span class="gauge-pct" id="sig-sell-pct" style="color:var(--red)">—</span>
+      </div>
+    </div>
 <!-- ── Footer Section ── -->
 <div id="footer-section" style="margin-top:8px;">
 
