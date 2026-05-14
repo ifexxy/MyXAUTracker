@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1T072J6769"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-1T072J6769');
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1T072J6769"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1T072J6769');
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Welcome to XauTracker - Forecast Real-time Gold Price</title>
+  <title>XauTracker — Real-Time Gold Forecast</title>
   <meta name="description" content="Forecast live XAU/USD gold spot prices in real time using ATR advanced method" />
   <meta name="keywords" content="XAUUSD, gold price live, gold spot price, gold trading, gold tracker, gold market, XAU price today, live gold price" />
   <meta name="author" content="XAU Tracker" />
@@ -19,1164 +19,1220 @@
   <link rel="canonical" href="https://www.xautracker.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.xautracker.com/" />
-  <meta property="og:title" content="XAU/USD Live Price Tracker" />
+  <meta property="og:title" content="XauTracker — Real-Time Gold Price & Forecast" />
   <meta property="og:description" content="Forecast live XAU/USD gold spot prices in real time using ATR advanced method, Updated every 60 seconds." />
   <meta property="og:image" content="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="XAU Tracker — Live Gold Price Dashboard" />
   <meta property="og:site_name" content="XAU Tracker" />
   <meta property="og:locale" content="en_US" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://www.xautracker.com/" />
-  <meta name="twitter:title" content="Welcome to XauTracker - Forecast Real-time Gold Price" />
-  <meta name="twitter:description" content="Live XAU/USD gold spot prices, real-time bid/ask, market signals and buy/sell indicators. Updated every 60 seconds." />
-  <meta name="twitter:image" content="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png"/>
-  <meta name="twitter:image:alt" content="Welcome to XauTracker - Forecast Real-time Gold Price" />
-  <meta name="theme-color" content="#070c12" />
+  <meta name="twitter:title" content="XauTracker — Real-Time Gold Price & Forecast" />
+  <meta name="twitter:description" content="Live XAU/USD gold spot prices, real-time bid/ask, market signals and buy/sell indicators." />
+  <meta name="twitter:image" content="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
+  <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="XAU Tracker" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="application-name" content="XAU Tracker" />
-  <meta name="msapplication-TileColor" content="#070c12" />
   <link rel="icon" type="image/png" sizes="192x192" href="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "XAU Tracker — Live Gold Price",
-    "url": "https://www.xautracker.com",
-    "description": "Live XAU/USD gold spot price tracker with real-time bid/ask, market signals, news and predictions.",
-    "applicationCategory": "FinanceApplication",
-    "operatingSystem": "Any",
-    "browserRequirements": "Requires JavaScript",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "publisher": { "@type": "Organization", "name": "XAU Tracker", "url": "https://www.xautracker.com" } 
-  }
-  </script>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <link rel="stylesheet" href="css/style.css" />
 
   <style>
-    /* ══════════════════════════════════════
-       LANDING SECTION STYLES
-    ══════════════════════════════════════ */
+    /* ══ RESET & ROOT ══ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    #landing {
-      position: relative;
-      overflow: hidden;
-      padding: 40px 22px 36px;
-      border-bottom: 1px solid var(--border);
+    :root {
+      --white:    #ffffff;
+      --off:      #f5f4f1;
+      --ink:      #0a0a0a;
+      --ink-2:    #444444;
+      --ink-3:    #888888;
+      --ink-4:    #bbbbbb;
+      --border:   #e8e6e1;
+      --gold:     #b8860b;
+      --gold-lt:  #f5e6b8;
+      --green:    #008055;
+      --green-lt: #e6f5ee;
+      --red:      #c0392b;
+      --red-lt:   #fdf0ef;
+      --radius:   12px;
+      --nav-h:    64px;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans:  'DM Sans', sans-serif;
+      --font-mono:  'Space Mono', monospace;
     }
 
-    /* Animated radial glow behind content */
-    #landing::before {
-      content: '';
-      position: absolute;
-      top: -60px;
-      right: -60px;
-      width: 280px;
-      height: 280px;
-      background: radial-gradient(circle, rgba(212,167,44,0.13) 0%, transparent 70%);
-      pointer-events: none;
-      border-radius: 50%;
-      animation: glowPulse 4s ease-in-out infinite;
+    html, body {
+      height: 100%;
+      background: var(--white);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
     }
 
-    #landing::after {
-      content: '';
-      position: absolute;
-      bottom: -40px;
-      left: -40px;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(212,167,44,0.07) 0%, transparent 70%);
-      pointer-events: none;
-      border-radius: 50%;
-      animation: glowPulse 4s ease-in-out infinite reverse;
-    }
-
-    @keyframes glowPulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.5; transform: scale(1.1); }
-    }
-
-    /* ── Eyebrow label ── */
-    .landing-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--gold);
-      background: var(--gold-glow);
-      border: 1px solid rgba(212,167,44,0.25);
-      padding: 5px 12px;
-      border-radius: 20px;
-      margin-bottom: 20px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .landing-eyebrow-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--gold);
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    /* ── Headline ── */
-    .landing-headline {
-      font-size: 26px;
-      font-weight: 800;
-      line-height: 1.3;
-      color: #fff;
-      margin-bottom: 14px;
-      position: relative;
-      z-index: 1;
-      letter-spacing: -0.3px;
-    }
-
-    .landing-headline em {
-      font-style: normal;
-      background: linear-gradient(90deg, var(--gold), #f0c84a);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* ── Subtext ── */
-    .landing-sub {
-      font-size: 14px;
-      line-height: 1.75;
-      color: rgba(255,255,255,0.65);
-      margin-bottom: 28px;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* ── Horizontal rule ── */
-    .landing-rule {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--border), transparent);
-      margin: 0 0 28px;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* ── Auth card ── */
-    .landing-auth-card {
-      background: rgba(14,22,34,0.8);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 28px;
-      position: relative;
-      z-index: 1;
-      backdrop-filter: blur(8px);
-    }
-
-    /* Gold top accent line */
-    .landing-auth-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 20px; right: 20px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      border-radius: 1px;
-    }
-
-    .auth-card-label {
-      font-size: 10px;
-      color: var(--txt-2);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-family: 'Space Mono', monospace;
-      margin-bottom: 10px;
-    }
-
-    /* Signed-out state */
-    .auth-guest-text {
-      font-size: 13px;
-      color: rgba(255,255,255,0.75);
-      line-height: 1.7;
-      margin-bottom: 16px;
-    }
-
-    .auth-guest-text strong {
-      color: #fff;
-    }
-
-    /* Trial pill */
-    .trial-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0,212,143,0.1);
-      border: 1px solid rgba(0,212,143,0.2);
-      color: var(--green);
-      font-size: 11px;
-      font-family: 'Space Mono', monospace;
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-bottom: 16px;
-    }
-
-    .trial-pill-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--green);
-    }
-
-    /* CTA button — primary white */
-    .btn-landing-primary {
-      display: block;
-      width: 100%;
-      text-align: center;
-      background: #fff;
-      color: #000;
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 800;
-      padding: 14px 20px;
-      border-radius: 12px;
-      text-decoration: none;
-      letter-spacing: 0.01em;
-      transition: opacity 0.2s, transform 0.15s;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-landing-primary:hover {
-      opacity: 0.92;
-      transform: translateY(-1px);
-    }
-
-    .btn-landing-primary:active {
-      transform: translateY(0);
-    }
-
-    /* Signed-in state */
-    .auth-user-row {
+    #app {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .auth-user-avatar {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: var(--gold-glow);
-      border: 1px solid var(--gold-dim);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      color: var(--gold);
-      flex-shrink: 0;
-    }
-
-    .auth-user-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .auth-user-status {
-      font-size: 10px;
-      color: var(--green);
-      font-family: 'Space Mono', monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 2px;
-    }
-
-    .auth-user-email {
-      font-size: 13px;
-      font-weight: 700;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* ── Scroll CTA ── */
-    .landing-scroll-cta {
-      text-align: center;
-      margin-bottom: 28px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .landing-scroll-btn {
-      display: inline-flex;
       flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      letter-spacing: 0.02em;
-      transition: opacity 0.2s;
+      min-height: 100dvh;
+      max-width: 480px;
+      margin: 0 auto;
     }
 
-    .landing-scroll-btn:hover { opacity: 0.75; }
-
-    .scroll-arrow {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      color: #fff;
-      animation: bounceDown 2s ease-in-out infinite;
-    }
-
-    @keyframes bounceDown {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(5px); }
-    }
-
-    /* ── Contact strip ── */
-    .landing-contact {
-      position: relative;
-      z-index: 1;
-      border-top: 1px solid var(--border);
-      padding-top: 22px;
-    }
-
-    .landing-contact-label {
-      font-size: 12px;
-      color: rgba(255,255,255,0.55);
-      line-height: 1.7;
-      margin-bottom: 14px;
-      text-align: center;
-    }
-
-    .landing-contact-btns {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn-whatsapp {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 14px;
-      background: #25D366;
-      color: #000;
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 800;
-      border-radius: 12px;
-      text-decoration: none;
-      transition: opacity 0.2s, transform 0.15s;
-    }
-
-    .btn-whatsapp:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-    }
-
-    .btn-mail {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 14px;
-      background: transparent;
-      color: #fff;
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.18);
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .btn-mail:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-
-    /* ── Skeleton pulse for auth loading ── */
-    .auth-skel {
-      height: 48px;
-      border-radius: 10px;
-      background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-muted) 50%, var(--bg-card) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-    }
-  </style>
-</head>
-<body>
-<div id="app">
-
-  <div id="topbar">
-    <div class="topbar-brand">
-    <div class="menu-wrap">
-  <button class="menu-trigger" id="menu-trigger" onclick="toggleMenu()" title="Menu">
-    <i class="fa-solid fa-bars"></i>
-  </button>
-
-  <div class="dropdown-menu" id="dropdown-menu">
-    <!-- Header -->
-    <div class="dropdown-menu-header">
-      <div class="dropdown-menu-brand">
-        <img src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" width="30" height="30"/>
-        <span class="topbar-title">AU<span>/USD</span></span>
-      </div>
-      <button class="dropdown-menu-close" onclick="toggleMenu()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <!-- Items -->
-    <div class="dropdown-menu-items">
-      
-      <a class="dropdown-item" href="/news">News</a>
-      <a class="dropdown-item" href="/trends">Trends</a>
-      <a class="dropdown-item" href="/minds">Minds</a>
-      <a class="dropdown-item" href="/predict">Forecast</a>
-      <a class="dropdown-item" href="/about">About</a>
-      <a class="dropdown-item" href="/disclaimer">Disclaimer</a>
-      <a class="dropdown-item" href="/contact">Contact Us</a>
-    </div>
-  </div>
-</div>
-      
-      <img src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" width="30" height="30"/><span class="topbar-title">AU<span>/USD</span></span>
-    </div>
-    
-    <button class="refresh-btn" id="refresh-btn" title="Refresh">
-      
-    </button>
-  </div>
-
-  <div id="content">
-
-    <!--
-         LANDING SECTION
--->
-
-<section id="landing">
-
-  <style>
-    #landing {
-      position: relative;
-      overflow: hidden;
-      background: #070c12;
-      padding: 0;
-    }
-
-    /* ── Atmospheric background ── */
-    #landing-bg {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Grain overlay via SVG filter */
-    #landing-bg::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      opacity: 0.4;
-    }
-
-    /* Gold radial glow — top right */
-    #landing-bg::after {
-      content: '';
-      position: absolute;
-      top: -80px;
-      right: -80px;
-      width: 340px;
-      height: 340px;
-      background: radial-gradient(ellipse, rgba(212,167,44,0.18) 0%, transparent 65%);
-      border-radius: 50%;
-    }
-
-    /* Subtle bottom-left glow */
-    .landing-glow-bl {
-      position: absolute;
-      bottom: -60px;
-      left: -60px;
-      width: 260px;
-      height: 260px;
-      background: radial-gradient(ellipse, rgba(212,167,44,0.07) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-
-    /* Horizontal rule — gold gradient */
-    .landing-hr {
-      height: 1px;
-      background: linear-gradient(90deg, transparent 0%, rgba(212,167,44,0.4) 30%, rgba(212,167,44,0.4) 70%, transparent 100%);
-      margin: 0;
-    }
-
-    /* ── Top strip ── */
-    .landing-strip {
-      position: relative;
-      z-index: 1;
+    /* ══ TOPBAR ══ */
+    #topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 22px 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--white);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .landing-strip-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: rgba(212,167,44,0.7);
-    }
-
-    .landing-strip-live {
+    .topbar-brand {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #00d48f;
+      gap: 10px;
     }
 
-    .landing-strip-live-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: #00d48f;
-      animation: pulse 1.5s ease-in-out infinite;
+    .topbar-logo-img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
     }
 
-    /* ── Hero price block ── */
-    .landing-hero-price {
-      position: relative;
-      z-index: 1;
-      padding: 32px 22px 24px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .landing-pair-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: 10px;
-    }
-
-    /* The massive price number */
-    .landing-price-number {
-      font-family: 'Space Mono', monospace;
-      font-size: 54px;
+    .topbar-wordmark {
+      font-family: var(--font-sans);
+      font-size: 16px;
       font-weight: 700;
-      color: #fff;
-      letter-spacing: -2px;
-      line-height: 1;
-      margin-bottom: 10px;
-      /* Subtle gold shimmer on the number */
-      background: linear-gradient(135deg, #fff 60%, rgba(212,167,44,0.8) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--ink);
+      letter-spacing: -0.3px;
     }
 
-    .landing-price-sym {
-      font-size: 26px;
-      letter-spacing: 0;
-      opacity: 0.5;
+    .topbar-wordmark span { color: var(--gold); }
+
+    /* Live badge in topbar */
+    .topbar-price-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .landing-price-row {
+    .live-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--green);
+      background: var(--green-lt);
+      padding: 4px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+    }
+
+    .live-chip-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: livePulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    .topbar-price-num {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    /* Hamburger */
+    .menu-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      color: var(--ink);
+      font-size: 16px;
+      transition: background 0.2s;
+    }
+
+    .menu-btn:hover { background: var(--off); }
+
+    /* ══ DRAWER NAV ══ */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .drawer-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0; left: 0;
+      width: 280px;
+      height: 100%;
+      background: var(--white);
+      z-index: 201;
+      transform: translateX(-100%);
+      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow-y: auto;
+    }
+
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .drawer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .drawer-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 32px; height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: var(--ink-3);
+      font-size: 14px;
+    }
+
+    .drawer-close:hover { background: var(--off); }
+
+    .drawer-nav {
+      flex: 1;
+      padding: 12px 10px;
+    }
+
+    .drawer-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink-2);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      letter-spacing: -0.2px;
     }
 
-    .landing-change-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-family: 'Space Mono', monospace;
+    .drawer-item:hover {
+      background: var(--off);
+      color: var(--ink);
+    }
+
+    .drawer-item i {
+      width: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--ink-3);
+    }
+
+    .drawer-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 10px;
+    }
+
+    .drawer-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
       font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 4px;
+      color: var(--ink-4);
+      font-family: var(--font-mono);
     }
 
-    .landing-change-pill.up   { background: rgba(0,212,143,0.12); color: #00d48f; border: 1px solid rgba(0,212,143,0.2); }
-    .landing-change-pill.down { background: rgba(255,69,97,0.12);  color: #ff4561; border: 1px solid rgba(255,69,97,0.2); }
-
-    .landing-updated {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      color: rgba(255,255,255,0.2);
-      text-transform: uppercase;
+    /* ══ CONTENT ══ */
+    #content {
+      flex: 1;
+      padding-bottom: calc(var(--nav-h) + 16px);
     }
 
-    /* ── Stat bar ── */
-    .landing-stat-bar {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      border-top: 1px solid rgba(255,255,255,0.06);
+    /* ══ HERO ══ */
+    .hero {
+      padding: 36px 22px 28px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
     }
 
-    .landing-stat-item {
-      padding: 14px 16px;
-      border-right: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .landing-stat-item:last-child { border-right: none; }
-
-    .landing-stat-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 8px;
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 10px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.25);
-      margin-bottom: 5px;
-    }
-
-    .landing-stat-val {
-      font-family: 'Space Mono', monospace;
-      font-size: 13px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.85);
-    }
-
-    .landing-stat-val.green { color: #00d48f; }
-    .landing-stat-val.red   { color: #ff4561; }
-    .landing-stat-val.gold  { color: #d4a72c; }
-
-    /* ── CTA block ── */
-    .landing-cta-block {
-      position: relative;
-      z-index: 1;
-      padding: 24px 22px 28px;
-    }
-
-    /* Tagline */
-    .landing-tagline {
-      font-size: 22px;
-      font-weight: 800;
-      line-height: 1.3;
-      color: #fff;
-      letter-spacing: -0.3px;
-      margin-bottom: 10px;
-    }
-
-    .landing-tagline-gold {
-      color: #d4a72c;
-    }
-
-    .landing-tagline-sub {
-      font-size: 13px;
-      color: rgba(255,255,255,0.45);
-      line-height: 1.7;
-      margin-bottom: 22px;
-      max-width: 320px;
-    }
-
-    /* Auth card */
-    .landing-auth {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px;
-      padding: 18px;
+      color: var(--ink-3);
       margin-bottom: 18px;
-      position: relative;
-      overflow: hidden;
     }
 
-    /* Gold top line accent */
-    .landing-auth::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 10%; right: 10%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(212,167,44,0.6), transparent);
-    }
-
-    .landing-trial-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #00d48f;
-      background: rgba(0,212,143,0.08);
-      border: 1px solid rgba(0,212,143,0.18);
-      padding: 4px 10px;
-      border-radius: 20px;
-      margin-bottom: 12px;
-    }
-
-    .landing-trial-dot {
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: #00d48f;
-    }
-
-    .landing-auth-copy {
-      font-size: 13px;
-      color: rgba(255,255,255,0.6);
-      line-height: 1.65;
+    .hero-price-block {
       margin-bottom: 16px;
     }
 
-    .landing-auth-copy strong { color: #fff; font-weight: 700; }
+    .hero-price-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+      letter-spacing: 0.03em;
+    }
 
-    /* Primary CTA button */
-    .landing-btn-primary {
+    .hero-price-num {
+      font-family: var(--font-serif);
+      font-size: 64px;
+      color: var(--ink);
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .hero-price-sym {
+      font-size: 32px;
+      color: var(--ink-3);
+      font-style: italic;
+    }
+
+    .hero-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+
+    .hero-change.up   { background: var(--green-lt); color: var(--green); }
+    .hero-change.down { background: var(--red-lt);   color: var(--red); }
+
+    .hero-updated {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--ink-4);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* ══ STAT ROW ══ */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--border);
+      margin-top: 22px;
+    }
+
+    .stat-cell {
+      padding: 14px 0;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat-cell:last-child { border-right: none; }
+
+    .stat-cell-label {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+      margin-bottom: 5px;
+    }
+
+    .stat-cell-val {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .stat-cell-val.up   { color: var(--green); }
+    .stat-cell-val.down { color: var(--red); }
+    .stat-cell-val.gold { color: var(--gold); }
+
+    /* ══ SECTION TITLE ══ */
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      padding: 20px 22px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ══ BID/ASK ROW ══ */
+    .bid-ask-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .bid-ask-cell {
+      padding: 16px 22px;
+      border-right: 1px solid var(--border);
+    }
+
+    .bid-ask-cell:last-child { border-right: none; }
+
+    .bid-ask-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 6px;
+    }
+
+    .bid-ask-val {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .bid-ask-val.bid { color: var(--green); }
+    .bid-ask-val.ask { color: var(--red); }
+
+    /* ══ CHART ══ */
+    .chart-section {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .range-pills {
+      display: flex;
+      gap: 2px;
+      background: var(--off);
+      padding: 3px;
+      border-radius: 8px;
+    }
+
+    .pill {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--ink-3);
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+
+    .pill.active {
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* ══ SIGNAL ══ */
+    .signal-section {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .signal-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    .gauge-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .gauge-row:last-child { margin-bottom: 0; }
+
+    .gauge-name {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      width: 34px;
+      letter-spacing: 0.05em;
+    }
+
+    .gauge-name.buy  { color: var(--green); }
+    .gauge-name.hold { color: var(--gold); }
+    .gauge-name.sell { color: var(--red); }
+
+    .gauge-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--off);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s ease;
+    }
+
+    .gauge-fill.buy  { background: var(--green); }
+    .gauge-fill.hold { background: var(--gold); }
+    .gauge-fill.sell { background: var(--red); }
+
+    .gauge-pct {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      width: 34px;
+      text-align: right;
+      color: var(--ink-2);
+    }
+
+    /* ══ FEATURE CARDS (3-col scroll) ══ */
+    .features-scroll {
+      padding: 20px 0 20px 22px;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .features-scroll::-webkit-scrollbar { display: none; }
+
+    .feature-card {
+      flex-shrink: 0;
+      width: 200px;
+      scroll-snap-align: start;
+      background: var(--off);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+    }
+
+    .feature-card:last-child { margin-right: 22px; }
+
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--white);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      color: var(--ink);
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .feature-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 6px;
+      letter-spacing: -0.2px;
+    }
+
+    .feature-desc {
+      font-size: 11px;
+      color: var(--ink-3);
+      line-height: 1.6;
+    }
+
+    /* ══ CTA SECTION ══ */
+    .cta-section {
+      padding: 28px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cta-headline {
+      font-family: var(--font-serif);
+      font-size: 30px;
+      color: var(--ink);
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+
+    .cta-headline em {
+      font-style: italic;
+      color: var(--ink-3);
+    }
+
+    .cta-sub {
+      font-size: 13px;
+      color: var(--ink-3);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    /* Auth card */
+    .auth-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 16px;
+      background: var(--off);
+    }
+
+    .trial-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+      background: var(--green-lt);
+      padding: 4px 9px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .auth-copy {
+      font-size: 13px;
+      color: var(--ink-2);
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+
+    .auth-copy strong { color: var(--ink); }
+
+    .btn-primary {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       width: 100%;
       padding: 15px 20px;
-      background: #d4a72c;
-      color: #000;
-      font-family: 'Syne', sans-serif;
+      background: var(--ink);
+      color: var(--white);
+      font-family: var(--font-sans);
       font-size: 14px;
-      font-weight: 800;
+      font-weight: 700;
       border-radius: 10px;
       text-decoration: none;
-      letter-spacing: 0.01em;
       border: none;
       cursor: pointer;
       transition: opacity 0.2s, transform 0.15s;
-      position: relative;
-      overflow: hidden;
+      letter-spacing: -0.1px;
     }
 
-    /* Shimmer sweep on hover */
-    .landing-btn-primary::after {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-      transition: left 0.4s ease;
-    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
 
-    .landing-btn-primary:hover::after { left: 150%; }
-    .landing-btn-primary:hover { opacity: 0.93; transform: translateY(-1px); }
-    .landing-btn-primary:active { transform: translateY(0); }
-
-    /* Signed-in state */
-    .landing-user-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .landing-user-avatar {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: rgba(212,167,44,0.12);
-      border: 1px solid rgba(212,167,44,0.25);
+    .btn-outline {
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #d4a72c;
-      font-size: 15px;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 20px;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      text-decoration: none;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: -0.1px;
+    }
+
+    .btn-outline:hover { border-color: var(--ink); }
+
+    /* Signed in state */
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--white);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--off);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--ink-3);
       flex-shrink: 0;
     }
 
-    .landing-user-status {
-      font-family: 'Space Mono', monospace;
+    .user-status {
+      font-family: var(--font-mono);
       font-size: 9px;
-      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: #00d48f;
+      letter-spacing: 0.1em;
+      color: var(--green);
       margin-bottom: 2px;
     }
 
-    .landing-user-email {
+    .user-email {
       font-size: 13px;
-      font-weight: 700;
-      color: #fff;
+      font-weight: 600;
+      color: var(--ink);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 200px;
+      max-width: 180px;
     }
 
     /* Contact row */
-    .landing-contact-row {
+    .contact-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .landing-btn-wa {
+    .btn-wa {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 7px;
       padding: 12px;
-      background: #1a1a1a;
+      background: #000;
       color: #25D366;
-      font-family: 'Syne', sans-serif;
+      font-family: var(--font-sans);
       font-size: 12px;
       font-weight: 700;
       border-radius: 10px;
       text-decoration: none;
-      border: 1px solid rgba(37,211,102,0.2);
-      transition: all 0.2s;
+      transition: opacity 0.2s;
     }
 
-    .landing-btn-wa:hover {
-      background: rgba(37,211,102,0.08);
-      border-color: rgba(37,211,102,0.4);
-    }
+    .btn-wa:hover { opacity: 0.85; }
 
-    .landing-btn-mail {
+    .btn-mail {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 7px;
       padding: 12px;
       background: transparent;
-      color: rgba(255,255,255,0.5);
-      font-family: 'Syne', sans-serif;
+      color: var(--ink-2);
+      font-family: var(--font-sans);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 600;
       border-radius: 10px;
       text-decoration: none;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1.5px solid var(--border);
       transition: all 0.2s;
     }
 
-    .landing-btn-mail:hover {
-      border-color: rgba(212,167,44,0.4);
-      color: #d4a72c;
-    }
-
-    /* ── Scroll anchor ── */
-    .landing-scroll-anchor {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px 0 20px;
-      border-top: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .landing-scroll-link {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.2);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .landing-scroll-link:hover { color: rgba(212,167,44,0.7); }
-
-    .landing-scroll-icon {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      animation: bounceDown 2.5s ease-in-out infinite;
-    }
-
-    @keyframes bounceDown {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(4px); }
-    }
+    .btn-mail:hover { border-color: var(--ink); color: var(--ink); }
 
     /* Auth skeleton */
-    .landing-auth-skel {
-      height: 46px;
+    .auth-skel {
+      height: 48px;
       border-radius: 10px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%);
+      background: linear-gradient(90deg, var(--border) 25%, var(--off) 50%, var(--border) 75%);
       background-size: 200% 100%;
       animation: shimmer 1.4s infinite;
     }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ══ HOW IT WORKS ══ */
+    .how-section {
+      padding: 28px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .how-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .how-step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .how-step:last-child { border-bottom: none; }
+
+    .how-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-4);
+      width: 24px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+
+    .how-step-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+      letter-spacing: -0.2px;
+    }
+
+    .how-step-body {
+      font-size: 12px;
+      color: var(--ink-3);
+      line-height: 1.65;
+    }
+
+    .how-step-body code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--off);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--gold);
+    }
+
+    /* ══ FOOTER ══ */
+    .footer {
+      padding: 24px 22px 100px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .footer-link {
+      font-size: 12px;
+      color: var(--ink-3);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .footer-link:hover { border-color: var(--ink); color: var(--ink); }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-4);
+      line-height: 1.8;
+    }
+
+    .footer-disc {
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: var(--red-lt);
+      border-radius: 8px;
+      font-size: 11px;
+      color: var(--ink-3);
+      line-height: 1.6;
+      border: 1px solid rgba(192,57,43,0.12);
+    }
+
+    .footer-disc i { color: var(--red); margin-right: 4px; }
+
+    /* ══ BOTTOM NAV ══ */
+    #bottomnav {
+      position: fixed;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      height: var(--nav-h);
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-decoration: none;
+      color: var(--ink-4);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      padding-bottom: 6px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-family: var(--font-sans);
+    }
+
+    .nav-btn i {
+      font-size: 18px;
+      transition: transform 0.2s;
+    }
+
+    .nav-btn.active {
+      color: var(--ink);
+    }
+
+    .nav-btn.active i { transform: scale(1.1); }
+
+    /* ══ TOAST ══ */
+    #toast {
+      position: fixed;
+      bottom: calc(var(--nav-h) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: var(--white);
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      z-index: 200;
+      white-space: nowrap;
+    }
+
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ══ Misc ══ */
+    canvas { width: 100% !important; }
   </style>
+</head>
+<body>
+<div id="app">
 
-  <div id="landing-bg">
-    <div class="landing-glow-bl"></div>
-  </div>
+  <!-- Drawer overlay -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="closeMenu()"></div>
 
-
-
-  <!-- ── Hero price ── -->
-  <div class="landing-hero-price">
-    <div class="landing-pair-label">Troy Ounce · USD · Real-Time</div>
-    <div class="landing-price-number">
-      <span class="landing-price-sym">$</span><span id="hero-price">——</span>
-    </div>
-    <div class="landing-price-row">
-      <span class="landing-change-pill" id="hero-change-pill">— —</span>
-      <span class="landing-updated" id="hero-updated">Fetching price...</span>
-    </div>
-  </div>
-
-  <!-- ── Stat bar ── -->
-  <div class="landing-stat-bar">
-    <div class="landing-stat-item">
-      <div class="landing-stat-label">High</div>
-      <div class="landing-stat-val green" id="hero-high">—</div>
-    </div>
-    <div class="landing-stat-item">
-      <div class="landing-stat-label">Low</div>
-      <div class="landing-stat-val red" id="hero-low">—</div>
-    </div>
-    <div class="landing-stat-item">
-      <div class="landing-stat-label">Open</div>
-      <div class="landing-stat-val gold" id="hero-open">—</div>
-    </div>
-  </div>
-
-  <!-- ── CTA block ── -->
-  <div class="landing-cta-block">
-
-    <h1 class="landing-tagline">
-      Trade Gold<br>
-      <span class="landing-tagline-gold">like a Pro.</span>
-    </h1>
-    <p class="landing-tagline-sub">
-      Trade Gold with peace of mind like a Pro with our advanced algorithm and ATR based model prediction on the Forecast section.
-      <br>
-      <br>
-      Join other traders like you, who use XauTracker and explore opportunities never seen before.
-
-
-    </p>
-
-    <!-- Auth-aware panel -->
-    <div class="landing-auth">
-      <div id="landing-auth-inner">
-        <div class="landing-auth-skel"></div>
+  <!-- Drawer -->
+  <nav class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-logo">
+        <img src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" width="24" height="24" />
+        XauTracker
       </div>
+      <button class="drawer-close" onclick="closeMenu()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
 
-    <!-- Contact -->
-    <div class="landing-contact-row">
-      <a href="https://wa.me/2348131560586" target="_blank" class="landing-btn-wa">
-        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+    <div class="drawer-nav">
+      <a class="drawer-item" href="/">
+        <i class="fa-solid fa-house"></i> Home
       </a>
-      <a href="contact.html" class="landing-btn-mail">
-        <i class="fa-solid fa-envelope" style="font-size:11px;"></i> Email Us
+      <a class="drawer-item" href="/news">
+        <i class="fa-solid fa-newspaper"></i> News
+      </a>
+      <a class="drawer-item" href="/trends">
+        <i class="fa-solid fa-chart-area"></i> Trends
+      </a>
+      <a class="drawer-item" href="/minds">
+        <i class="fa-solid fa-lightbulb"></i> Minds
+      </a>
+      <a class="drawer-item" href="/predict">
+        <i class="fa-solid fa-brain"></i> Forecast
+      </a>
+      <div class="drawer-divider"></div>
+      <a class="drawer-item" href="/about">
+        <i class="fa-solid fa-circle-info"></i> About
+      </a>
+      <a class="drawer-item" href="/disclaimer">
+        <i class="fa-solid fa-triangle-exclamation"></i> Disclaimer
+      </a>
+      <a class="drawer-item" href="/contact">
+        <i class="fa-solid fa-envelope"></i> Contact Us
       </a>
     </div>
 
+    <div class="drawer-footer">
+      © 2026 XauTracker.com<br />Not financial advice.
+    </div>
+  </nav>
+
+  <!-- Topbar -->
+  <div id="topbar">
+    <div class="topbar-brand">
+      <button class="menu-btn" onclick="openMenu()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <img class="topbar-logo-img" src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" alt="XAU" />
+      <span class="topbar-wordmark">XAU<span>/USD</span></span>
+    </div>
+    <div class="topbar-price-badge">
+      <div class="live-chip">
+        <div class="live-chip-dot"></div>
+        LIVE
+      </div>
+      <span class="topbar-price-num" id="topbar-price">—</span>
+    </div>
   </div>
 
-  <!-- ── Scroll down ── -->
-  <div class="landing-scroll-anchor">
-    <a href="#price-anchor"
-       class="landing-scroll-link"
-       onclick="document.getElementById('price-anchor').scrollIntoView({behavior:'smooth'});return false;">
-      Todays's Stats
-      <span class="landing-scroll-icon">
-        <i class="fa-solid fa-chevron-down"></i>
-      </span>
-    </a>
-  </div>
+  <div id="content">
 
-</section>
+    <!-- ══ HERO ══ -->
+    <section class="hero">
+      <div class="hero-eyebrow">XAU/USD · Spot Gold · Troy Oz</div>
 
+      <div class="hero-price-block">
+        <div class="hero-price-label">Current Price</div>
+        <div class="hero-price-num">
+          <span class="hero-price-sym">$</span><span id="hero-price">——</span>
+        </div>
+        <div class="hero-change" id="hero-change">— —</div>
+        <div class="hero-updated" id="hero-updated">Fetching price...</div>
+      </div>
 
-    <div class="price-hero" id="price-anchor">
-      <div class="price-pair"><i class="fa-solid fa-layer-group" style="font-size:9px;margin-right:4px;"></i>SPOT GOLD · XAU/USD · TROY OZ</div>
-      <div id="price-display" class="price-main"><div class="skeleton skel-price"></div></div>
-      <div id="price-change"></div>
-      <div class="update-time" id="last-update"></div>
-    </div>
+      <div class="stat-row">
+        <div class="stat-cell">
+          <div class="stat-cell-label">High</div>
+          <div class="stat-cell-val up" id="hero-high">—</div>
+        </div>
+        <div class="stat-cell" style="padding-left:14px;">
+          <div class="stat-cell-label">Low</div>
+          <div class="stat-cell-val down" id="hero-low">—</div>
+        </div>
+        <div class="stat-cell" style="padding-left:14px;">
+          <div class="stat-cell-label">Open</div>
+          <div class="stat-cell-val gold" id="hero-open">—</div>
+        </div>
+      </div>
+    </section>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label"><i class="fa-solid fa-arrow-up stat-icon" style="color:var(--green)"></i>Day High</div>
-        <div class="stat-val" id="stat-high">—</div>
+    <!-- ══ BID / ASK ══ -->
+    <div class="bid-ask-row">
+      <div class="bid-ask-cell">
+        <div class="bid-ask-label">Bid</div>
+        <div class="bid-ask-val bid" id="stat-bid">—</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="fa-solid fa-arrow-down stat-icon" style="color:var(--red)"></i>Day Low</div>
-        <div class="stat-val" id="stat-low">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="fa-solid fa-door-open stat-icon" style="color:var(--gold)"></i>Open</div>
-        <div class="stat-val" id="stat-open">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="fa-solid fa-chart-bar stat-icon" style="color:var(--txt-2)"></i>24h Change</div>
-        <div class="stat-val" id="stat-chg">—</div>
-      </div>
-    </div>
-
-    <div class="stats-grid" style="margin-top:-4px;">
-      <div class="stat-card" style="border-color:rgba(0,212,143,0.2)">
-        <div class="stat-label"><i class="fa-solid fa-circle stat-icon" style="color:var(--green)"></i>Bid</div>
-        <div class="stat-val" id="stat-bid" style="color:var(--green)">—</div>
-      </div>
-      <div class="stat-card" style="border-color:rgba(255,69,97,0.2)">
-        <div class="stat-label"><i class="fa-solid fa-circle stat-icon" style="color:var(--red)"></i>Ask</div>
-        <div class="stat-val" id="stat-ask" style="color:var(--red)">—</div>
+      <div class="bid-ask-cell">
+        <div class="bid-ask-label">Ask</div>
+        <div class="bid-ask-val ask" id="stat-ask">—</div>
       </div>
     </div>
 
-    
-
-      <div class="chart-card">
-      <div class="chart-card-header">
-        <span class="chart-card-title"><i class="fa-solid fa-chart-line" style="margin-right:6px;color:var(--gold)"></i>Price Chart</span>
+    <!-- ══ CHART ══ -->
+    <div class="chart-section">
+      <div class="chart-header">
+        <div class="chart-title">Price Chart</div>
         <div class="range-pills">
           <button class="pill active" onclick="setRange('1D',this)">1D</button>
           <button class="pill" onclick="setRange('1W',this)">1W</button>
           <button class="pill" onclick="setRange('1M',this)">1M</button>
         </div>
       </div>
-      <canvas id="homeChart" height="160"></canvas>
-  </div>
-    
-    <div class="signal-card">
-      <div class="signal-label"><i class="fa-solid fa-gauge-high" style="margin-right:6px;color:var(--gold)"></i>Market Signal</div>
+      <canvas id="homeChart" height="150"></canvas>
+    </div>
+
+    <!-- ══ SIGNAL ══ -->
+    <div class="signal-section">
+      <div class="signal-title">Market Signal</div>
       <div class="gauge-row">
-        <span class="gauge-name" style="color:var(--green)">BUY</span>
+        <span class="gauge-name buy">BUY</span>
         <div class="gauge-bar"><div class="gauge-fill buy" id="sig-buy" style="width:0%"></div></div>
-        <span class="gauge-pct" id="sig-buy-pct" style="color:var(--green)">—</span>
+        <span class="gauge-pct" id="sig-buy-pct">—</span>
       </div>
       <div class="gauge-row">
-        <span class="gauge-name" style="color:var(--gold)">HLD</span>
+        <span class="gauge-name hold">HLD</span>
         <div class="gauge-bar"><div class="gauge-fill hold" id="sig-hold" style="width:0%"></div></div>
-        <span class="gauge-pct" id="sig-hold-pct" style="color:var(--gold)">—</span>
+        <span class="gauge-pct" id="sig-hold-pct">—</span>
       </div>
       <div class="gauge-row">
-        <span class="gauge-name" style="color:var(--red)">SELL</span>
+        <span class="gauge-name sell">SELL</span>
         <div class="gauge-bar"><div class="gauge-fill sell" id="sig-sell" style="width:0%"></div></div>
-        <span class="gauge-pct" id="sig-sell-pct" style="color:var(--red)">—</span>
+        <span class="gauge-pct" id="sig-sell-pct">—</span>
       </div>
     </div>
-<!-- ── Footer Section ── -->
-<div id="footer-section" style="margin-top:8px;">
 
-  <!-- How it Works (scroll-reveal) -->
-  <div id="how-it-works" style="
-    margin: 0 16px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  ">
-    <div style="font-size:11px;color:var(--txt-2);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:16px;font-family:'Space Mono',monospace;">
-      <i class="fa-solid fa-circle-question" style="color:var(--gold);margin-right:6px;"></i>How It Works
+    <!-- ══ FEATURE CARDS ══ -->
+    <div class="features-scroll">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
+        <div class="feature-name">AI Forecast</div>
+        <div class="feature-desc">ATR-based predictions across 5m, 15m, 1h, 6h & 24h timeframes.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-chart-area"></i></div>
+        <div class="feature-name">Trend Analysis</div>
+        <div class="feature-desc">MA20, MA50, RSI(14) and multi-timeframe technical charts.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-newspaper"></i></div>
+        <div class="feature-name">Market News</div>
+        <div class="feature-desc">Live gold market headlines sourced from major financial outlets.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+        <div class="feature-name">Real-Time</div>
+        <div class="feature-desc">Prices refreshed every 60 seconds via TwelveData API.</div>
+      </div>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:14px;">
+    <!-- ══ CTA ══ -->
+    <section class="cta-section">
+      <h1 class="cta-headline">Trade Gold<br><em>like a Pro.</em></h1>
+      <p class="cta-sub">
+        Use our advanced ATR model to get accurate short-term gold forecasts.
+        Join traders who rely on XauTracker every day.
+      </p>
 
-      <div style="display:flex;gap:12px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:11px;font-family:'Space Mono',monospace;font-weight:700;flex-shrink:0;">1</div>
-        <div>
-          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;">Live Price Feed</div>
-          <div style="font-size:12px;color:var(--txt-2);line-height:1.6;">We pull real-time XAU/USD spot prices from TwelveData API, refreshed every 60 seconds so you always see the latest market data.</div>
+      <div class="auth-card">
+        <div id="auth-inner">
+          <div class="auth-skel"></div>
         </div>
       </div>
 
-      <div style="display:flex;gap:12px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:11px;font-family:'Space Mono',monospace;font-weight:700;flex-shrink:0;">2</div>
+      <div class="contact-row">
+        <a href="https://wa.me/2348131560586" target="_blank" class="btn-wa">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp
+        </a>
+        <a href="/contact" class="btn-mail">
+          <i class="fa-solid fa-envelope" style="font-size:11px;"></i> Email Us
+        </a>
+      </div>
+    </section>
+
+    <!-- ══ HOW IT WORKS ══ -->
+    <section class="how-section">
+      <div class="how-title">How it Works</div>
+
+      <div class="how-step">
+        <div class="how-num">01</div>
         <div>
-          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;">ATR Volatility Model</div>
-          <div style="font-size:12px;color:var(--txt-2);line-height:1.6;">Our forecast engine uses <span style="color:var(--gold);font-family:'Space Mono',monospace;">ATR × √(t/1440)</span>, the financial square-root-of-time formula to predict realistic price ranges across multiple timeframes.</div>
+          <div class="how-step-title">Live Price Feed</div>
+          <div class="how-step-body">Real-time XAU/USD spot prices from TwelveData, refreshed every 60 seconds.</div>
         </div>
       </div>
 
-      <div style="display:flex;gap:12px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:11px;font-family:'Space Mono',monospace;font-weight:700;flex-shrink:0;">3</div>
+      <div class="how-step">
+        <div class="how-num">02</div>
         <div>
-          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;">Market Session Awareness</div>
-          <div style="font-size:12px;color:var(--txt-2);line-height:1.6;">The model adjusts for Asian, London, and New York trading sessions, peak overlap hours get a higher volatility multiplier for more accurate short-term bands.</div>
+          <div class="how-step-title">ATR Volatility Model</div>
+          <div class="how-step-body">Our engine uses <code>ATR × √(t/1440)</code>, the financial square-root-of-time formula, to produce realistic price bands.</div>
         </div>
       </div>
 
-      <div style="display:flex;gap:12px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:11px;font-family:'Space Mono',monospace;font-weight:700;flex-shrink:0;">4</div>
+      <div class="how-step">
+        <div class="how-num">03</div>
         <div>
-          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;">Momentum & Reversion</div>
-          <div style="font-size:12px;color:var(--txt-2);line-height:1.6;">Directional drift is weighted by today's momentum score and dampened by mean-reversion pressure, so big moves attract proportional counter-trend probability.</div>
+          <div class="how-step-title">Session Awareness</div>
+          <div class="how-step-body">Adjusts for Asian, London and New York sessions — peak overlap gets a higher volatility multiplier.</div>
         </div>
       </div>
 
-    </div>
-  </div>
+      <div class="how-step">
+        <div class="how-num">04</div>
+        <div>
+          <div class="how-step-title">Momentum & Reversion</div>
+          <div class="how-step-body">Drift is weighted by today's momentum and dampened by mean-reversion pressure for realistic short-term bands.</div>
+        </div>
+      </div>
+    </section>
 
-  <!-- Footer links -->
-  <div style="
-    margin: 0 16px;
-    padding: 20px 0 16px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    flex-wrap: wrap;
-  ">
-    <a href="/about" style="font-size:12px;color:var(--txt-2);text-decoration:none;padding:6px 12px;border-radius:20px;border:1px solid var(--border);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--txt-2)'">
-About
-    </a>
-    <a href="/contact" style="font-size:12px;color:var(--txt-2);text-decoration:none;padding:6px 12px;border-radius:20px;border:1px solid var(--border);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--txt-2)'">
-  Contact
-    </a>
-    <a href="/disclaimer" style="font-size:12px;color:var(--txt-2);text-decoration:none;padding:6px 12px;border-radius:20px;border:1px solid var(--border);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--txt-2)'">
-Disclaimer
-    </a>
-  </div>
+    <!-- ══ FOOTER ══ -->
+    <footer class="footer">
+      <div class="footer-links">
+        <a class="footer-link" href="/about">About</a>
+        <a class="footer-link" href="/news">News</a>
+        <a class="footer-link" href="/trends">Trends</a>
+        <a class="footer-link" href="/predict">Forecast</a>
+        <a class="footer-link" href="/contact">Contact</a>
+        <a class="footer-link" href="/disclaimer">Disclaimer</a>
+      </div>
 
-  <!-- Copyright -->
-  <div style="text-align:center;padding:0 16px 100px;font-size:11px;color:var(--txt-3);font-family:'Space Mono',monospace;line-height:1.7;">
-    © 2026 XauTracker.com
-  </div>
+      <div class="footer-disc">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates — not financial advice. Always consult a licensed professional before trading.
+      </div>
 
-</div>
+      <div class="footer-copy" style="margin-top:16px;">
+        © 2026 XauTracker.com · Powered by TwelveData
+      </div>
+    </footer>
+
   </div><!-- /content -->
+
 
 </div>
 <div id="toast"></div>
-  
+
 <script src="js/api.js"></script>
 <script src="js/charts.js"></script>
 
@@ -1184,50 +1240,70 @@ Disclaimer
   let activeRange = '1D';
   let homeChart   = null;
 
-  
+  /* ── Format helper ── */
+  function fmtP(v) {
+    return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 
+  /* ── Render price data ── */
   function renderPrice(d, isDemo) {
     const isUp = d.ch >= 0;
-    document.getElementById('price-display').innerHTML = `<span class="currency">$</span>${fmt(d.price)}`;
-    document.getElementById('price-change').innerHTML  = `
-      <div class="price-change ${isUp ? 'up' : 'down'}">
-        <i class="fa-solid fa-caret-${isUp ? 'up' : 'down'}"></i>
-        ${isUp ? '+' : ''}${d.ch.toFixed(2)} (${isUp ? '+' : ''}${d.chp.toFixed(2)}%)
-      </div>`;
-    document.getElementById('last-update').textContent =
-      (isDemo ? '⚠ Demo · ' : '') + 'Updated ' + new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    const sym  = isUp ? '+' : '';
 
-    document.getElementById('stat-high').textContent = '$' + fmt(d.high);
-    document.getElementById('stat-low').textContent  = '$' + fmt(d.low);
-    document.getElementById('stat-open').textContent = '$' + fmt(d.open);
-    document.getElementById('stat-chg').innerHTML    = `<span style="color:${isUp?'var(--green)':'var(--red)'}">${isUp?'+':''}${d.ch.toFixed(2)}</span>`;
-    document.getElementById('stat-bid').textContent  = '$' + fmt(d.bid);
-    document.getElementById('stat-ask').textContent  = '$' + fmt(d.ask);
+    /* Topbar price */
+    document.getElementById('topbar-price').textContent = '$' + fmtP(d.price);
 
+    /* Hero */
+    document.getElementById('hero-price').textContent = fmtP(d.price);
+
+    const chgEl = document.getElementById('hero-change');
+    chgEl.textContent = `${sym}${d.ch.toFixed(2)}  (${sym}${d.chp.toFixed(2)}%)`;
+    chgEl.className   = 'hero-change ' + (isUp ? 'up' : 'down');
+
+    document.getElementById('hero-updated').textContent =
+      (isDemo ? '⚠ Demo · ' : '') +
+      'Updated ' + new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+
+    document.getElementById('hero-high').textContent = '$' + fmtP(d.high);
+    document.getElementById('hero-low').textContent  = '$' + fmtP(d.low);
+    document.getElementById('hero-open').textContent = '$' + fmtP(d.open);
+    document.getElementById('stat-bid').textContent  = '$' + fmtP(d.bid);
+    document.getElementById('stat-ask').textContent  = '$' + fmtP(d.ask);
+
+    /* Signal */
     const rng = Math.random();
     let buy, hold, sell;
-    if (isUp) { buy = 55 + Math.round(rng * 20); hold = Math.round((100 - buy) * 0.5); sell = 100 - buy - hold; }
-    else       { sell = 55 + Math.round(rng * 20); hold = Math.round((100 - sell) * 0.5); buy = 100 - sell - hold; }
+    if (isUp) {
+      buy  = 55 + Math.round(rng * 20);
+      hold = Math.round((100 - buy) * 0.5);
+      sell = 100 - buy - hold;
+    } else {
+      sell = 55 + Math.round(rng * 20);
+      hold = Math.round((100 - sell) * 0.5);
+      buy  = 100 - sell - hold;
+    }
+
     setTimeout(() => {
-      document.getElementById('sig-buy').style.width   = buy + '%';
-      document.getElementById('sig-hold').style.width  = hold + '%';
-      document.getElementById('sig-sell').style.width  = sell + '%';
-      document.getElementById('sig-buy-pct').textContent  = buy + '%';
+      document.getElementById('sig-buy').style.width    = buy  + '%';
+      document.getElementById('sig-hold').style.width   = hold + '%';
+      document.getElementById('sig-sell').style.width   = sell + '%';
+      document.getElementById('sig-buy-pct').textContent  = buy  + '%';
       document.getElementById('sig-hold-pct').textContent = hold + '%';
       document.getElementById('sig-sell-pct').textContent = sell + '%';
     }, 300);
 
     renderHomeChart(d.price);
-    if (isDemo) showToast('Gold Price is currently in demo mode, please reload page');
+
+    if (isDemo) showToast('Demo mode — reload to fetch live price');
   }
 
   function renderHomeChart(price) {
     const days   = activeRange === '1D' ? 1 : activeRange === '1W' ? 7 : 30;
     const points = buildHistory(price, days, days === 1 ? 3 : days === 7 ? 10 : 18);
     const labels = buildLabels(days, points.length);
-    const color  = points[points.length - 1] >= points[0] ? '#00d48f' : '#ff4561';
+    const color  = points[points.length - 1] >= points[0] ? '#008055' : '#c0392b';
     if (homeChart) homeChart.destroy();
-    homeChart = makeChart('homeChart', labels, points, color);
+    homeChart = makeChartLight('homeChart', labels, points, color);
   }
 
   function setRange(range, btn) {
@@ -1237,44 +1313,96 @@ Disclaimer
     if (window.GOLD_STATE.price) renderHomeChart(window.GOLD_STATE.price);
   }
 
-  document.getElementById('refresh-btn').addEventListener('click', async function() {
-    this.classList.add('spin');
-    const d = await fetchGoldPrice();
-    if (d) { Object.assign(window.GOLD_STATE, d); renderPrice(d, false); showToast('Updated via ' + d.source); }
-    else     showToast('Both APIs unavailable');
-    setTimeout(() => this.classList.remove('spin'), 700);
-  });
+  /* ── Light-themed chart ── */
+  function makeChartLight(canvasId, labels, data, color) {
+    const ctx  = document.getElementById(canvasId).getContext('2d');
+    const grad = ctx.createLinearGradient(0, 0, 0, 180);
+    grad.addColorStop(0, color + '22');
+    grad.addColorStop(1, color + '00');
+    return new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          borderColor: color,
+          borderWidth: 1.5,
+          fill: true,
+          backgroundColor: grad,
+          pointRadius: 0,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0a0a0a',
+            titleColor: '#888',
+            bodyColor: '#fff',
+            bodyFont: { family: 'Space Mono', size: 12 },
+            callbacks: {
+              title: () => 'XAU/USD',
+              label: ctx => ' $' + ctx.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2 })
+            }
+          }
+        },
+        scales: {
+          x: { display: false },
+          y: {
+            display: true,
+            position: 'right',
+            grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
+            ticks: {
+              color: '#aaa',
+              font: { family: 'Space Mono', size: 9 },
+              callback: v => '$' + v.toLocaleString()
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /* ── Nav ── */
+  function setActiveNav() {
+    const page = location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.page === page);
+    });
+  }
+
+  /* ── Toast ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  /* ── Drawer ── */
+  function openMenu() {
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('drawer-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('drawer-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
 
   setActiveNav();
   loadPrice(renderPrice);
   setInterval(() => loadPrice(renderPrice), 10000);
-
 </script>
 
-  <script>
-  /* ── Dropdown menu ── */
-  function toggleMenu() {
-  const trigger  = document.getElementById('menu-trigger');
-  const dropdown = document.getElementById('dropdown-menu');
-  const isOpen   = dropdown.classList.contains('open');
-  dropdown.classList.toggle('open', !isOpen);
-  trigger.classList.toggle('open',  !isOpen);
-  /* Prevent body scroll when menu is open */
-  document.body.style.overflow = isOpen ? '' : 'hidden';
-}
-
-/* Close on outside click — not needed for fullscreen but keep for safety */
-document.addEventListener('click', function(e) {
-  const wrap = document.querySelector('.menu-wrap');
-  if (wrap && !wrap.contains(e.target)) {
-    document.getElementById('dropdown-menu')?.classList.remove('open');
-    document.getElementById('menu-trigger')?.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-});
-</script>
-
-<!-- ── Landing auth block (Firebase) ── -->
+<!-- Firebase auth-aware CTA -->
 <script type="module">
   import { initializeApp, getApps }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -1292,92 +1420,42 @@ document.addEventListener('click', function(e) {
 
   const fbApp = getApps().length ? getApps()[0] : initializeApp(fbConfig);
   const auth  = getAuth(fbApp);
-  const inner = document.getElementById('landing-auth-inner');
+  const inner = document.getElementById('auth-inner');
 
   onAuthStateChanged(auth, user => {
     if (user) {
       inner.innerHTML = `
-        <div class="landing-user-row">
-          <div class="landing-user-avatar">
-            <i class="fa-solid fa-user"></i>
-          </div>
+        <div class="user-row">
+          <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
           <div>
-            <div class="landing-user-status">Signed In</div>
-            <div class="landing-user-email">${user.email}</div>
+            <div class="user-status">Signed In</div>
+            <div class="user-email">${user.email}</div>
           </div>
         </div>
-        <a href="/predict" class="landing-btn-primary">
-
+        <a href="/predict" class="btn-primary">
+          <i class="fa-solid fa-brain" style="font-size:13px;"></i>
           Open Gold Forecast
         </a>`;
     } else {
       inner.innerHTML = `
-        <div class="landing-trial-badge">
-          <span class="landing-trial-dot"></span>
+        <div class="trial-badge">
+          <span>✦</span>
           7-Day Free Trial · No Payment Required
         </div>
-        <p class="landing-auth-copy">
-          <strong>Two steps</strong> to get started, just an email and password.
-          Access the full forecast dashboard free for 7 days.
+        <p class="auth-copy">
+          <strong>Two steps</strong> to get started — just email and password.
+          Full forecast dashboard free for 7 days.
         </p>
-        <a href="/signup" class="landing-btn-primary">
+        <a href="/signup" class="btn-primary" style="margin-bottom:8px;">
           <i class="fa-solid fa-rocket" style="font-size:12px;"></i>
-          Create Account
+          Create Free Account
+        </a>
+        <a href="/login" class="btn-outline">
+          Sign In
         </a>`;
     }
   });
-
-  /* ── Populate hero price from GOLD_STATE once api.js has loaded ── */
-  function populateHero(d) {
-    if (!d || !d.price) return;
-    const isUp = d.ch >= 0;
-    document.getElementById('hero-price').textContent =
-      d.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const pill = document.getElementById('hero-change-pill');
-    pill.textContent = `${isUp ? '+' : ''}${d.ch.toFixed(2)}  (${isUp ? '+' : ''}${d.chp.toFixed(2)}%)`;
-    pill.className   = 'landing-change-pill ' + (isUp ? 'up' : 'down');
-    document.getElementById('hero-updated').textContent =
-      'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    document.getElementById('hero-high').textContent =
-      '$' + d.high.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    document.getElementById('hero-low').textContent =
-      '$' + d.low.toLocaleString('en-US',  { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    document.getElementById('hero-open').textContent =
-      '$' + d.open.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-
-  /* Poll until api.js has loaded GOLD_STATE */
-  const heroTimer = setInterval(() => {
-    if (window.GOLD_STATE?.price) {
-      populateHero(window.GOLD_STATE);
-      clearInterval(heroTimer);
-    }
-  }, 300);
-
-  /* Also update on every subsequent price refresh */
-  const _origLoad = window.loadPrice;
-  if (typeof _origLoad === 'function') {
-    window.loadPrice = function(cb) {
-      return _origLoad(function(d, isDemo) {
-        populateHero(d);
-        if (cb) cb(d, isDemo);
-      });
-    };
-  }
 </script>
-<script>
-  /* ── How it Works scroll reveal ── */
-  const hiw = document.getElementById('how-it-works');
-  const hiwObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        hiw.style.opacity = '1';
-        hiw.style.transform = 'translateY(0)';
-        
-      }
-    });
-  }, { threshold: 0.15 });
-  hiwObserver.observe(hiw);
-</script>
+
 </body>
 </html>
