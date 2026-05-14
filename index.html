@@ -1,84 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-1T072J6769"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-1T072J6769');
+    /* Apply saved theme before paint to prevent flash */
+    (function(){
+      var t = localStorage.getItem('xau-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>XauTracker — Real-Time Gold Forecast</title>
+  <title>XauTracker — Real-Time Gold Price & Forecast</title>
   <meta name="description" content="Forecast live XAU/USD gold spot prices in real time using ATR advanced method" />
-  <meta name="keywords" content="XAUUSD, gold price live, gold spot price, gold trading, gold tracker, gold market, XAU price today, live gold price" />
+  <meta name="keywords" content="XAUUSD, gold price live, gold spot price, gold trading, gold tracker" />
   <meta name="author" content="XAU Tracker" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://www.xautracker.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.xautracker.com/" />
   <meta property="og:title" content="XauTracker — Real-Time Gold Price & Forecast" />
-  <meta property="og:description" content="Forecast live XAU/USD gold spot prices in real time using ATR advanced method, Updated every 60 seconds." />
+  <meta property="og:description" content="Forecast live XAU/USD gold spot prices in real time." />
   <meta property="og:image" content="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
   <meta property="og:site_name" content="XAU Tracker" />
-  <meta property="og:locale" content="en_US" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="XauTracker — Real-Time Gold Price & Forecast" />
-  <meta name="twitter:description" content="Live XAU/USD gold spot prices, real-time bid/ask, market signals and buy/sell indicators." />
   <meta name="twitter:image" content="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
-  <meta name="theme-color" content="#ffffff" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="XAU Tracker" />
-  <link rel="icon" type="image/png" sizes="192x192" href="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
-
+  <link rel="icon" type="image/png" href="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="css/style.css" />
 
   <style>
-    /* ══ RESET & ROOT ══ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --white:    #ffffff;
-      --off:      #f5f4f1;
+    /* ══ THEME TOKENS ══ */
+    [data-theme="light"] {
+      --bg:       #ffffff;
+      --bg-2:     #f6f6f4;
+      --bg-3:     #eeede9;
       --ink:      #0a0a0a;
       --ink-2:    #444444;
       --ink-3:    #888888;
       --ink-4:    #bbbbbb;
-      --border:   #e8e6e1;
-      --gold:     #b8860b;
-      --gold-lt:  #f5e6b8;
-      --green:    #008055;
-      --green-lt: #e6f5ee;
-      --red:      #c0392b;
-      --red-lt:   #fdf0ef;
-      --radius:   12px;
-      --nav-h:    64px;
-      --font-serif: 'Instrument Serif', Georgia, serif;
-      --font-sans:  'DM Sans', sans-serif;
-      --font-mono:  'Space Mono', monospace;
+      --border:   #e0dedd;
+      --green:    #1a7a4a;
+      --green-bg: #e8f5ee;
+      --red:      #b83232;
+      --red-bg:   #fdf0f0;
+      --gold:     #9a6e00;
     }
+
+    [data-theme="dark"] {
+      --bg:       #0e0e0e;
+      --bg-2:     #181818;
+      --bg-3:     #222222;
+      --ink:      #f0f0f0;
+      --ink-2:    #aaaaaa;
+      --ink-3:    #666666;
+      --ink-4:    #444444;
+      --border:   #2a2a2a;
+      --green:    #3dba72;
+      --green-bg: #0d2a1a;
+      --red:      #e05555;
+      --red-bg:   #2a0d0d;
+      --gold:     #c8962a;
+    }
+
+    /* ══ RESET ══ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
       height: 100%;
-      background: var(--white);
+      background: var(--bg);
       color: var(--ink);
-      font-family: var(--font-sans);
+      font-family: Arial, Helvetica, sans-serif;
       -webkit-font-smoothing: antialiased;
+      transition: background 0.22s, color 0.22s;
     }
 
     #app {
-      display: flex;
-      flex-direction: column;
-      min-height: 100dvh;
       max-width: 480px;
       margin: 0 auto;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ══ TOPBAR ══ */
@@ -86,139 +92,122 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 20px;
+      padding: 13px 18px;
       border-bottom: 1px solid var(--border);
-      background: var(--white);
+      background: var(--bg);
       position: sticky;
       top: 0;
       z-index: 100;
+      transition: background 0.22s, border-color 0.22s;
     }
 
-    .topbar-brand {
+    .topbar-left {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .topbar-logo-img {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
+    .menu-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: var(--ink);
+      font-size: 15px;
+      transition: background 0.14s;
     }
 
+    .menu-btn:hover { background: var(--bg-2); }
+
     .topbar-wordmark {
-      font-family: var(--font-sans);
       font-size: 16px;
       font-weight: 700;
       color: var(--ink);
-      letter-spacing: -0.3px;
     }
 
-    .topbar-wordmark span { color: var(--gold); }
-
-    /* Live badge in topbar */
-    .topbar-price-badge {
+    .topbar-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .live-chip {
       display: flex;
       align-items: center;
       gap: 5px;
-      font-family: var(--font-mono);
       font-size: 10px;
+      font-weight: 700;
       color: var(--green);
-      background: var(--green-lt);
+      background: var(--green-bg);
       padding: 4px 9px;
       border-radius: 20px;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
+      transition: background 0.22s, color 0.22s;
     }
 
-    .live-chip-dot {
+    .live-dot {
       width: 5px; height: 5px;
       border-radius: 50%;
       background: var(--green);
-      animation: livePulse 1.5s ease-in-out infinite;
+      animation: blink 1.6s ease-in-out infinite;
     }
 
-    @keyframes livePulse {
+    @keyframes blink {
       0%, 100% { opacity: 1; }
-      50%       { opacity: 0.3; }
+      50%       { opacity: 0.25; }
     }
 
-    .topbar-price-num {
-      font-family: var(--font-mono);
+    #topbar-price {
       font-size: 13px;
       font-weight: 700;
       color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      transition: color 0.22s;
     }
 
-    /* Hamburger */
-    .menu-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      color: var(--ink);
-      font-size: 16px;
-      transition: background 0.2s;
-    }
-
-    .menu-btn:hover { background: var(--off); }
-
-    /* ══ DRAWER NAV ══ */
-    .drawer-overlay {
+    /* ══ DRAWER ══ */
+    .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.35);
+      background: rgba(0,0,0,0.42);
       z-index: 200;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s;
+      transition: opacity 0.22s;
     }
 
-    .drawer-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
+    .overlay.open { opacity: 1; pointer-events: all; }
 
     .drawer {
       position: fixed;
       top: 0; left: 0;
-      width: 280px;
+      width: 268px;
       height: 100%;
-      background: var(--white);
+      background: var(--bg);
       z-index: 201;
       transform: translateX(-100%);
-      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), background 0.22s;
       display: flex;
       flex-direction: column;
-      padding: 0;
-      overflow-y: auto;
+      border-right: 1px solid var(--border);
     }
 
     .drawer.open { transform: translateX(0); }
 
-    .drawer-header {
+    .drawer-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 20px;
+      padding: 16px 16px;
       border-bottom: 1px solid var(--border);
     }
 
-    .drawer-logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-sans);
+    .drawer-brand {
       font-size: 15px;
       font-weight: 700;
       color: var(--ink);
@@ -228,427 +217,344 @@
       background: none;
       border: none;
       cursor: pointer;
-      width: 32px; height: 32px;
+      width: 30px; height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 6px;
       color: var(--ink-3);
-      font-size: 14px;
+      font-size: 13px;
+      transition: background 0.14s;
     }
 
-    .drawer-close:hover { background: var(--off); }
+    .drawer-close:hover { background: var(--bg-2); }
 
     .drawer-nav {
       flex: 1;
-      padding: 12px 10px;
+      padding: 8px;
+      overflow-y: auto;
     }
 
     .drawer-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 500;
+      gap: 11px;
+      padding: 11px 12px;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 600;
       color: var(--ink-2);
       text-decoration: none;
-      transition: background 0.15s, color 0.15s;
-      letter-spacing: -0.2px;
+      transition: background 0.13s, color 0.13s;
     }
 
     .drawer-item:hover {
-      background: var(--off);
+      background: var(--bg-2);
       color: var(--ink);
     }
 
     .drawer-item i {
-      width: 20px;
+      width: 18px;
       text-align: center;
       font-size: 13px;
       color: var(--ink-3);
     }
 
-    .drawer-divider {
+    .drawer-sep {
       height: 1px;
       background: var(--border);
-      margin: 8px 10px;
+      margin: 6px 8px;
     }
 
+    /* Theme toggle pinned to drawer bottom */
     .drawer-footer {
-      padding: 16px 20px;
+      padding: 12px 12px 16px;
       border-top: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--ink-4);
-      font-family: var(--font-mono);
     }
+
+    .theme-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--bg-2);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.14s;
+    }
+
+    .theme-row:hover { background: var(--bg-3); }
+
+    .theme-row-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    .theme-row-label i { font-size: 13px; color: var(--ink-3); width: 16px; text-align: center; }
+
+    .sw {
+      width: 38px; height: 22px;
+      background: var(--border);
+      border-radius: 11px;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .sw.on { background: var(--ink); }
+
+    .sw-knob {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--bg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .sw.on .sw-knob { transform: translateX(16px); }
 
     /* ══ CONTENT ══ */
-    #content {
-      flex: 1;
-      padding-bottom: calc(var(--nav-h) + 16px);
-    }
+    #content { flex: 1; }
 
     /* ══ HERO ══ */
     .hero {
-      padding: 36px 22px 28px;
+      padding: 30px 20px 24px;
       border-bottom: 1px solid var(--border);
-      position: relative;
     }
 
-    .hero-eyebrow {
-      font-family: var(--font-mono);
+    .hero-pair {
       font-size: 10px;
-      letter-spacing: 0.16em;
+      font-weight: 700;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--ink-3);
-      margin-bottom: 18px;
+      color: var(--ink-4);
+      margin-bottom: 14px;
+      transition: color 0.22s;
     }
 
-    .hero-price-block {
-      margin-bottom: 16px;
-    }
-
-    .hero-price-label {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--ink-3);
-      margin-bottom: 4px;
-      letter-spacing: 0.03em;
-    }
-
-    .hero-price-num {
-      font-family: var(--font-serif);
-      font-size: 64px;
+    .hero-price {
+      font-size: 56px;
+      font-weight: 700;
       color: var(--ink);
       line-height: 1;
-      letter-spacing: -1px;
+      letter-spacing: -2px;
+      margin-bottom: 10px;
+      font-variant-numeric: tabular-nums;
+      transition: color 0.22s;
     }
 
-    .hero-price-sym {
-      font-size: 32px;
+    .hero-price .sym {
+      font-size: 26px;
+      font-weight: 400;
       color: var(--ink-3);
-      font-style: italic;
+      letter-spacing: 0;
     }
 
     .hero-change {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      font-family: var(--font-mono);
       font-size: 12px;
       font-weight: 700;
-      padding: 5px 12px;
+      padding: 5px 11px;
       border-radius: 4px;
-      margin-top: 10px;
+      margin-bottom: 8px;
+      transition: background 0.22s, color 0.22s;
     }
 
-    .hero-change.up   { background: var(--green-lt); color: var(--green); }
-    .hero-change.down { background: var(--red-lt);   color: var(--red); }
+    .hero-change.up   { background: var(--green-bg); color: var(--green); }
+    .hero-change.down { background: var(--red-bg);   color: var(--red); }
 
     .hero-updated {
-      font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: 10px;
       color: var(--ink-4);
-      letter-spacing: 0.1em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      margin-top: 6px;
+      transition: color 0.22s;
     }
 
-    /* ══ STAT ROW ══ */
     .stat-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       border-top: 1px solid var(--border);
-      margin-top: 22px;
+      margin-top: 20px;
+      transition: border-color 0.22s;
     }
 
     .stat-cell {
-      padding: 14px 0;
+      padding: 12px 0;
       border-right: 1px solid var(--border);
+      transition: border-color 0.22s;
     }
 
     .stat-cell:last-child { border-right: none; }
 
-    .stat-cell-label {
-      font-family: var(--font-mono);
-      font-size: 8px;
-      letter-spacing: 0.18em;
+    .stat-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--ink-4);
-      margin-bottom: 5px;
+      margin-bottom: 4px;
+      transition: color 0.22s;
     }
 
-    .stat-cell-val {
-      font-family: var(--font-mono);
-      font-size: 14px;
+    .stat-v {
+      font-size: 13px;
       font-weight: 700;
       color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      transition: color 0.22s;
     }
 
-    .stat-cell-val.up   { color: var(--green); }
-    .stat-cell-val.down { color: var(--red); }
-    .stat-cell-val.gold { color: var(--gold); }
+    .stat-v.up   { color: var(--green); }
+    .stat-v.down { color: var(--red); }
+    .stat-v.gold { color: var(--gold); }
 
-    /* ══ SECTION TITLE ══ */
-    .section-title {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-3);
-      padding: 20px 22px 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    /* ══ BID/ASK ROW ══ */
-    .bid-ask-row {
+    /* ══ BID / ASK ══ */
+    .bidask {
       display: grid;
       grid-template-columns: 1fr 1fr;
       border-bottom: 1px solid var(--border);
+      transition: border-color 0.22s;
     }
 
-    .bid-ask-cell {
-      padding: 16px 22px;
+    .ba-cell {
+      padding: 16px 20px;
       border-right: 1px solid var(--border);
+      transition: border-color 0.22s;
     }
 
-    .bid-ask-cell:last-child { border-right: none; }
+    .ba-cell:last-child { border-right: none; }
 
-    .bid-ask-label {
-      font-family: var(--font-mono);
+    .ba-lbl {
       font-size: 9px;
-      letter-spacing: 0.15em;
+      font-weight: 700;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--ink-3);
-      margin-bottom: 6px;
+      color: var(--ink-4);
+      margin-bottom: 5px;
+      transition: color 0.22s;
     }
 
-    .bid-ask-val {
-      font-family: var(--font-mono);
-      font-size: 18px;
+    .ba-val {
+      font-size: 20px;
       font-weight: 700;
+      font-variant-numeric: tabular-nums;
     }
 
-    .bid-ask-val.bid { color: var(--green); }
-    .bid-ask-val.ask { color: var(--red); }
+    .ba-val.bid { color: var(--green); }
+    .ba-val.ask { color: var(--red); }
 
-    /* ══ CHART ══ */
-    .chart-section {
-      padding: 20px 22px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .chart-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .chart-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .range-pills {
-      display: flex;
-      gap: 2px;
-      background: var(--off);
-      padding: 3px;
-      border-radius: 8px;
-    }
-
-    .pill {
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      color: var(--ink-3);
-      font-weight: 700;
-      transition: all 0.15s;
-    }
-
-    .pill.active {
-      background: var(--white);
-      color: var(--ink);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    /* ══ SIGNAL ══ */
-    .signal-section {
-      padding: 20px 22px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .signal-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: 16px;
-    }
-
-    .gauge-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .gauge-row:last-child { margin-bottom: 0; }
-
-    .gauge-name {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 700;
-      width: 34px;
-      letter-spacing: 0.05em;
-    }
-
-    .gauge-name.buy  { color: var(--green); }
-    .gauge-name.hold { color: var(--gold); }
-    .gauge-name.sell { color: var(--red); }
-
-    .gauge-bar {
-      flex: 1;
-      height: 6px;
-      background: var(--off);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .gauge-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.8s ease;
-    }
-
-    .gauge-fill.buy  { background: var(--green); }
-    .gauge-fill.hold { background: var(--gold); }
-    .gauge-fill.sell { background: var(--red); }
-
-    .gauge-pct {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      width: 34px;
-      text-align: right;
-      color: var(--ink-2);
-    }
-
-    /* ══ FEATURE CARDS (3-col scroll) ══ */
-    .features-scroll {
-      padding: 20px 0 20px 22px;
+    /* ══ FEATURE CARDS ══ */
+    .features {
+      padding: 20px 0 20px 20px;
       display: flex;
       gap: 10px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
-      scroll-snap-type: x mandatory;
       border-bottom: 1px solid var(--border);
+      transition: border-color 0.22s;
     }
 
-    .features-scroll::-webkit-scrollbar { display: none; }
+    .features::-webkit-scrollbar { display: none; }
 
-    .feature-card {
+    .feat {
       flex-shrink: 0;
-      width: 200px;
-      scroll-snap-align: start;
-      background: var(--off);
-      border-radius: var(--radius);
-      padding: 18px 16px;
+      width: 176px;
+      background: var(--bg-2);
+      border-radius: 10px;
+      padding: 15px 14px;
+      transition: background 0.22s;
     }
 
-    .feature-card:last-child { margin-right: 22px; }
+    .feat:last-child { margin-right: 20px; }
 
-    .feature-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--white);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .feat-icon {
       font-size: 15px;
-      color: var(--ink);
-      margin-bottom: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      color: var(--ink-3);
+      margin-bottom: 10px;
+      transition: color 0.22s;
     }
 
-    .feature-name {
+    .feat-name {
       font-size: 13px;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 6px;
-      letter-spacing: -0.2px;
+      margin-bottom: 4px;
+      transition: color 0.22s;
     }
 
-    .feature-desc {
+    .feat-desc {
       font-size: 11px;
       color: var(--ink-3);
-      line-height: 1.6;
+      line-height: 1.55;
+      transition: color 0.22s;
     }
 
-    /* ══ CTA SECTION ══ */
-    .cta-section {
-      padding: 28px 22px;
+    /* ══ CTA ══ */
+    .cta {
+      padding: 26px 20px;
       border-bottom: 1px solid var(--border);
+      transition: border-color 0.22s;
     }
 
-    .cta-headline {
-      font-family: var(--font-serif);
-      font-size: 30px;
+    .cta h1 {
+      font-size: 26px;
+      font-weight: 700;
       color: var(--ink);
-      line-height: 1.2;
-      letter-spacing: -0.5px;
-      margin-bottom: 10px;
-    }
-
-    .cta-headline em {
-      font-style: italic;
-      color: var(--ink-3);
+      line-height: 1.25;
+      letter-spacing: -0.4px;
+      margin-bottom: 8px;
+      transition: color 0.22s;
     }
 
     .cta-sub {
       font-size: 13px;
       color: var(--ink-3);
-      line-height: 1.7;
+      line-height: 1.65;
       margin-bottom: 20px;
+      transition: color 0.22s;
     }
 
-    /* Auth card */
     .auth-card {
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      margin-bottom: 16px;
-      background: var(--off);
+      border-radius: 10px;
+      padding: 16px;
+      background: var(--bg-2);
+      margin-bottom: 14px;
+      transition: background 0.22s, border-color 0.22s;
     }
 
     .trial-badge {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 0.12em;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--green);
-      background: var(--green-lt);
+      background: var(--green-bg);
       padding: 4px 9px;
       border-radius: 20px;
       margin-bottom: 10px;
+      transition: background 0.22s, color 0.22s;
     }
 
     .auth-copy {
       font-size: 13px;
       color: var(--ink-2);
-      line-height: 1.65;
+      line-height: 1.6;
       margin-bottom: 14px;
+      transition: color 0.22s;
     }
 
     .auth-copy strong { color: var(--ink); }
@@ -659,91 +565,101 @@
       justify-content: center;
       gap: 8px;
       width: 100%;
-      padding: 15px 20px;
+      padding: 14px;
       background: var(--ink);
-      color: var(--white);
-      font-family: var(--font-sans);
+      color: var(--bg);
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 14px;
       font-weight: 700;
-      border-radius: 10px;
+      border-radius: 8px;
       text-decoration: none;
       border: none;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s;
-      letter-spacing: -0.1px;
+      transition: opacity 0.16s, background 0.22s, color 0.22s;
+      margin-bottom: 8px;
     }
 
-    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:hover { opacity: 0.8; }
 
-    .btn-outline {
+    .btn-secondary {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
       width: 100%;
-      padding: 14px 20px;
+      padding: 13px;
       background: transparent;
-      color: var(--ink);
-      font-family: var(--font-sans);
+      color: var(--ink-2);
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 14px;
       font-weight: 600;
-      border-radius: 10px;
+      border-radius: 8px;
       text-decoration: none;
-      border: 1.5px solid var(--border);
+      border: 1px solid var(--border);
       cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: -0.1px;
+      transition: border-color 0.16s, color 0.16s;
     }
 
-    .btn-outline:hover { border-color: var(--ink); }
+    .btn-secondary:hover { border-color: var(--ink-2); color: var(--ink); }
 
-    /* Signed in state */
     .user-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 12px 14px;
-      background: var(--white);
-      border-radius: 10px;
+      padding: 10px 12px;
+      background: var(--bg);
+      border-radius: 8px;
       margin-bottom: 12px;
       border: 1px solid var(--border);
+      transition: background 0.22s, border-color 0.22s;
     }
 
     .user-avatar {
-      width: 34px;
-      height: 34px;
+      width: 32px; height: 32px;
       border-radius: 50%;
-      background: var(--off);
-      border: 1px solid var(--border);
+      background: var(--bg-3);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 13px;
       color: var(--ink-3);
       flex-shrink: 0;
+      transition: background 0.22s;
     }
 
     .user-status {
-      font-family: var(--font-mono);
       font-size: 9px;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--green);
       margin-bottom: 2px;
+      transition: color 0.22s;
     }
 
     .user-email {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--ink);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 180px;
+      max-width: 185px;
+      transition: color 0.22s;
     }
 
-    /* Contact row */
+    .auth-skel {
+      height: 46px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--bg-3) 25%, var(--bg-2) 50%, var(--bg-3) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
     .contact-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -756,14 +672,14 @@
       justify-content: center;
       gap: 7px;
       padding: 12px;
-      background: #000;
-      color: #25D366;
-      font-family: var(--font-sans);
+      background: #25D366;
+      color: #000;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 12px;
       font-weight: 700;
-      border-radius: 10px;
+      border-radius: 8px;
       text-decoration: none;
-      transition: opacity 0.2s;
+      transition: opacity 0.16s;
     }
 
     .btn-wa:hover { opacity: 0.85; }
@@ -776,387 +692,264 @@
       padding: 12px;
       background: transparent;
       color: var(--ink-2);
-      font-family: var(--font-sans);
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 12px;
       font-weight: 600;
-      border-radius: 10px;
+      border-radius: 8px;
       text-decoration: none;
-      border: 1.5px solid var(--border);
-      transition: all 0.2s;
+      border: 1px solid var(--border);
+      transition: all 0.16s;
     }
 
-    .btn-mail:hover { border-color: var(--ink); color: var(--ink); }
-
-    /* Auth skeleton */
-    .auth-skel {
-      height: 48px;
-      border-radius: 10px;
-      background: linear-gradient(90deg, var(--border) 25%, var(--off) 50%, var(--border) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-    }
-
-    @keyframes shimmer {
-      0%   { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+    .btn-mail:hover { border-color: var(--ink-2); color: var(--ink); }
 
     /* ══ HOW IT WORKS ══ */
-    .how-section {
-      padding: 28px 22px;
+    .how {
+      padding: 26px 20px;
       border-bottom: 1px solid var(--border);
+      transition: border-color 0.22s;
     }
 
-    .how-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--ink-3);
-      letter-spacing: 0.08em;
+    .sec-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      margin-bottom: 20px;
+      color: var(--ink-4);
+      margin-bottom: 18px;
+      transition: color 0.22s;
     }
 
-    .how-step {
+    .step {
       display: flex;
       gap: 14px;
-      align-items: flex-start;
-      padding: 14px 0;
+      padding: 13px 0;
       border-bottom: 1px solid var(--border);
+      transition: border-color 0.22s;
     }
 
-    .how-step:last-child { border-bottom: none; }
+    .step:last-child { border-bottom: none; padding-bottom: 0; }
 
-    .how-num {
-      font-family: var(--font-mono);
+    .step-num {
       font-size: 11px;
       font-weight: 700;
       color: var(--ink-4);
-      width: 24px;
+      width: 22px;
       flex-shrink: 0;
-      padding-top: 2px;
+      padding-top: 1px;
+      transition: color 0.22s;
     }
 
-    .how-step-title {
-      font-size: 14px;
+    .step-title {
+      font-size: 13px;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 4px;
-      letter-spacing: -0.2px;
+      margin-bottom: 3px;
+      transition: color 0.22s;
     }
 
-    .how-step-body {
+    .step-body {
       font-size: 12px;
       color: var(--ink-3);
-      line-height: 1.65;
+      line-height: 1.6;
+      transition: color 0.22s;
     }
 
-    .how-step-body code {
-      font-family: var(--font-mono);
+    .step-body code {
+      font-family: monospace;
       font-size: 11px;
-      background: var(--off);
-      padding: 1px 5px;
+      background: var(--bg-3);
+      padding: 1px 4px;
       border-radius: 3px;
       color: var(--gold);
+      transition: background 0.22s, color 0.22s;
     }
 
     /* ══ FOOTER ══ */
-    .footer {
-      padding: 24px 22px 100px;
+    footer {
+      padding: 24px 20px 40px;
+      border-top: 1px solid var(--border);
+      transition: border-color 0.22s;
     }
 
     .footer-links {
       display: flex;
-      flex-wrap: wrap;
       gap: 6px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .footer-link {
       font-size: 12px;
+      font-weight: 600;
       color: var(--ink-3);
       text-decoration: none;
-      padding: 6px 12px;
+      padding: 6px 13px;
       border-radius: 20px;
       border: 1px solid var(--border);
-      transition: all 0.2s;
-      font-weight: 500;
+      transition: all 0.15s;
     }
 
-    .footer-link:hover { border-color: var(--ink); color: var(--ink); }
-
-    .footer-copy {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--ink-4);
-      line-height: 1.8;
-    }
+    .footer-link:hover { border-color: var(--ink-3); color: var(--ink); }
 
     .footer-disc {
-      margin-top: 12px;
-      padding: 12px 14px;
-      background: var(--red-lt);
-      border-radius: 8px;
       font-size: 11px;
-      color: var(--ink-3);
-      line-height: 1.6;
-      border: 1px solid rgba(192,57,43,0.12);
-    }
-
-    .footer-disc i { color: var(--red); margin-right: 4px; }
-
-    /* ══ BOTTOM NAV ══ */
-    #bottomnav {
-      position: fixed;
-      bottom: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 480px;
-      height: var(--nav-h);
-      background: var(--white);
-      border-top: 1px solid var(--border);
-      display: flex;
-      z-index: 100;
-    }
-
-    .nav-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      text-decoration: none;
       color: var(--ink-4);
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      transition: color 0.2s;
-      padding-bottom: 6px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      font-family: var(--font-sans);
+      line-height: 1.65;
+      padding: 12px 14px;
+      background: var(--bg-2);
+      border-radius: 8px;
+      margin-bottom: 14px;
+      transition: background 0.22s, color 0.22s;
     }
 
-    .nav-btn i {
-      font-size: 18px;
-      transition: transform 0.2s;
+    .footer-copy {
+      font-size: 10px;
+      color: var(--ink-4);
+      letter-spacing: 0.03em;
+      transition: color 0.22s;
     }
-
-    .nav-btn.active {
-      color: var(--ink);
-    }
-
-    .nav-btn.active i { transform: scale(1.1); }
 
     /* ══ TOAST ══ */
     #toast {
       position: fixed;
-      bottom: calc(var(--nav-h) + 16px);
+      bottom: 24px;
       left: 50%;
       transform: translateX(-50%) translateY(20px);
       background: var(--ink);
-      color: var(--white);
-      padding: 10px 20px;
+      color: var(--bg);
+      padding: 10px 18px;
       border-radius: 20px;
       font-size: 12px;
-      font-family: var(--font-sans);
-      font-weight: 500;
+      font-weight: 600;
       opacity: 0;
-      transition: all 0.3s;
+      transition: all 0.28s;
       pointer-events: none;
-      z-index: 200;
+      z-index: 300;
       white-space: nowrap;
     }
 
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    /* ══ Misc ══ */
-    canvas { width: 100% !important; }
   </style>
 </head>
 <body>
-<div id="app">
 
-  <!-- Drawer overlay -->
-  <div class="drawer-overlay" id="drawer-overlay" onclick="closeMenu()"></div>
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
-  <!-- Drawer -->
-  <nav class="drawer" id="drawer">
-    <div class="drawer-header">
-      <div class="drawer-logo">
-        <img src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" width="24" height="24" />
-        XauTracker
+<!-- Drawer -->
+<nav class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span class="drawer-brand">XauTracker</span>
+    <button class="drawer-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <div class="drawer-nav">
+    <a class="drawer-item" href="/"><i class="fa-solid fa-house"></i> Home</a>
+    <a class="drawer-item" href="/news"><i class="fa-solid fa-newspaper"></i> News</a>
+    <a class="drawer-item" href="/trends"><i class="fa-solid fa-chart-area"></i> Trends</a>
+    <a class="drawer-item" href="/predict"><i class="fa-solid fa-brain"></i> Forecast</a>
+    <div class="drawer-sep"></div>
+    <a class="drawer-item" href="/about"><i class="fa-solid fa-circle-info"></i> About</a>
+    <a class="drawer-item" href="/disclaimer"><i class="fa-solid fa-triangle-exclamation"></i> Disclaimer</a>
+    <a class="drawer-item" href="/contact"><i class="fa-solid fa-envelope"></i> Contact</a>
+  </div>
+
+  <!-- Theme toggle — pinned to bottom -->
+  <div class="drawer-footer">
+    <div class="theme-row" onclick="toggleTheme()">
+      <div class="theme-row-label">
+        <i id="theme-icon" class="fa-solid fa-moon"></i>
+        <span id="theme-label">Dark Mode</span>
       </div>
-      <button class="drawer-close" onclick="closeMenu()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+      <div class="sw" id="sw">
+        <div class="sw-knob"></div>
+      </div>
     </div>
+  </div>
+</nav>
 
-    <div class="drawer-nav">
-      <a class="drawer-item" href="/">
-        <i class="fa-solid fa-house"></i> Home
-      </a>
-      <a class="drawer-item" href="/news">
-        <i class="fa-solid fa-newspaper"></i> News
-      </a>
-      <a class="drawer-item" href="/trends">
-        <i class="fa-solid fa-chart-area"></i> Trends
-      </a>
-      <a class="drawer-item" href="/minds">
-        <i class="fa-solid fa-lightbulb"></i> Minds
-      </a>
-      <a class="drawer-item" href="/predict">
-        <i class="fa-solid fa-brain"></i> Forecast
-      </a>
-      <div class="drawer-divider"></div>
-      <a class="drawer-item" href="/about">
-        <i class="fa-solid fa-circle-info"></i> About
-      </a>
-      <a class="drawer-item" href="/disclaimer">
-        <i class="fa-solid fa-triangle-exclamation"></i> Disclaimer
-      </a>
-      <a class="drawer-item" href="/contact">
-        <i class="fa-solid fa-envelope"></i> Contact Us
-      </a>
-    </div>
-
-    <div class="drawer-footer">
-      © 2026 XauTracker.com<br />Not financial advice.
-    </div>
-  </nav>
+<div id="app">
 
   <!-- Topbar -->
   <div id="topbar">
-    <div class="topbar-brand">
-      <button class="menu-btn" onclick="openMenu()">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-      <img class="topbar-logo-img" src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" alt="XAU" />
-      <span class="topbar-wordmark">XAU<span>/USD</span></span>
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="openMenu()"><i class="fa-solid fa-bars"></i></button>
+      <span class="topbar-wordmark">XauTracker</span>
     </div>
-    <div class="topbar-price-badge">
-      <div class="live-chip">
-        <div class="live-chip-dot"></div>
-        LIVE
-      </div>
-      <span class="topbar-price-num" id="topbar-price">—</span>
+    <div class="topbar-right">
+      <div class="live-chip"><div class="live-dot"></div>LIVE</div>
+      <span id="topbar-price">—</span>
     </div>
   </div>
 
   <div id="content">
 
-    <!-- ══ HERO ══ -->
+    <!-- Hero -->
     <section class="hero">
-      <div class="hero-eyebrow">XAU/USD · Spot Gold · Troy Oz</div>
-
-      <div class="hero-price-block">
-        <div class="hero-price-label">Current Price</div>
-        <div class="hero-price-num">
-          <span class="hero-price-sym">$</span><span id="hero-price">——</span>
-        </div>
-        <div class="hero-change" id="hero-change">— —</div>
-        <div class="hero-updated" id="hero-updated">Fetching price...</div>
-      </div>
+      <div class="hero-pair">XAU / USD &nbsp;·&nbsp; Spot Gold &nbsp;·&nbsp; Troy Oz</div>
+      <div class="hero-price"><span class="sym">$</span><span id="hero-price">——</span></div>
+      <div class="hero-change" id="hero-change">— —</div>
+      <div class="hero-updated" id="hero-updated">Fetching price...</div>
 
       <div class="stat-row">
         <div class="stat-cell">
-          <div class="stat-cell-label">High</div>
-          <div class="stat-cell-val up" id="hero-high">—</div>
+          <div class="stat-lbl">High</div>
+          <div class="stat-v up" id="hero-high">—</div>
         </div>
-        <div class="stat-cell" style="padding-left:14px;">
-          <div class="stat-cell-label">Low</div>
-          <div class="stat-cell-val down" id="hero-low">—</div>
+        <div class="stat-cell" style="padding-left:12px;">
+          <div class="stat-lbl">Low</div>
+          <div class="stat-v down" id="hero-low">—</div>
         </div>
-        <div class="stat-cell" style="padding-left:14px;">
-          <div class="stat-cell-label">Open</div>
-          <div class="stat-cell-val gold" id="hero-open">—</div>
+        <div class="stat-cell" style="padding-left:12px;">
+          <div class="stat-lbl">Open</div>
+          <div class="stat-v gold" id="hero-open">—</div>
         </div>
       </div>
     </section>
 
-    <!-- ══ BID / ASK ══ -->
-    <div class="bid-ask-row">
-      <div class="bid-ask-cell">
-        <div class="bid-ask-label">Bid</div>
-        <div class="bid-ask-val bid" id="stat-bid">—</div>
+    <!-- Bid / Ask -->
+    <div class="bidask">
+      <div class="ba-cell">
+        <div class="ba-lbl">Bid</div>
+        <div class="ba-val bid" id="stat-bid">—</div>
       </div>
-      <div class="bid-ask-cell">
-        <div class="bid-ask-label">Ask</div>
-        <div class="bid-ask-val ask" id="stat-ask">—</div>
-      </div>
-    </div>
-
-    <!-- ══ CHART ══ -->
-    <div class="chart-section">
-      <div class="chart-header">
-        <div class="chart-title">Price Chart</div>
-        <div class="range-pills">
-          <button class="pill active" onclick="setRange('1D',this)">1D</button>
-          <button class="pill" onclick="setRange('1W',this)">1W</button>
-          <button class="pill" onclick="setRange('1M',this)">1M</button>
-        </div>
-      </div>
-      <canvas id="homeChart" height="150"></canvas>
-    </div>
-
-    <!-- ══ SIGNAL ══ -->
-    <div class="signal-section">
-      <div class="signal-title">Market Signal</div>
-      <div class="gauge-row">
-        <span class="gauge-name buy">BUY</span>
-        <div class="gauge-bar"><div class="gauge-fill buy" id="sig-buy" style="width:0%"></div></div>
-        <span class="gauge-pct" id="sig-buy-pct">—</span>
-      </div>
-      <div class="gauge-row">
-        <span class="gauge-name hold">HLD</span>
-        <div class="gauge-bar"><div class="gauge-fill hold" id="sig-hold" style="width:0%"></div></div>
-        <span class="gauge-pct" id="sig-hold-pct">—</span>
-      </div>
-      <div class="gauge-row">
-        <span class="gauge-name sell">SELL</span>
-        <div class="gauge-bar"><div class="gauge-fill sell" id="sig-sell" style="width:0%"></div></div>
-        <span class="gauge-pct" id="sig-sell-pct">—</span>
+      <div class="ba-cell">
+        <div class="ba-lbl">Ask</div>
+        <div class="ba-val ask" id="stat-ask">—</div>
       </div>
     </div>
 
-    <!-- ══ FEATURE CARDS ══ -->
-    <div class="features-scroll">
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
-        <div class="feature-name">AI Forecast</div>
-        <div class="feature-desc">ATR-based predictions across 5m, 15m, 1h, 6h & 24h timeframes.</div>
+    <!-- Feature cards -->
+    <div class="features">
+      <div class="feat">
+        <div class="feat-icon"><i class="fa-solid fa-brain"></i></div>
+        <div class="feat-name">AI Forecast</div>
+        <div class="feat-desc">ATR-based predictions across 5m, 15m, 1h, 6h and 24h.</div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-chart-area"></i></div>
-        <div class="feature-name">Trend Analysis</div>
-        <div class="feature-desc">MA20, MA50, RSI(14) and multi-timeframe technical charts.</div>
+      <div class="feat">
+        <div class="feat-icon"><i class="fa-solid fa-chart-area"></i></div>
+        <div class="feat-name">Trend Analysis</div>
+        <div class="feat-desc">MA20, MA50, RSI(14) and multi-timeframe technical charts.</div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-newspaper"></i></div>
-        <div class="feature-name">Market News</div>
-        <div class="feature-desc">Live gold market headlines sourced from major financial outlets.</div>
+      <div class="feat">
+        <div class="feat-icon"><i class="fa-solid fa-newspaper"></i></div>
+        <div class="feat-name">Market News</div>
+        <div class="feat-desc">Live gold market headlines from major financial outlets.</div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
-        <div class="feature-name">Real-Time</div>
-        <div class="feature-desc">Prices refreshed every 60 seconds via TwelveData API.</div>
+      <div class="feat">
+        <div class="feat-icon"><i class="fa-solid fa-rotate"></i></div>
+        <div class="feat-name">Real-Time</div>
+        <div class="feat-desc">Prices refreshed every 60 seconds via TwelveData API.</div>
       </div>
     </div>
 
-    <!-- ══ CTA ══ -->
-    <section class="cta-section">
-      <h1 class="cta-headline">Trade Gold<br><em>like a Pro.</em></h1>
-      <p class="cta-sub">
-        Use our advanced ATR model to get accurate short-term gold forecasts.
-        Join traders who rely on XauTracker every day.
-      </p>
+    <!-- CTA -->
+    <section class="cta">
+      <h1>Trade Gold<br>like a Pro.</h1>
+      <p class="cta-sub">Use our advanced ATR model to get accurate short-term gold forecasts. Join traders who rely on XauTracker every day.</p>
 
       <div class="auth-card">
-        <div id="auth-inner">
-          <div class="auth-skel"></div>
-        </div>
+        <div id="auth-inner"><div class="auth-skel"></div></div>
       </div>
 
       <div class="contact-row">
@@ -1164,97 +957,77 @@
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
         </a>
         <a href="/contact" class="btn-mail">
-          <i class="fa-solid fa-envelope" style="font-size:11px;"></i> Email Us
+          <i class="fa-solid fa-envelope"></i> Email Us
         </a>
       </div>
     </section>
 
-    <!-- ══ HOW IT WORKS ══ -->
-    <section class="how-section">
-      <div class="how-title">How it Works</div>
-
-      <div class="how-step">
-        <div class="how-num">01</div>
+    <!-- How it works -->
+    <section class="how">
+      <div class="sec-label">How it Works</div>
+      <div class="step">
+        <div class="step-num">01</div>
         <div>
-          <div class="how-step-title">Live Price Feed</div>
-          <div class="how-step-body">Real-time XAU/USD spot prices from TwelveData, refreshed every 60 seconds.</div>
+          <div class="step-title">Live Price Feed</div>
+          <div class="step-body">Real-time XAU/USD spot prices from TwelveData, refreshed every 60 seconds.</div>
         </div>
       </div>
-
-      <div class="how-step">
-        <div class="how-num">02</div>
+      <div class="step">
+        <div class="step-num">02</div>
         <div>
-          <div class="how-step-title">ATR Volatility Model</div>
-          <div class="how-step-body">Our engine uses <code>ATR × √(t/1440)</code>, the financial square-root-of-time formula, to produce realistic price bands.</div>
+          <div class="step-title">ATR Volatility Model</div>
+          <div class="step-body">Uses <code>ATR × √(t/1440)</code> — the square-root-of-time formula — for realistic price bands.</div>
         </div>
       </div>
-
-      <div class="how-step">
-        <div class="how-num">03</div>
+      <div class="step">
+        <div class="step-num">03</div>
         <div>
-          <div class="how-step-title">Session Awareness</div>
-          <div class="how-step-body">Adjusts for Asian, London and New York sessions — peak overlap gets a higher volatility multiplier.</div>
+          <div class="step-title">Session Awareness</div>
+          <div class="step-body">Adjusts for Asian, London and New York sessions. Peak overlap gets a higher volatility multiplier.</div>
         </div>
       </div>
-
-      <div class="how-step">
-        <div class="how-num">04</div>
+      <div class="step">
+        <div class="step-num">04</div>
         <div>
-          <div class="how-step-title">Momentum & Reversion</div>
-          <div class="how-step-body">Drift is weighted by today's momentum and dampened by mean-reversion pressure for realistic short-term bands.</div>
+          <div class="step-title">Momentum & Reversion</div>
+          <div class="step-body">Drift weighted by today's momentum and dampened by mean-reversion pressure.</div>
         </div>
       </div>
     </section>
 
-    <!-- ══ FOOTER ══ -->
-    <footer class="footer">
+    <!-- Footer -->
+    <footer>
       <div class="footer-links">
         <a class="footer-link" href="/about">About</a>
-        <a class="footer-link" href="/news">News</a>
-        <a class="footer-link" href="/trends">Trends</a>
-        <a class="footer-link" href="/predict">Forecast</a>
         <a class="footer-link" href="/contact">Contact</a>
         <a class="footer-link" href="/disclaimer">Disclaimer</a>
       </div>
-
       <div class="footer-disc">
-        <i class="fa-solid fa-circle-exclamation"></i>
-        Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates — not financial advice. Always consult a licensed professional before trading.
+        Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates — not financial advice. Consult a licensed professional before trading.
       </div>
-
-      <div class="footer-copy" style="margin-top:16px;">
-        © 2026 XauTracker.com · Powered by TwelveData
-      </div>
+      <div class="footer-copy">© 2026 XauTracker.com &nbsp;·&nbsp; Powered by TwelveData</div>
     </footer>
 
-  </div><!-- /content -->
-
-
+  </div>
 </div>
+
 <div id="toast"></div>
 
 <script src="js/api.js"></script>
-<script src="js/charts.js"></script>
 
 <script>
-  let activeRange = '1D';
-  let homeChart   = null;
-
-  /* ── Format helper ── */
+  /* ── Format ── */
   function fmtP(v) {
     return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  /* ── Render price data ── */
+  /* ── Render price ── */
   function renderPrice(d, isDemo) {
     const isUp = d.ch >= 0;
     const sym  = isUp ? '+' : '';
 
-    /* Topbar price */
     document.getElementById('topbar-price').textContent = '$' + fmtP(d.price);
-
-    /* Hero */
-    document.getElementById('hero-price').textContent = fmtP(d.price);
+    document.getElementById('hero-price').textContent   = fmtP(d.price);
 
     const chgEl = document.getElementById('hero-change');
     chgEl.textContent = `${sym}${d.ch.toFixed(2)}  (${sym}${d.chp.toFixed(2)}%)`;
@@ -1262,7 +1035,7 @@
 
     document.getElementById('hero-updated').textContent =
       (isDemo ? '⚠ Demo · ' : '') +
-      'Updated ' + new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+      'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
     document.getElementById('hero-high').textContent = '$' + fmtP(d.high);
     document.getElementById('hero-low').textContent  = '$' + fmtP(d.low);
@@ -1270,134 +1043,49 @@
     document.getElementById('stat-bid').textContent  = '$' + fmtP(d.bid);
     document.getElementById('stat-ask').textContent  = '$' + fmtP(d.ask);
 
-    /* Signal */
-    const rng = Math.random();
-    let buy, hold, sell;
-    if (isUp) {
-      buy  = 55 + Math.round(rng * 20);
-      hold = Math.round((100 - buy) * 0.5);
-      sell = 100 - buy - hold;
-    } else {
-      sell = 55 + Math.round(rng * 20);
-      hold = Math.round((100 - sell) * 0.5);
-      buy  = 100 - sell - hold;
-    }
-
-    setTimeout(() => {
-      document.getElementById('sig-buy').style.width    = buy  + '%';
-      document.getElementById('sig-hold').style.width   = hold + '%';
-      document.getElementById('sig-sell').style.width   = sell + '%';
-      document.getElementById('sig-buy-pct').textContent  = buy  + '%';
-      document.getElementById('sig-hold-pct').textContent = hold + '%';
-      document.getElementById('sig-sell-pct').textContent = sell + '%';
-    }, 300);
-
-    renderHomeChart(d.price);
-
-    if (isDemo) showToast('Demo mode — reload to fetch live price');
-  }
-
-  function renderHomeChart(price) {
-    const days   = activeRange === '1D' ? 1 : activeRange === '1W' ? 7 : 30;
-    const points = buildHistory(price, days, days === 1 ? 3 : days === 7 ? 10 : 18);
-    const labels = buildLabels(days, points.length);
-    const color  = points[points.length - 1] >= points[0] ? '#008055' : '#c0392b';
-    if (homeChart) homeChart.destroy();
-    homeChart = makeChartLight('homeChart', labels, points, color);
-  }
-
-  function setRange(range, btn) {
-    activeRange = range;
-    document.querySelectorAll('.range-pills .pill').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    if (window.GOLD_STATE.price) renderHomeChart(window.GOLD_STATE.price);
-  }
-
-  /* ── Light-themed chart ── */
-  function makeChartLight(canvasId, labels, data, color) {
-    const ctx  = document.getElementById(canvasId).getContext('2d');
-    const grad = ctx.createLinearGradient(0, 0, 0, 180);
-    grad.addColorStop(0, color + '22');
-    grad.addColorStop(1, color + '00');
-    return new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          data,
-          borderColor: color,
-          borderWidth: 1.5,
-          fill: true,
-          backgroundColor: grad,
-          pointRadius: 0,
-          tension: 0.4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: '#0a0a0a',
-            titleColor: '#888',
-            bodyColor: '#fff',
-            bodyFont: { family: 'Space Mono', size: 12 },
-            callbacks: {
-              title: () => 'XAU/USD',
-              label: ctx => ' $' + ctx.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2 })
-            }
-          }
-        },
-        scales: {
-          x: { display: false },
-          y: {
-            display: true,
-            position: 'right',
-            grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
-            ticks: {
-              color: '#aaa',
-              font: { family: 'Space Mono', size: 9 },
-              callback: v => '$' + v.toLocaleString()
-            }
-          }
-        }
-      }
-    });
-  }
-
-  /* ── Nav ── */
-  function setActiveNav() {
-    const page = location.pathname.split('/').pop() || 'index.html';
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.page === page);
-    });
+    if (isDemo) showToast('Demo mode — reload for live price');
   }
 
   /* ── Toast ── */
   function showToast(msg) {
     const t = document.getElementById('toast');
-    if (!t) return;
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
+    setTimeout(() => t.classList.remove('show'), 2600);
   }
 
   /* ── Drawer ── */
   function openMenu() {
     document.getElementById('drawer').classList.add('open');
-    document.getElementById('drawer-overlay').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 
   function closeMenu() {
     document.getElementById('drawer').classList.remove('open');
-    document.getElementById('drawer-overlay').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
     document.body.style.overflow = '';
   }
 
-  setActiveNav();
+  /* ── Theme ── */
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('xau-theme', theme);
+    const isDark = theme === 'dark';
+    document.getElementById('sw').classList.toggle('on', isDark);
+    document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    document.getElementById('theme-label').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+  }
+
+  function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  }
+
+  /* Sync UI with saved theme on load */
+  applyTheme(localStorage.getItem('xau-theme') || 'light');
+
+  /* ── Init ── */
   loadPrice(renderPrice);
   setInterval(() => loadPrice(renderPrice), 10000);
 </script>
@@ -1432,27 +1120,19 @@
             <div class="user-email">${user.email}</div>
           </div>
         </div>
-        <a href="/predict" class="btn-primary">
-          <i class="fa-solid fa-brain" style="font-size:13px;"></i>
-          Open Gold Forecast
-        </a>`;
+        <a href="/predict" class="btn-primary">Open Gold Forecast</a>`;
     } else {
       inner.innerHTML = `
-        <div class="trial-badge">
-          <span>✦</span>
-          7-Day Free Trial · No Payment Required
-        </div>
+        <div class="trial-badge">7-Day Free Trial &nbsp;·&nbsp; No Payment Required</div>
         <p class="auth-copy">
           <strong>Two steps</strong> to get started — just email and password.
           Full forecast dashboard free for 7 days.
         </p>
-        <a href="/signup" class="btn-primary" style="margin-bottom:8px;">
+        <a href="/signup" class="btn-primary">
           <i class="fa-solid fa-rocket" style="font-size:12px;"></i>
           Create Free Account
         </a>
-        <a href="/login" class="btn-outline">
-          Sign In
-        </a>`;
+        <a href="/login" class="btn-secondary">Sign In</a>`;
     }
   });
 </script>
