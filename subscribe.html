@@ -1,235 +1,816 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
+  <script>
+    /* Apply saved theme before paint — no flash */
+    (function(){
+      var t = localStorage.getItem('xau-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="theme-color" content="#070c12" />
-  <title>Subscribe · XAU Tracker</title>
+  <title>Subscribe to XauTracker Pro</title>
+  <link rel="icon" type="image/png" href="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+
   <style>
-    html, body {
-      min-height: 100%;
-      background: var(--bg-deep);
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
+    /* ══ THEME TOKENS ══ */
+    [data-theme="light"] {
+      --bg:       #ffffff;
+      --bg-2:     #f6f6f4;
+      --bg-3:     #eeede9;
+      --ink:      #0a0a0a;
+      --ink-2:    #444444;
+      --ink-3:    #888888;
+      --ink-4:    #bbbbbb;
+      --border:   #e0dedd;
+      --green:    #1a7a4a;
+      --green-bg: #e8f5ee;
+      --red:      #b83232;
+      --red-bg:   #fdf0f0;
+      --gold:     #9a6e00;
+      --gold-bg:  #faf3e0;
     }
 
-    .sub-page {
-      width: 100%;
+    [data-theme="dark"] {
+      --bg:       #0e0e0e;
+      --bg-2:     #181818;
+      --bg-3:     #222222;
+      --ink:      #f0f0f0;
+      --ink-2:    #aaaaaa;
+      --ink-3:    #666666;
+      --ink-4:    #444444;
+      --border:   #2a2a2a;
+      --green:    #3dba72;
+      --green-bg: #0d2a1a;
+      --red:      #e05555;
+      --red-bg:   #2a0d0d;
+      --gold:     #c8962a;
+      --gold-bg:  #2a1e00;
+    }
+
+    /* ══ RESET ══ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.22s, color 0.22s;
+    }
+
+    #app {
       max-width: 480px;
+      margin: 0 auto;
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
     }
 
-    .sub-topbar {
+    /* ══ TOPBAR ══ */
+    #topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 20px;
+      padding: 13px 18px;
       border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: background 0.22s, border-color 0.22s;
     }
 
-    .sub-topbar-brand {
+    .topbar-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .sub-logo {
-      width: 30px; height: 30px;
-      background: var(--gold); border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; color: #000;
+    .topbar-wordmark {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      transition: color 0.22s;
     }
 
-    .sub-title { font-size: 17px; font-weight: 800; }
-    .sub-title span { color: var(--gold); }
-
-    .sub-body { flex: 1; padding: 28px 20px 60px; }
-
-    .page-badge {
-      display: inline-flex; align-items: center; gap: 7px;
-      background: var(--gold-glow); border: 1px solid var(--gold-dim);
-      color: var(--gold); font-size: 11px; padding: 5px 13px;
-      border-radius: 20px; text-transform: uppercase;
-      letter-spacing: 0.1em; margin-bottom: 16px;
+    .topbar-right {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+      transition: color 0.22s;
     }
 
-    h1 { font-size: 26px; font-weight: 800; line-height: 1.25; margin-bottom: 6px; }
-
-    .sub-desc {
-      font-size: 13px; color: var(--txt-2);
-      margin-bottom: 24px; line-height: 1.6;
+    /* Back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-3);
+      text-decoration: none;
+      transition: color 0.15s;
     }
 
-    /* Trial banner */
-    .trial-banner {
-      background: var(--green-dim);
-      border: 1px solid rgba(0,212,143,0.2);
-      border-radius: 14px; padding: 16px 18px;
-      display: flex; gap: 12px; align-items: flex-start;
-      margin-bottom: 20px;
-    }
-    .trial-banner i { color: var(--green); font-size: 18px; flex-shrink: 0; padding-top: 2px; }
-    .trial-banner-text { font-size: 13px; color: var(--txt-1); line-height: 1.6; }
-    .trial-banner-text strong { color: var(--green); }
+    .back-link:hover { color: var(--ink); }
 
-    /* Expired banner */
-    .expired-banner {
-      background: rgba(255,69,97,0.07);
-      border: 1px solid rgba(255,69,97,0.2);
-      border-radius: 14px; padding: 16px 18px;
-      display: flex; gap: 12px; align-items: flex-start;
-      margin-bottom: 20px;
-    }
-    .expired-banner i { color: var(--red); font-size: 18px; flex-shrink: 0; padding-top: 2px; }
-    .expired-banner-text { font-size: 13px; color: var(--txt-1); line-height: 1.6; }
-
-    /* Plan card */
-    .plan-card {
-      background: var(--bg-card);
-      border: 1px solid var(--gold-dim);
-      border-radius: 16px; padding: 22px;
-      margin-bottom: 16px; position: relative; overflow: hidden;
-    }
-    .plan-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
-    .plan-name {
-      font-size: 11px; color: var(--gold); text-transform: uppercase;
-      letter-spacing: 0.1em; margin-bottom: 10px;
-    }
-    .plan-price {
-      font-family: 'Space Mono', monospace;
-      font-size: 36px; font-weight: 700; color: var(--txt-1);
-      line-height: 1; margin-bottom: 4px;
-    }
-    .plan-price span { font-size: 16px; color: var(--txt-2); }
-    .plan-cycle {
-      font-size: 12px; color: var(--txt-2); margin-bottom: 18px;
+    /* ══ DRAWER ══ */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.42);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s;
     }
 
-    .plan-features { list-style: none; padding: 0; margin: 0 0 20px; }
-    .plan-features li {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 13px; color: var(--txt-1); padding: 7px 0;
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .drawer {
+      position: fixed;
+      top: 0; left: 0;
+      width: 268px;
+      height: 100%;
+      background: var(--bg);
+      z-index: 201;
+      transform: translateX(-100%);
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), background 0.22s;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+    }
+
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
       border-bottom: 1px solid var(--border);
     }
-    .plan-features li:last-child { border-bottom: none; }
-    .plan-features li i { color: var(--green); font-size: 12px; flex-shrink: 0; }
 
-    .btn-pay {
-      width: 100%; padding: 15px;
-      background: var(--gold); color: #000;
-      border: none; border-radius: 12px;
-      font-family: 'Syne', sans-serif;
-      font-size: 15px; font-weight: 800;
+    .drawer-brand {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .drawer-close {
+      background: none;
+      border: none;
       cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      transition: opacity 0.2s;
+      width: 30px; height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: var(--ink-3);
+      font-size: 13px;
+      transition: background 0.14s;
     }
-    .btn-pay:hover   { opacity: 0.88; }
-    .btn-pay:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .btn-signout {
-      width: 100%; padding: 12px; margin-top: 12px;
-      background: transparent; color: var(--txt-2);
-      border: 1px solid var(--border); border-radius: 12px;
-      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
+    .drawer-close:hover { background: var(--bg-2); }
+
+    .drawer-nav {
+      flex: 1;
+      padding: 8px;
+      overflow-y: auto;
     }
-    .btn-signout:hover { border-color: var(--red); color: var(--red); }
+
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 12px;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-2);
+      text-decoration: none;
+      transition: background 0.13s, color 0.13s;
+    }
+
+    .drawer-item:hover { background: var(--bg-2); color: var(--ink); }
+    .drawer-item i { width: 18px; text-align: center; font-size: 13px; color: var(--ink-3); }
+
+    .drawer-sep { height: 1px; background: var(--border); margin: 6px 8px; }
+
+    .drawer-footer {
+      padding: 12px 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .theme-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--bg-2);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.14s;
+    }
+
+    .theme-row:hover { background: var(--bg-3); }
+
+    .theme-row-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    .theme-row-label i { font-size: 13px; color: var(--ink-3); width: 16px; text-align: center; }
+
+    .sw {
+      width: 38px; height: 22px;
+      background: var(--border);
+      border-radius: 11px;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .sw.on { background: var(--ink); }
+
+    .sw-knob {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--bg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .sw.on .sw-knob { transform: translateX(16px); }
+
+    /* Menu btn */
+    .menu-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 34px; height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: var(--ink);
+      font-size: 15px;
+      transition: background 0.14s;
+    }
+
+    .menu-btn:hover { background: var(--bg-2); }
+
+    /* ══ CONTENT ══ */
+    #content {
+      flex: 1;
+      padding: 28px 20px 0;
+    }
+
+    /* ══ PAGE HEADER ══ */
+    .page-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--gold-bg);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      transition: background 0.22s, color 0.22s;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.25;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+      transition: color 0.22s;
+    }
+
+    .page-sub {
+      font-size: 13px;
+      color: var(--ink-3);
+      line-height: 1.65;
+      margin-bottom: 24px;
+      transition: color 0.22s;
+    }
+
+    /* ══ STATUS BANNER ══ */
+    #status-banner {
+      margin-bottom: 18px;
+    }
+
+    .banner {
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .banner i { font-size: 16px; flex-shrink: 0; padding-top: 1px; }
+
+    .banner.expired {
+      background: var(--red-bg);
+      border: 1px solid rgba(184,50,50,0.2);
+      color: var(--red);
+    }
+
+    .banner.trial {
+      background: var(--green-bg);
+      border: 1px solid rgba(26,122,74,0.2);
+      color: var(--green);
+    }
+
+    /* ══ PLAN CARD ══ */
+    .plan-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      background: var(--bg-2);
+      margin-bottom: 14px;
+      transition: background 0.22s, border-color 0.22s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Gold top line */
+    .plan-card.featured::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .plan-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+      transition: color 0.22s;
+    }
+
+    .plan-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .plan-amount {
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+      letter-spacing: -1px;
+      font-variant-numeric: tabular-nums;
+      transition: color 0.22s;
+    }
+
+    .plan-currency {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink-3);
+      transition: color 0.22s;
+    }
+
+    .plan-per {
+      font-size: 13px;
+      color: var(--ink-3);
+      transition: color 0.22s;
+    }
+
+    .plan-cycle {
+      font-size: 11px;
+      color: var(--ink-4);
+      margin-bottom: 18px;
+      transition: color 0.22s;
+    }
+
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+      border-top: 1px solid var(--border);
+      transition: border-color 0.22s;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--ink-2);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+      transition: color 0.22s, border-color 0.22s;
+    }
+
+    .plan-features li:last-child { border-bottom: none; }
+
+    .plan-features li i {
+      color: var(--green);
+      font-size: 11px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ══ BANK TRANSFER CARD ══ */
+    .transfer-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      background: var(--bg-2);
+      margin-bottom: 14px;
+      transition: background 0.22s, border-color 0.22s;
+    }
+
+    .transfer-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+      margin-bottom: 14px;
+      transition: color 0.22s;
+    }
+
+    .transfer-step {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+      transition: border-color 0.22s;
+    }
+
+    .transfer-step:last-child { border-bottom: none; }
+
+    .transfer-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-4);
+      width: 20px;
+      flex-shrink: 0;
+      padding-top: 1px;
+      transition: color 0.22s;
+    }
+
+    .transfer-text {
+      font-size: 13px;
+      color: var(--ink-2);
+      line-height: 1.55;
+      transition: color 0.22s;
+    }
+
+    .transfer-text strong { color: var(--ink); }
+
+    .transfer-text a {
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .transfer-text a:hover { text-decoration: underline; }
+
+    /* ══ BUTTONS ══ */
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 15px;
+      background: var(--ink);
+      color: var(--bg);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.16s, background 0.22s, color 0.22s;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary:hover { opacity: 0.82; }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-outline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      color: var(--ink-3);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.16s;
+      text-decoration: none;
+    }
+
+    .btn-outline:hover { border-color: var(--red); color: var(--red); }
 
     .secure-note {
-      display: flex; align-items: center; justify-content: center;
-      gap: 6px; font-size: 11px; color: var(--txt-3);
-      margin-top: 14px; text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--ink-4);
+      margin-top: 12px;
+      text-align: center;
+      transition: color 0.22s;
     }
-    .secure-note i { color: var(--gold); }
 
-    .spinner { animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* ══ FOOTER ══ */
+    footer {
+      padding: 24px 20px 40px;
+      border-top: 1px solid var(--border);
+      margin-top: 28px;
+      transition: border-color 0.22s;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .footer-link {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-3);
+      text-decoration: none;
+      padding: 6px 13px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      transition: all 0.15s;
+    }
+
+    .footer-link:hover { border-color: var(--ink-3); color: var(--ink); }
+
+    .footer-disc {
+      font-size: 11px;
+      color: var(--ink-4);
+      line-height: 1.65;
+      padding: 12px 14px;
+      background: var(--bg-2);
+      border-radius: 8px;
+      margin-bottom: 14px;
+      transition: background 0.22s, color 0.22s;
+    }
+
+    .footer-copy {
+      font-size: 10px;
+      color: var(--ink-4);
+      letter-spacing: 0.03em;
+      transition: color 0.22s;
+    }
+
+    /* ══ TOAST ══ */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: var(--bg);
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.28s;
+      pointer-events: none;
+      z-index: 300;
+      white-space: nowrap;
+    }
+
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Spinner */
+    .spin { animation: spinning 0.8s linear infinite; }
+    @keyframes spinning { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-<div class="sub-page">
 
-  <div class="sub-topbar">
-    <div class="sub-topbar-brand">
-      <img src="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-logo-text-e1778176677116.png" width="30" height="30"/><span class="topbar-title">AU<span>/USD</span></span>
-    </div>
-    <div style="font-size:11px;color:var(--txt-2);font-family:'Space Mono',monospace;">
-      Forecast ACCESS
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<!-- Drawer -->
+<nav class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span class="drawer-brand">XauTracker</span>
+    <button class="drawer-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="drawer-nav">
+    <a class="drawer-item" href="/">Home</a>
+    <a class="drawer-item" href="/news">News</a>
+    <a class="drawer-item" href="/trends">Trends</a>
+    <a class="drawer-item" href="/predict">Forecast</a>
+    <div class="drawer-sep"></div>
+    <a class="drawer-item" href="/about">About</a>
+    <a class="drawer-item" href="/disclaimer">Disclaimer</a>
+    <a class="drawer-item" href="/contact">Contact</a>
+  </div>
+  <div class="drawer-footer">
+    <div class="theme-row" onclick="toggleTheme()">
+      <div class="theme-row-label">
+        <i id="theme-icon" class="fa-solid fa-moon"></i>
+        <span id="theme-label">Dark Mode</span>
+      </div>
+      <div class="sw" id="sw">
+        <div class="sw-knob"></div>
+      </div>
     </div>
   </div>
+</nav>
 
-  <div class="sub-body">
+<div id="app">
 
-    <div class="page-badge">
-      XauTracker Pro</div>
+  <!-- Topbar -->
+  <div id="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="openMenu()"><i class="fa-solid fa-bars"></i></button>
+      <span class="topbar-wordmark">XauTracker</span>
+    </div>
+    <div class="topbar-right">Forecast Access</div>
+  </div>
 
-    <h1>Unlock Gold Real-time Forecast</h1>
-    <p class="sub-desc">
-      Get access to ATR-based price forecasts, key levels, gold signals and sentiment, updated live.
+  <div id="content">
+
+    <!-- Page header -->
+    <div class="page-eyebrow"><i class="fa-solid fa-crown"></i> XauTracker Pro</div>
+    <h1 class="page-title">Unlock Gold<br>Real-Time Forecast</h1>
+    <p class="page-sub">
+      ATR-based price forecasts, key levels, gold signals and sentiment — updated live every minute.
     </p>
 
-    <!-- Status banner — shown dynamically -->
-    <div id="status-banner" style="display:none;"></div>
+    <!-- Status banner — injected by Firebase -->
+    <div id="status-banner"></div>
 
-    <div class="plan-card">
-      <div class="plan-name">Monthly Plan</div>
-      <div class="plan-price">₦9,900<span>/mo</span></div>
-      <div class="plan-cycle">Billed monthly · Cancel anytime</div>
+    <!-- Plan card -->
+    <div class="plan-card featured">
+      <div class="plan-label">Monthly Plan</div>
+
+      <div class="plan-price-row">
+        <span class="plan-currency">$</span>
+        <span class="plan-amount">7.5</span>
+        <span class="plan-per">/mo</span>
+      </div>
+      <div class="plan-cycle">or ₦9,900/mo for Nigeria · Billed monthly · Cancel anytime</div>
+
       <ul class="plan-features">
         <li><i class="fa-solid fa-check"></i> Real-time XAU/USD price forecasts</li>
-        <li><i class="fa-solid fa-check"></i> 5m, 10m, 15m, 1h, 6h & 24h timeline</li>
+        <li><i class="fa-solid fa-check"></i> 1h, 6h & 24h prediction timeline</li>
+        <li><i class="fa-solid fa-check"></i> Trade entry signals (1h, 4h, 24h)</li>
         <li><i class="fa-solid fa-check"></i> ATR-based volatility model</li>
         <li><i class="fa-solid fa-check"></i> Key support & resistance levels</li>
-        <li><i class="fa-solid fa-check"></i> Market sentiment & signals</li>
-        <li><i class="fa-solid fa-check"></i> Card payments is not availabe for now</li>
+        <li><i class="fa-solid fa-check"></i> Market sentiment & buy/sell signals</li>
+        <li><i class="fa-solid fa-check"></i> Market session awareness</li>
       </ul>
-    
-    <div class="plan-card">
-      <div class="plan-name">Pay with Bank Transfer</div>   <div class="plan-price">₦9,900<span>/mo</span></div>
-            <ul class="plan-features">
-        <li><i class="fa-solid fa-check"></i> Transfer ₦9,900 to <b>OPAY</b> <b>6518823532</b></li>
-       <li><i class="fa-solid fa-check"></i>Include your email address associated with XuaTracker in narrative</li>
-        <li><i class="fa-solid fa-check"></i> After successful transfer, your account will be activated for use</li>     
-        <li><i class="fa-solid fa-check"></i>Got questions about your account activation? <a href="https://wa.link/pvhzgb">Send a whatsapp message</a></li> </div> </ul>
-      <button class="btn-pay" id="pay-btn" onclick="startPayment()">
+
+      <button class="btn-primary" id="pay-btn" onclick="startPayment()">
         <i class="fa-solid fa-lock-open"></i> Subscribe — ₦9,900/month
       </button>
-      <button class="btn-signout" onclick="doSignOut()">
+      <button class="btn-outline" onclick="doSignOut()">
         <i class="fa-solid fa-right-from-bracket"></i> Sign Out
       </button>
       <div class="secure-note">
-        <i class="fa-solid fa-shield-halved"></i>
+        <i class="fa-solid fa-shield-halved" style="color:var(--green);"></i>
         Secured by Flutterwave · Payments are encrypted
       </div>
     </div>
 
-  </div>
-</div>
+    <!-- Bank transfer card -->
+    <div class="transfer-card">
+      <div class="transfer-label">Pay with Bank Transfer</div>
 
-<div id="toast"
-     style="position:fixed;bottom:24px;left:50%;
-            transform:translateX(-50%) translateY(20px);
-            background:var(--bg-card);border:1px solid var(--border);
-            color:#fff;padding:10px 20px;border-radius:20px;
-            font-size:13px;opacity:0;transition:all 0.3s;
-            pointer-events:none;z-index:200;white-space:nowrap;">
-</div>
+      <div class="transfer-step">
+        <div class="transfer-num">01</div>
+        <div class="transfer-text">
+          Transfer <strong>₦9,900</strong> to <strong>OPAY</strong> account number <strong>6518823532</strong>
+        </div>
+      </div>
+      <div class="transfer-step">
+        <div class="transfer-num">02</div>
+        <div class="transfer-text">
+          Include your <strong>XauTracker email address</strong> in the payment narrative / description
+        </div>
+      </div>
+      <div class="transfer-step">
+        <div class="transfer-num">03</div>
+        <div class="transfer-text">
+          After a successful transfer, your account will be activated within a few hours
+        </div>
+      </div>
+      <div class="transfer-step">
+        <div class="transfer-num">04</div>
+        <div class="transfer-text">
+          Got questions about account activation?
+          <a href="https://wa.link/pvhzgb" target="_blank">Send a WhatsApp message</a>
+        </div>
+      </div>
+    </div>
 
-<!-- Flutterwave inline script -->
+  </div><!-- /content -->
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-links">
+      <a class="footer-link" href="/about">About</a>
+      <a class="footer-link" href="/contact">Contact</a>
+      <a class="footer-link" href="/disclaimer">Disclaimer</a>
+    </div>
+    <div class="footer-disc">
+      Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates — not financial advice. Consult a licensed professional before trading.
+    </div>
+    <div class="footer-copy">© 2026 XauTracker.com &nbsp;·&nbsp; Powered by TwelveData</div>
+  </footer>
+
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<!-- Flutterwave -->
 <script src="https://checkout.flutterwave.com/v3.js"></script>
 
+<script>
+  /* ── Drawer ── */
+  function openMenu() {
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ── Theme ── */
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('xau-theme', theme);
+    const isDark = theme === 'dark';
+    document.getElementById('sw').classList.toggle('on', isDark);
+    document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    document.getElementById('theme-label').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+  }
+
+  function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  }
+
+  /* Sync UI on load */
+  applyTheme(localStorage.getItem('xau-theme') || 'light');
+
+  /* ── Toast ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+
+<!-- Firebase logic -->
 <script type="module">
   import { initializeApp, getApps }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -239,115 +820,110 @@
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
-    authDomain: "xautracker.firebaseapp.com",
-    projectId: "xautracker",
-    storageBucket: "xautracker.firebasestorage.app",
+    apiKey:            "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain:        "xautracker.firebaseapp.com",
+    projectId:         "xautracker",
+    storageBucket:     "xautracker.firebasestorage.app",
     messagingSenderId: "831752609455",
-    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+    appId:             "1:831752609455:web:ea9be478691744afa73e5a"
   };
 
-  const app  = initializeApp(firebaseConfig);
+  const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
   let currentUser = null;
 
   onAuthStateChanged(auth, async user => {
-  if (!user) {
-    window.location.href = 'login.html';
-    return;
-  }
-
-  currentUser = user;
-
-  try {
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (!snap.exists()) return;
-
-    const d   = snap.data();
-    const now = Date.now();
-
-    const trialActive =
-      d.trialEndsAt &&
-      new Date(d.trialEndsAt).getTime() > now;
-
-    const subscriptionActive =
-      d.subscriptionStatus === 'active' &&
-      d.currentPeriodEnd &&
-      new Date(d.currentPeriodEnd).getTime() > now;
-
-    const manualActive =
-      d.manualAccess === true &&
-      (!d.manualAccessExpiresAt ||
-        new Date(d.manualAccessExpiresAt).getTime() > now);
-
-    if (trialActive || subscriptionActive || manualActive) {
-      window.location.href = 'predict.html';
+    if (!user) {
+      window.location.replace('login.html');
       return;
     }
 
-    /* Show expired banner if trial is done */
-    const banner = document.getElementById('status-banner');
-    if (d.trialEndsAt && new Date(d.trialEndsAt).getTime() < now) {
-      banner.innerHTML = `
-        <div class="expired-banner">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          <div class="expired-banner-text">
-            Your <strong>7-day free trial has ended.</strong>
-            Subscribe below to continue accessing gold market predictions.
-          </div>
-        </div>`;
-      banner.style.display = 'block';
+    currentUser = user;
+
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (!snap.exists()) return;
+
+      const d   = snap.data();
+      const now = Date.now();
+
+      const trialActive = d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now;
+      const subscriptionActive =
+        d.subscriptionStatus === 'active' &&
+        d.currentPeriodEnd &&
+        new Date(d.currentPeriodEnd).getTime() > now;
+      const manualActive =
+        d.manualAccess === true &&
+        (!d.manualAccessExpiresAt || new Date(d.manualAccessExpiresAt).getTime() > now);
+
+      /* If user already has valid access, send them to forecast */
+      if (trialActive || subscriptionActive || manualActive) {
+        window.location.replace('predict.html');
+        return;
+      }
+
+      /* Show expired banner if trial has ended */
+      const bannerEl = document.getElementById('status-banner');
+      if (d.trialEndsAt && new Date(d.trialEndsAt).getTime() < now) {
+        bannerEl.innerHTML = `
+          <div class="banner expired">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <div>
+              Your <strong>7-day free trial has ended.</strong>
+              Subscribe below to continue accessing gold market predictions.
+            </div>
+          </div>`;
+      }
+
+    } catch (e) {
+      console.error('Subscribe page error:', e.message);
     }
+  });
 
-  } catch (e) {
-    console.error(e);
-  }
-});
-
+  /* ── Payment ── */
   window.startPayment = async () => {
     if (!currentUser) {
-      showToast('⚠ Please wait, loading your account...');
+      showToast('Please wait, loading your account...');
       return;
     }
 
     const btn = document.getElementById('pay-btn');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner spinner"></i> Loading...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Loading...';
 
     let userToken;
     try {
       userToken = await currentUser.getIdToken();
     } catch (e) {
-      showToast('⚠ Auth error, please refresh');
+      showToast('Auth error, please refresh the page');
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> Subscribe — ₦9,900/month';
       return;
     }
 
-    /* Reset button — Flutterwave handles the UI from here */
     btn.disabled = false;
     btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> Subscribe — ₦9,900/month';
 
     FlutterwaveCheckout({
-      public_key: 'FLWPUBK_TEST-a8050bdbca5d54c821af221df56f15ea-X',
-      tx_ref:     'xau-' + Date.now() + '-' + currentUser.uid.slice(0, 8),
-      amount:     9900,
-      currency:   'NGN',
+      public_key:      'FLWPUBK_TEST-a8050bdbca5d54c821af221df56f15ea-X',
+      tx_ref:          'xau-' + Date.now() + '-' + currentUser.uid.slice(0, 8),
+      amount:          9900,
+      currency:        'NGN',
       payment_options: 'card,banktransfer,ussd',
       customer: {
         email: currentUser.email,
         name:  currentUser.displayName || currentUser.email,
       },
       customizations: {
-        title:       'XAU Tracker',
-        description: 'Monthly Predict Access — ₦9,900',
-        logo:        'https://xautracker.vercel.app/og-image.png',
+        title:       'XauTracker',
+        description: 'Monthly Forecast Access — ₦9,900',
+        logo:        'https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png',
       },
       callback: async (response) => {
         if (response.status === 'successful') {
-          showToast('✓ Payment received. Verifying...');
+          showToast('Payment received. Verifying...');
           try {
             const res = await fetch('/api/verify-payment', {
               method:  'POST',
@@ -359,39 +935,28 @@
             });
             const data = await res.json();
             if (data.success) {
-              showToast('✓ Access granted! Redirecting...');
-              setTimeout(() => { window.location.href = 'predict.html'; }, 1500);
+              showToast('Access granted! Redirecting...');
+              setTimeout(() => { window.location.replace('predict.html'); }, 1500);
             } else {
-              showToast('⚠ Verification failed: ' + (data.error || 'Contact support'));
+              showToast('Verification failed: ' + (data.error || 'Contact support'));
             }
           } catch (e) {
-            showToast('⚠ Network error during verification');
+            showToast('Network error during verification');
           }
         } else {
-          showToast('⚠ Payment was not completed');
+          showToast('Payment was not completed');
         }
       },
-      onclose: () => {
-        /* User closed the popup — do nothing */
-      },
+      onclose: () => {},
     });
   };
 
+  /* ── Sign out ── */
   window.doSignOut = async () => {
     await signOut(auth);
-    window.location.href = 'login.html';
-  };
-
-  window.showToast = (msg) => {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.opacity = '1';
-    t.style.transform = 'translateX(-50%) translateY(0)';
-    setTimeout(() => {
-      t.style.opacity = '0';
-      t.style.transform = 'translateX(-50%) translateY(20px)';
-    }, 3000);
+    window.location.replace('login.html');
   };
 </script>
+
 </body>
 </html>
