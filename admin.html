@@ -301,16 +301,18 @@
   const db   = getFirestore(app);
 
   /* ── Auth ── */
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('admin-app').style.display    = 'block';
-      loadPosts();
-    } else {
-      document.getElementById('login-screen').style.display = 'flex';
-      document.getElementById('admin-app').style.display    = 'none';
-    }
-  });
+  onAuthStateChanged(auth, async user => {
+  if (!user) {
+    showLoginScreen(); return;
+  }
+  const snap = await getDoc(doc(db, 'users', user.uid));
+  if (snap.exists() && snap.data().isAdmin === true) {
+    showAdminApp();
+  } else {
+    await signOut(auth);
+    showLoginError('Access denied.');
+  }
+});
 
   window.doLogin = async () => {
     const email = document.getElementById('login-email').value.trim();
