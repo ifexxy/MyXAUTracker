@@ -1026,11 +1026,13 @@ function updatePageTitle(price, ch) {
           new Date(d.manualAccessExpiresAt).getTime() > now);
 
       if (trialActive || subscriptionActive || manualActive) {
-        /* Access granted — render dashboard */
-renderDashboard(user, d, now);
-updateDoc(doc(db, 'users', user.id), { lastSeen: serverTimestamp() }).catch(() => {});
-return;
-      }
+          /* access granted - render dashboard */
+  renderDashboard(user, d, now);
+  updateDoc(doc(db, 'users', user.uid), { lastSeen: serverTimestamp() })
+    .then(() => console.log('lastSeen written'))
+    .catch(e => console.error('lastSeen error:', e));
+  return;
+}
 
       window.location.replace('subscribe.html');
 
