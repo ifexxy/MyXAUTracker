@@ -978,7 +978,7 @@ function updatePageTitle(price, ch) {
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc }
+  import { getFirestore, doc, getDoc, updateDoc, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -1028,6 +1028,7 @@ function updatePageTitle(price, ch) {
       if (trialActive || subscriptionActive || manualActive) {
         /* Access granted — render dashboard */
 renderDashboard(user, d, now);
+updateDoc(doc(db, 'users', user.id), { lastSeen: serverTimestamp() }).catch(() => {});
 return;
       }
 
