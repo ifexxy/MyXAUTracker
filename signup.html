@@ -731,6 +731,11 @@
       try {
         const linked = await linkWithCredential(phoneUser, emailCred);
         finalUser = linked.user;
+        // Add these lines temporarily
+console.log('finalUser UID:', finalUser.uid);
+console.log('finalUser email:', finalUser.email);
+console.log('finalUser phone:', finalUser.phoneNumber);
+console.log('finalUser providers:', finalUser.providerData);
       } catch(linkErr){
         if (linkErr.code === 'auth/email-already-in-use'){
           throw linkErr;
@@ -756,7 +761,10 @@
         lastPaymentAt:         null,
         lastPaymentAmount:     null,
       });
-
+console.log('Firestore doc written successfully');
+} catch(firestoreErr){
+  console.error('FIRESTORE WRITE FAILED:', firestoreErr.code, firestoreErr.message);
+}
       window.location.href = 'predict.html';
 
     } catch(e){
