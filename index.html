@@ -1121,12 +1121,14 @@
             <div class="user-email">${user.email}</div>
           </div>
         </div>
-        <a href="/predict" class="btn-primary">Open Gold Forecast</a>`;
+        <a href="/predict" class="btn-primary">Open Gold Forecast</a>        <button onclick="dashSignOut()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;width:100%;background:transparent;color:var(--ink-3);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;">
+      <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+    </button>`;
     } else {
       inner.innerHTML = `
         <div class="trial-badge">7-Day Free Trial &nbsp;·&nbsp; No Payment Required</div>
         <p class="auth-copy">
-          <strong>Two steps</strong> to get started — just email and password.
+          <strong>Two steps</strong> to get started, just email and password.
           Full forecast dashboard free for 7 days.
         </p>
         <a href="/signup" class="btn-primary">
@@ -1136,6 +1138,14 @@
         <a href="/login" class="btn-secondary">Sign In</a>`;
     }
   });
+  
+  window.dashSignOut = async () => {
+  const { signOut } = await import(
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+  );
+  await signOut(auth);
+  window.location.replace('index.html');
+};
 </script>
 
 </body>
