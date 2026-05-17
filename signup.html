@@ -721,22 +721,24 @@
   setLoading('su-btn', true, 'Verifying...', '<i class="fa-solid fa-rocket"></i> Create Account');
 
   try {
-    const phoneCredential = await confirmationResult.confirm(otp);
-    const phoneUser = phoneCredential.user;
+  const phoneCredential = await confirmationResult.confirm(otp);
+  console.log('OTP confirmed, phoneUser:', phoneCredential.user.uid);
+  const phoneUser = phoneCredential.user;
 
-    const emailCred = EmailAuthProvider.credential(email, pass);
-    let finalUser;
-    try {
-      const linked = await linkWithCredential(phoneUser, emailCred);
-      finalUser = linked.user;
-      console.log('finalUser UID:', finalUser.uid);
-      console.log('finalUser email:', finalUser.email);
-      console.log('finalUser phone:', finalUser.phoneNumber);
-      console.log('finalUser providers:', finalUser.providerData);
-    } catch(linkErr){
-      if (linkErr.code === 'auth/email-already-in-use') throw linkErr;
-      finalUser = phoneUser;
-    }
+  console.log('About to link email...');
+  const emailCred = EmailAuthProvider.credential(email, pass);
+  let finalUser;
+  try {
+    const linked = await linkWithCredential(phoneUser, emailCred);
+    finalUser = linked.user;
+    console.log('Link succeeded, finalUser:', finalUser.uid);
+  } catch(linkErr){
+    console.error('LINK FAILED:', linkErr.code, linkErr.message);
+    if (linkErr.code === 'auth/email-already-in-use') throw linkErr;
+    finalUser = phoneUser;
+  }
+
+  console.log('About to write Firestore...');
 
     const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
