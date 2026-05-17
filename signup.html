@@ -761,13 +761,14 @@ console.log('finalUser providers:', finalUser.providerData);
         lastPaymentAt:         null,
         lastPaymentAmount:     null,
       });
-console.log('Firestore doc written successfully');
-} catch(firestoreErr){
-  console.error('FIRESTORE WRITE FAILED:', firestoreErr.code, firestoreErr.message);
-}
+
       window.location.href = 'predict.html';
 
     } catch(e){
+      console.log('Firestore doc written successfully');
+} catch(firestoreErr){
+  console.error('FIRESTORE WRITE FAILED:', firestoreErr.code, firestoreErr.message);
+}
       console.error('Signup error:', e);
       const msg =
         e.code === 'auth/invalid-verification-code'              ? 'Incorrect code. Try again.' :
