@@ -16,355 +16,531 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#ffffff" />
-  <title>Create Account</title>
+  <title>Create Account · XauTracker</title>
   <meta name="description" content="Create your XauTracker account and start a 7-day free trial for live XAU/USD forecasts." />
   <link rel="icon" type="image/png" href="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
-
     [data-theme="light"]{--bg:#ffffff;--bg-2:#f6f6f4;--bg-3:#eeede9;--ink:#0a0a0a;--ink-2:#444444;--ink-3:#888888;--ink-4:#bbbbbb;--border:#e0dedd;--green:#1a7a4a;--green-bg:#e8f5ee;--red:#b83232;--red-bg:#fdf0f0;--gold:#9a6e00;--gold-bg:#fff6d8}
     [data-theme="dark"]{--bg:#0e0e0e;--bg-2:#181818;--bg-3:#222222;--ink:#f0f0f0;--ink-2:#aaaaaa;--ink-3:#666666;--ink-4:#444444;--border:#2a2a2a;--green:#3dba72;--green-bg:#0d2a1a;--red:#e05555;--red-bg:#2a0d0d;--gold:#c8962a;--gold-bg:#2b2109}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{min-height:100%;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;transition:background .22s,color .22s}a{color:inherit}#app{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}#content{flex:1;overflow-x:hidden;padding:0 20px 0}
-    #topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;transition:background .22s,border-color .22s}.topbar-left,.topbar-right{display:flex;align-items:center;gap:10px}.menu-btn{background:none;border:none;cursor:pointer;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:var(--ink);font-size:15px}.menu-btn:hover{background:var(--bg-2)}.topbar-wordmark{font-size:16px;font-weight:700;color:var(--ink)}.live-chip{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--green);background:var(--green-bg);padding:4px 9px;border-radius:20px;letter-spacing:.04em}.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.6s ease-in-out infinite}@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}#topbar-price{font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:200;opacity:0;pointer-events:none;transition:opacity .22s}.overlay.open{opacity:1;pointer-events:all}.drawer{position:fixed;top:0;left:0;width:268px;height:100%;background:var(--bg);z-index:201;transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1),background .22s;display:flex;flex-direction:column;border-right:1px solid var(--border)}.drawer.open{transform:translateX(0)}.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px;border-bottom:1px solid var(--border)}.drawer-brand{font-size:18px;font-weight:800}.drawer-close{background:var(--bg-2);border:none;color:var(--ink);width:30px;height:30px;border-radius:50%;cursor:pointer}.drawer-nav{padding:14px}.drawer-item{display:block;text-decoration:none;color:var(--ink-2);font-size:15px;font-weight:600;padding:13px 12px;border-radius:9px;transition:background .15s,color .15s}.drawer-item:hover,.drawer-item.active{background:var(--bg-2);color:var(--ink)}.drawer-sep{height:1px;background:var(--border);margin:10px 0}.drawer-footer{margin-top:auto;padding:16px;border-top:1px solid var(--border)}.theme-row{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;padding:10px 0}.theme-row-label{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--ink)}.theme-row-label i{color:var(--gold);width:18px}.sw{width:42px;height:24px;background:var(--bg-3);border-radius:20px;padding:3px;transition:background .22s}.sw-knob{width:18px;height:18px;background:var(--bg);border-radius:50%;transition:transform .22s}.sw.on{background:var(--gold)}.sw.on .sw-knob{transform:translateX(18px)}
-    .auth-hero{padding:28px 0 18px;text-align:center}.hero-kicker{font-size:11px;color:var(--ink-3);letter-spacing:.13em;text-transform:uppercase;font-weight:700;margin-bottom:10px}.page-title{font-size:38px;line-height:1;font-weight:800;letter-spacing:-1.3px;color:var(--ink)}.page-title span{color:var(--gold)}.page-sub{max-width:330px;margin:14px auto 0;color:var(--ink-2);font-size:14px;line-height:1.65}.trial-badge{display:inline-flex;align-items:center;gap:7px;background:var(--gold-bg);color:var(--gold);font-size:11px;font-weight:800;padding:7px 12px;border-radius:20px;margin-top:16px;letter-spacing:.04em}.auth-card{background:var(--bg-2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:18px}.step-row{display:flex;align-items:center;margin-bottom:22px}.step-item{display:flex;align-items:center;gap:8px}.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:1px solid var(--border);background:var(--bg);color:var(--ink-3);transition:all .2s;flex-shrink:0}.step-num.active{background:var(--ink);border-color:var(--ink);color:var(--bg)}.step-num.done{background:var(--green-bg);border-color:var(--green);color:var(--green)}.step-label{font-size:12px;color:var(--ink-3);font-weight:700}.step-label.active{color:var(--ink)}.step-line{flex:1;height:1px;background:var(--border);margin:0 10px}.field-group{margin-bottom:16px}.field-label,label{display:block;font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px;font-weight:800}.field-input,input{display:block;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:15px;padding:14px 15px;outline:none;transition:border-color .2s;-webkit-appearance:none}.field-input:focus,input:focus{border-color:var(--gold)}.field-input::placeholder,input::placeholder{color:var(--ink-3)}.phone-row{display:flex;gap:10px}.phone-input-wrap{flex:1;min-width:0}.country-select-wrap{position:relative;flex-shrink:0}.country-trigger{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 12px;cursor:pointer;white-space:nowrap;min-width:105px;font-size:14px;color:var(--ink);user-select:none}.country-trigger:hover,.country-trigger.open{border-color:var(--gold)}.country-trigger .arrow{font-size:9px;color:var(--ink-3);transition:transform .2s}.country-trigger.open .arrow{transform:rotate(180deg)}.country-dropdown{position:absolute;top:calc(100% + 6px);left:0;width:min(300px,calc(100vw - 40px));background:var(--bg);border:1px solid var(--border);border-radius:14px;z-index:500;box-shadow:0 18px 40px rgba(0,0,0,.22);opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:all .18s ease;overflow:hidden}.country-dropdown.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}.country-search-wrap{padding:10px;border-bottom:1px solid var(--border)}.country-search{font-size:13px;padding:10px 12px;background:var(--bg-2)}.country-list{max-height:240px;overflow-y:auto;padding:6px}.country-option{display:flex;align-items:center;gap:9px;padding:10px 9px;border-radius:9px;cursor:pointer;color:var(--ink-2);font-size:13px}.country-option:hover,.country-option.selected{background:var(--bg-2);color:var(--ink)}.opt-name{flex:1}.opt-code{font-weight:800;color:var(--gold)}.otp-section,#otp-section{display:none;margin-top:16px}.err-msg,.ok-msg{font-size:12px;margin-top:10px;padding:10px 12px;border-radius:10px;display:none;line-height:1.45}.err-msg{color:var(--red);background:var(--red-bg);border:1px solid color-mix(in srgb,var(--red) 22%,transparent)}.ok-msg{color:var(--green);background:var(--green-bg);border:1px solid color-mix(in srgb,var(--green) 22%,transparent)}.btn-primary,.btn-secondary{width:100%;border-radius:12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:opacity .2s,border-color .2s,color .2s}.btn-primary{padding:14px 16px;margin-top:16px;background:var(--ink);color:var(--bg);border:none}.btn-primary:hover{opacity:.88}.btn-primary:disabled{opacity:.5;cursor:not-allowed}.btn-secondary{padding:13px 16px;margin-top:10px;background:transparent;color:var(--ink-2);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--gold);color:var(--gold)}.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--ink-3);font-size:12px}.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}.form-switch{text-align:center;font-size:13px;color:var(--ink-2);margin-top:18px;line-height:1.6}.form-switch a{color:var(--gold);cursor:pointer;font-weight:800;text-decoration:none}.section-divider{height:1px;background:var(--border);margin:24px 0 14px}.auth-mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.mini-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:13px}.mini-label{font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:4px}.mini-value{font-size:13px;font-weight:800;color:var(--ink)}.mini-value.gold{color:var(--gold)}.spinner{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}footer{padding:24px 0 40px;border-top:1px solid var(--border);margin-top:24px}.footer-links{display:flex;gap:6px;margin-bottom:16px}.footer-link{font-size:12px;font-weight:600;color:var(--ink-3);text-decoration:none;padding:6px 13px;border-radius:20px;border:1px solid var(--border)}.footer-link:hover{border-color:var(--ink-3);color:var(--ink)}.footer-disc{font-size:11px;color:var(--ink-4);line-height:1.65;padding:12px 14px;background:var(--bg-2);border-radius:8px;margin-bottom:14px}.footer-copy{font-size:10px;color:var(--ink-4);letter-spacing:.03em}#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:all .28s;pointer-events:none;z-index:300;white-space:nowrap}#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;transition:background .22s,color .22s}
+    a{color:inherit}
+
+    #app{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}
+    #content{flex:1;overflow-x:hidden;padding:0 20px}
+
+    /* ── Topbar ── */
+    #topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;transition:background .22s,border-color .22s}
+    .topbar-left,.topbar-right{display:flex;align-items:center;gap:10px}
+    .menu-btn{background:none;border:none;cursor:pointer;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:var(--ink);font-size:15px}
+    .menu-btn:hover{background:var(--bg-2)}
+    .topbar-wordmark{font-size:16px;font-weight:700;color:var(--ink)}
+    .live-chip{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--green);background:var(--green-bg);padding:4px 9px;border-radius:20px;letter-spacing:.04em}
+    .live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.6s ease-in-out infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+    #topbar-price{font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+
+    /* ── Drawer ── */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:200;opacity:0;pointer-events:none;transition:opacity .22s}
+    .overlay.open{opacity:1;pointer-events:all}
+    .drawer{position:fixed;top:0;left:0;width:268px;height:100%;background:var(--bg);z-index:201;transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1),background .22s;display:flex;flex-direction:column;border-right:1px solid var(--border)}
+    .drawer.open{transform:translateX(0)}
+    .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px;border-bottom:1px solid var(--border)}
+    .drawer-brand{font-size:18px;font-weight:800}
+    .drawer-close{background:var(--bg-2);border:none;color:var(--ink);width:30px;height:30px;border-radius:50%;cursor:pointer}
+    .drawer-nav{padding:14px}
+    .drawer-item{display:block;text-decoration:none;color:var(--ink-2);font-size:15px;font-weight:600;padding:13px 12px;border-radius:9px;transition:background .15s,color .15s}
+    .drawer-item:hover,.drawer-item.active{background:var(--bg-2);color:var(--ink)}
+    .drawer-sep{height:1px;background:var(--border);margin:10px 0}
+    .drawer-footer{margin-top:auto;padding:16px;border-top:1px solid var(--border)}
+    .theme-row{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;padding:10px 0}
+    .theme-row-label{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--ink)}
+    .theme-row-label i{color:var(--gold);width:18px}
+    .sw{width:42px;height:24px;background:var(--bg-3);border-radius:20px;padding:3px;transition:background .22s}
+    .sw-knob{width:18px;height:18px;background:var(--bg);border-radius:50%;transition:transform .22s}
+    .sw.on{background:var(--gold)}
+    .sw.on .sw-knob{transform:translateX(18px)}
+
+    /* ── Page content ── */
+    .auth-hero{padding:28px 0 18px;text-align:center}
+    .page-title{font-size:38px;line-height:1;font-weight:800;letter-spacing:-1.3px;color:var(--ink)}
+    .page-title span{color:var(--gold)}
+    .page-sub{max-width:330px;margin:14px auto 0;color:var(--ink-2);font-size:14px;line-height:1.65}
+
+    /* ── Auth card ── */
+    .auth-card{background:var(--bg-2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:18px}
+
+    /* ── Step indicator ── */
+    .step-row{display:flex;align-items:center;margin-bottom:22px}
+    .step-item{display:flex;align-items:center;gap:8px}
+    .step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:1px solid var(--border);background:var(--bg);color:var(--ink-3);transition:all .2s;flex-shrink:0}
+    .step-num.active{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+    .step-num.done{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+    .step-label{font-size:12px;color:var(--ink-3);font-weight:700}
+    .step-label.active{color:var(--ink)}
+    .step-line{flex:1;height:1px;background:var(--border);margin:0 10px}
+
+    /* ── Form fields ── */
+    .field-group{margin-bottom:16px}
+    .field-label,label{display:block;font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px;font-weight:800}
+    .field-input,input[type="email"],input[type="password"],input[type="tel"],input[type="number"],input[type="text"]{display:block;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:15px;padding:14px 15px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+    .field-input:focus,input:focus{border-color:var(--gold)}
+    .field-input::placeholder,input::placeholder{color:var(--ink-3)}
+
+    /* ── Phone row ── */
+    .phone-row{display:flex;gap:10px}
+    .phone-input-wrap{flex:1;min-width:0}
+    .country-select-wrap{position:relative;flex-shrink:0}
+    .country-trigger{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 12px;cursor:pointer;white-space:nowrap;min-width:105px;font-size:14px;color:var(--ink);user-select:none}
+    .country-trigger:hover,.country-trigger.open{border-color:var(--gold)}
+    .country-trigger .arrow{font-size:9px;color:var(--ink-3);transition:transform .2s}
+    .country-trigger.open .arrow{transform:rotate(180deg)}
+    .country-dropdown{position:absolute;top:calc(100% + 6px);left:0;width:min(300px,calc(100vw - 40px));background:var(--bg);border:1px solid var(--border);border-radius:14px;z-index:500;box-shadow:0 18px 40px rgba(0,0,0,.22);opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:all .18s ease;overflow:hidden}
+    .country-dropdown.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+    .country-search-wrap{padding:10px;border-bottom:1px solid var(--border)}
+    .country-search{font-size:13px;padding:10px 12px;background:var(--bg-2)}
+    .country-list{max-height:240px;overflow-y:auto;padding:6px}
+    .country-option{display:flex;align-items:center;gap:9px;padding:10px 9px;border-radius:9px;cursor:pointer;color:var(--ink-2);font-size:13px}
+    .country-option:hover,.country-option.selected{background:var(--bg-2);color:var(--ink)}
+    .opt-name{flex:1}
+    .opt-code{font-weight:800;color:var(--gold)}
+
+    /* ── Messages ── */
+    .err-msg,.ok-msg{font-size:12px;margin-top:10px;padding:10px 12px;border-radius:10px;display:none;line-height:1.45}
+    .err-msg{color:var(--red);background:var(--red-bg);border:1px solid color-mix(in srgb,var(--red) 22%,transparent)}
+    .ok-msg{color:var(--green);background:var(--green-bg);border:1px solid color-mix(in srgb,var(--green) 22%,transparent)}
+
+    /* ── Buttons ── */
+    .btn-primary,.btn-secondary{width:100%;border-radius:12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:opacity .2s,border-color .2s,color .2s;border:none}
+    .btn-primary{padding:14px 16px;margin-top:16px;background:var(--ink);color:var(--bg)}
+    .btn-primary:hover{opacity:.88}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed}
+    .btn-secondary{padding:13px 16px;margin-top:10px;background:transparent;color:var(--ink-2);border:1px solid var(--border)}
+    .btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
+
+    .divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--ink-3);font-size:12px}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .form-switch{text-align:center;font-size:13px;color:var(--ink-2);margin-top:18px;line-height:1.6}
+    .form-switch a{color:var(--gold);cursor:pointer;font-weight:800;text-decoration:none}
+    .section-divider{height:1px;background:var(--border);margin:20px 0 14px}
+
+    /* ── OTP section ── */
+    #otp-section{display:none;margin-top:16px}
+
+    /* ── Spinner ── */
+    .spinner{animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ── Footer ── */
+    footer{padding:24px 0 40px;border-top:1px solid var(--border);margin-top:24px}
+    .footer-links{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+    .footer-link{font-size:12px;font-weight:600;color:var(--ink-3);text-decoration:none;padding:6px 13px;border-radius:20px;border:1px solid var(--border)}
+    .footer-link:hover{border-color:var(--ink-3);color:var(--ink)}
+    .footer-disc{font-size:11px;color:var(--ink-4);line-height:1.65;padding:12px 14px;background:var(--bg-2);border-radius:8px;margin-bottom:14px}
+    .footer-copy{font-size:10px;color:var(--ink-4);letter-spacing:.03em}
+
+    /* ── Toast ── */
+    #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:all .28s;pointer-events:none;z-index:300;white-space:nowrap}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   </style>
 </head>
 <body>
-<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<div class="overlay" id="overlay"></div>
 <nav class="drawer" id="drawer" aria-label="Main navigation">
-  <div class="drawer-head"><span class="drawer-brand">XauTracker</span><button class="drawer-close" onclick="closeMenu()" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button></div>
-  <div class="drawer-nav">
-    <a class="drawer-item" href="/">Home</a><a class="drawer-item" href="/news">News</a><a class="drawer-item" href="/trends">Trends</a><a class="drawer-item" href="/predict">Forecast</a><a class="drawer-item" href="/minds">Minds</a>
-    <div class="drawer-sep"></div><a class="drawer-item" href="/about">About</a><a class="drawer-item" href="/disclaimer">Disclaimer</a><a class="drawer-item" href="/contact">Contact</a>
+  <div class="drawer-head">
+    <span class="drawer-brand">XauTracker</span>
+    <button class="drawer-close" id="drawer-close-btn" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
   </div>
-  <div class="drawer-footer"><div class="theme-row" onclick="toggleTheme()"><div class="theme-row-label"><i id="theme-icon" class="fa-solid fa-moon"></i><span id="theme-label">Dark Mode</span></div><div class="sw" id="sw"><div class="sw-knob"></div></div></div></div>
+  <div class="drawer-nav">
+    <a class="drawer-item" href="/">Home</a>
+    <a class="drawer-item" href="/news">News</a>
+    <a class="drawer-item" href="/trends">Trends</a>
+    <a class="drawer-item" href="/predict">Forecast</a>
+    <div class="drawer-sep"></div>
+    <a class="drawer-item" href="/about">About</a>
+    <a class="drawer-item" href="/disclaimer">Disclaimer</a>
+    <a class="drawer-item" href="/contact">Contact</a>
+  </div>
+  <div class="drawer-footer">
+    <div class="theme-row" id="theme-toggle-row">
+      <div class="theme-row-label">
+        <i id="theme-icon" class="fa-solid fa-moon"></i>
+        <span id="theme-label">Dark Mode</span>
+      </div>
+      <div class="sw" id="sw"><div class="sw-knob"></div></div>
+    </div>
+  </div>
 </nav>
+
 <div id="app">
   <div id="topbar">
-    <div class="topbar-left"><button class="menu-btn" onclick="openMenu()" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button><span class="topbar-wordmark">XauTracker</span></div>
-    <div class="topbar-right"><div class="live-chip"><div class="live-dot"></div>LIVE</div><span id="topbar-price">â</span></div>
+    <div class="topbar-left">
+      <button class="menu-btn" id="menu-open-btn" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+      <span class="topbar-wordmark">XauTracker</span>
+    </div>
+    <div class="topbar-right">
+      <div class="live-chip"><div class="live-dot"></div>LIVE</div>
+      <span id="topbar-price">—</span>
+    </div>
   </div>
+
   <div id="content">
     <section class="auth-hero">
-    
       <h1 class="page-title">Create Account<span>.</span></h1>
       <p class="page-sub">Start your 7-day free trial and unlock the gold forecast dashboard, live signals, and trader tools.</p>
-      
     </section>
 
     <div class="auth-card">
+
+      <!-- Step indicator -->
       <div class="step-row">
-        <div class="step-item"><div class="step-num active" id="dot-1">1</div><span class="step-label active" id="label-1">Your Details</span></div>
+        <div class="step-item">
+          <div class="step-num active" id="dot-1">1</div>
+          <span class="step-label active" id="label-1">Your Details</span>
+        </div>
         <div class="step-line"></div>
-        <div class="step-item"><div class="step-num" id="dot-2">2</div><span class="step-label" id="label-2">Phone Verification</span></div>
+        <div class="step-item">
+          <div class="step-num" id="dot-2">2</div>
+          <span class="step-label" id="label-2">Phone Verification</span>
+        </div>
       </div>
 
+      <!-- ── Step 1: Email & Password ── -->
       <div id="signup-step1">
-        <div class="field-group"><label class="field-label" for="su-email">Email Address</label><input class="field-input" type="email" id="su-email" placeholder="you@email.com" autocomplete="email" /></div>
-        <div class="field-group"><label class="field-label" for="su-pass">Password</label><input class="field-input" type="password" id="su-pass" placeholder="Minimum 6 characters" autocomplete="new-password" /></div>
-        <div class="field-group"><label class="field-label" for="su-pass2">Confirm Password</label><input class="field-input" type="password" id="su-pass2" placeholder="Repeat password" autocomplete="new-password" /></div>
+        <div class="field-group">
+          <label class="field-label" for="su-email">Email Address</label>
+          <input class="field-input" type="email" id="su-email" placeholder="you@email.com" autocomplete="email" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="su-pass">Password</label>
+          <input class="field-input" type="password" id="su-pass" placeholder="Minimum 6 characters" autocomplete="new-password" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="su-pass2">Confirm Password</label>
+          <input class="field-input" type="password" id="su-pass2" placeholder="Repeat password" autocomplete="new-password" />
+        </div>
         <div class="err-msg" id="su-err"></div>
-        <button class="btn-primary" id="su-next-btn"><i class="fa-solid fa-arrow-right"></i> Continue</button>
+        <button class="btn-primary" id="su-next-btn">
+          <i class="fa-solid fa-arrow-right"></i> Continue
+        </button>
         <div class="form-switch">Already have an account? <a href="login.html">Sign in</a></div>
       </div>
 
+      <!-- ── Step 2: Phone ── -->
       <div id="signup-step2" style="display:none;">
         <div class="field-group">
           <label class="field-label">Phone Number</label>
           <div class="phone-row">
             <div class="country-select-wrap">
-              <div class="country-trigger" id="country-trigger" onclick="toggleCountryDropdown()"><span class="flag" id="selected-flag">ð³ð¬</span><span class="code" id="selected-code">+234</span><span class="arrow">â¼</span></div>
-              <div class="country-dropdown" id="country-dropdown"><div class="country-search-wrap"><input class="country-search" type="text" id="country-search" placeholder="Search country..." oninput="filterCountries(this.value)" /></div><div class="country-list" id="country-list"></div></div>
+              <div class="country-trigger" id="country-trigger">
+                <span id="selected-flag">🇳🇬</span>
+                <span id="selected-code">+234</span>
+                <span class="arrow">▼</span>
+              </div>
+              <div class="country-dropdown" id="country-dropdown">
+                <div class="country-search-wrap">
+                  <input class="country-search field-input" type="text" id="country-search" placeholder="Search country..." />
+                </div>
+                <div class="country-list" id="country-list"></div>
+              </div>
             </div>
-            <div class="phone-input-wrap"><input class="field-input" type="tel" id="su-phone" placeholder="8012345678" autocomplete="tel" /></div>
+            <div class="phone-input-wrap">
+              <input class="field-input" type="tel" id="su-phone" placeholder="8012345678" autocomplete="tel" />
+            </div>
           </div>
         </div>
+
         <div class="err-msg" id="phone-err"></div>
         <div id="recaptcha-container" style="margin-top:10px;"></div>
-        <button class="btn-primary" id="send-otp-btn" onclick="sendOTP()"><i class="fa-solid fa-mobile-screen"></i> Send Verification Code</button>
-        <div class="otp-section" id="otp-section">
-          <div class="field-group" style="margin-bottom:0;"><label class="field-label" for="su-otp">Verification Code</label><input class="field-input" type="number" id="su-otp" placeholder="Enter the 6-digit code" /></div>
+
+        <button class="btn-primary" id="send-otp-btn">
+          <i class="fa-solid fa-mobile-screen"></i> Send Verification Code
+        </button>
+
+        <!-- OTP section — shown after code is sent -->
+        <div id="otp-section">
+          <div class="field-group" style="margin-bottom:0;margin-top:16px;">
+            <label class="field-label" for="su-otp">Verification Code</label>
+            <input class="field-input" type="number" id="su-otp" placeholder="Enter the 6-digit code" />
+          </div>
           <div class="err-msg" id="otp-err"></div>
-          <button class="btn-primary" id="su-btn" onclick="doSignUp()"><i class="fa-solid fa-rocket"></i> Create Account</button>
-          <button class="btn-secondary" onclick="sendOTP()"><i class="fa-solid fa-rotate-right"></i> Resend Code</button>
+          <button class="btn-primary" id="su-btn">
+            <i class="fa-solid fa-rocket"></i> Create Account
+          </button>
+          <button class="btn-secondary" id="resend-otp-btn">
+            <i class="fa-solid fa-rotate-right"></i> Resend Code
+          </button>
         </div>
+
         <div class="section-divider"></div>
-        <button class="btn-secondary" id="back-to-step1-btn"><i class="fa-solid fa-arrow-left"></i> Back to Step 1</button>
+        <button class="btn-secondary" id="back-to-step1-btn">
+          <i class="fa-solid fa-arrow-left"></i> Back to Step 1
+        </button>
         <div class="form-switch">Already have an account? <a href="login.html">Sign in</a></div>
       </div>
-    </div>
 
-    
-    
+    </div><!-- /auth-card -->
+
     <footer>
-      <div class="footer-links"><a class="footer-link" href="/about">About</a><a class="footer-link" href="/contact">Contact</a><a class="footer-link" href="/disclaimer">Disclaimer</a></div>
+      <div class="footer-links">
+        <a class="footer-link" href="/about">About</a>
+        <a class="footer-link" href="/contact">Contact</a>
+        <a class="footer-link" href="/disclaimer">Disclaimer</a>
+      </div>
       <div class="footer-disc">Trading gold carries significant financial risk. XauTracker predictions and community content are informational only, not financial advice.</div>
-      <div class="footer-copy">Â© 2026 XauTracker.com &nbsp;Â·&nbsp; Powered by TwelveData</div>
+      <div class="footer-copy">© 2026 XauTracker.com &nbsp;·&nbsp; Powered by TwelveData</div>
     </footer>
-  </div>
-</div>
+  </div><!-- /content -->
+</div><!-- /app -->
+
 <div id="toast"></div>
+
+<!-- ── Non-module utilities ── -->
 <script src="js/api.js"></script>
+
 <script>
+  /* ── Price in topbar ── */
   function fmtP(v){ return v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function renderPrice(d){ document.getElementById('topbar-price').textContent = '$' + fmtP(d.price); }
-  function openMenu(){ document.getElementById('drawer').classList.add('open'); document.getElementById('overlay').classList.add('open'); document.body.style.overflow='hidden'; }
-  function closeMenu(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); document.body.style.overflow=''; }
-  function toggleMenu(){ const isOpen=document.getElementById('drawer').classList.contains('open'); isOpen ? closeMenu() : openMenu(); }
+  loadPrice(renderPrice);
+  setInterval(() => loadPrice(renderPrice), 10000);
+
+  /* ── Drawer ── */
+  function openMenu(){
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMenu(){
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('menu-open-btn').addEventListener('click', openMenu);
+  document.getElementById('drawer-close-btn').addEventListener('click', closeMenu);
+  document.getElementById('overlay').addEventListener('click', closeMenu);
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMenu(); });
+
+  /* ── Theme ── */
   function applyTheme(theme){
-    document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('xau-theme', theme);
-    const isDark = theme === 'dark'; document.getElementById('sw').classList.toggle('on', isDark);
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('xau-theme', theme);
+    const isDark = theme === 'dark';
+    document.getElementById('sw').classList.toggle('on', isDark);
     document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
     document.getElementById('theme-label').textContent = isDark ? 'Light Mode' : 'Dark Mode';
     document.querySelector('meta[name="theme-color"]').setAttribute('content', isDark ? '#0e0e0e' : '#ffffff');
   }
-  function toggleTheme(){ const cur=document.documentElement.getAttribute('data-theme') || 'light'; applyTheme(cur === 'dark' ? 'light' : 'dark'); }
-  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMenu(); });
-  applyTheme(localStorage.getItem('xau-theme') || 'light');
-  loadPrice(renderPrice); setInterval(() => loadPrice(renderPrice), 10000);
-</script>
-<script>
-const COUNTRIES = [
-  { name: "Nigeria",              code: "+234", flag: "ð³ð¬" },
-  { name: "Afghanistan",          code: "+93",  flag: "ð¦ð«" },
-  { name: "Albania",              code: "+355", flag: "ð¦ð±" },
-  { name: "Algeria",              code: "+213", flag: "ð©ð¿" },
-  { name: "Andorra",              code: "+376", flag: "ð¦ð©" },
-  { name: "Angola",               code: "+244", flag: "ð¦ð´" },
-  { name: "Argentina",            code: "+54",  flag: "ð¦ð·" },
-  { name: "Armenia",              code: "+374", flag: "ð¦ð²" },
-  { name: "Australia",            code: "+61",  flag: "ð¦ðº" },
-  { name: "Austria",              code: "+43",  flag: "ð¦ð¹" },
-  { name: "Azerbaijan",           code: "+994", flag: "ð¦ð¿" },
-  { name: "Bahrain",              code: "+973", flag: "ð§ð­" },
-  { name: "Bangladesh",           code: "+880", flag: "ð§ð©" },
-  { name: "Belarus",              code: "+375", flag: "ð§ð¾" },
-  { name: "Belgium",              code: "+32",  flag: "ð§ðª" },
-  { name: "Belize",               code: "+501", flag: "ð§ð¿" },
-  { name: "Benin",                code: "+229", flag: "ð§ð¯" },
-  { name: "Bolivia",              code: "+591", flag: "ð§ð´" },
-  { name: "Bosnia and Herzegovina", code: "+387", flag: "ð§ð¦" },
-  { name: "Botswana",             code: "+267", flag: "ð§ð¼" },
-  { name: "Brazil",               code: "+55",  flag: "ð§ð·" },
-  { name: "Brunei",               code: "+673", flag: "ð§ð³" },
-  { name: "Bulgaria",             code: "+359", flag: "ð§ð¬" },
-  { name: "Burkina Faso",         code: "+226", flag: "ð§ð«" },
-  { name: "Burundi",              code: "+257", flag: "ð§ð®" },
-  { name: "Cambodia",             code: "+855", flag: "ð°ð­" },
-  { name: "Cameroon",             code: "+237", flag: "ð¨ð²" },
-  { name: "Canada",               code: "+1",   flag: "ð¨ð¦" },
-  { name: "Cape Verde",           code: "+238", flag: "ð¨ð»" },
-  { name: "Central African Republic", code: "+236", flag: "ð¨ð«" },
-  { name: "Chad",                 code: "+235", flag: "ð¹ð©" },
-  { name: "Chile",                code: "+56",  flag: "ð¨ð±" },
-  { name: "China",                code: "+86",  flag: "ð¨ð³" },
-  { name: "Colombia",             code: "+57",  flag: "ð¨ð´" },
-  { name: "Comoros",              code: "+269", flag: "ð°ð²" },
-  { name: "Congo (DRC)",          code: "+243", flag: "ð¨ð©" },
-  { name: "Congo (Republic)",     code: "+242", flag: "ð¨ð¬" },
-  { name: "Costa Rica",           code: "+506", flag: "ð¨ð·" },
-  { name: "Croatia",              code: "+385", flag: "ð­ð·" },
-  { name: "Cuba",                 code: "+53",  flag: "ð¨ðº" },
-  { name: "Cyprus",               code: "+357", flag: "ð¨ð¾" },
-  { name: "Czech Republic",       code: "+420", flag: "ð¨ð¿" },
-  { name: "Denmark",              code: "+45",  flag: "ð©ð°" },
-  { name: "Djibouti",             code: "+253", flag: "ð©ð¯" },
-  { name: "Dominican Republic",   code: "+1",   flag: "ð©ð´" },
-  { name: "Ecuador",              code: "+593", flag: "ðªð¨" },
-  { name: "Egypt",                code: "+20",  flag: "ðªð¬" },
-  { name: "El Salvador",          code: "+503", flag: "ð¸ð»" },
-  { name: "Equatorial Guinea",    code: "+240", flag: "ð¬ð¶" },
-  { name: "Eritrea",              code: "+291", flag: "ðªð·" },
-  { name: "Estonia",              code: "+372", flag: "ðªðª" },
-  { name: "Eswatini",             code: "+268", flag: "ð¸ð¿" },
-  { name: "Ethiopia",             code: "+251", flag: "ðªð¹" },
-  { name: "Fiji",                 code: "+679", flag: "ð«ð¯" },
-  { name: "Finland",              code: "+358", flag: "ð«ð®" },
-  { name: "France",               code: "+33",  flag: "ð«ð·" },
-  { name: "Gabon",                code: "+241", flag: "ð¬ð¦" },
-  { name: "Gambia",               code: "+220", flag: "ð¬ð²" },
-  { name: "Georgia",              code: "+995", flag: "ð¬ðª" },
-  { name: "Germany",              code: "+49",  flag: "ð©ðª" },
-  { name: "Ghana",                code: "+233", flag: "ð¬ð­" },
-  { name: "Greece",               code: "+30",  flag: "ð¬ð·" },
-  { name: "Guatemala",            code: "+502", flag: "ð¬ð¹" },
-  { name: "Guinea",               code: "+224", flag: "ð¬ð³" },
-  { name: "Guinea-Bissau",        code: "+245", flag: "ð¬ð¼" },
-  { name: "Guyana",               code: "+592", flag: "ð¬ð¾" },
-  { name: "Haiti",                code: "+509", flag: "ð­ð¹" },
-  { name: "Honduras",             code: "+504", flag: "ð­ð³" },
-  { name: "Hungary",              code: "+36",  flag: "ð­ðº" },
-  { name: "Iceland",              code: "+354", flag: "ð®ð¸" },
-  { name: "India",                code: "+91",  flag: "ð®ð³" },
-  { name: "Indonesia",            code: "+62",  flag: "ð®ð©" },
-  { name: "Iran",                 code: "+98",  flag: "ð®ð·" },
-  { name: "Iraq",                 code: "+964", flag: "ð®ð¶" },
-  { name: "Ireland",              code: "+353", flag: "ð®ðª" },
-  { name: "Israel",               code: "+972", flag: "ð®ð±" },
-  { name: "Italy",                code: "+39",  flag: "ð®ð¹" },
-  { name: "Ivory Coast",          code: "+225", flag: "ð¨ð®" },
-  { name: "Jamaica",              code: "+1",   flag: "ð¯ð²" },
-  { name: "Japan",                code: "+81",  flag: "ð¯ðµ" },
-  { name: "Jordan",               code: "+962", flag: "ð¯ð´" },
-  { name: "Kazakhstan",           code: "+7",   flag: "ð°ð¿" },
-  { name: "Kenya",                code: "+254", flag: "ð°ðª" },
-  { name: "Kosovo",               code: "+383", flag: "ð½ð°" },
-  { name: "Kuwait",               code: "+965", flag: "ð°ð¼" },
-  { name: "Kyrgyzstan",           code: "+996", flag: "ð°ð¬" },
-  { name: "Laos",                 code: "+856", flag: "ð±ð¦" },
-  { name: "Latvia",               code: "+371", flag: "ð±ð»" },
-  { name: "Lebanon",              code: "+961", flag: "ð±ð§" },
-  { name: "Lesotho",              code: "+266", flag: "ð±ð¸" },
-  { name: "Liberia",              code: "+231", flag: "ð±ð·" },
-  { name: "Libya",                code: "+218", flag: "ð±ð¾" },
-  { name: "Lithuania",            code: "+370", flag: "ð±ð¹" },
-  { name: "Luxembourg",           code: "+352", flag: "ð±ðº" },
-  { name: "Madagascar",           code: "+261", flag: "ð²ð¬" },
-  { name: "Malawi",               code: "+265", flag: "ð²ð¼" },
-  { name: "Malaysia",             code: "+60",  flag: "ð²ð¾" },
-  { name: "Maldives",             code: "+960", flag: "ð²ð»" },
-  { name: "Mali",                 code: "+223", flag: "ð²ð±" },
-  { name: "Malta",                code: "+356", flag: "ð²ð¹" },
-  { name: "Mauritania",           code: "+222", flag: "ð²ð·" },
-  { name: "Mauritius",            code: "+230", flag: "ð²ðº" },
-  { name: "Mexico",               code: "+52",  flag: "ð²ð½" },
-  { name: "Moldova",              code: "+373", flag: "ð²ð©" },
-  { name: "Mongolia",             code: "+976", flag: "ð²ð³" },
-  { name: "Montenegro",           code: "+382", flag: "ð²ðª" },
-  { name: "Morocco",              code: "+212", flag: "ð²ð¦" },
-  { name: "Mozambique",           code: "+258", flag: "ð²ð¿" },
-  { name: "Myanmar",              code: "+95",  flag: "ð²ð²" },
-  { name: "Namibia",              code: "+264", flag: "ð³ð¦" },
-  { name: "Nepal",                code: "+977", flag: "ð³ðµ" },
-  { name: "Netherlands",          code: "+31",  flag: "ð³ð±" },
-  { name: "New Zealand",          code: "+64",  flag: "ð³ð¿" },
-  { name: "Nicaragua",            code: "+505", flag: "ð³ð®" },
-  { name: "Niger",                code: "+227", flag: "ð³ðª" },
-  { name: "North Korea",          code: "+850", flag: "ð°ðµ" },
-  { name: "North Macedonia",      code: "+389", flag: "ð²ð°" },
-  { name: "Norway",               code: "+47",  flag: "ð³ð´" },
-  { name: "Oman",                 code: "+968", flag: "ð´ð²" },
-  { name: "Pakistan",             code: "+92",  flag: "ðµð°" },
-  { name: "Palestine",            code: "+970", flag: "ðµð¸" },
-  { name: "Panama",               code: "+507", flag: "ðµð¦" },
-  { name: "Papua New Guinea",     code: "+675", flag: "ðµð¬" },
-  { name: "Paraguay",             code: "+595", flag: "ðµð¾" },
-  { name: "Peru",                 code: "+51",  flag: "ðµðª" },
-  { name: "Philippines",          code: "+63",  flag: "ðµð­" },
-  { name: "Poland",               code: "+48",  flag: "ðµð±" },
-  { name: "Portugal",             code: "+351", flag: "ðµð¹" },
-  { name: "Qatar",                code: "+974", flag: "ð¶ð¦" },
-  { name: "Romania",              code: "+40",  flag: "ð·ð´" },
-  { name: "Russia",               code: "+7",   flag: "ð·ðº" },
-  { name: "Rwanda",               code: "+250", flag: "ð·ð¼" },
-  { name: "Saudi Arabia",         code: "+966", flag: "ð¸ð¦" },
-  { name: "Senegal",              code: "+221", flag: "ð¸ð³" },
-  { name: "Serbia",               code: "+381", flag: "ð·ð¸" },
-  { name: "Sierra Leone",         code: "+232", flag: "ð¸ð±" },
-  { name: "Singapore",            code: "+65",  flag: "ð¸ð¬" },
-  { name: "Slovakia",             code: "+421", flag: "ð¸ð°" },
-  { name: "Slovenia",             code: "+386", flag: "ð¸ð®" },
-  { name: "Somalia",              code: "+252", flag: "ð¸ð´" },
-  { name: "South Africa",         code: "+27",  flag: "ð¿ð¦" },
-  { name: "South Korea",          code: "+82",  flag: "ð°ð·" },
-  { name: "South Sudan",          code: "+211", flag: "ð¸ð¸" },
-  { name: "Spain",                code: "+34",  flag: "ðªð¸" },
-  { name: "Sri Lanka",            code: "+94",  flag: "ð±ð°" },
-  { name: "Sudan",                code: "+249", flag: "ð¸ð©" },
-  { name: "Sweden",               code: "+46",  flag: "ð¸ðª" },
-  { name: "Switzerland",          code: "+41",  flag: "ð¨ð­" },
-  { name: "Syria",                code: "+963", flag: "ð¸ð¾" },
-  { name: "Taiwan",               code: "+886", flag: "ð¹ð¼" },
-  { name: "Tajikistan",           code: "+992", flag: "ð¹ð¯" },
-  { name: "Tanzania",             code: "+255", flag: "ð¹ð¿" },
-  { name: "Thailand",             code: "+66",  flag: "ð¹ð­" },
-  { name: "Togo",                 code: "+228", flag: "ð¹ð¬" },
-  { name: "Tunisia",              code: "+216", flag: "ð¹ð³" },
-  { name: "Turkey",               code: "+90",  flag: "ð¹ð·" },
-  { name: "Turkmenistan",         code: "+993", flag: "ð¹ð²" },
-  { name: "Uganda",               code: "+256", flag: "ðºð¬" },
-  { name: "Ukraine",              code: "+380", flag: "ðºð¦" },
-  { name: "United Arab Emirates", code: "+971", flag: "ð¦ðª" },
-  { name: "United Kingdom",       code: "+44",  flag: "ð¬ð§" },
-  { name: "United States",        code: "+1",   flag: "ðºð¸" },
-  { name: "Uruguay",              code: "+598", flag: "ðºð¾" },
-  { name: "Uzbekistan",           code: "+998", flag: "ðºð¿" },
-  { name: "Venezuela",            code: "+58",  flag: "ð»ðª" },
-  { name: "Vietnam",              code: "+84",  flag: "ð»ð³" },
-  { name: "Yemen",                code: "+967", flag: "ð¾ðª" },
-  { name: "Zambia",               code: "+260", flag: "ð¿ð²" },
-  { name: "Zimbabwe",             code: "+263", flag: "ð¿ð¼" },
-];
-
-let selectedCountry = COUNTRIES[0];
-window.selectedCountry = COUNTRIES[0];
-
-function renderCountryList(list) {
-  const el = document.getElementById('country-list');
-  el.innerHTML = list.map(c => `
-    <div class="country-option ${c.name === selectedCountry.name ? 'selected' : ''}"
-         onclick="selectCountry(${COUNTRIES.indexOf(c)})">
-      <span class="opt-flag">${c.flag}</span>
-      <span class="opt-name">${c.name}</span>
-      <span class="opt-code">${c.code}</span>
-    </div>`).join('');
-}
-
-function selectCountry(idx) {
-  selectedCountry = COUNTRIES[idx];
-  window.selectedCountry = COUNTRIES[idx];
-  document.getElementById('selected-flag').textContent = selectedCountry.flag;
-  document.getElementById('selected-code').textContent = selectedCountry.code;
-  closeCountryDropdown();
-}
-
-function toggleCountryDropdown() {
-  const trigger  = document.getElementById('country-trigger');
-  const dropdown = document.getElementById('country-dropdown');
-  const isOpen   = dropdown.classList.contains('open');
-  if (isOpen) {
-    closeCountryDropdown();
-  } else {
-    dropdown.classList.add('open');
-    trigger.classList.add('open');
-    renderCountryList(COUNTRIES);
-    setTimeout(() => document.getElementById('country-search').focus(), 100);
+  function toggleTheme(){
+    const cur = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
   }
-}
+  document.getElementById('theme-toggle-row').addEventListener('click', toggleTheme);
+  applyTheme(localStorage.getItem('xau-theme') || 'light');
 
-function closeCountryDropdown() {
-  document.getElementById('country-dropdown').classList.remove('open');
-  document.getElementById('country-trigger').classList.remove('open');
-  document.getElementById('country-search').value = '';
-}
+  /* ── Toast ── */
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
 
-function filterCountries(q) {
-  const lower = q.toLowerCase();
-  const results = COUNTRIES.filter(c =>
-    c.name.toLowerCase().includes(lower) || c.code.includes(q)
-  );
-  renderCountryList(results);
-}
+  /* ── Country picker ── */
+  const COUNTRIES = [
+    { name:"Nigeria", code:"+234", flag:"🇳🇬" },
+    { name:"Afghanistan", code:"+93", flag:"🇦🇫" },
+    { name:"Albania", code:"+355", flag:"🇦🇱" },
+    { name:"Algeria", code:"+213", flag:"🇩🇿" },
+    { name:"Angola", code:"+244", flag:"🇦🇴" },
+    { name:"Argentina", code:"+54", flag:"🇦🇷" },
+    { name:"Armenia", code:"+374", flag:"🇦🇲" },
+    { name:"Australia", code:"+61", flag:"🇦🇺" },
+    { name:"Austria", code:"+43", flag:"🇦🇹" },
+    { name:"Azerbaijan", code:"+994", flag:"🇦🇿" },
+    { name:"Bahrain", code:"+973", flag:"🇧🇭" },
+    { name:"Bangladesh", code:"+880", flag:"🇧🇩" },
+    { name:"Belarus", code:"+375", flag:"🇧🇾" },
+    { name:"Belgium", code:"+32", flag:"🇧🇪" },
+    { name:"Bolivia", code:"+591", flag:"🇧🇴" },
+    { name:"Brazil", code:"+55", flag:"🇧🇷" },
+    { name:"Bulgaria", code:"+359", flag:"🇧🇬" },
+    { name:"Cameroon", code:"+237", flag:"🇨🇲" },
+    { name:"Canada", code:"+1", flag:"🇨🇦" },
+    { name:"Chile", code:"+56", flag:"🇨🇱" },
+    { name:"China", code:"+86", flag:"🇨🇳" },
+    { name:"Colombia", code:"+57", flag:"🇨🇴" },
+    { name:"Congo (DRC)", code:"+243", flag:"🇨🇩" },
+    { name:"Croatia", code:"+385", flag:"🇭🇷" },
+    { name:"Czech Republic", code:"+420", flag:"🇨🇿" },
+    { name:"Denmark", code:"+45", flag:"🇩🇰" },
+    { name:"Ecuador", code:"+593", flag:"🇪🇨" },
+    { name:"Egypt", code:"+20", flag:"🇪🇬" },
+    { name:"Ethiopia", code:"+251", flag:"🇪🇹" },
+    { name:"Finland", code:"+358", flag:"🇫🇮" },
+    { name:"France", code:"+33", flag:"🇫🇷" },
+    { name:"Gabon", code:"+241", flag:"🇬🇦" },
+    { name:"Gambia", code:"+220", flag:"🇬🇲" },
+    { name:"Germany", code:"+49", flag:"🇩🇪" },
+    { name:"Ghana", code:"+233", flag:"🇬🇭" },
+    { name:"Greece", code:"+30", flag:"🇬🇷" },
+    { name:"Guinea", code:"+224", flag:"🇬🇳" },
+    { name:"Hungary", code:"+36", flag:"🇭🇺" },
+    { name:"India", code:"+91", flag:"🇮🇳" },
+    { name:"Indonesia", code:"+62", flag:"🇮🇩" },
+    { name:"Iran", code:"+98", flag:"🇮🇷" },
+    { name:"Iraq", code:"+964", flag:"🇮🇶" },
+    { name:"Ireland", code:"+353", flag:"🇮🇪" },
+    { name:"Israel", code:"+972", flag:"🇮🇱" },
+    { name:"Italy", code:"+39", flag:"🇮🇹" },
+    { name:"Ivory Coast", code:"+225", flag:"🇨🇮" },
+    { name:"Japan", code:"+81", flag:"🇯🇵" },
+    { name:"Jordan", code:"+962", flag:"🇯🇴" },
+    { name:"Kazakhstan", code:"+7", flag:"🇰🇿" },
+    { name:"Kenya", code:"+254", flag:"🇰🇪" },
+    { name:"Kuwait", code:"+965", flag:"🇰🇼" },
+    { name:"Lebanon", code:"+961", flag:"🇱🇧" },
+    { name:"Liberia", code:"+231", flag:"🇱🇷" },
+    { name:"Libya", code:"+218", flag:"🇱🇾" },
+    { name:"Malaysia", code:"+60", flag:"🇲🇾" },
+    { name:"Mali", code:"+223", flag:"🇲🇱" },
+    { name:"Mexico", code:"+52", flag:"🇲🇽" },
+    { name:"Morocco", code:"+212", flag:"🇲🇦" },
+    { name:"Mozambique", code:"+258", flag:"🇲🇿" },
+    { name:"Myanmar", code:"+95", flag:"🇲🇲" },
+    { name:"Nepal", code:"+977", flag:"🇳🇵" },
+    { name:"Netherlands", code:"+31", flag:"🇳🇱" },
+    { name:"New Zealand", code:"+64", flag:"🇳🇿" },
+    { name:"Niger", code:"+227", flag:"🇳🇪" },
+    { name:"Norway", code:"+47", flag:"🇳🇴" },
+    { name:"Oman", code:"+968", flag:"🇴🇲" },
+    { name:"Pakistan", code:"+92", flag:"🇵🇰" },
+    { name:"Philippines", code:"+63", flag:"🇵🇭" },
+    { name:"Poland", code:"+48", flag:"🇵🇱" },
+    { name:"Portugal", code:"+351", flag:"🇵🇹" },
+    { name:"Qatar", code:"+974", flag:"🇶🇦" },
+    { name:"Romania", code:"+40", flag:"🇷🇴" },
+    { name:"Russia", code:"+7", flag:"🇷🇺" },
+    { name:"Rwanda", code:"+250", flag:"🇷🇼" },
+    { name:"Saudi Arabia", code:"+966", flag:"🇸🇦" },
+    { name:"Senegal", code:"+221", flag:"🇸🇳" },
+    { name:"Serbia", code:"+381", flag:"🇷🇸" },
+    { name:"Sierra Leone", code:"+232", flag:"🇸🇱" },
+    { name:"Singapore", code:"+65", flag:"🇸🇬" },
+    { name:"Somalia", code:"+252", flag:"🇸🇴" },
+    { name:"South Africa", code:"+27", flag:"🇿🇦" },
+    { name:"South Korea", code:"+82", flag:"🇰🇷" },
+    { name:"South Sudan", code:"+211", flag:"🇸🇸" },
+    { name:"Spain", code:"+34", flag:"🇪🇸" },
+    { name:"Sri Lanka", code:"+94", flag:"🇱🇰" },
+    { name:"Sudan", code:"+249", flag:"🇸🇩" },
+    { name:"Sweden", code:"+46", flag:"🇸🇪" },
+    { name:"Switzerland", code:"+41", flag:"🇨🇭" },
+    { name:"Syria", code:"+963", flag:"🇸🇾" },
+    { name:"Taiwan", code:"+886", flag:"🇹🇼" },
+    { name:"Tanzania", code:"+255", flag:"🇹🇿" },
+    { name:"Thailand", code:"+66", flag:"🇹🇭" },
+    { name:"Togo", code:"+228", flag:"🇹🇬" },
+    { name:"Tunisia", code:"+216", flag:"🇹🇳" },
+    { name:"Turkey", code:"+90", flag:"🇹🇷" },
+    { name:"Uganda", code:"+256", flag:"🇺🇬" },
+    { name:"Ukraine", code:"+380", flag:"🇺🇦" },
+    { name:"United Arab Emirates", code:"+971", flag:"🇦🇪" },
+    { name:"United Kingdom", code:"+44", flag:"🇬🇧" },
+    { name:"United States", code:"+1", flag:"🇺🇸" },
+    { name:"Uruguay", code:"+598", flag:"🇺🇾" },
+    { name:"Uzbekistan", code:"+998", flag:"🇺🇿" },
+    { name:"Venezuela", code:"+58", flag:"🇻🇪" },
+    { name:"Vietnam", code:"+84", flag:"🇻🇳" },
+    { name:"Yemen", code:"+967", flag:"🇾🇪" },
+    { name:"Zambia", code:"+260", flag:"🇿🇲" },
+    { name:"Zimbabwe", code:"+263", flag:"🇿🇼" },
+  ];
 
-document.addEventListener('click', function(e) {
-  const wrap = document.querySelector('.country-select-wrap');
-  if (wrap && !wrap.contains(e.target)) closeCountryDropdown();
-});
+  let selectedCountry = COUNTRIES[0];
 
-renderCountryList(COUNTRIES);
+  function getFullPhone(){
+    const local = document.getElementById('su-phone').value.trim();
+    const stripped = local.startsWith('0') ? local.slice(1) : local;
+    return selectedCountry.code + stripped;
+  }
+
+  function renderCountryList(list){
+    const el = document.getElementById('country-list');
+    el.innerHTML = list.map((c, i) => `
+      <div class="country-option ${c.name === selectedCountry.name ? 'selected' : ''}"
+           data-index="${COUNTRIES.indexOf(c)}">
+        <span>${c.flag}</span>
+        <span class="opt-name">${c.name}</span>
+        <span class="opt-code">${c.code}</span>
+      </div>`).join('');
+    el.querySelectorAll('.country-option').forEach(opt => {
+      opt.addEventListener('click', () => selectCountry(parseInt(opt.dataset.index)));
+    });
+  }
+
+  function selectCountry(idx){
+    selectedCountry = COUNTRIES[idx];
+    document.getElementById('selected-flag').textContent = selectedCountry.flag;
+    document.getElementById('selected-code').textContent = selectedCountry.code;
+    closeCountryDropdown();
+  }
+
+  function toggleCountryDropdown(){
+    const trigger = document.getElementById('country-trigger');
+    const dropdown = document.getElementById('country-dropdown');
+    const isOpen = dropdown.classList.contains('open');
+    if(isOpen){ closeCountryDropdown(); }
+    else {
+      dropdown.classList.add('open');
+      trigger.classList.add('open');
+      renderCountryList(COUNTRIES);
+      setTimeout(() => document.getElementById('country-search').focus(), 100);
+    }
+  }
+
+  function closeCountryDropdown(){
+    document.getElementById('country-dropdown').classList.remove('open');
+    document.getElementById('country-trigger').classList.remove('open');
+    document.getElementById('country-search').value = '';
+    renderCountryList(COUNTRIES);
+  }
+
+  document.getElementById('country-trigger').addEventListener('click', toggleCountryDropdown);
+  document.getElementById('country-search').addEventListener('input', function(){
+    const q = this.value.toLowerCase();
+    const results = COUNTRIES.filter(c =>
+      c.name.toLowerCase().includes(q) || c.code.includes(q)
+    );
+    renderCountryList(results);
+  });
+  document.addEventListener('click', function(e){
+    const wrap = document.querySelector('.country-select-wrap');
+    if(wrap && !wrap.contains(e.target)) closeCountryDropdown();
+  });
+
+  renderCountryList(COUNTRIES);
 </script>
+
+<!-- ── Firebase auth module ── -->
 <script type="module">
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
-    getAuth, createUserWithEmailAndPassword,
-    onAuthStateChanged, PhoneAuthProvider, RecaptchaVerifier
+    getAuth,
+    createUserWithEmailAndPassword,
+    EmailAuthProvider,
+    linkWithCredential,
+    onAuthStateChanged,
+    RecaptchaVerifier,
+    signInWithPhoneNumber
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc,
-           getDocs, collection, query, where, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getFirestore, doc, setDoc, getDoc,
+    getDocs, collection, query, where, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
@@ -382,17 +558,27 @@ renderCountryList(COUNTRIES);
   let confirmationResult = null;
   let recaptchaVerifier  = null;
 
-  document.getElementById('su-next-btn').addEventListener('click', goToPhoneStep);
-document.getElementById('send-otp-btn').addEventListener('click', sendOTP);
-document.getElementById('su-btn').addEventListener('click', doSignUp);
-  document.getElementById('back-to-step1-btn').addEventListener('click', backToStep1);
+  /* ── Helpers ── */
+  function showErr(id, msg){
+    const el = document.getElementById(id);
+    el.textContent   = msg;
+    el.style.display = msg ? 'block' : 'none';
+  }
 
-  /* ââ Already logged in â redirect ââ */
+  function setLoading(btnId, loading, loadText, origHTML){
+    const btn = document.getElementById(btnId);
+    btn.disabled  = loading;
+    btn.innerHTML = loading
+      ? `<i class="fa-solid fa-spinner spinner"></i> ${loadText}`
+      : origHTML;
+  }
+
+  /* ── Already logged in — redirect ── */
   onAuthStateChanged(auth, async user => {
     if (!user) return;
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
-      if (!snap.exists()) { window.location.href = 'predict.html'; return; }
+      if (!snap.exists()){ window.location.href = 'predict.html'; return; }
       const d   = snap.data();
       const now = Date.now();
       const hasAccess =
@@ -405,102 +591,99 @@ document.getElementById('su-btn').addEventListener('click', doSignUp);
     } catch { window.location.href = 'predict.html'; }
   });
 
-  /* ââ Step 1 validation ââ */
-  const goToPhoneStep = () => {
+  /* ── Step UI helpers ── */
+  function showStep(step){
+    document.getElementById('signup-step1').style.display = step === 1 ? 'block' : 'none';
+    document.getElementById('signup-step2').style.display = step === 2 ? 'block' : 'none';
+
+    document.getElementById('dot-1').className  = 'step-num'  + (step === 1 ? ' active' : ' done');
+    document.getElementById('dot-2').className  = 'step-num'  + (step === 2 ? ' active' : '');
+    document.getElementById('label-1').className = 'step-label' + (step === 1 ? ' active' : '');
+    document.getElementById('label-2').className = 'step-label' + (step === 2 ? ' active' : '');
+  }
+
+  /* ── reCAPTCHA init ── */
+  function initRecaptcha(){
+    if (recaptchaVerifier) return;
+    recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      size: 'normal',
+      'expired-callback': () => {
+        showErr('phone-err', 'reCAPTCHA expired. Please try again.');
+        recaptchaVerifier.clear();
+        recaptchaVerifier = null;
+        document.getElementById('recaptcha-container').innerHTML = '';
+        initRecaptcha();
+      }
+    });
+    recaptchaVerifier.render();
+  }
+
+  /* ── Step 1: validate and move to step 2 ── */
+  function goToPhoneStep(){
     const email = document.getElementById('su-email').value.trim();
     const pass  = document.getElementById('su-pass').value;
     const pass2 = document.getElementById('su-pass2').value;
     showErr('su-err', '');
 
     if (!email)          { showErr('su-err', 'Enter your email.');               return; }
+    if (!/\S+@\S+\.\S+/.test(email)) { showErr('su-err', 'Enter a valid email address.'); return; }
     if (pass.length < 6) { showErr('su-err', 'Password must be 6+ characters.'); return; }
     if (pass !== pass2)  { showErr('su-err', 'Passwords do not match.');          return; }
 
-    document.getElementById('signup-step1').style.display = 'none';
-    document.getElementById('signup-step2').style.display = 'block';
-    document.getElementById('dot-1').classList.remove('active');
-    document.getElementById('dot-1').classList.add('done');
-    document.getElementById('dot-2').classList.add('active');
-    document.getElementById('label-1').classList.remove('active');
-    document.getElementById('label-2').classList.add('active');
+    showStep(2);
     initRecaptcha();
-  };
+  }
 
-  const backToStep1 = () => {
-    document.getElementById('signup-step2').style.display = 'none';
-    document.getElementById('signup-step1').style.display = 'block';
-    document.getElementById('dot-2').classList.remove('active');
-    document.getElementById('dot-1').classList.remove('done');
-    document.getElementById('dot-1').classList.add('active');
-    document.getElementById('label-2').classList.remove('active');
-    document.getElementById('label-1').classList.add('active');
-    if (recaptchaVerifier) {
+  /* ── Back to step 1 ── */
+  function backToStep1(){
+    showStep(1);
+    if (recaptchaVerifier){
       recaptchaVerifier.clear();
       recaptchaVerifier = null;
     }
     document.getElementById('recaptcha-container').innerHTML = '';
     document.getElementById('otp-section').style.display = 'none';
+    confirmationResult = null;
     showErr('phone-err', '');
     showErr('otp-err', '');
-  };
-
-  /* ââ reCAPTCHA ââ */
-  function initRecaptcha() {
-    if (recaptchaVerifier) return;
-    recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      size: 'normal',
-      'expired-callback': () => {
-        showErr('phone-err', 'reCAPTCHA expired. Please try again.');
-      }
-    });
-    recaptchaVerifier.render();
   }
 
-  function getFullPhone() {
-    const local = document.getElementById('su-phone').value.trim();
-    const stripped = local.startsWith('0') ? local.slice(1) : local;
-    return window.selectedCountry.code + stripped;
-  }
-  
-
-  /* ââ Send OTP ââ */
-  const sendOTP = async () => {
+  /* ── Send OTP ── */
+  async function sendOTP(){
     const fullPhone = getFullPhone();
     showErr('phone-err', '');
-    if (!document.getElementById('su-phone').value.trim()) {
+
+    if (!document.getElementById('su-phone').value.trim()){
       showErr('phone-err', 'Please enter your phone number.');
       return;
     }
 
     const btn = document.getElementById('send-otp-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner spinner"></i> Sending...';
+    setLoading('send-otp-btn', true, 'Checking...', '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code');
 
     try {
-      /* Check if phone already used */
+      /* ── BLOCK: check if phone already registered (using fullPhone with country code) ── */
       const phoneQuery = query(
-  collection(db, 'users'),
-  where('phone', '==', fullPhone)
-);
-const existing = await getDocs(phoneQuery);
+        collection(db, 'users'),
+        where('phone', '==', fullPhone)
+      );
+      const existing = await getDocs(phoneQuery);
 
-if (!existing.empty) {
-  showErr('phone-err', 'This phone number is already registered. Please sign in instead.');
-  btn.disabled = false;
-  btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
-  return;
-}
+      if (!existing.empty){
+        showErr('phone-err', 'This phone number is already registered. Please sign in instead.');
+        setLoading('send-otp-btn', false, '', '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code');
+        return;
       }
 
-      const { signInWithPhoneNumber } = await import(
-        "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
-      );
+      /* ── Phone not taken — send OTP ── */
+      if (!recaptchaVerifier) initRecaptcha();
       confirmationResult = await signInWithPhoneNumber(auth, fullPhone, recaptchaVerifier);
 
       document.getElementById('otp-section').style.display = 'block';
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> Code Sent';
+      setLoading('send-otp-btn', false, '', '<i class="fa-solid fa-check"></i> Code Sent');
+      showToast('Code sent to ' + fullPhone);
 
-    } catch (e) {
+    } catch(e){
       console.error('OTP error:', e);
       const msg =
         e.code === 'auth/invalid-phone-number' ? 'Invalid phone number format.' :
@@ -508,106 +691,102 @@ if (!existing.empty) {
         e.code === 'auth/quota-exceeded'       ? 'SMS quota exceeded. Try again later.' :
         'Failed to send code: ' + e.message;
       showErr('phone-err', msg);
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
-      if (recaptchaVerifier) {
+      setLoading('send-otp-btn', false, '', '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code');
+      if (recaptchaVerifier){
         recaptchaVerifier.clear();
         recaptchaVerifier = null;
         document.getElementById('recaptcha-container').innerHTML = '';
         initRecaptcha();
       }
     }
-  };
-
-  /* ââ Complete Sign Up ââ */
-const doSignUp = async () => {
-  const otp   = document.getElementById('su-otp').value.trim();
-  const email = document.getElementById('su-email').value.trim();
-  const pass  = document.getElementById('su-pass').value;
-  const phone = getFullPhone();
-  showErr('otp-err', '');
-
-  if (!otp || otp.length !== 6) {
-    showErr('otp-err', 'Enter the 6-digit code sent to your phone.');
-    return;
-  }
-  if (!confirmationResult) {
-    showErr('otp-err', 'Please request a verification code first.');
-    return;
   }
 
-  setLoading('su-btn', true, 'Verifying...', '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+  /* ── Complete sign up ── */
+  async function doSignUp(){
+    const otp   = document.getElementById('su-otp').value.trim();
+    const email = document.getElementById('su-email').value.trim();
+    const pass  = document.getElementById('su-pass').value;
+    const fullPhone = getFullPhone();
+    showErr('otp-err', '');
 
-  try {
-    // Actually verify the OTP  this signs in with phone number
-    const phoneUserCredential = await confirmationResult.confirm(otp);
-    const phoneUser = phoneUserCredential.user;
-
-    // Link email/password to the phone-verified account
-    const { EmailAuthProvider, linkWithCredential } = await import(
-      "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
-    );
-    const emailCred = EmailAuthProvider.credential(email, pass);
-
-    let finalUser;
-    try {
-      const linked = await linkWithCredential(phoneUser, emailCred);
-      finalUser = linked.user;
-    } catch (linkErr) {
-      if (linkErr.code === 'auth/email-already-in-use') {
-        throw linkErr;
-      }
-      // If linking fails for other reasons, fall back
-      finalUser = phoneUser;
+    if (!otp || otp.length !== 6){
+      showErr('otp-err', 'Enter the 6-digit code sent to your phone.');
+      return;
+    }
+    if (!confirmationResult){
+      showErr('otp-err', 'Please request a verification code first.');
+      return;
     }
 
-    const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    setLoading('su-btn', true, 'Verifying...', '<i class="fa-solid fa-rocket"></i> Create Account');
 
-    await setDoc(doc(db, 'users', finalUser.uid), {
-      email,
-      phone,
-      createdAt:             serverTimestamp(),
-      trialEndsAt,
-      subscriptionStatus:    'trial',
-      flutterwaveTxRef:      null,
-      flutterwaveTxId:       null,
-      currentPeriodEnd:      null,
-      manualAccess:          false,
-      manualAccessNote:      '',
-      manualAccessExpiresAt: null,
-      lastPaymentAt:         null,
-      lastPaymentAmount:     null,
-    });
+    try {
+      /* ── Actually verify OTP — signs in with phone number ── */
+      const phoneCredential = await confirmationResult.confirm(otp);
+      const phoneUser = phoneCredential.user;
 
-    window.location.href = 'predict.html';
+      /* ── Link email/password to the phone-verified account ── */
+      const emailCred = EmailAuthProvider.credential(email, pass);
+      let finalUser;
+      try {
+        const linked = await linkWithCredential(phoneUser, emailCred);
+        finalUser = linked.user;
+      } catch(linkErr){
+        if (linkErr.code === 'auth/email-already-in-use'){
+          throw linkErr;
+        }
+        finalUser = phoneUser;
+      }
 
-  } catch (e) {
-    console.error('Signup error:', e);
-    const msg =
-      e.code === 'auth/invalid-verification-code' ? 'Incorrect code. Try again.' :
-      e.code === 'auth/code-expired'              ? 'Code expired. Request a new one.' :
-      e.code === 'auth/email-already-in-use'      ? 'An account with this email already exists.' :
-      e.code === 'auth/account-exists-with-different-credential' ? 'This phone number is already linked to an account.' :
-      'Sign up failed: ' + e.message;
-    showErr('otp-err', msg);
-    setLoading('su-btn', false, '', '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+      /* ── Save to Firestore — store fullPhone with country code ── */
+      const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+      await setDoc(doc(db, 'users', finalUser.uid), {
+        email,
+        phone: fullPhone,          /* always stored with country code e.g. +2348012345678 */
+        createdAt:             serverTimestamp(),
+        trialEndsAt,
+        subscriptionStatus:    'trial',
+        flutterwaveTxRef:      null,
+        flutterwaveTxId:       null,
+        currentPeriodEnd:      null,
+        manualAccess:          false,
+        manualAccessNote:      '',
+        manualAccessExpiresAt: null,
+        lastPaymentAt:         null,
+        lastPaymentAmount:     null,
+      });
+
+      window.location.href = 'predict.html';
+
+    } catch(e){
+      console.error('Signup error:', e);
+      const msg =
+        e.code === 'auth/invalid-verification-code'              ? 'Incorrect code. Try again.' :
+        e.code === 'auth/code-expired'                           ? 'Code expired. Request a new one.' :
+        e.code === 'auth/email-already-in-use'                   ? 'An account with this email already exists.' :
+        e.code === 'auth/account-exists-with-different-credential' ? 'This phone number is already linked to an account.' :
+        'Sign up failed: ' + e.message;
+      showErr('otp-err', msg);
+      setLoading('su-btn', false, '', '<i class="fa-solid fa-rocket"></i> Create Account');
+    }
   }
-};
 
-  /* ââ Helpers ââ */
-  function setLoading(btnId, loading, loadText, origHTML) {
-    const btn = document.getElementById(btnId);
-    btn.disabled  = loading;
-    btn.innerHTML = loading
-      ? `<i class="fa-solid fa-spinner spinner"></i> ${loadText}`
-      : origHTML;
-  }
+  /* ── Wire up all buttons via addEventListener (no inline onclick) ── */
+  document.getElementById('su-next-btn').addEventListener('click', goToPhoneStep);
+  document.getElementById('send-otp-btn').addEventListener('click', sendOTP);
+  document.getElementById('su-btn').addEventListener('click', doSignUp);
+  document.getElementById('back-to-step1-btn').addEventListener('click', backToStep1);
+  document.getElementById('resend-otp-btn').addEventListener('click', sendOTP);
 
-  function showErr(id, msg) {
-    const el = document.getElementById(id);
-    el.textContent   = msg;
-    el.style.display = msg ? 'block' : 'none';
-  }
+  /* ── Enter key support ── */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const step1Visible = document.getElementById('signup-step1').style.display !== 'none';
+    const otpVisible   = document.getElementById('otp-section').style.display   !== 'none';
+    if (step1Visible) goToPhoneStep();
+    else if (otpVisible) doSignUp();
+  });
 </script>
 </body>
 </html>
