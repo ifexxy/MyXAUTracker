@@ -479,15 +479,11 @@ renderCountryList(COUNTRIES);
       const existing = await getDocs(phoneQuery);
 
       if (!existing.empty) {
-        const userData = existing.docs[0].data();
-        if (userData.trialEndsAt || userData.subscriptionStatus) {
-          showErr('phone-err',
-            'This phone number has already been used for a free trial. Please sign in or subscribe.');
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
-          return;
-        }
-      }
+  showErr('phone-err', 'This phone number is already registered. Please sign in instead.');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
+  return;
+}
 
       const { signInWithPhoneNumber } = await import(
         "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
@@ -521,7 +517,7 @@ renderCountryList(COUNTRIES);
     const otp   = document.getElementById('su-otp').value.trim();
     const email = document.getElementById('su-email').value.trim();
     const pass  = document.getElementById('su-pass').value;
-    const phone = document.getElementById('su-phone').value.trim();
+    const phone = getFullPhone();
     showErr('otp-err', '');
 
     if (!otp || otp.length !== 6) {
