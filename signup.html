@@ -474,19 +474,17 @@ renderCountryList(COUNTRIES);
     try {
       /* Check if phone already used */
       const phoneQuery = query(
-        collection(db, 'users'),
-        where('phone', '==', fullPhone));
-      const existing = await getDocs(phoneQuery);
+  collection(db, 'users'),
+  where('phone', '==', fullPhone)
+);
+const existing = await getDocs(phoneQuery);
 
-      if (!existing.empty) {
-        const userData = existing.docs[0].data();
-        if (userData.trialEndsAt || userData.subscriptionStatus) {
-          showErr('phone-err',
-            'This phone number has already been used for a free trial. Please sign in or subscribe.');
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
-          return;
-        }
+if (!existing.empty) {
+  showErr('phone-err', 'This phone number is already registered. Please sign in instead.');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Send Verification Code';
+  return;
+}
       }
 
       const { signInWithPhoneNumber } = await import(
@@ -517,73 +515,79 @@ renderCountryList(COUNTRIES);
   };
 
   /* ── Complete Sign Up ── */
-  window.doSignUp = async () => {
-    const otp   = document.getElementById('su-otp').value.trim();
-    const email = document.getElementById('su-email').value.trim();
-    const pass  = document.getElementById('su-pass').value;
-    const phone = document.getElementById('su-phone').value.trim();
-    showErr('otp-err', '');
+window.doSignUp = async () => {
+  const otp   = document.getElementById('su-otp').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const pass  = document.getElementById('su-pass').value;
+  const phone = getFullPhone();
+  showErr('otp-err', '');
 
-    if (!otp || otp.length !== 6) {
-      showErr('otp-err', 'Enter the 6-digit code sent to your phone.');
-      return;
-    }
-    if (!confirmationResult) {
-      showErr('otp-err', 'Please request a verification code first.');
-      return;
-    }
+  if (!otp || otp.length !== 6) {
+    showErr('otp-err', 'Enter the 6-digit code sent to your phone.');
+    return;
+  }
+  if (!confirmationResult) {
+    showErr('otp-err', 'Please request a verification code first.');
+    return;
+  }
 
-    setLoading('su-btn', true, 'Verifying...',
-      '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+  setLoading('su-btn', true, 'Verifying...', '<i class="fa-solid fa-rocket"></i> Start Free Trial');
 
+  try {
+    // Actually verify the OTP � this signs in with phone number
+    const phoneUserCredential = await confirmationResult.confirm(otp);
+    const phoneUser = phoneUserCredential.user;
+
+    // Link email/password to the phone-verified account
+    const { EmailAuthProvider, linkWithCredential } = await import(
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+    );
+    const emailCred = EmailAuthProvider.credential(email, pass);
+
+    let finalUser;
     try {
-      /* Verify OTP — just checks it's valid, we don't sign in with phone */
-      PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
-
-      /* Create email/password account */
-      const { user } = await createUserWithEmailAndPassword(auth, email, pass);
-
-      const trialEndsAt = new Date(
-  Date.now() + 7 * 24 * 60 * 60 * 1000
-).toISOString();
-
-      await setDoc(doc(db, 'users', user.uid), {
-        email,
-        phone,
-        createdAt:             serverTimestamp(),
-        trialEndsAt,
-        subscriptionStatus:    'trial',
-        flutterwaveTxRef:      null,
-        flutterwaveTxId:       null,
-        currentPeriodEnd:      null,
-        manualAccess:          false,
-        manualAccessNote:      '',
-        manualAccessExpiresAt: null,
-        lastPaymentAt:         null,
-        lastPaymentAmount:     null,
-      });
-
-      window.location.href = 'predict.html';
-
-    } catch (e) {
-      console.error('Signup error:', e);
-      const msg =
-        e.code === 'auth/invalid-verification-code' ? 'Incorrect code. Try again.' :
-        e.code === 'auth/code-expired'              ? 'Code expired. Request a new one.' :
-        e.code === 'auth/email-already-in-use'      ? 'An account with this email already exists.' :
-        e.code === 'auth/invalid-email'             ? 'Enter a valid email address.' :
-        'Sign up failed: ' + e.message;
-      showErr('otp-err', msg);
-      setLoading('su-btn', false, '',
-        '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+      const linked = await linkWithCredential(phoneUser, emailCred);
+      finalUser = linked.user;
+    } catch (linkErr) {
+      if (linkErr.code === 'auth/email-already-in-use') {
+        throw linkErr;
+      }
+      // If linking fails for other reasons, fall back
+      finalUser = phoneUser;
     }
-  };
 
-  document.addEventListener('keydown', e => {
-    if (e.key !== 'Enter') return;
-    if (document.getElementById('signup-step1').style.display !== 'none') window.goToPhoneStep();
-    else if (document.getElementById('otp-section').style.display !== 'none') window.doSignUp();
-  });
+    const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    await setDoc(doc(db, 'users', finalUser.uid), {
+      email,
+      phone,
+      createdAt:             serverTimestamp(),
+      trialEndsAt,
+      subscriptionStatus:    'trial',
+      flutterwaveTxRef:      null,
+      flutterwaveTxId:       null,
+      currentPeriodEnd:      null,
+      manualAccess:          false,
+      manualAccessNote:      '',
+      manualAccessExpiresAt: null,
+      lastPaymentAt:         null,
+      lastPaymentAmount:     null,
+    });
+
+    window.location.href = 'predict.html';
+
+  } catch (e) {
+    console.error('Signup error:', e);
+    const msg =
+      e.code === 'auth/invalid-verification-code' ? 'Incorrect code. Try again.' :
+      e.code === 'auth/code-expired'              ? 'Code expired. Request a new one.' :
+      e.code === 'auth/email-already-in-use'      ? 'An account with this email already exists.' :
+      e.code === 'auth/account-exists-with-different-credential' ? 'This phone number is already linked to an account.' :
+      'Sign up failed: ' + e.message;
+    showErr('otp-err', msg);
+    setLoading('su-btn', false, '', '<i class="fa-solid fa-rocket"></i> Start Free Trial');
+  }
+};
 
   /* ── Helpers ── */
   function setLoading(btnId, loading, loadText, origHTML) {
