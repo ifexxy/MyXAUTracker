@@ -44,7 +44,7 @@
 <div id="app">
   <div id="topbar">
     <div class="topbar-left"><button class="menu-btn" onclick="openMenu()" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button><span class="topbar-wordmark">XauTracker</span></div>
-    <div class="topbar-right"><div class="live-chip"><div class="live-dot"></div>LIVE</div><span id="topbar-price">—</span></div>
+    <div class="topbar-right"><div class="live-chip"><div class="live-dot"></div>LIVE</div><span id="topbar-price">â</span></div>
   </div>
   <div id="content">
     <section class="auth-hero">
@@ -66,7 +66,7 @@
         <div class="field-group"><label class="field-label" for="su-pass">Password</label><input class="field-input" type="password" id="su-pass" placeholder="Minimum 6 characters" autocomplete="new-password" /></div>
         <div class="field-group"><label class="field-label" for="su-pass2">Confirm Password</label><input class="field-input" type="password" id="su-pass2" placeholder="Repeat password" autocomplete="new-password" /></div>
         <div class="err-msg" id="su-err"></div>
-        <button class="btn-primary" id="su-next-btn" onclick="goToPhoneStep()"><i class="fa-solid fa-arrow-right"></i> Continue</button>
+        <button class="btn-primary" id="su-next-btn"><i class="fa-solid fa-arrow-right"></i> Continue</button>
         <div class="form-switch">Already have an account? <a href="login.html">Sign in</a></div>
       </div>
 
@@ -75,7 +75,7 @@
           <label class="field-label">Phone Number</label>
           <div class="phone-row">
             <div class="country-select-wrap">
-              <div class="country-trigger" id="country-trigger" onclick="toggleCountryDropdown()"><span class="flag" id="selected-flag">🇳🇬</span><span class="code" id="selected-code">+234</span><span class="arrow">▼</span></div>
+              <div class="country-trigger" id="country-trigger" onclick="toggleCountryDropdown()"><span class="flag" id="selected-flag">ð³ð¬</span><span class="code" id="selected-code">+234</span><span class="arrow">â¼</span></div>
               <div class="country-dropdown" id="country-dropdown"><div class="country-search-wrap"><input class="country-search" type="text" id="country-search" placeholder="Search country..." oninput="filterCountries(this.value)" /></div><div class="country-list" id="country-list"></div></div>
             </div>
             <div class="phone-input-wrap"><input class="field-input" type="tel" id="su-phone" placeholder="8012345678" autocomplete="tel" /></div>
@@ -91,7 +91,7 @@
           <button class="btn-secondary" onclick="sendOTP()"><i class="fa-solid fa-rotate-right"></i> Resend Code</button>
         </div>
         <div class="section-divider"></div>
-        <button class="btn-secondary" onclick="backToStep1()"><i class="fa-solid fa-arrow-left"></i> Back to Step 1</button>
+        <button class="btn-secondary" id="back-to-step1-btn"><i class="fa-solid fa-arrow-left"></i> Back to Step 1</button>
         <div class="form-switch">Already have an account? <a href="login.html">Sign in</a></div>
       </div>
     </div>
@@ -101,7 +101,7 @@
     <footer>
       <div class="footer-links"><a class="footer-link" href="/about">About</a><a class="footer-link" href="/contact">Contact</a><a class="footer-link" href="/disclaimer">Disclaimer</a></div>
       <div class="footer-disc">Trading gold carries significant financial risk. XauTracker predictions and community content are informational only, not financial advice.</div>
-      <div class="footer-copy">© 2026 XauTracker.com &nbsp;·&nbsp; Powered by TwelveData</div>
+      <div class="footer-copy">Â© 2026 XauTracker.com &nbsp;Â·&nbsp; Powered by TwelveData</div>
     </footer>
   </div>
 </div>
@@ -127,175 +127,175 @@
 </script>
 <script>
 const COUNTRIES = [
-  { name: "Nigeria",              code: "+234", flag: "🇳🇬" },
-  { name: "Afghanistan",          code: "+93",  flag: "🇦🇫" },
-  { name: "Albania",              code: "+355", flag: "🇦🇱" },
-  { name: "Algeria",              code: "+213", flag: "🇩🇿" },
-  { name: "Andorra",              code: "+376", flag: "🇦🇩" },
-  { name: "Angola",               code: "+244", flag: "🇦🇴" },
-  { name: "Argentina",            code: "+54",  flag: "🇦🇷" },
-  { name: "Armenia",              code: "+374", flag: "🇦🇲" },
-  { name: "Australia",            code: "+61",  flag: "🇦🇺" },
-  { name: "Austria",              code: "+43",  flag: "🇦🇹" },
-  { name: "Azerbaijan",           code: "+994", flag: "🇦🇿" },
-  { name: "Bahrain",              code: "+973", flag: "🇧🇭" },
-  { name: "Bangladesh",           code: "+880", flag: "🇧🇩" },
-  { name: "Belarus",              code: "+375", flag: "🇧🇾" },
-  { name: "Belgium",              code: "+32",  flag: "🇧🇪" },
-  { name: "Belize",               code: "+501", flag: "🇧🇿" },
-  { name: "Benin",                code: "+229", flag: "🇧🇯" },
-  { name: "Bolivia",              code: "+591", flag: "🇧🇴" },
-  { name: "Bosnia and Herzegovina", code: "+387", flag: "🇧🇦" },
-  { name: "Botswana",             code: "+267", flag: "🇧🇼" },
-  { name: "Brazil",               code: "+55",  flag: "🇧🇷" },
-  { name: "Brunei",               code: "+673", flag: "🇧🇳" },
-  { name: "Bulgaria",             code: "+359", flag: "🇧🇬" },
-  { name: "Burkina Faso",         code: "+226", flag: "🇧🇫" },
-  { name: "Burundi",              code: "+257", flag: "🇧🇮" },
-  { name: "Cambodia",             code: "+855", flag: "🇰🇭" },
-  { name: "Cameroon",             code: "+237", flag: "🇨🇲" },
-  { name: "Canada",               code: "+1",   flag: "🇨🇦" },
-  { name: "Cape Verde",           code: "+238", flag: "🇨🇻" },
-  { name: "Central African Republic", code: "+236", flag: "🇨🇫" },
-  { name: "Chad",                 code: "+235", flag: "🇹🇩" },
-  { name: "Chile",                code: "+56",  flag: "🇨🇱" },
-  { name: "China",                code: "+86",  flag: "🇨🇳" },
-  { name: "Colombia",             code: "+57",  flag: "🇨🇴" },
-  { name: "Comoros",              code: "+269", flag: "🇰🇲" },
-  { name: "Congo (DRC)",          code: "+243", flag: "🇨🇩" },
-  { name: "Congo (Republic)",     code: "+242", flag: "🇨🇬" },
-  { name: "Costa Rica",           code: "+506", flag: "🇨🇷" },
-  { name: "Croatia",              code: "+385", flag: "🇭🇷" },
-  { name: "Cuba",                 code: "+53",  flag: "🇨🇺" },
-  { name: "Cyprus",               code: "+357", flag: "🇨🇾" },
-  { name: "Czech Republic",       code: "+420", flag: "🇨🇿" },
-  { name: "Denmark",              code: "+45",  flag: "🇩🇰" },
-  { name: "Djibouti",             code: "+253", flag: "🇩🇯" },
-  { name: "Dominican Republic",   code: "+1",   flag: "🇩🇴" },
-  { name: "Ecuador",              code: "+593", flag: "🇪🇨" },
-  { name: "Egypt",                code: "+20",  flag: "🇪🇬" },
-  { name: "El Salvador",          code: "+503", flag: "🇸🇻" },
-  { name: "Equatorial Guinea",    code: "+240", flag: "🇬🇶" },
-  { name: "Eritrea",              code: "+291", flag: "🇪🇷" },
-  { name: "Estonia",              code: "+372", flag: "🇪🇪" },
-  { name: "Eswatini",             code: "+268", flag: "🇸🇿" },
-  { name: "Ethiopia",             code: "+251", flag: "🇪🇹" },
-  { name: "Fiji",                 code: "+679", flag: "🇫🇯" },
-  { name: "Finland",              code: "+358", flag: "🇫🇮" },
-  { name: "France",               code: "+33",  flag: "🇫🇷" },
-  { name: "Gabon",                code: "+241", flag: "🇬🇦" },
-  { name: "Gambia",               code: "+220", flag: "🇬🇲" },
-  { name: "Georgia",              code: "+995", flag: "🇬🇪" },
-  { name: "Germany",              code: "+49",  flag: "🇩🇪" },
-  { name: "Ghana",                code: "+233", flag: "🇬🇭" },
-  { name: "Greece",               code: "+30",  flag: "🇬🇷" },
-  { name: "Guatemala",            code: "+502", flag: "🇬🇹" },
-  { name: "Guinea",               code: "+224", flag: "🇬🇳" },
-  { name: "Guinea-Bissau",        code: "+245", flag: "🇬🇼" },
-  { name: "Guyana",               code: "+592", flag: "🇬🇾" },
-  { name: "Haiti",                code: "+509", flag: "🇭🇹" },
-  { name: "Honduras",             code: "+504", flag: "🇭🇳" },
-  { name: "Hungary",              code: "+36",  flag: "🇭🇺" },
-  { name: "Iceland",              code: "+354", flag: "🇮🇸" },
-  { name: "India",                code: "+91",  flag: "🇮🇳" },
-  { name: "Indonesia",            code: "+62",  flag: "🇮🇩" },
-  { name: "Iran",                 code: "+98",  flag: "🇮🇷" },
-  { name: "Iraq",                 code: "+964", flag: "🇮🇶" },
-  { name: "Ireland",              code: "+353", flag: "🇮🇪" },
-  { name: "Israel",               code: "+972", flag: "🇮🇱" },
-  { name: "Italy",                code: "+39",  flag: "🇮🇹" },
-  { name: "Ivory Coast",          code: "+225", flag: "🇨🇮" },
-  { name: "Jamaica",              code: "+1",   flag: "🇯🇲" },
-  { name: "Japan",                code: "+81",  flag: "🇯🇵" },
-  { name: "Jordan",               code: "+962", flag: "🇯🇴" },
-  { name: "Kazakhstan",           code: "+7",   flag: "🇰🇿" },
-  { name: "Kenya",                code: "+254", flag: "🇰🇪" },
-  { name: "Kosovo",               code: "+383", flag: "🇽🇰" },
-  { name: "Kuwait",               code: "+965", flag: "🇰🇼" },
-  { name: "Kyrgyzstan",           code: "+996", flag: "🇰🇬" },
-  { name: "Laos",                 code: "+856", flag: "🇱🇦" },
-  { name: "Latvia",               code: "+371", flag: "🇱🇻" },
-  { name: "Lebanon",              code: "+961", flag: "🇱🇧" },
-  { name: "Lesotho",              code: "+266", flag: "🇱🇸" },
-  { name: "Liberia",              code: "+231", flag: "🇱🇷" },
-  { name: "Libya",                code: "+218", flag: "🇱🇾" },
-  { name: "Lithuania",            code: "+370", flag: "🇱🇹" },
-  { name: "Luxembourg",           code: "+352", flag: "🇱🇺" },
-  { name: "Madagascar",           code: "+261", flag: "🇲🇬" },
-  { name: "Malawi",               code: "+265", flag: "🇲🇼" },
-  { name: "Malaysia",             code: "+60",  flag: "🇲🇾" },
-  { name: "Maldives",             code: "+960", flag: "🇲🇻" },
-  { name: "Mali",                 code: "+223", flag: "🇲🇱" },
-  { name: "Malta",                code: "+356", flag: "🇲🇹" },
-  { name: "Mauritania",           code: "+222", flag: "🇲🇷" },
-  { name: "Mauritius",            code: "+230", flag: "🇲🇺" },
-  { name: "Mexico",               code: "+52",  flag: "🇲🇽" },
-  { name: "Moldova",              code: "+373", flag: "🇲🇩" },
-  { name: "Mongolia",             code: "+976", flag: "🇲🇳" },
-  { name: "Montenegro",           code: "+382", flag: "🇲🇪" },
-  { name: "Morocco",              code: "+212", flag: "🇲🇦" },
-  { name: "Mozambique",           code: "+258", flag: "🇲🇿" },
-  { name: "Myanmar",              code: "+95",  flag: "🇲🇲" },
-  { name: "Namibia",              code: "+264", flag: "🇳🇦" },
-  { name: "Nepal",                code: "+977", flag: "🇳🇵" },
-  { name: "Netherlands",          code: "+31",  flag: "🇳🇱" },
-  { name: "New Zealand",          code: "+64",  flag: "🇳🇿" },
-  { name: "Nicaragua",            code: "+505", flag: "🇳🇮" },
-  { name: "Niger",                code: "+227", flag: "🇳🇪" },
-  { name: "North Korea",          code: "+850", flag: "🇰🇵" },
-  { name: "North Macedonia",      code: "+389", flag: "🇲🇰" },
-  { name: "Norway",               code: "+47",  flag: "🇳🇴" },
-  { name: "Oman",                 code: "+968", flag: "🇴🇲" },
-  { name: "Pakistan",             code: "+92",  flag: "🇵🇰" },
-  { name: "Palestine",            code: "+970", flag: "🇵🇸" },
-  { name: "Panama",               code: "+507", flag: "🇵🇦" },
-  { name: "Papua New Guinea",     code: "+675", flag: "🇵🇬" },
-  { name: "Paraguay",             code: "+595", flag: "🇵🇾" },
-  { name: "Peru",                 code: "+51",  flag: "🇵🇪" },
-  { name: "Philippines",          code: "+63",  flag: "🇵🇭" },
-  { name: "Poland",               code: "+48",  flag: "🇵🇱" },
-  { name: "Portugal",             code: "+351", flag: "🇵🇹" },
-  { name: "Qatar",                code: "+974", flag: "🇶🇦" },
-  { name: "Romania",              code: "+40",  flag: "🇷🇴" },
-  { name: "Russia",               code: "+7",   flag: "🇷🇺" },
-  { name: "Rwanda",               code: "+250", flag: "🇷🇼" },
-  { name: "Saudi Arabia",         code: "+966", flag: "🇸🇦" },
-  { name: "Senegal",              code: "+221", flag: "🇸🇳" },
-  { name: "Serbia",               code: "+381", flag: "🇷🇸" },
-  { name: "Sierra Leone",         code: "+232", flag: "🇸🇱" },
-  { name: "Singapore",            code: "+65",  flag: "🇸🇬" },
-  { name: "Slovakia",             code: "+421", flag: "🇸🇰" },
-  { name: "Slovenia",             code: "+386", flag: "🇸🇮" },
-  { name: "Somalia",              code: "+252", flag: "🇸🇴" },
-  { name: "South Africa",         code: "+27",  flag: "🇿🇦" },
-  { name: "South Korea",          code: "+82",  flag: "🇰🇷" },
-  { name: "South Sudan",          code: "+211", flag: "🇸🇸" },
-  { name: "Spain",                code: "+34",  flag: "🇪🇸" },
-  { name: "Sri Lanka",            code: "+94",  flag: "🇱🇰" },
-  { name: "Sudan",                code: "+249", flag: "🇸🇩" },
-  { name: "Sweden",               code: "+46",  flag: "🇸🇪" },
-  { name: "Switzerland",          code: "+41",  flag: "🇨🇭" },
-  { name: "Syria",                code: "+963", flag: "🇸🇾" },
-  { name: "Taiwan",               code: "+886", flag: "🇹🇼" },
-  { name: "Tajikistan",           code: "+992", flag: "🇹🇯" },
-  { name: "Tanzania",             code: "+255", flag: "🇹🇿" },
-  { name: "Thailand",             code: "+66",  flag: "🇹🇭" },
-  { name: "Togo",                 code: "+228", flag: "🇹🇬" },
-  { name: "Tunisia",              code: "+216", flag: "🇹🇳" },
-  { name: "Turkey",               code: "+90",  flag: "🇹🇷" },
-  { name: "Turkmenistan",         code: "+993", flag: "🇹🇲" },
-  { name: "Uganda",               code: "+256", flag: "🇺🇬" },
-  { name: "Ukraine",              code: "+380", flag: "🇺🇦" },
-  { name: "United Arab Emirates", code: "+971", flag: "🇦🇪" },
-  { name: "United Kingdom",       code: "+44",  flag: "🇬🇧" },
-  { name: "United States",        code: "+1",   flag: "🇺🇸" },
-  { name: "Uruguay",              code: "+598", flag: "🇺🇾" },
-  { name: "Uzbekistan",           code: "+998", flag: "🇺🇿" },
-  { name: "Venezuela",            code: "+58",  flag: "🇻🇪" },
-  { name: "Vietnam",              code: "+84",  flag: "🇻🇳" },
-  { name: "Yemen",                code: "+967", flag: "🇾🇪" },
-  { name: "Zambia",               code: "+260", flag: "🇿🇲" },
-  { name: "Zimbabwe",             code: "+263", flag: "🇿🇼" },
+  { name: "Nigeria",              code: "+234", flag: "ð³ð¬" },
+  { name: "Afghanistan",          code: "+93",  flag: "ð¦ð«" },
+  { name: "Albania",              code: "+355", flag: "ð¦ð±" },
+  { name: "Algeria",              code: "+213", flag: "ð©ð¿" },
+  { name: "Andorra",              code: "+376", flag: "ð¦ð©" },
+  { name: "Angola",               code: "+244", flag: "ð¦ð´" },
+  { name: "Argentina",            code: "+54",  flag: "ð¦ð·" },
+  { name: "Armenia",              code: "+374", flag: "ð¦ð²" },
+  { name: "Australia",            code: "+61",  flag: "ð¦ðº" },
+  { name: "Austria",              code: "+43",  flag: "ð¦ð¹" },
+  { name: "Azerbaijan",           code: "+994", flag: "ð¦ð¿" },
+  { name: "Bahrain",              code: "+973", flag: "ð§ð­" },
+  { name: "Bangladesh",           code: "+880", flag: "ð§ð©" },
+  { name: "Belarus",              code: "+375", flag: "ð§ð¾" },
+  { name: "Belgium",              code: "+32",  flag: "ð§ðª" },
+  { name: "Belize",               code: "+501", flag: "ð§ð¿" },
+  { name: "Benin",                code: "+229", flag: "ð§ð¯" },
+  { name: "Bolivia",              code: "+591", flag: "ð§ð´" },
+  { name: "Bosnia and Herzegovina", code: "+387", flag: "ð§ð¦" },
+  { name: "Botswana",             code: "+267", flag: "ð§ð¼" },
+  { name: "Brazil",               code: "+55",  flag: "ð§ð·" },
+  { name: "Brunei",               code: "+673", flag: "ð§ð³" },
+  { name: "Bulgaria",             code: "+359", flag: "ð§ð¬" },
+  { name: "Burkina Faso",         code: "+226", flag: "ð§ð«" },
+  { name: "Burundi",              code: "+257", flag: "ð§ð®" },
+  { name: "Cambodia",             code: "+855", flag: "ð°ð­" },
+  { name: "Cameroon",             code: "+237", flag: "ð¨ð²" },
+  { name: "Canada",               code: "+1",   flag: "ð¨ð¦" },
+  { name: "Cape Verde",           code: "+238", flag: "ð¨ð»" },
+  { name: "Central African Republic", code: "+236", flag: "ð¨ð«" },
+  { name: "Chad",                 code: "+235", flag: "ð¹ð©" },
+  { name: "Chile",                code: "+56",  flag: "ð¨ð±" },
+  { name: "China",                code: "+86",  flag: "ð¨ð³" },
+  { name: "Colombia",             code: "+57",  flag: "ð¨ð´" },
+  { name: "Comoros",              code: "+269", flag: "ð°ð²" },
+  { name: "Congo (DRC)",          code: "+243", flag: "ð¨ð©" },
+  { name: "Congo (Republic)",     code: "+242", flag: "ð¨ð¬" },
+  { name: "Costa Rica",           code: "+506", flag: "ð¨ð·" },
+  { name: "Croatia",              code: "+385", flag: "ð­ð·" },
+  { name: "Cuba",                 code: "+53",  flag: "ð¨ðº" },
+  { name: "Cyprus",               code: "+357", flag: "ð¨ð¾" },
+  { name: "Czech Republic",       code: "+420", flag: "ð¨ð¿" },
+  { name: "Denmark",              code: "+45",  flag: "ð©ð°" },
+  { name: "Djibouti",             code: "+253", flag: "ð©ð¯" },
+  { name: "Dominican Republic",   code: "+1",   flag: "ð©ð´" },
+  { name: "Ecuador",              code: "+593", flag: "ðªð¨" },
+  { name: "Egypt",                code: "+20",  flag: "ðªð¬" },
+  { name: "El Salvador",          code: "+503", flag: "ð¸ð»" },
+  { name: "Equatorial Guinea",    code: "+240", flag: "ð¬ð¶" },
+  { name: "Eritrea",              code: "+291", flag: "ðªð·" },
+  { name: "Estonia",              code: "+372", flag: "ðªðª" },
+  { name: "Eswatini",             code: "+268", flag: "ð¸ð¿" },
+  { name: "Ethiopia",             code: "+251", flag: "ðªð¹" },
+  { name: "Fiji",                 code: "+679", flag: "ð«ð¯" },
+  { name: "Finland",              code: "+358", flag: "ð«ð®" },
+  { name: "France",               code: "+33",  flag: "ð«ð·" },
+  { name: "Gabon",                code: "+241", flag: "ð¬ð¦" },
+  { name: "Gambia",               code: "+220", flag: "ð¬ð²" },
+  { name: "Georgia",              code: "+995", flag: "ð¬ðª" },
+  { name: "Germany",              code: "+49",  flag: "ð©ðª" },
+  { name: "Ghana",                code: "+233", flag: "ð¬ð­" },
+  { name: "Greece",               code: "+30",  flag: "ð¬ð·" },
+  { name: "Guatemala",            code: "+502", flag: "ð¬ð¹" },
+  { name: "Guinea",               code: "+224", flag: "ð¬ð³" },
+  { name: "Guinea-Bissau",        code: "+245", flag: "ð¬ð¼" },
+  { name: "Guyana",               code: "+592", flag: "ð¬ð¾" },
+  { name: "Haiti",                code: "+509", flag: "ð­ð¹" },
+  { name: "Honduras",             code: "+504", flag: "ð­ð³" },
+  { name: "Hungary",              code: "+36",  flag: "ð­ðº" },
+  { name: "Iceland",              code: "+354", flag: "ð®ð¸" },
+  { name: "India",                code: "+91",  flag: "ð®ð³" },
+  { name: "Indonesia",            code: "+62",  flag: "ð®ð©" },
+  { name: "Iran",                 code: "+98",  flag: "ð®ð·" },
+  { name: "Iraq",                 code: "+964", flag: "ð®ð¶" },
+  { name: "Ireland",              code: "+353", flag: "ð®ðª" },
+  { name: "Israel",               code: "+972", flag: "ð®ð±" },
+  { name: "Italy",                code: "+39",  flag: "ð®ð¹" },
+  { name: "Ivory Coast",          code: "+225", flag: "ð¨ð®" },
+  { name: "Jamaica",              code: "+1",   flag: "ð¯ð²" },
+  { name: "Japan",                code: "+81",  flag: "ð¯ðµ" },
+  { name: "Jordan",               code: "+962", flag: "ð¯ð´" },
+  { name: "Kazakhstan",           code: "+7",   flag: "ð°ð¿" },
+  { name: "Kenya",                code: "+254", flag: "ð°ðª" },
+  { name: "Kosovo",               code: "+383", flag: "ð½ð°" },
+  { name: "Kuwait",               code: "+965", flag: "ð°ð¼" },
+  { name: "Kyrgyzstan",           code: "+996", flag: "ð°ð¬" },
+  { name: "Laos",                 code: "+856", flag: "ð±ð¦" },
+  { name: "Latvia",               code: "+371", flag: "ð±ð»" },
+  { name: "Lebanon",              code: "+961", flag: "ð±ð§" },
+  { name: "Lesotho",              code: "+266", flag: "ð±ð¸" },
+  { name: "Liberia",              code: "+231", flag: "ð±ð·" },
+  { name: "Libya",                code: "+218", flag: "ð±ð¾" },
+  { name: "Lithuania",            code: "+370", flag: "ð±ð¹" },
+  { name: "Luxembourg",           code: "+352", flag: "ð±ðº" },
+  { name: "Madagascar",           code: "+261", flag: "ð²ð¬" },
+  { name: "Malawi",               code: "+265", flag: "ð²ð¼" },
+  { name: "Malaysia",             code: "+60",  flag: "ð²ð¾" },
+  { name: "Maldives",             code: "+960", flag: "ð²ð»" },
+  { name: "Mali",                 code: "+223", flag: "ð²ð±" },
+  { name: "Malta",                code: "+356", flag: "ð²ð¹" },
+  { name: "Mauritania",           code: "+222", flag: "ð²ð·" },
+  { name: "Mauritius",            code: "+230", flag: "ð²ðº" },
+  { name: "Mexico",               code: "+52",  flag: "ð²ð½" },
+  { name: "Moldova",              code: "+373", flag: "ð²ð©" },
+  { name: "Mongolia",             code: "+976", flag: "ð²ð³" },
+  { name: "Montenegro",           code: "+382", flag: "ð²ðª" },
+  { name: "Morocco",              code: "+212", flag: "ð²ð¦" },
+  { name: "Mozambique",           code: "+258", flag: "ð²ð¿" },
+  { name: "Myanmar",              code: "+95",  flag: "ð²ð²" },
+  { name: "Namibia",              code: "+264", flag: "ð³ð¦" },
+  { name: "Nepal",                code: "+977", flag: "ð³ðµ" },
+  { name: "Netherlands",          code: "+31",  flag: "ð³ð±" },
+  { name: "New Zealand",          code: "+64",  flag: "ð³ð¿" },
+  { name: "Nicaragua",            code: "+505", flag: "ð³ð®" },
+  { name: "Niger",                code: "+227", flag: "ð³ðª" },
+  { name: "North Korea",          code: "+850", flag: "ð°ðµ" },
+  { name: "North Macedonia",      code: "+389", flag: "ð²ð°" },
+  { name: "Norway",               code: "+47",  flag: "ð³ð´" },
+  { name: "Oman",                 code: "+968", flag: "ð´ð²" },
+  { name: "Pakistan",             code: "+92",  flag: "ðµð°" },
+  { name: "Palestine",            code: "+970", flag: "ðµð¸" },
+  { name: "Panama",               code: "+507", flag: "ðµð¦" },
+  { name: "Papua New Guinea",     code: "+675", flag: "ðµð¬" },
+  { name: "Paraguay",             code: "+595", flag: "ðµð¾" },
+  { name: "Peru",                 code: "+51",  flag: "ðµðª" },
+  { name: "Philippines",          code: "+63",  flag: "ðµð­" },
+  { name: "Poland",               code: "+48",  flag: "ðµð±" },
+  { name: "Portugal",             code: "+351", flag: "ðµð¹" },
+  { name: "Qatar",                code: "+974", flag: "ð¶ð¦" },
+  { name: "Romania",              code: "+40",  flag: "ð·ð´" },
+  { name: "Russia",               code: "+7",   flag: "ð·ðº" },
+  { name: "Rwanda",               code: "+250", flag: "ð·ð¼" },
+  { name: "Saudi Arabia",         code: "+966", flag: "ð¸ð¦" },
+  { name: "Senegal",              code: "+221", flag: "ð¸ð³" },
+  { name: "Serbia",               code: "+381", flag: "ð·ð¸" },
+  { name: "Sierra Leone",         code: "+232", flag: "ð¸ð±" },
+  { name: "Singapore",            code: "+65",  flag: "ð¸ð¬" },
+  { name: "Slovakia",             code: "+421", flag: "ð¸ð°" },
+  { name: "Slovenia",             code: "+386", flag: "ð¸ð®" },
+  { name: "Somalia",              code: "+252", flag: "ð¸ð´" },
+  { name: "South Africa",         code: "+27",  flag: "ð¿ð¦" },
+  { name: "South Korea",          code: "+82",  flag: "ð°ð·" },
+  { name: "South Sudan",          code: "+211", flag: "ð¸ð¸" },
+  { name: "Spain",                code: "+34",  flag: "ðªð¸" },
+  { name: "Sri Lanka",            code: "+94",  flag: "ð±ð°" },
+  { name: "Sudan",                code: "+249", flag: "ð¸ð©" },
+  { name: "Sweden",               code: "+46",  flag: "ð¸ðª" },
+  { name: "Switzerland",          code: "+41",  flag: "ð¨ð­" },
+  { name: "Syria",                code: "+963", flag: "ð¸ð¾" },
+  { name: "Taiwan",               code: "+886", flag: "ð¹ð¼" },
+  { name: "Tajikistan",           code: "+992", flag: "ð¹ð¯" },
+  { name: "Tanzania",             code: "+255", flag: "ð¹ð¿" },
+  { name: "Thailand",             code: "+66",  flag: "ð¹ð­" },
+  { name: "Togo",                 code: "+228", flag: "ð¹ð¬" },
+  { name: "Tunisia",              code: "+216", flag: "ð¹ð³" },
+  { name: "Turkey",               code: "+90",  flag: "ð¹ð·" },
+  { name: "Turkmenistan",         code: "+993", flag: "ð¹ð²" },
+  { name: "Uganda",               code: "+256", flag: "ðºð¬" },
+  { name: "Ukraine",              code: "+380", flag: "ðºð¦" },
+  { name: "United Arab Emirates", code: "+971", flag: "ð¦ðª" },
+  { name: "United Kingdom",       code: "+44",  flag: "ð¬ð§" },
+  { name: "United States",        code: "+1",   flag: "ðºð¸" },
+  { name: "Uruguay",              code: "+598", flag: "ðºð¾" },
+  { name: "Uzbekistan",           code: "+998", flag: "ðºð¿" },
+  { name: "Venezuela",            code: "+58",  flag: "ð»ðª" },
+  { name: "Vietnam",              code: "+84",  flag: "ð»ð³" },
+  { name: "Yemen",                code: "+967", flag: "ð¾ðª" },
+  { name: "Zambia",               code: "+260", flag: "ð¿ð²" },
+  { name: "Zimbabwe",             code: "+263", flag: "ð¿ð¼" },
 ];
 
 let selectedCountry = COUNTRIES[0];
@@ -382,7 +382,12 @@ renderCountryList(COUNTRIES);
   let confirmationResult = null;
   let recaptchaVerifier  = null;
 
-  /* ── Already logged in — redirect ── */
+  document.getElementById('su-next-btn').addEventListener('click', goToPhoneStep);
+document.getElementById('send-otp-btn').addEventListener('click', sendOTP);
+document.getElementById('su-btn').addEventListener('click', doSignUp);
+  document.getElementById('back-to-step1-btn').addEventListener('click', backToStep1);
+
+  /* ââ Already logged in â redirect ââ */
   onAuthStateChanged(auth, async user => {
     if (!user) return;
     try {
@@ -400,8 +405,8 @@ renderCountryList(COUNTRIES);
     } catch { window.location.href = 'predict.html'; }
   });
 
-  /* ── Step 1 validation ── */
-  window.goToPhoneStep = () => {
+  /* ââ Step 1 validation ââ */
+  const goToPhoneStep = () => {
     const email = document.getElementById('su-email').value.trim();
     const pass  = document.getElementById('su-pass').value;
     const pass2 = document.getElementById('su-pass2').value;
@@ -421,7 +426,7 @@ renderCountryList(COUNTRIES);
     initRecaptcha();
   };
 
-  window.backToStep1 = () => {
+  const backToStep1 = () => {
     document.getElementById('signup-step2').style.display = 'none';
     document.getElementById('signup-step1').style.display = 'block';
     document.getElementById('dot-2').classList.remove('active');
@@ -439,7 +444,7 @@ renderCountryList(COUNTRIES);
     showErr('otp-err', '');
   };
 
-  /* ── reCAPTCHA ── */
+  /* ââ reCAPTCHA ââ */
   function initRecaptcha() {
     if (recaptchaVerifier) return;
     recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
@@ -458,8 +463,8 @@ renderCountryList(COUNTRIES);
   }
   
 
-  /* ── Send OTP ── */
-  window.sendOTP = async () => {
+  /* ââ Send OTP ââ */
+  const sendOTP = async () => {
     const fullPhone = getFullPhone();
     showErr('phone-err', '');
     if (!document.getElementById('su-phone').value.trim()) {
@@ -514,8 +519,8 @@ if (!existing.empty) {
     }
   };
 
-  /* ── Complete Sign Up ── */
-window.doSignUp = async () => {
+  /* ââ Complete Sign Up ââ */
+const doSignUp = async () => {
   const otp   = document.getElementById('su-otp').value.trim();
   const email = document.getElementById('su-email').value.trim();
   const pass  = document.getElementById('su-pass').value;
@@ -534,7 +539,7 @@ window.doSignUp = async () => {
   setLoading('su-btn', true, 'Verifying...', '<i class="fa-solid fa-rocket"></i> Start Free Trial');
 
   try {
-    // Actually verify the OTP � this signs in with phone number
+    // Actually verify the OTP  this signs in with phone number
     const phoneUserCredential = await confirmationResult.confirm(otp);
     const phoneUser = phoneUserCredential.user;
 
@@ -589,7 +594,7 @@ window.doSignUp = async () => {
   }
 };
 
-  /* ── Helpers ── */
+  /* ââ Helpers ââ */
   function setLoading(btnId, loading, loadText, origHTML) {
     const btn = document.getElementById(btnId);
     btn.disabled  = loading;
