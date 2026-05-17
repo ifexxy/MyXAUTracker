@@ -703,52 +703,47 @@
 
   /* ── Complete sign up ── */
   async function doSignUp(){
-    const otp   = document.getElementById('su-otp').value.trim();
-    const email = document.getElementById('su-email').value.trim();
-    const pass  = document.getElementById('su-pass').value;
-    const fullPhone = getFullPhone();
-    showErr('otp-err', '');
+  const otp   = document.getElementById('su-otp').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const pass  = document.getElementById('su-pass').value;
+  const fullPhone = getFullPhone();
+  showErr('otp-err', '');
 
-    if (!otp || otp.length !== 6){
-      showErr('otp-err', 'Enter the 6-digit code sent to your phone.');
-      return;
-    }
-    if (!confirmationResult){
-      showErr('otp-err', 'Please request a verification code first.');
-      return;
+  if (!otp || otp.length !== 6){
+    showErr('otp-err', 'Enter the 6-digit code sent to your phone.');
+    return;
+  }
+  if (!confirmationResult){
+    showErr('otp-err', 'Please request a verification code first.');
+    return;
+  }
+
+  setLoading('su-btn', true, 'Verifying...', '<i class="fa-solid fa-rocket"></i> Create Account');
+
+  try {
+    const phoneCredential = await confirmationResult.confirm(otp);
+    const phoneUser = phoneCredential.user;
+
+    const emailCred = EmailAuthProvider.credential(email, pass);
+    let finalUser;
+    try {
+      const linked = await linkWithCredential(phoneUser, emailCred);
+      finalUser = linked.user;
+      console.log('finalUser UID:', finalUser.uid);
+      console.log('finalUser email:', finalUser.email);
+      console.log('finalUser phone:', finalUser.phoneNumber);
+      console.log('finalUser providers:', finalUser.providerData);
+    } catch(linkErr){
+      if (linkErr.code === 'auth/email-already-in-use') throw linkErr;
+      finalUser = phoneUser;
     }
 
-    setLoading('su-btn', true, 'Verifying...', '<i class="fa-solid fa-rocket"></i> Create Account');
+    const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
     try {
-      /* ── Actually verify OTP — signs in with phone number ── */
-      const phoneCredential = await confirmationResult.confirm(otp);
-      const phoneUser = phoneCredential.user;
-
-      /* ── Link email/password to the phone-verified account ── */
-      const emailCred = EmailAuthProvider.credential(email, pass);
-      let finalUser;
-      try {
-        const linked = await linkWithCredential(phoneUser, emailCred);
-        finalUser = linked.user;
-        // Add these lines temporarily
-console.log('finalUser UID:', finalUser.uid);
-console.log('finalUser email:', finalUser.email);
-console.log('finalUser phone:', finalUser.phoneNumber);
-console.log('finalUser providers:', finalUser.providerData);
-      } catch(linkErr){
-        if (linkErr.code === 'auth/email-already-in-use'){
-          throw linkErr;
-        }
-        finalUser = phoneUser;
-      }
-
-      /* ── Save to Firestore — store fullPhone with country code ── */
-      const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-
       await setDoc(doc(db, 'users', finalUser.uid), {
         email,
-        phone: fullPhone,          /* always stored with country code e.g. +2348012345678 */
+        phone: fullPhone,
         createdAt:             serverTimestamp(),
         trialEndsAt,
         subscriptionStatus:    'trial',
@@ -761,25 +756,25 @@ console.log('finalUser providers:', finalUser.providerData);
         lastPaymentAt:         null,
         lastPaymentAmount:     null,
       });
-
-      window.location.href = 'predict.html';
-
-    } catch(e){
       console.log('Firestore doc written successfully');
-} catch(firestoreErr){
-  console.error('FIRESTORE WRITE FAILED:', firestoreErr.code, firestoreErr.message);
-}
-      console.error('Signup error:', e);
-      const msg =
-        e.code === 'auth/invalid-verification-code'              ? 'Incorrect code. Try again.' :
-        e.code === 'auth/code-expired'                           ? 'Code expired. Request a new one.' :
-        e.code === 'auth/email-already-in-use'                   ? 'An account with this email already exists.' :
-        e.code === 'auth/account-exists-with-different-credential' ? 'This phone number is already linked to an account.' :
-        'Sign up failed: ' + e.message;
-      showErr('otp-err', msg);
-      setLoading('su-btn', false, '', '<i class="fa-solid fa-rocket"></i> Create Account');
+    } catch(firestoreErr){
+      console.error('FIRESTORE WRITE FAILED:', firestoreErr.code, firestoreErr.message);
     }
+
+    window.location.href = 'predict.html';
+
+  } catch(e){
+    console.error('Signup error:', e);
+    const msg =
+      e.code === 'auth/invalid-verification-code'                ? 'Incorrect code. Try again.' :
+      e.code === 'auth/code-expired'                             ? 'Code expired. Request a new one.' :
+      e.code === 'auth/email-already-in-use'                     ? 'An account with this email already exists.' :
+      e.code === 'auth/account-exists-with-different-credential' ? 'This phone number is already linked to an account.' :
+      'Sign up failed: ' + e.message;
+    showErr('otp-err', msg);
+    setLoading('su-btn', false, '', '<i class="fa-solid fa-rocket"></i> Create Account');
   }
+}
 
   /* ── Wire up all buttons via addEventListener (no inline onclick) ── */
   document.getElementById('su-next-btn').addEventListener('click', goToPhoneStep);
