@@ -44,7 +44,7 @@
 <div id="app">
   <div id="topbar">
     <div class="topbar-left"><button class="menu-btn" onclick="openMenu()" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button><span class="topbar-wordmark">XauTracker</span></div>
-    <div class="topbar-right"><div class="live-chip"><div class="live-dot"></div>LIVE</div><span id="topbar-price">—</span></div>
+    <div class="topbar-right"><div class="live-chip"><div class="live-dot"></div>LIVE</div></div>
   </div>
   <div id="content">
     <section class="auth-hero">
@@ -83,7 +83,7 @@
   </div>
 </div>
 <div id="toast"></div>
-<script src="js/api.js"></script>
+
 <script>
   function fmtP(v){ return v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function renderPrice(d){ document.getElementById('topbar-price').textContent = '$' + fmtP(d.price); }
@@ -100,7 +100,7 @@
   function toggleTheme(){ const cur=document.documentElement.getAttribute('data-theme') || 'light'; applyTheme(cur === 'dark' ? 'light' : 'dark'); }
   document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMenu(); });
   applyTheme(localStorage.getItem('xau-theme') || 'light');
-  loadPrice(renderPrice); setInterval(() => loadPrice(renderPrice), 10000);
+ 
 </script>
 <script type="module">
   import { initializeApp }
