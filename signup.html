@@ -356,8 +356,8 @@ document.addEventListener('click', function(e) {
 renderCountryList(COUNTRIES);
 </script>
 <script type="module">
-  import { fbConfig } from './js/firebase-config.js';
-  import { initializeApp }
+  import { fbConfig } from '/js/firebase-config.js';
+  import { initializeApp, getApps }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth, createUserWithEmailAndPassword,
@@ -369,7 +369,7 @@ renderCountryList(COUNTRIES);
 
 
 
-  const app  = initializeApp(firebaseConfig);
+  const app = getApps().length ? getApps()[0] : initializeApp(fbConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
