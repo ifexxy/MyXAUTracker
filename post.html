@@ -78,8 +78,8 @@
   loadPrice(renderPrice); setInterval(() => loadPrice(renderPrice), 10000);
 </script>
 <script type="module">
-  import { fbConfig } from './js/firebase-config.js';
-  import { initializeApp }
+  import { fbConfig } from '/js/firebase-config.js';
+  import { initializeApp, getApps }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, doc, getDoc }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
