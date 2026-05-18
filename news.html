@@ -115,12 +115,12 @@
 </script>
 <script type="module">
   import { fbConfig } from '/js/firebase-config.js';
-  import { initializeApp, getApps }
+  import { initializeApp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, collection, getDocs, orderBy, query, where }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const app = getApps().length ? getApps()[0] : initializeApp(fbConfig, 'news-page');
+  const fbApp = initializeApp(firebaseConfig, 'news-page');
   const db    = getFirestore(fbApp);
 
   /* ════════════════════════════════════════
