@@ -41,7 +41,7 @@
 <div id="app" class="">
   <div id="topbar">
     <div class="topbar-left"><button class="menu-btn" onclick="openMenu()" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button><span class="topbar-wordmark">XauTracker</span></div>
-    <div class="topbar-right"><div class="live-chip"><div class="live-dot"></div>LIVE</div><span id="topbar-price">—</span></div>
+    <div class="topbar-right"><div class="live-chip"><div class="live-dot"></div>LIVE</div></div>
   </div>
   <div id="content">
     <section class="hero">
@@ -62,7 +62,7 @@
   </div>
 </div>
 <div id="toast"></div>
-<script src="js/api.js"></script>
+
 <script>
   function fmtP(v){ return Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function renderPrice(d){ const el=document.getElementById('topbar-price'); if(el&&d&&d.price) el.textContent='$'+fmtP(d.price); }
@@ -75,7 +75,7 @@
   function showToast(msg){ const t=document.getElementById('toast'); if(!t) return; t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
   applyTheme(localStorage.getItem('xau-theme')||'light');
-  loadPrice(renderPrice); setInterval(() => loadPrice(renderPrice), 10000);
+
 </script>
 
 </body>
