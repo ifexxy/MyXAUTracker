@@ -1033,7 +1033,7 @@ function updatePageTitle(price, ch) {
 </script>
 <script type="module">
   import { fbConfig } from '/js/firebase-config.js';
-  import { initializeApp }
+  import { initializeApp, getApps }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1042,7 +1042,7 @@ function updatePageTitle(price, ch) {
 
   
 
-  const app  = initializeApp(firebaseConfig);
+  const app = getApps().length ? getApps()[0] : initializeApp(fbConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
