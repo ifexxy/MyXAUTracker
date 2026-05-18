@@ -356,6 +356,7 @@ document.addEventListener('click', function(e) {
 renderCountryList(COUNTRIES);
 </script>
 <script type="module">
+  import { fbConfig } from './js/firebase-config.js';
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
@@ -366,14 +367,7 @@ renderCountryList(COUNTRIES);
            getDocs, collection, query, where, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
-    authDomain: "xautracker.firebaseapp.com",
-    projectId: "xautracker",
-    storageBucket: "xautracker.firebasestorage.app",
-    messagingSenderId: "831752609455",
-    appId: "1:831752609455:web:ea9be478691744afa73e5a"
-  };
+
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
