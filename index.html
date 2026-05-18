@@ -879,47 +879,14 @@
     </div>
     <div class="topbar-right">
       <div class="live-chip"><div class="live-dot"></div>LIVE</div>
-      <span id="topbar-price">—</span>
+      
     </div>
   </div>
 
   <div id="content">
 
     <!-- Hero -->
-    <section class="hero">
-      <div class="hero-pair">XAU / USD &nbsp;·&nbsp; Spot Gold &nbsp;·&nbsp; Troy Oz</div>
-      <div class="hero-price"><span class="sym">$</span><span id="hero-price">——</span></div>
-      <div class="hero-change" id="hero-change">— —</div>
-      <div class="hero-updated" id="hero-updated">Fetching price...</div>
-
-      <div class="stat-row">
-        <div class="stat-cell">
-          <div class="stat-lbl">High</div>
-          <div class="stat-v up" id="hero-high">—</div>
-        </div>
-        <div class="stat-cell" style="padding-left:12px;">
-          <div class="stat-lbl">Low</div>
-          <div class="stat-v down" id="hero-low">—</div>
-        </div>
-        <div class="stat-cell" style="padding-left:12px;">
-          <div class="stat-lbl">Open</div>
-          <div class="stat-v gold" id="hero-open">—</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Bid / Ask -->
-    <div class="bidask">
-      <div class="ba-cell">
-        <div class="ba-lbl">Bid</div>
-        <div class="ba-val bid" id="stat-bid">—</div>
-      </div>
-      <div class="ba-cell">
-        <div class="ba-lbl">Ask</div>
-        <div class="ba-val ask" id="stat-ask">—</div>
-      </div>
-    </div>
-
+   
     <!-- Feature cards -->
     <div class="features">
       <div class="feat">
@@ -1014,7 +981,7 @@
 
 <div id="toast"></div>
 
-<script src="js/api.js"></script>
+
 
 <script>
   /* ── Format ── */
@@ -1022,30 +989,7 @@
     return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  /* ── Render price ── */
-  function renderPrice(d, isDemo) {
-    const isUp = d.ch >= 0;
-    const sym  = isUp ? '+' : '';
-
-    document.getElementById('topbar-price').textContent = '$' + fmtP(d.price);
-    document.getElementById('hero-price').textContent   = fmtP(d.price);
-
-    const chgEl = document.getElementById('hero-change');
-    chgEl.textContent = `${sym}${d.ch.toFixed(2)}  (${sym}${d.chp.toFixed(2)}%)`;
-    chgEl.className   = 'hero-change ' + (isUp ? 'up' : 'down');
-
-    document.getElementById('hero-updated').textContent =
-      (isDemo ? '⚠ Demo · ' : '') +
-      'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-    document.getElementById('hero-high').textContent = '$' + fmtP(d.high);
-    document.getElementById('hero-low').textContent  = '$' + fmtP(d.low);
-    document.getElementById('hero-open').textContent = '$' + fmtP(d.open);
-    document.getElementById('stat-bid').textContent  = '$' + fmtP(d.bid);
-    document.getElementById('stat-ask').textContent  = '$' + fmtP(d.ask);
-
-    if (isDemo) showToast('Demo mode — reload for live price');
-  }
+  
 
   /* ── Toast ── */
   function showToast(msg) {
@@ -1087,8 +1031,7 @@
   applyTheme(localStorage.getItem('xau-theme') || 'light');
 
   /* ── Init ── */
-  loadPrice(renderPrice);
-  setInterval(() => loadPrice(renderPrice), 10000);
+ 
 </script>
 
 <!-- Firebase auth-aware CTA -->
