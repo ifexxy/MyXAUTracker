@@ -259,7 +259,9 @@
         <div class="tl-group-label">Current Price</div>
         <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot now"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label"><i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px;color:var(--green)"></i>Live · Right Now</div><div class="tl-price" id="pred-now">—</div><div class="tl-range" id="pred-now-time"></div></div><div class="tl-badge badge-live">LIVE</div></div>
         <div class="tl-group-label">Trade Entry Signals · Signal-Based</div>
-        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label">1-Hour Trade · Entry Signal</div><div class="tl-price" id="entry-1h-signal">—</div><div class="tl-sub" id="entry-1h-dir"></div><div class="tl-range" id="entry-1h-reason"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill high" id="conf-entry-1h" style="width:0%"></div></div><span class="conf-label" id="conf-entry-1h-lbl">—</span></div></div><div class="tl-badge" id="entry-1h-badge">—</div></div>
+        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label">10-Min Trade · Entry Signal</div><div class="tl-price" id="entry-10m-signal">—</div><div class="tl-sub" id="entry-10m-dir"></div><div class="tl-range" id="entry-10m-reason"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill high" id="conf-entry-10m" style="width:0%"></div></div><span class="conf-label" id="conf-entry-10m-lbl">—</span></div></div><div class="tl-badge" id="entry-10m-badge">—</div></div>
+        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label">1-Hour Trade · Entry Signal</div>
+          <div class="tl-price" id="entry-1h-signal">—</div><div class="tl-sub" id="entry-1h-dir"></div><div class="tl-range" id="entry-1h-reason"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill high" id="conf-entry-1h" style="width:0%"></div></div><span class="conf-label" id="conf-entry-1h-lbl">—</span></div></div><div class="tl-badge" id="entry-1h-badge">—</div></div>
         <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label">4-Hour Trade · Entry Signal</div><div class="tl-price" id="entry-4h-signal">—</div><div class="tl-sub" id="entry-4h-dir"></div><div class="tl-range" id="entry-4h-reason"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill medium" id="conf-entry-4h" style="width:0%"></div></div><span class="conf-label" id="conf-entry-4h-lbl">—</span></div></div><div class="tl-badge" id="entry-4h-badge">—</div></div>
         <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div></div><div class="tl-body"><div class="tl-label">24-Hour Trade · Entry Signal</div><div class="tl-price" id="entry-24h-signal">—</div><div class="tl-sub" id="entry-24h-dir"></div><div class="tl-range" id="entry-24h-reason"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill low" id="conf-entry-24h" style="width:0%"></div></div><span class="conf-label" id="conf-entry-24h-lbl">—</span></div></div><div class="tl-badge" id="entry-24h-badge">—</div></div>
         <div class="tl-group-label">Medium-Term · Session Moves</div>
@@ -669,7 +671,54 @@ function computeEntrySignals(price, chp, high, low, atr, sess) {
     badge24h = { cls: 'badge-flat', txt: 'SKIP' };
   }
 
+  let sig10m, dir10m, reason10m, conf10m, badge10m;
+
+if (poorSession) {
+  sig10m   = 'WAIT';
+  dir10m   = 'Low liquidity — avoid 10m entries';
+  reason10m = `Asian/off-hours session. Poor conditions for short entries. ATR: $${atr.toFixed(2)}`;
+  conf10m  = 35;
+  badge10m = { cls: 'badge-flat', txt: 'WAIT' };
+} else if (momStrong && isUp && !overbought) {
+  sig10m   = 'ENTER LONG';
+  dir10m   = `Bullish · +${absMom.toFixed(2)}% momentum`;
+  reason10m = `Strong momentum, not overbought (RSI≈${pseudoRSI.toFixed(0)}). Quick 10m long scalp setup.`;
+  conf10m  = highVol ? 65 : 74;
+  badge10m = { cls: 'badge-bull', txt: 'LONG' };
+} else if (momStrong && !isUp && !oversold) {
+  sig10m   = 'ENTER SHORT';
+  dir10m   = `Bearish · ${chp.toFixed(2)}% momentum`;
+  reason10m = `Strong downward momentum, not oversold (RSI≈${pseudoRSI.toFixed(0)}). Quick 10m short scalp setup.`;
+  conf10m  = highVol ? 65 : 74;
+  badge10m = { cls: 'badge-bear', txt: 'SHORT' };
+} else if (overbought && isUp) {
+  sig10m   = 'CAUTION';
+  dir10m   = 'Overbought — scalp risk is high';
+  reason10m = `Price at day high range (RSI≈${pseudoRSI.toFixed(0)}). 10m longs risk a sharp reversal.`;
+  conf10m  = 45;
+  badge10m = { cls: 'badge-flat', txt: 'WAIT' };
+} else if (oversold && !isUp) {
+  sig10m   = 'CAUTION';
+  dir10m   = 'Oversold — scalp risk is high';
+  reason10m = `Price at day low range (RSI≈${pseudoRSI.toFixed(0)}). 10m shorts risk a snap-back.`;
+  conf10m  = 45;
+  badge10m = { cls: 'badge-flat', txt: 'WAIT' };
+} else if (momModerate && neutral) {
+  sig10m   = isUp ? 'ENTER LONG' : 'ENTER SHORT';
+  dir10m   = `Mild ${isUp ? 'bullish' : 'bearish'} · ${isUp ? '+' : ''}${chp.toFixed(2)}%`;
+  reason10m = `Moderate momentum, neutral range. Acceptable 10m scalp in trend direction.`;
+  conf10m  = 58;
+  badge10m = isUp ? { cls: 'badge-bull', txt: 'LONG' } : { cls: 'badge-bear', txt: 'SHORT' };
+} else {
+  sig10m   = 'NO SIGNAL';
+  dir10m   = 'Momentum too weak for a 10m scalp';
+  reason10m = `Insufficient directional conviction for a 10-minute trade.`;
+  conf10m  = 36;
+  badge10m = { cls: 'badge-flat', txt: 'SKIP' };
+}
+
   return {
+    e10m: { sig: sig10m, dir: dir10m, reason: reason10m, conf: conf10m, badge: badge10m },
     e1h:  { sig: sig1h,  dir: dir1h,  reason: reason1h,  conf: conf1h,  badge: badge1h  },
     e4h:  { sig: sig4h,  dir: dir4h,  reason: reason4h,  conf: conf4h,  badge: badge4h  },
     e24h: { sig: sig24h, dir: dir24h, reason: reason24h, conf: conf24h, badge: badge24h },
@@ -697,6 +746,7 @@ function renderEntrySignals(price, chp, high, low, atr, sess) {
     }, delay);
   }
 
+  applySignal('entry-10m-signal', 'entry-10m-dir', 'entry-10m-reason', 'entry-10m-badge', 'conf-entry-10m', 'conf-entry-10m-lbl', e.e10m, 100);
   applySignal('entry-1h-signal',  'entry-1h-dir',  'entry-1h-reason',  'entry-1h-badge',  'conf-entry-1h',  'conf-entry-1h-lbl',  e.e1h,  150);
   applySignal('entry-4h-signal',  'entry-4h-dir',  'entry-4h-reason',  'entry-4h-badge',  'conf-entry-4h',  'conf-entry-4h-lbl',  e.e4h,  250);
   applySignal('entry-24h-signal', 'entry-24h-dir', 'entry-24h-reason', 'entry-24h-badge', 'conf-entry-24h', 'conf-entry-24h-lbl', e.e24h, 350);
