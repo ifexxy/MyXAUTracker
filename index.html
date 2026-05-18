@@ -1036,19 +1036,12 @@
 
 <!-- Firebase auth-aware CTA -->
 <script type="module">
+  import { fbConfig } from './js/firebase-config.js';
   import { initializeApp, getApps }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-  const fbConfig = {
-    apiKey:            "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
-    authDomain:        "xautracker.firebaseapp.com",
-    projectId:         "xautracker",
-    storageBucket:     "xautracker.firebasestorage.app",
-    messagingSenderId: "831752609455",
-    appId:             "1:831752609455:web:ea9be478691744afa73e5a"
-  };
 
   const fbApp = getApps().length ? getApps()[0] : initializeApp(fbConfig);
   const auth  = getAuth(fbApp);
