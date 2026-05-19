@@ -965,7 +965,7 @@ checkMarketStatus();
 
 /* ── Init ── */
 loadPrice(renderPredict);
-setInterval(() => loadPrice(renderPredict), 60000);
+setInterval(() => loadPrice(renderPredict), 10000);
 
   /* ── Drawer menu compatibility ── */
 function toggleMenu() {
@@ -1069,7 +1069,7 @@ function checkMarketStatus() {
     if (banner) { banner.style.opacity = '1'; banner.style.pointerEvents = 'all'; }
 
     /* Update page title */
-    document.title = 'Market Closed · XAUTracker.com';
+    document.title = 'Xauusd Forecast - XauTracker.com';
   }
 }
 
