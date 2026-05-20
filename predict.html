@@ -41,1491 +41,1020 @@
     }
 
     :root {
-      --txt-1:var(--ink); --txt-2:var(--ink-2); --txt-3:var(--ink-3); --bg-deep:var(--bg); --bg-card:var(--bg); --bg-muted:var(--bg-2);
-      --green-dim:var(--green-bg); --red-dim:var(--red-bg); --gold-glow:var(--gold-bg); --gold-dim:var(--gold); --radius:10px;
+      --txt-1:var(--ink); --txt-2:var(--ink-2); --txt-3:var(--ink-3);
+      --bg-deep:var(--bg); --bg-card:var(--bg); --bg-muted:var(--bg-2);
+      --green-dim:var(--green-bg); --red-dim:var(--red-bg);
+      --gold-glow:var(--gold-bg); --gold-dim:var(--gold); --radius:10px;
     }
 
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-    html, body { min-height:100%; background:var(--bg); color:var(--ink); font-family:Arial, Helvetica, sans-serif; -webkit-font-smoothing:antialiased; transition:background .22s,color .22s; }
+    html, body {
+      min-height:100%; background:var(--bg); color:var(--ink);
+      font-family:Arial, Helvetica, sans-serif;
+      -webkit-font-smoothing:antialiased; transition:background .22s,color .22s;
+    }
     button, a { font-family:inherit; }
     #app { max-width:480px; margin:0 auto; min-height:100dvh; display:flex; flex-direction:column; }
     #content { flex:1; }
 
-    #topbar { display:flex; align-items:center; justify-content:space-between; padding:13px 18px; border-bottom:1px solid var(--border); background:var(--bg); position:sticky; top:0; z-index:500; transition:background .22s,border-color .22s; }
+    /* ── Topbar ── */
+    #topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:13px 18px; border-bottom:1px solid var(--border);
+      background:var(--bg); position:sticky; top:0; z-index:500;
+      transition:background .22s,border-color .22s;
+    }
     .topbar-left,.topbar-right { display:flex; align-items:center; gap:10px; }
-    .menu-btn,.icon-btn { background:none; border:none; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border-radius:6px; color:var(--ink); font-size:15px; transition:background .14s,color .22s; }
+    .menu-btn,.icon-btn {
+      background:none; border:none; cursor:pointer; width:34px; height:34px;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:6px; color:var(--ink); font-size:15px; transition:background .14s,color .22s;
+    }
     .menu-btn:hover,.icon-btn:hover { background:var(--bg-2); }
     .topbar-wordmark { font-size:16px; font-weight:700; color:var(--ink); }
-    .live-chip { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:700; color:var(--green); background:var(--green-bg); padding:4px 9px; border-radius:20px; letter-spacing:.04em; }
-    .live-dot { width:5px; height:5px; border-radius:50%; background:var(--green); animation:blink 1.6s ease-in-out infinite; }
+    .live-chip {
+      display:flex; align-items:center; gap:5px; font-size:10px; font-weight:700;
+      color:var(--green); background:var(--green-bg); padding:4px 9px;
+      border-radius:20px; letter-spacing:.04em;
+    }
+    .live-dot {
+      width:5px; height:5px; border-radius:50%; background:var(--green);
+      animation:blink 1.6s ease-in-out infinite;
+    }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
 
-    .overlay { position:fixed; inset:0; background:rgba(0,0,0,.42); z-index:699; opacity:0; pointer-events:none; transition:opacity .22s; }
+    /* ── Drawer ── */
+    .overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.42);
+      z-index:699; opacity:0; pointer-events:none; transition:opacity .22s;
+    }
     .overlay.open { opacity:1; pointer-events:all; }
-    .drawer { position:fixed; top:0; left:0; width:268px; height:100%; background:var(--bg); z-index:700; transform:translateX(-100%); transition:transform .25s cubic-bezier(.4,0,.2,1),background .22s; display:flex; flex-direction:column; border-right:1px solid var(--border); }
+    .drawer {
+      position:fixed; top:0; left:0; width:268px; height:100%;
+      background:var(--bg); z-index:700; transform:translateX(-100%);
+      transition:transform .25s cubic-bezier(.4,0,.2,1),background .22s;
+      display:flex; flex-direction:column; border-right:1px solid var(--border);
+    }
     .drawer.open { transform:translateX(0); }
-    .drawer-head { display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid var(--border); }
+    .drawer-head {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px; border-bottom:1px solid var(--border);
+    }
     .drawer-brand { font-size:15px; font-weight:700; color:var(--ink); }
-    .drawer-close { background:none; border:none; cursor:pointer; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:6px; color:var(--ink-3); }
+    .drawer-close {
+      background:none; border:none; cursor:pointer; width:30px; height:30px;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:6px; color:var(--ink-3);
+    }
     .drawer-close:hover { background:var(--bg-2); }
     .drawer-nav { flex:1; padding:8px; overflow-y:auto; }
-    .drawer-item { display:flex; align-items:center; gap:11px; padding:11px 12px; border-radius:7px; font-size:14px; font-weight:600; color:var(--ink-2); text-decoration:none; transition:background .13s,color .13s; }
+    .drawer-item {
+      display:flex; align-items:center; gap:11px; padding:11px 12px;
+      border-radius:7px; font-size:14px; font-weight:600; color:var(--ink-2);
+      text-decoration:none; transition:background .13s,color .13s;
+    }
     .drawer-item:hover,.drawer-item.active { background:var(--bg-2); color:var(--ink); }
     .drawer-sep { height:1px; background:var(--border); margin:6px 8px; }
     .drawer-footer { padding:12px 12px 16px; border-top:1px solid var(--border); }
-    .theme-row { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:8px; background:var(--bg-2); cursor:pointer; user-select:none; }
+    .theme-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 12px; border-radius:8px; background:var(--bg-2);
+      cursor:pointer; user-select:none;
+    }
     .theme-row-label { display:flex; align-items:center; gap:9px; font-size:13px; font-weight:600; color:var(--ink-2); }
     .theme-row-label i { color:var(--ink-3); width:16px; text-align:center; }
-    .sw { width:38px; height:22px; background:var(--border); border-radius:11px; position:relative; transition:background .2s; flex-shrink:0; }
+    .sw {
+      width:38px; height:22px; background:var(--border); border-radius:11px;
+      position:relative; transition:background .2s; flex-shrink:0;
+    }
     .sw.on { background:var(--ink); }
-    .sw-knob { position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:var(--bg); box-shadow:0 1px 3px rgba(0,0,0,.2); transition:transform .2s; }
+    .sw-knob {
+      position:absolute; top:3px; left:3px; width:16px; height:16px;
+      border-radius:50%; background:var(--bg);
+      box-shadow:0 1px 3px rgba(0,0,0,.2); transition:transform .2s;
+    }
     .sw.on .sw-knob { transform:translateX(16px); }
 
-    .predict-hero { padding:30px 20px 22px; border-bottom:1px solid var(--border); }
-    .hero-kicker { font-size:10px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-4); margin-bottom:14px; }
-    .hero-title { font-size:34px; line-height:1.08; letter-spacing:-1.1px; color:var(--ink); margin-bottom:9px; }
-    .hero-copy { font-size:13px; color:var(--ink-3); line-height:1.65; max-width:390px; }
-    .hero-tags { display:flex; gap:8px; flex-wrap:wrap; margin-top:18px; }
-    .hero-tag { font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--gold); background:var(--gold-bg); border-radius:20px; padding:5px 10px; }
-
-    .predict-card,.live-strip { margin:0; background:var(--bg); border-bottom:1px solid var(--border); border-radius:0; padding:18px 20px; transition:background .22s,border-color .22s; }
-    .predict-card h3 { font-size:13px; font-weight:700; color:var(--ink); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
-    .predict-card h3 i { color:var(--gold); }
-
-    #account-dashboard { background:var(--bg-2); }
-    .account-shell { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
-    .account-avatar { width:42px; height:42px; border-radius:50%; background:var(--gold-bg); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--gold); flex-shrink:0; }
-    #dash-email { font-size:13px; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .account-info { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:14px; }
-    .account-label { font-size:10px; color:var(--ink-4); font-weight:700; text-transform:uppercase; letter-spacing:.12em; margin-bottom:4px; }
-    #dash-access-text { font-size:13px; color:var(--ink-2); line-height:1.6; }
-    #dash-actions { display:flex; gap:10px; flex-wrap:wrap; }
-
-    .btn-solid,.btn-ghost { flex:1; display:flex; align-items:center; justify-content:center; gap:7px; padding:12px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:700; cursor:pointer; min-width:130px; }
-    .btn-solid { background:var(--ink); color:var(--bg); border:1px solid var(--ink); }
-    .btn-ghost { background:transparent; color:var(--ink-2); border:1px solid var(--border); }
-
-    .live-strip { display:flex; align-items:stretch; justify-content:space-between; gap:12px; }
+    /* ── Live strip ── */
+    .live-strip {
+      display:flex; align-items:stretch; justify-content:space-between;
+      gap:12px; padding:18px 20px; border-bottom:1px solid var(--border);
+      transition:background .22s,border-color .22s;
+    }
     .live-strip-left { display:flex; align-items:center; gap:12px; min-width:0; }
-    .mini-label { font-size:10px; color:var(--ink-4); font-weight:700; letter-spacing:.14em; text-transform:uppercase; margin-bottom:5px; }
-    .live-price-big { font-size:42px; font-weight:700; letter-spacing:-1.5px; color:var(--ink); line-height:1; font-variant-numeric:tabular-nums; }
+    .mini-label {
+      font-size:10px; color:var(--ink-4); font-weight:700;
+      letter-spacing:.14em; text-transform:uppercase; margin-bottom:5px;
+    }
+    .live-price-big {
+      font-size:42px; font-weight:700; letter-spacing:-1.5px;
+      color:var(--ink); line-height:1; font-variant-numeric:tabular-nums;
+    }
     .live-price-big .sym { font-size:20px; font-weight:400; color:var(--ink-3); vertical-align:super; }
-    .live-change { align-self:center; font-size:12px; font-weight:700; padding:5px 10px; border-radius:4px; white-space:nowrap; }
-    .live-change.up { background:var(--green-bg); color:var(--green); } .live-change.down { background:var(--red-bg); color:var(--red); }
-    .atr-badge { min-width:82px; text-align:right; color:var(--ink-4); font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+    .live-change {
+      align-self:center; font-size:12px; font-weight:700;
+      padding:5px 10px; border-radius:4px; white-space:nowrap;
+    }
+    .live-change.up { background:var(--green-bg); color:var(--green); }
+    .live-change.down { background:var(--red-bg); color:var(--red); }
+    .atr-badge {
+      min-width:82px; text-align:right; color:var(--ink-4);
+      font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+    }
     #strip-atr { color:var(--ink); font-size:14px; margin-top:4px; font-variant-numeric:tabular-nums; }
     #strip-updated { color:var(--ink-4); margin-top:6px; font-size:9px; letter-spacing:0; text-transform:none; }
 
-    .session-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:12px 20px; border-bottom:1px solid var(--border); }
-    .session-chip { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:700; color:var(--ink-3); background:var(--bg-2); border:1px solid var(--border); padding:5px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:.06em; }
+    /* ── Stats grid ── */
+    .stats-grid-3 {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:8px; padding:14px 16px;
+      border-bottom:1px solid var(--border);
+    }
+    .stat-card {
+      background:var(--bg-2); border:1px solid var(--border);
+      border-radius:10px; padding:11px 12px;
+    }
+    .stat-label {
+      font-size:10px; font-weight:700; letter-spacing:.1em;
+      text-transform:uppercase; color:var(--ink-3); margin-bottom:5px;
+    }
+    .stat-val {
+      font-size:14px; font-weight:700; color:var(--ink);
+      font-variant-numeric:tabular-nums;
+    }
+    .stat-icon { font-size:9px; margin-right:3px; }
+
+    /* ── Session row ── */
+    .session-row {
+      display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+      padding:12px 16px; border-bottom:1px solid var(--border);
+    }
+    .session-chip {
+      display:flex; align-items:center; gap:5px; font-size:10px; font-weight:700;
+      color:var(--ink-3); background:var(--bg-2); border:1px solid var(--border);
+      padding:5px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:.06em;
+    }
     .session-chip.active { color:var(--green); background:var(--green-bg); border-color:transparent; }
     .session-chip .dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
     .session-chip.active .dot { animation:blink 1.5s ease-in-out infinite; }
 
-    .timeline-container { position:relative; }
-    .tl-group-label { font-size:10px; color:var(--ink-4); text-transform:uppercase; letter-spacing:.14em; font-weight:700; padding:12px 0 8px; border-top:1px solid var(--border); margin-top:6px; }
-    .tl-group-label:first-child { border-top:none; margin-top:0; padding-top:0; }
-    .timeline-row { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
-    .timeline-row:last-child { border-bottom:none; }
-    .tl-dot-col { display:flex; flex-direction:column; align-items:center; width:18px; flex-shrink:0; padding-top:4px; }
-    .tl-dot { width:10px; height:10px; border-radius:50%; border:2px solid var(--ink-4); background:var(--bg); flex-shrink:0; }
-    .tl-dot.now { background:var(--gold); border-color:var(--gold); box-shadow:0 0 0 4px var(--gold-bg); }
-    .tl-dot.done { border-color:var(--gold); }
-    .tl-line { width:2px; flex:1; min-height:18px; background:var(--border); }
-    .tl-body { flex:1; min-width:0; }
-    .tl-label { font-size:10px; color:var(--ink-4); text-transform:uppercase; letter-spacing:.1em; font-weight:700; margin-bottom:4px; }
-    .tl-price { font-size:18px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; }
-    .tl-sub { font-size:11px; margin-top:3px; }
-    .tl-range { font-size:11px; color:var(--ink-3); line-height:1.45; margin-top:3px; }
-    .tl-conf-row { display:flex; align-items:center; gap:7px; margin-top:8px; }
-    .conf-bar { flex:1; height:4px; background:var(--bg-3); border-radius:4px; overflow:hidden; }
-    .conf-fill { height:100%; border-radius:4px; transition:width .9s ease; }
-    .conf-fill.high{background:var(--green)} .conf-fill.medium{background:var(--gold)} .conf-fill.low{background:var(--red)}
-    .conf-label { font-size:10px; color:var(--ink-3); white-space:nowrap; }
-    .tl-badge,.level-badge,.factor-sig { flex-shrink:0; padding:4px 9px; border-radius:8px; font-size:10px; font-weight:700; text-align:center; min-width:52px; }
-    .badge-bull,.badge-support { background:var(--green-bg); color:var(--green); } .badge-bear,.badge-resist { background:var(--red-bg); color:var(--red); } .badge-flat,.badge-live,.badge-neutral { background:var(--gold-bg); color:var(--gold); }
+    /* ══════════════════════════════════════════
+       NEW TIMELINE STYLES
+    ══════════════════════════════════════════ */
+    .tl-outer-card {
+      margin:14px 16px 0;
+      background:var(--bg);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      overflow:hidden;
+    }
+    .tl-outer-card:last-of-type { margin-bottom:0; }
 
+    .tl-card-header {
+      display:flex; align-items:center; gap:8px;
+      padding:13px 16px 0;
+    }
+    .tl-card-header i { font-size:12px; color:var(--ink-4); }
+    .tl-card-header-label {
+      font-size:10px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.12em; color:var(--ink-3);
+    }
+
+    .tl-row {
+      display:flex; align-items:center; gap:12px;
+      padding:12px 16px; border-bottom:1px solid var(--border);
+    }
+    .tl-row:last-child { border-bottom:none; }
+
+    .tl-dot {
+      width:8px; height:8px; border-radius:50%;
+      flex-shrink:0; background:var(--border);
+    }
+    .tl-dot.live {
+      background:var(--green);
+      box-shadow:0 0 0 3px var(--green-bg);
+    }
+
+    .tl-frame {
+      font-size:12px; color:var(--ink-2);
+      width:52px; flex-shrink:0;
+    }
+
+    .tl-main { flex:1; min-width:0; }
+
+    .tl-value {
+      font-size:15px; font-weight:700; color:var(--ink);
+      font-variant-numeric:tabular-nums; line-height:1.2;
+    }
+
+    .tl-conf-row {
+      display:flex; align-items:center; gap:7px; margin-top:4px;
+    }
+    .tl-conf-bar {
+      width:56px; height:3px; background:var(--bg-3);
+      border-radius:3px; overflow:hidden; flex-shrink:0;
+    }
+    .tl-conf-fill { height:100%; border-radius:3px; transition:width .9s ease; }
+    .tl-conf-pct { font-size:11px; color:var(--ink-3); }
+
+    .tl-badge {
+      font-size:10px; font-weight:700; padding:3px 9px;
+      border-radius:20px; letter-spacing:.04em;
+      flex-shrink:0; white-space:nowrap;
+    }
+    .tl-badge.bull  { background:var(--green-bg); color:var(--green); }
+    .tl-badge.bear  { background:var(--red-bg);   color:var(--red);   }
+    .tl-badge.flat  { background:var(--gold-bg);  color:var(--gold);  }
+    .tl-badge.wait  { background:var(--bg-3);     color:var(--ink-3); }
+    .tl-badge.live-badge { background:var(--green-bg); color:var(--green); }
+
+    .tl-info-btn {
+      width:30px; height:30px; border-radius:50%;
+      border:1px solid var(--border); background:none;
+      cursor:pointer; display:flex; align-items:center;
+      justify-content:center; flex-shrink:0;
+      color:var(--ink-3); font-size:14px;
+      transition:background .14s,color .14s;
+    }
+    .tl-info-btn:hover { background:var(--bg-2); color:var(--ink); }
+
+    /* ── Bottom sheet popup ── */
+    .tl-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.42);
+      z-index:600; opacity:0; pointer-events:none; transition:opacity .22s;
+    }
+    .tl-overlay.open { opacity:1; pointer-events:all; }
+
+    .tl-popup {
+      position:fixed; bottom:0; left:50%;
+      transform:translateX(-50%) translateY(100%);
+      width:100%; max-width:480px;
+      background:var(--bg); border-radius:20px 20px 0 0;
+      border-top:1px solid var(--border);
+      z-index:601; padding:0 20px 36px;
+      max-height:80vh; overflow-y:auto;
+      transition:transform .28s cubic-bezier(.4,0,.2,1);
+    }
+    .tl-popup.open { transform:translateX(-50%) translateY(0); }
+
+    .tl-popup-handle {
+      width:36px; height:4px; background:var(--border);
+      border-radius:4px; margin:14px auto 20px;
+    }
+    .tl-popup-kicker {
+      font-size:10px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.12em; color:var(--ink-4); margin-bottom:6px;
+    }
+    .tl-popup-signal {
+      font-size:22px; font-weight:700; color:var(--ink); margin-bottom:4px;
+    }
+    .tl-popup-dir { font-size:13px; margin-bottom:16px; line-height:1.5; }
+    .tl-popup-reason {
+      font-size:13px; color:var(--ink-2); line-height:1.65;
+      background:var(--bg-2); border-radius:10px; padding:12px 14px;
+      margin-bottom:16px;
+    }
+    .tl-popup-divider { height:1px; background:var(--border); margin:14px 0; }
+    .tl-popup-meta-row {
+      display:flex; justify-content:space-between;
+      align-items:center; padding:7px 0;
+    }
+    .tl-popup-meta-label { font-size:12px; color:var(--ink-3); }
+    .tl-popup-meta-val {
+      font-size:12px; font-weight:700; color:var(--ink);
+      text-align:right; max-width:200px;
+    }
+    .tl-popup-close {
+      display:flex; align-items:center; justify-content:center;
+      gap:8px; width:100%; padding:13px; margin-top:16px;
+      background:var(--bg-2); border:1px solid var(--border);
+      border-radius:10px; font-size:14px; font-weight:700;
+      color:var(--ink); cursor:pointer; transition:background .14s;
+    }
+    .tl-popup-close:hover { background:var(--bg-3); }
+
+    /* ══════════════════════════════════════════
+       SHARED PREDICT CARD (signals, sentiment, levels, factors)
+    ══════════════════════════════════════════ */
+    .predict-card {
+      margin:14px 16px 0;
+      background:var(--bg); border:1px solid var(--border);
+      border-radius:var(--radius); padding:18px 16px;
+      transition:background .22s,border-color .22s;
+    }
+    .predict-card h3 {
+      font-size:13px; font-weight:700; color:var(--ink);
+      margin-bottom:14px; display:flex; align-items:center; gap:8px;
+    }
+    .predict-card h3 i { color:var(--gold); }
+
+    /* signals */
     .signal-grid { display:grid; gap:10px; }
     .sig-gauge-row { display:grid; grid-template-columns:36px 1fr 40px; align-items:center; gap:10px; }
     .sig-name,.sig-pct { font-size:12px; font-weight:700; }
     .sig-pct { text-align:right; font-variant-numeric:tabular-nums; }
     .sig-gauge-bar { height:8px; background:var(--bg-3); border-radius:5px; overflow:hidden; }
     .sig-gauge-fill { height:100%; border-radius:5px; transition:width .8s ease; }
-    .sig-gauge-fill.buy{background:var(--green)} .sig-gauge-fill.hold{background:var(--gold)} .sig-gauge-fill.sell{background:var(--red)}
-    .sentiment-arc { text-align:center; padding:10px 0 4px; } .sentiment-big { font-size:44px; font-weight:800; line-height:1; } .sentiment-lbl { font-size:12px; color:var(--ink-3); margin-top:8px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; }
-    .level-row,.factor-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
-    .level-row { justify-content:space-between; }
-    .level-row:last-child,.factor-row:last-child { border-bottom:none; }
-    .level-name,.factor-desc { font-size:12px; color:var(--ink-3); line-height:1.45; }
-    .level-val { font-size:13px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; }
+    .sig-gauge-fill.buy  { background:var(--green); }
+    .sig-gauge-fill.hold { background:var(--gold);  }
+    .sig-gauge-fill.sell { background:var(--red);   }
+
+    /* sentiment */
+    .sentiment-arc { text-align:center; padding:10px 0 4px; }
+    .sentiment-big { font-size:44px; font-weight:800; line-height:1; }
+    .sentiment-lbl {
+      font-size:12px; color:var(--ink-3); margin-top:8px;
+      text-transform:uppercase; letter-spacing:.1em; font-weight:700;
+    }
+
+    /* key levels */
+    .level-row {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; padding:10px 0; border-bottom:1px solid var(--border);
+    }
+    .level-row:last-child { border-bottom:none; }
+    .level-name { font-size:12px; color:var(--ink-3); }
+    .level-val  { font-size:13px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; }
+    .level-badge { font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px; }
+    .badge-support { background:var(--green-bg); color:var(--green); }
+    .badge-resist  { background:var(--red-bg);   color:var(--red);   }
+    .badge-neutral { background:var(--gold-bg);  color:var(--gold);  }
     .current-level { background:var(--bg-2); border-radius:8px; padding:10px 8px; margin:2px 0; }
-    .factor-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .factor-text { flex:1; min-width:0; } .factor-name { font-size:13px; font-weight:700; color:var(--ink); margin-bottom:2px; }
 
-    .disclaimer { margin:0; padding:16px 20px; background:var(--red-bg); border-bottom:1px solid var(--border); color:var(--ink-2); font-size:12px; line-height:1.6; }
+    /* factors */
+    .factor-row {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 0; border-bottom:1px solid var(--border);
+    }
+    .factor-row:last-child { border-bottom:none; }
+    .factor-icon {
+      width:32px; height:32px; border-radius:8px;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .factor-text { flex:1; min-width:0; }
+    .factor-name { font-size:13px; font-weight:700; color:var(--ink); margin-bottom:2px; }
+    .factor-desc { font-size:12px; color:var(--ink-3); line-height:1.45; }
+    .factor-sig {
+      font-size:10px; font-weight:700; padding:4px 9px;
+      border-radius:8px; flex-shrink:0;
+    }
+
+    /* account dashboard */
+    #account-dashboard { background:var(--bg-2); }
+    .account-shell { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+    .account-avatar {
+      width:42px; height:42px; border-radius:50%;
+      background:var(--gold-bg); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      color:var(--gold); flex-shrink:0;
+    }
+    #dash-email { font-size:13px; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .account-info {
+      background:var(--bg); border:1px solid var(--border);
+      border-radius:10px; padding:12px 14px; margin-bottom:14px;
+    }
+    .account-label {
+      font-size:10px; color:var(--ink-4); font-weight:700;
+      text-transform:uppercase; letter-spacing:.12em; margin-bottom:4px;
+    }
+    #dash-access-text { font-size:13px; color:var(--ink-2); line-height:1.6; }
+    #dash-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn-solid,.btn-ghost {
+      flex:1; display:flex; align-items:center; justify-content:center;
+      gap:7px; padding:12px; border-radius:8px; text-decoration:none;
+      font-size:13px; font-weight:700; cursor:pointer; min-width:130px;
+    }
+    .btn-solid { background:var(--ink); color:var(--bg); border:1px solid var(--ink); }
+    .btn-ghost { background:transparent; color:var(--ink-2); border:1px solid var(--border); }
+
+    /* algo note */
+    .algo-note {
+      margin:14px 16px 0; padding:10px 14px;
+      background:rgba(154,110,0,0.06); border:1px solid rgba(154,110,0,0.14);
+      border-radius:10px; font-size:11px; color:var(--ink-3); line-height:1.6;
+    }
+    .algo-note i { color:var(--gold); margin-right:5px; }
+
+    /* disclaimer / footer */
+    .disclaimer {
+      margin:14px 16px 0; padding:14px 16px;
+      background:var(--red-bg); border:1px solid rgba(184,50,50,0.15);
+      border-radius:10px; font-size:11px; color:var(--ink-2); line-height:1.6;
+    }
     .disclaimer i { color:var(--red); margin-right:5px; }
-    footer { padding:24px 20px 40px; border-top:1px solid var(--border); }
-    .footer-links { display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
-    .footer-link { font-size:12px; font-weight:600; color:var(--ink-3); text-decoration:none; padding:6px 13px; border-radius:20px; border:1px solid var(--border); }
-    .footer-disc { font-size:11px; color:var(--ink-4); line-height:1.65; padding:12px 14px; background:var(--bg-2); border-radius:8px; margin-bottom:14px; }
+    footer { padding:24px 16px 48px; border-top:1px solid var(--border); margin-top:16px; }
+    .footer-links { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+    .footer-link {
+      font-size:12px; font-weight:600; color:var(--ink-3);
+      text-decoration:none; padding:6px 13px; border-radius:20px;
+      border:1px solid var(--border);
+    }
+    .footer-disc {
+      font-size:11px; color:var(--ink-4); line-height:1.65;
+      padding:12px 14px; background:var(--bg-2);
+      border-radius:8px; margin-bottom:14px;
+    }
     .footer-copy { font-size:10px; color:var(--ink-4); letter-spacing:.03em; }
-    #toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:var(--bg); padding:10px 18px; border-radius:20px; font-size:12px; font-weight:600; opacity:0; transition:all .28s; pointer-events:none; z-index:300; white-space:nowrap; }
+
+    /* toast */
+    #toast {
+      position:fixed; bottom:24px; left:50%;
+      transform:translateX(-50%) translateY(20px);
+      background:var(--ink); color:var(--bg);
+      padding:10px 18px; border-radius:20px;
+      font-size:12px; font-weight:600; opacity:0;
+      transition:all .28s; pointer-events:none; z-index:300; white-space:nowrap;
+    }
     #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-    @media (max-width:390px) { .live-strip{flex-direction:column}.atr-badge{text-align:left}.live-price-big{font-size:38px}.hero-title{font-size:31px} }
-    .stat-card {
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-}
 
-.stat-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  margin-bottom: 6px;
-}
+    /* market closed */
+    #market-closed-banner { margin:14px 16px 0; }
 
-.stat-val {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
+    /* trial expired overlay */
+    #trial-expired-overlay {
+      display:none; position:fixed; inset:0; z-index:499;
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      background:rgba(0,0,0,0.45); padding:24px;
+      align-items:center; justify-content:center;
+    }
 
-.stat-icon {
-  font-size: 10px;
-  margin-right: 4px;
-}
-  /* ── Timeline cards ── */
-  .tl-outer-card {
-    margin: 0 16px 10px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-
-  .tl-card-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 16px 0;
-  }
-
-  .tl-card-header-label {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .12em;
-    color: var(--ink-3);
-    padding: 0;
-  }
-
-  .tl-card-header i {
-    font-size: 12px;
-    color: var(--ink-4);
-  }
-
-  /* ── Individual rows ── */
-  .tl-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .tl-row:last-child {
-    border-bottom: none;
-  }
-
-  .tl-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    background: var(--border);
-  }
-
-  .tl-dot.live {
-    background: var(--green);
-    box-shadow: 0 0 0 3px var(--green-bg);
-  }
-
-  .tl-frame {
-    font-size: 12px;
-    color: var(--ink-2);
-    width: 52px;
-    flex-shrink: 0;
-  }
-
-  .tl-main {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .tl-value {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--ink);
-    font-variant-numeric: tabular-nums;
-    line-height: 1.2;
-  }
-
-  .tl-conf-row {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    margin-top: 4px;
-  }
-
-  .tl-conf-bar {
-    width: 56px;
-    height: 3px;
-    background: var(--bg-3);
-    border-radius: 3px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  .tl-conf-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width .9s ease;
-  }
-
-  .tl-conf-pct {
-    font-size: 11px;
-    color: var(--ink-3);
-  }
-
-  .tl-badge {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 3px 9px;
-    border-radius: 20px;
-    letter-spacing: .04em;
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-
-  .tl-badge.bull  { background: var(--green-bg); color: var(--green); }
-  .tl-badge.bear  { background: var(--red-bg);   color: var(--red);   }
-  .tl-badge.flat  { background: var(--gold-bg);  color: var(--gold);  }
-  .tl-badge.wait  { background: var(--bg-3);     color: var(--ink-3); }
-  .tl-badge.live-badge { background: var(--green-bg); color: var(--green); }
-
-  .tl-info-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: var(--ink-3);
-    font-size: 14px;
-    transition: background .14s, color .14s;
-  }
-
-  .tl-info-btn:hover {
-    background: var(--bg-2);
-    color: var(--ink);
-  }
-
-  /* ── Overlay + bottom sheet popup ── */
-  .tl-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, .42);
-    z-index: 600;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .22s;
-  }
-
-  .tl-overlay.open {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  .tl-popup {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    width: 100%;
-    max-width: 480px;
-    background: var(--bg);
-    border-radius: 20px 20px 0 0;
-    border-top: 1px solid var(--border);
-    z-index: 601;
-    padding: 0 20px 36px;
-    max-height: 80vh;
-    overflow-y: auto;
-    transition: transform .28s cubic-bezier(.4, 0, .2, 1);
-  }
-
-  .tl-popup.open {
-    transform: translateX(-50%) translateY(0);
-  }
-
-  .tl-popup-handle {
-    width: 36px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 4px;
-    margin: 14px auto 20px;
-  }
-
-  .tl-popup-kicker {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .12em;
-    color: var(--ink-4);
-    margin-bottom: 6px;
-  }
-
-  .tl-popup-signal {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 4px;
-  }
-
-  .tl-popup-dir {
-    font-size: 13px;
-    margin-bottom: 16px;
-    line-height: 1.5;
-  }
-
-  .tl-popup-reason {
-    font-size: 13px;
-    color: var(--ink-2);
-    line-height: 1.65;
-    background: var(--bg-2);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 16px;
-  }
-
-  .tl-popup-divider {
-    height: 1px;
-    background: var(--border);
-    margin: 14px 0;
-  }
-
-  .tl-popup-meta-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 7px 0;
-  }
-
-  .tl-popup-meta-label {
-    font-size: 12px;
-    color: var(--ink-3);
-  }
-
-  .tl-popup-meta-val {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--ink);
-    text-align: right;
-    max-width: 200px;
-  }
-
-  .tl-popup-close {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 13px;
-    margin-top: 16px;
-    background: var(--bg-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--ink);
-    cursor: pointer;
-    transition: background .14s;
-  }
-
-  .tl-popup-close:hover {
-    background: var(--bg-3);
-  }
-
+    @media (max-width:390px) {
+      .live-price-big { font-size:36px; }
+      .live-strip { flex-direction:column; }
+      .atr-badge { text-align:left; }
+    }
   </style>
 </head>
 <body>
+
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 <nav class="drawer" id="drawer">
-  <div class="drawer-head"><span class="drawer-brand">XauTracker</span><button class="drawer-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button></div>
-  <div class="drawer-nav">
-    <a class="drawer-item" href="/">Home</a><a class="drawer-item" href="/news">News</a><a class="drawer-item" href="/trends">Trends</a><a class="drawer-item" href="/minds">Minds</a><a class="drawer-item active" href="/predict">Forecast</a>
-    <div class="drawer-sep"></div><a class="drawer-item" href="/about">About</a><a class="drawer-item" href="/disclaimer">Disclaimer</a><a class="drawer-item" href="/contact">Contact</a>
+  <div class="drawer-head">
+    <span class="drawer-brand">XauTracker</span>
+    <button class="drawer-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
   </div>
-  <div class="drawer-footer"><div class="theme-row" onclick="toggleTheme()"><div class="theme-row-label"><i id="theme-icon" class="fa-solid fa-moon"></i><span id="theme-label">Dark Mode</span></div><div class="sw" id="sw"><div class="sw-knob"></div></div></div></div>
+  <div class="drawer-nav">
+    <a class="drawer-item" href="/">Home</a>
+    <a class="drawer-item" href="/news">News</a>
+    <a class="drawer-item" href="/trends">Trends</a>
+    <a class="drawer-item" href="/minds">Minds</a>
+    <a class="drawer-item active" href="/predict">Forecast</a>
+    <div class="drawer-sep"></div>
+    <a class="drawer-item" href="/about">About</a>
+    <a class="drawer-item" href="/disclaimer">Disclaimer</a>
+    <a class="drawer-item" href="/contact">Contact</a>
+  </div>
+  <div class="drawer-footer">
+    <div class="theme-row" onclick="toggleTheme()">
+      <div class="theme-row-label">
+        <i id="theme-icon" class="fa-solid fa-moon"></i>
+        <span id="theme-label">Dark Mode</span>
+      </div>
+      <div class="sw" id="sw"><div class="sw-knob"></div></div>
+    </div>
+  </div>
 </nav>
 
 <div id="app">
   <div id="topbar">
-    <div class="topbar-left"><button class="menu-btn" id="menu-trigger" onclick="openMenu()"><i class="fa-solid fa-bars"></i></button><span class="topbar-wordmark">XauTracker</span></div>
-    <div class="topbar-right"><div class="live-chip"><div class="live-dot"></div>LIVE</div><button class="icon-btn refresh-btn" id="refresh-btn" title="Refresh"><i class="fa-solid fa-rotate-right"></i></button></div>
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="openMenu()"><i class="fa-solid fa-bars"></i></button>
+      <span class="topbar-wordmark">XauTracker</span>
+    </div>
+    <div class="topbar-right">
+      <div class="live-chip"><div class="live-dot"></div>LIVE</div>
+      <button class="icon-btn" id="refresh-btn" title="Refresh"><i class="fa-solid fa-rotate-right"></i></button>
+    </div>
   </div>
 
   <div id="content">
-    
 
-    <div class="predict-card" id="account-dashboard" style="display:none;">
+    <!-- Account dashboard (shown when logged in) -->
+    <div class="predict-card" id="account-dashboard" style="display:none;margin-top:14px;">
       <h3><i class="fa-solid fa-circle-user"></i>My Account</h3>
-      <div class="account-shell"><div class="account-avatar"><i class="fa-solid fa-user"></i></div><div style="flex:1;min-width:0;"><div id="dash-email">—</div><div id="dash-status-badge" style="margin-top:5px;"></div></div></div>
-      <div class="account-info"><div class="account-label">Access Status</div><div id="dash-access-text">—</div></div>
-      <div id="dash-actions"><a href="subscribe.html" class="btn-solid"><i class="fa-solid fa-crown"></i> Subscribe</a><button onclick="dashSignOut()" class="btn-ghost"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button></div>
+      <div class="account-shell">
+        <div class="account-avatar"><i class="fa-solid fa-user"></i></div>
+        <div style="flex:1;min-width:0;">
+          <div id="dash-email">—</div>
+          <div id="dash-status-badge" style="margin-top:5px;"></div>
+        </div>
+      </div>
+      <div class="account-info">
+        <div class="account-label">Access Status</div>
+        <div id="dash-access-text">—</div>
+      </div>
+      <div id="dash-actions">
+        <a href="subscribe.html" class="btn-solid"><i class="fa-solid fa-crown"></i> Subscribe</a>
+        <button onclick="dashSignOut()" class="btn-ghost"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+      </div>
     </div>
 
+    <!-- Live price strip -->
     <div class="live-strip">
-      <div class="live-strip-left"><div><div class="mini-label">XAU/USD Spot</div><div class="live-price-big"><span class="sym">$</span><span id="strip-price">—</span></div></div><div class="live-change" id="strip-change">—</div></div>
-      <div class="atr-badge"><div>Daily ATR</div><div id="strip-atr">—</div><div id="strip-updated"></div></div>
+      <div class="live-strip-left">
+        <div>
+          <div class="mini-label">XAU/USD Spot</div>
+          <div class="live-price-big"><span class="sym">$</span><span id="strip-price">—</span></div>
+        </div>
+        <div class="live-change" id="strip-change">—</div>
+      </div>
+      <div class="atr-badge">
+        <div>Daily ATR</div>
+        <div id="strip-atr">—</div>
+        <div id="strip-updated"></div>
+      </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);margin:0 16px 12px;gap:10px;">
-  <div class="stat-card">
-    <div class="stat-label"><i class="fa-solid fa-arrow-up stat-icon" style="color:var(--green)"></i>Day High</div>
-    <div class="stat-val" id="pred-high">—</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label"><i class="fa-solid fa-arrow-down stat-icon" style="color:var(--red)"></i>Day Low</div>
-    <div class="stat-val" id="pred-low">—</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label"><i class="fa-solid fa-door-open stat-icon" style="color:var(--gold)"></i>Open</div>
-    <div class="stat-val" id="pred-open">—</div>
-  </div>
-</div>
-    
+    <!-- Day stats -->
+    <div class="stats-grid-3">
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-arrow-up stat-icon" style="color:var(--green)"></i>High</div>
+        <div class="stat-val" id="pred-high">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-arrow-down stat-icon" style="color:var(--red)"></i>Low</div>
+        <div class="stat-val" id="pred-low">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-solid fa-door-open stat-icon" style="color:var(--gold)"></i>Open</div>
+        <div class="stat-val" id="pred-open">—</div>
+      </div>
+    </div>
+
+    <!-- Session row -->
     <div class="session-row" id="session-row">
-      <div class="session-chip" id="sess-asian"><div class="dot"></div>Asian</div><div class="session-chip" id="sess-london"><div class="dot"></div>London</div><div class="session-chip" id="sess-ny"><div class="dot"></div>New York</div>
-      <div class="session-chip" id="sess-vol" style="margin-left:auto;"><i class="fa-solid fa-wave-square" style="font-size:9px;"></i><span id="sess-vol-label">—</span></div>
-    </div>
-
-  <!-- Entry Signals card -->
-<div class="tl-outer-card">
-  <div class="tl-card-header">
-    <i class="fa-solid fa-bolt"></i>
-    <span class="tl-card-header-label">Entry Signals</span>
-  </div>
-
-  <!-- Live / Now row -->
-  <div class="tl-row">
-    <div class="tl-dot live"></div>
-    <span class="tl-frame">Now</span>
-    <div class="tl-main">
-      <div class="tl-value" id="tl-now-price">—</div>
-      <div style="font-size:11px;color:var(--ink-3);margin-top:3px;" id="tl-now-time"></div>
-    </div>
-    <span class="tl-badge live-badge">LIVE</span>
-    <div style="width:30px;flex-shrink:0;"></div>
-  </div>
-
-  <!-- 10 min -->
-  <div class="tl-row">
-    <div class="tl-dot"></div>
-    <span class="tl-frame">10 min</span>
-    <div class="tl-main">
-      <div class="tl-value" id="tl-sig-10m">—</div>
-      <div class="tl-conf-row">
-        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-10m" style="width:0%"></div></div>
-        <span class="tl-conf-pct" id="tl-conf-10m-pct">—</span>
+      <div class="session-chip" id="sess-asian"><div class="dot"></div>Asian</div>
+      <div class="session-chip" id="sess-london"><div class="dot"></div>London</div>
+      <div class="session-chip" id="sess-ny"><div class="dot"></div>New York</div>
+      <div class="session-chip" id="sess-vol" style="margin-left:auto;">
+        <i class="fa-solid fa-wave-square" style="font-size:9px;"></i>
+        <span id="sess-vol-label">—</span>
       </div>
     </div>
-    <span class="tl-badge" id="tl-badge-10m">—</span>
-    <button class="tl-info-btn" onclick="tlOpenPopup('10m')" aria-label="10 min signal details">
-      <i class="fa-solid fa-circle-info"></i>
-    </button>
-  </div>
 
-  <!-- 1 hour -->
-  <div class="tl-row">
-    <div class="tl-dot"></div>
-    <span class="tl-frame">1 hour</span>
-    <div class="tl-main">
-      <div class="tl-value" id="tl-sig-1h">—</div>
-      <div class="tl-conf-row">
-        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-1h" style="width:0%"></div></div>
-        <span class="tl-conf-pct" id="tl-conf-1h-pct">—</span>
+    <!-- Algo note -->
+    <div class="algo-note">
+      <i class="fa-solid fa-microchip"></i>
+      Forecasts use <strong style="color:var(--gold)">ATR × √(t/1440)</strong> —
+      the financial square-root-of-time volatility model.
+      <strong style="color:var(--red)">Not financial advice.</strong>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         NEW TIMELINE — Entry Signals
+    ═══════════════════════════════════════ -->
+    <div class="tl-outer-card">
+      <div class="tl-card-header">
+        <i class="fa-solid fa-bolt"></i>
+        <span class="tl-card-header-label">Entry Signals</span>
+      </div>
+
+      <!-- Now -->
+      <div class="tl-row">
+        <div class="tl-dot live"></div>
+        <span class="tl-frame">Now</span>
+        <div class="tl-main">
+          <div class="tl-value" id="tl-now-price">—</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:3px;" id="tl-now-time"></div>
+        </div>
+        <span class="tl-badge live-badge">LIVE</span>
+        <div style="width:30px;flex-shrink:0;"></div>
+      </div>
+
+      <!-- 10 min -->
+      <div class="tl-row">
+        <div class="tl-dot"></div>
+        <span class="tl-frame">10 min</span>
+        <div class="tl-main">
+          <div class="tl-value" id="tl-sig-10m">—</div>
+          <div class="tl-conf-row">
+            <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-10m" style="width:0%"></div></div>
+            <span class="tl-conf-pct" id="tl-conf-10m-pct">—</span>
+          </div>
+        </div>
+        <span class="tl-badge" id="tl-badge-10m">—</span>
+        <button class="tl-info-btn" onclick="tlOpenPopup('10m')" aria-label="10 min details">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
+      </div>
+
+      <!-- 1 hour -->
+      <div class="tl-row">
+        <div class="tl-dot"></div>
+        <span class="tl-frame">1 hour</span>
+        <div class="tl-main">
+          <div class="tl-value" id="tl-sig-1h">—</div>
+          <div class="tl-conf-row">
+            <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-1h" style="width:0%"></div></div>
+            <span class="tl-conf-pct" id="tl-conf-1h-pct">—</span>
+          </div>
+        </div>
+        <span class="tl-badge" id="tl-badge-1h">—</span>
+        <button class="tl-info-btn" onclick="tlOpenPopup('1h')" aria-label="1 hour details">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
+      </div>
+
+      <!-- 4 hour -->
+      <div class="tl-row">
+        <div class="tl-dot"></div>
+        <span class="tl-frame">4 hour</span>
+        <div class="tl-main">
+          <div class="tl-value" id="tl-sig-4h">—</div>
+          <div class="tl-conf-row">
+            <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-4h" style="width:0%"></div></div>
+            <span class="tl-conf-pct" id="tl-conf-4h-pct">—</span>
+          </div>
+        </div>
+        <span class="tl-badge" id="tl-badge-4h">—</span>
+        <button class="tl-info-btn" onclick="tlOpenPopup('4h')" aria-label="4 hour details">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
+      </div>
+
+      <!-- 24 hour signal -->
+      <div class="tl-row">
+        <div class="tl-dot"></div>
+        <span class="tl-frame">24 hour</span>
+        <div class="tl-main">
+          <div class="tl-value" id="tl-sig-24h">—</div>
+          <div class="tl-conf-row">
+            <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-24h-sig" style="width:0%"></div></div>
+            <span class="tl-conf-pct" id="tl-conf-24h-sig-pct">—</span>
+          </div>
+        </div>
+        <span class="tl-badge" id="tl-badge-24h-sig">—</span>
+        <button class="tl-info-btn" onclick="tlOpenPopup('24h-sig')" aria-label="24 hour signal details">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
       </div>
     </div>
-    <span class="tl-badge" id="tl-badge-1h">—</span>
-    <button class="tl-info-btn" onclick="tlOpenPopup('1h')" aria-label="1 hour signal details">
-      <i class="fa-solid fa-circle-info"></i>
-    </button>
-  </div>
 
-  <!-- 4 hour -->
-  <div class="tl-row">
-    <div class="tl-dot"></div>
-    <span class="tl-frame">4 hour</span>
-    <div class="tl-main">
-      <div class="tl-value" id="tl-sig-4h">—</div>
-      <div class="tl-conf-row">
-        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-4h" style="width:0%"></div></div>
-        <span class="tl-conf-pct" id="tl-conf-4h-pct">—</span>
+    <!-- ═══════════════════════════════════════
+         NEW TIMELINE — Price Forecast
+    ═══════════════════════════════════════ -->
+    <div class="tl-outer-card" style="margin-bottom:14px;">
+      <div class="tl-card-header">
+        <i class="fa-solid fa-chart-line"></i>
+        <span class="tl-card-header-label">Price Forecast</span>
+      </div>
+
+      <!-- 1 hour forecast -->
+      <div class="tl-row">
+        <div class="tl-dot"></div>
+        <span class="tl-frame">1 hour</span>
+        <div class="tl-main">
+          <div class="tl-value" id="tl-fc-1h">—</div>
+          <div class="tl-conf-row">
+            <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-fc-1h" style="width:0%"></div></div>
+            <span class="tl-conf-pct" id="tl-conf-fc-1h-pct">—</span>
+          </div>
+        </div>
+        <span class="tl-badge" id="tl-fc-badge-1h">—</span>
+        <button class="tl-info-btn" onclick="tlOpenPopup('fc-1h')" aria-label="1 hour forecast details">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
+      </div>
+
+      <!-- 6 hour forecast -->
+      <div class="tl-row">
+        <div class="tl-dot"></div>
+        <span class="tl-frame">6 hour</span>
+        <div class="tl-main">
+          <div class="tl-value" id="tl-fc-6h">—</div>
+          <div class="tl-conf-row">
+            <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-fc-6h" style="width:0%"></div></div>
+            <span class="tl-conf-pct" id="tl-conf-fc-6h-pct">—</span>
+          </div>
+        </div>
+        <span class="tl-badge" id="tl-fc-badge-6h">—</span>
+        <button class="tl-info-btn" onclick="tlOpenPopup('fc-6h')" aria-label="6 hour forecast details">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
+      </div>
+
+      <!-- 24 hour forecast -->
+      <div class="tl-row">
+        <div class="tl-dot"></div>
+        <span class="tl-frame">24 hour</span>
+        <div class="tl-main">
+          <div class="tl-value" id="tl-fc-24h">—</div>
+          <div class="tl-conf-row">
+            <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-fc-24h" style="width:0%"></div></div>
+            <span class="tl-conf-pct" id="tl-conf-fc-24h-pct">—</span>
+          </div>
+        </div>
+        <span class="tl-badge" id="tl-fc-badge-24h">—</span>
+        <button class="tl-info-btn" onclick="tlOpenPopup('fc-24h')" aria-label="24 hour forecast details">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
       </div>
     </div>
-    <span class="tl-badge" id="tl-badge-4h">—</span>
-    <button class="tl-info-btn" onclick="tlOpenPopup('4h')" aria-label="4 hour signal details">
-      <i class="fa-solid fa-circle-info"></i>
-    </button>
-  </div>
 
-  <!-- 24 hour signal -->
-  <div class="tl-row">
-    <div class="tl-dot"></div>
-    <span class="tl-frame">24 hour</span>
-    <div class="tl-main">
-      <div class="tl-value" id="tl-sig-24h">—</div>
-      <div class="tl-conf-row">
-        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-24h-sig" style="width:0%"></div></div>
-        <span class="tl-conf-pct" id="tl-conf-24h-sig-pct">—</span>
+    <!-- Market Signal -->
+    <div class="predict-card">
+      <h3><i class="fa-solid fa-gauge-high"></i>Market Signal</h3>
+      <div class="signal-grid">
+        <div class="sig-gauge-row">
+          <span class="sig-name" style="color:var(--green)">BUY</span>
+          <div class="sig-gauge-bar"><div class="sig-gauge-fill buy" id="sig-buy" style="width:0%"></div></div>
+          <span class="sig-pct" id="sig-buy-pct" style="color:var(--green)">—</span>
+        </div>
+        <div class="sig-gauge-row">
+          <span class="sig-name" style="color:var(--gold)">HLD</span>
+          <div class="sig-gauge-bar"><div class="sig-gauge-fill hold" id="sig-hold" style="width:0%"></div></div>
+          <span class="sig-pct" id="sig-hold-pct" style="color:var(--gold)">—</span>
+        </div>
+        <div class="sig-gauge-row">
+          <span class="sig-name" style="color:var(--red)">SELL</span>
+          <div class="sig-gauge-bar"><div class="sig-gauge-fill sell" id="sig-sell" style="width:0%"></div></div>
+          <span class="sig-pct" id="sig-sell-pct" style="color:var(--red)">—</span>
+        </div>
       </div>
     </div>
-    <span class="tl-badge" id="tl-badge-24h-sig">—</span>
-    <button class="tl-info-btn" onclick="tlOpenPopup('24h-sig')" aria-label="24 hour signal details">
-      <i class="fa-solid fa-circle-info"></i>
-    </button>
-  </div>
-</div>
 
-<!-- Price Forecast card -->
-<div class="tl-outer-card">
-  <div class="tl-card-header">
-    <i class="fa-solid fa-chart-line"></i>
-    <span class="tl-card-header-label">Price Forecast</span>
-  </div>
-
-  <!-- 1 hour forecast -->
-  <div class="tl-row">
-    <div class="tl-dot"></div>
-    <span class="tl-frame">1 hour</span>
-    <div class="tl-main">
-      <div class="tl-value" id="tl-fc-1h">—</div>
-      <div class="tl-conf-row">
-        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-fc-1h" style="width:0%"></div></div>
-        <span class="tl-conf-pct" id="tl-conf-fc-1h-pct">—</span>
+    <!-- Market Sentiment -->
+    <div class="predict-card">
+      <h3><i class="fa-solid fa-heart-pulse"></i>Market Sentiment</h3>
+      <div class="sentiment-arc">
+        <div class="sentiment-big" id="sentiment-emoji">⚖️</div>
+        <div class="sentiment-lbl" id="sentiment-txt">Calculating...</div>
       </div>
     </div>
-    <span class="tl-badge" id="tl-fc-badge-1h">—</span>
-    <button class="tl-info-btn" onclick="tlOpenPopup('fc-1h')" aria-label="1 hour forecast details">
-      <i class="fa-solid fa-circle-info"></i>
-    </button>
-  </div>
 
-  <!-- 6 hour forecast -->
-  <div class="tl-row">
-    <div class="tl-dot"></div>
-    <span class="tl-frame">6 hour</span>
-    <div class="tl-main">
-      <div class="tl-value" id="tl-fc-6h">—</div>
-      <div class="tl-conf-row">
-        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-fc-6h" style="width:0%"></div></div>
-        <span class="tl-conf-pct" id="tl-conf-fc-6h-pct">—</span>
+    <!-- Key Price Levels -->
+    <div class="predict-card">
+      <h3><i class="fa-solid fa-layer-group"></i>Key Price Levels</h3>
+      <div class="level-row"><span class="level-name">Strong Resistance</span><span class="level-val" id="lvl-r2">—</span><span class="level-badge badge-resist">R2</span></div>
+      <div class="level-row"><span class="level-name">Resistance</span><span class="level-val" id="lvl-r1">—</span><span class="level-badge badge-resist">R1</span></div>
+      <div class="level-row current-level"><span class="level-name" style="font-weight:700;color:var(--ink)">Current Price</span><span class="level-val" id="lvl-curr" style="color:var(--gold)">—</span><span class="level-badge badge-neutral">NOW</span></div>
+      <div class="level-row"><span class="level-name">Support</span><span class="level-val" id="lvl-s1">—</span><span class="level-badge badge-support">S1</span></div>
+      <div class="level-row"><span class="level-name">Strong Support</span><span class="level-val" id="lvl-s2">—</span><span class="level-badge badge-support">S2</span></div>
+    </div>
+
+    <!-- Model Inputs -->
+    <div class="predict-card">
+      <h3><i class="fa-solid fa-sliders"></i>Model Inputs</h3>
+      <div class="factor-row">
+        <div class="factor-icon" style="background:var(--gold-bg);color:var(--gold)"><i class="fa-solid fa-chart-simple"></i></div>
+        <div class="factor-text"><div class="factor-name">Daily ATR</div><div class="factor-desc" id="f-atr-desc">Volatility anchor</div></div>
+        <div class="factor-sig" id="f-atr-sig" style="background:var(--gold-bg);color:var(--gold)">—</div>
+      </div>
+      <div class="factor-row">
+        <div class="factor-icon" style="background:var(--green-bg);color:var(--green)"><i class="fa-solid fa-arrow-trend-up"></i></div>
+        <div class="factor-text"><div class="factor-name">Momentum</div><div class="factor-desc" id="f-mom-desc">24h directional bias</div></div>
+        <div class="factor-sig" id="f-mom-sig" style="background:var(--green-bg);color:var(--green)">—</div>
+      </div>
+      <div class="factor-row">
+        <div class="factor-icon" style="background:var(--bg-3);color:var(--ink-2)"><i class="fa-solid fa-wave-square"></i></div>
+        <div class="factor-text"><div class="factor-name">Intraday Volatility</div><div class="factor-desc" id="f-vol-desc">High-low vs ATR baseline</div></div>
+        <div class="factor-sig" id="f-vol-sig" style="background:var(--bg-3);color:var(--ink-2)">—</div>
+      </div>
+      <div class="factor-row">
+        <div class="factor-icon" style="background:var(--gold-bg);color:var(--gold)"><i class="fa-solid fa-arrows-rotate"></i></div>
+        <div class="factor-text"><div class="factor-name">Mean Reversion</div><div class="factor-desc">Counter-trend pull probability</div></div>
+        <div class="factor-sig" id="f-mr-sig" style="background:var(--gold-bg);color:var(--gold)">—</div>
+      </div>
+      <div class="factor-row">
+        <div class="factor-icon" style="background:var(--red-bg);color:var(--red)"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="factor-text"><div class="factor-name">Market Session</div><div class="factor-desc" id="f-sess-desc">Active session multiplier</div></div>
+        <div class="factor-sig" id="f-sess-sig" style="background:var(--red-bg);color:var(--red)">—</div>
       </div>
     </div>
-    <span class="tl-badge" id="tl-fc-badge-6h">—</span>
-    <button class="tl-info-btn" onclick="tlOpenPopup('fc-6h')" aria-label="6 hour forecast details">
-      <i class="fa-solid fa-circle-info"></i>
-    </button>
-  </div>
 
-  <!-- 24 hour forecast -->
-  <div class="tl-row">
-    <div class="tl-dot"></div>
-    <span class="tl-frame">24 hour</span>
-    <div class="tl-main">
-      <div class="tl-value" id="tl-fc-24h">—</div>
-      <div class="tl-conf-row">
-        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-fc-24h" style="width:0%"></div></div>
-        <span class="tl-conf-pct" id="tl-conf-fc-24h-pct">—</span>
-      </div>
+    <div class="disclaimer">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      Not financial advice. Predictions are algorithmic estimates based on ATR volatility modelling. XAU/USD carries significant market risk. Always consult a licensed financial professional before trading.
     </div>
-    <span class="tl-badge" id="tl-fc-badge-24h">—</span>
-    <button class="tl-info-btn" onclick="tlOpenPopup('fc-24h')" aria-label="24 hour forecast details">
-      <i class="fa-solid fa-circle-info"></i>
-    </button>
-  </div>
-</div>
 
-    <div class="predict-card"><h3><i class="fa-solid fa-gauge-high"></i>Market Signal</h3><div class="signal-grid"><div class="sig-gauge-row"><span class="sig-name" style="color:var(--green)">BUY</span><div class="sig-gauge-bar"><div class="sig-gauge-fill buy" id="sig-buy" style="width:0%"></div></div><span class="sig-pct" id="sig-buy-pct" style="color:var(--green)">—</span></div><div class="sig-gauge-row"><span class="sig-name" style="color:var(--gold)">HLD</span><div class="sig-gauge-bar"><div class="sig-gauge-fill hold" id="sig-hold" style="width:0%"></div></div><span class="sig-pct" id="sig-hold-pct" style="color:var(--gold)">—</span></div><div class="sig-gauge-row"><span class="sig-name" style="color:var(--red)">SELL</span><div class="sig-gauge-bar"><div class="sig-gauge-fill sell" id="sig-sell" style="width:0%"></div></div><span class="sig-pct" id="sig-sell-pct" style="color:var(--red)">—</span></div></div></div>
-    <div class="predict-card"><h3><i class="fa-solid fa-heart-pulse"></i>Market Sentiment</h3><div class="sentiment-arc"><div class="sentiment-big" id="sentiment-emoji">⚖️</div><div class="sentiment-lbl" id="sentiment-txt">Calculating...</div></div></div>
-    <div class="predict-card"><h3><i class="fa-solid fa-layer-group"></i>Key Price Levels</h3><div class="level-row"><span class="level-name">Strong Resistance</span><span class="level-val" id="lvl-r2">—</span><span class="level-badge badge-resist">R2</span></div><div class="level-row"><span class="level-name">Resistance</span><span class="level-val" id="lvl-r1">—</span><span class="level-badge badge-resist">R1</span></div><div class="level-row current-level"><span class="level-name" style="font-weight:700;color:var(--ink);">Current Price</span><span class="level-val" id="lvl-curr" style="color:var(--gold)">—</span><span class="level-badge badge-neutral">NOW</span></div><div class="level-row"><span class="level-name">Support</span><span class="level-val" id="lvl-s1">—</span><span class="level-badge badge-support">S1</span></div><div class="level-row"><span class="level-name">Strong Support</span><span class="level-val" id="lvl-s2">—</span><span class="level-badge badge-support">S2</span></div></div>
-    <div class="predict-card"><h3><i class="fa-solid fa-sliders"></i>Model Inputs</h3><div class="factor-row"><div class="factor-icon" style="background:var(--gold-bg);color:var(--gold)"><i class="fa-solid fa-chart-simple"></i></div><div class="factor-text"><div class="factor-name">Daily ATR</div><div class="factor-desc" id="f-atr-desc">Volatility anchor for all timeframe bands</div></div><div class="factor-sig" id="f-atr-sig" style="background:var(--gold-bg);color:var(--gold)">—</div></div><div class="factor-row"><div class="factor-icon" style="background:var(--green-bg);color:var(--green)"><i class="fa-solid fa-arrow-trend-up"></i></div><div class="factor-text"><div class="factor-name">Momentum</div><div class="factor-desc" id="f-mom-desc">24h directional bias</div></div><div class="factor-sig" id="f-mom-sig" style="background:var(--green-bg);color:var(--green)">—</div></div><div class="factor-row"><div class="factor-icon" style="background:var(--bg-3);color:var(--ink-2)"><i class="fa-solid fa-wave-square"></i></div><div class="factor-text"><div class="factor-name">Intraday Volatility</div><div class="factor-desc" id="f-vol-desc">High-low spread vs ATR baseline</div></div><div class="factor-sig" id="f-vol-sig" style="background:var(--bg-3);color:var(--ink-2)">—</div></div><div class="factor-row"><div class="factor-icon" style="background:var(--gold-bg);color:var(--gold)"><i class="fa-solid fa-arrows-rotate"></i></div><div class="factor-text"><div class="factor-name">Mean Reversion</div><div class="factor-desc">Counter-trend pull probability</div></div><div class="factor-sig" id="f-mr-sig" style="background:var(--gold-bg);color:var(--gold)">—</div></div><div class="factor-row"><div class="factor-icon" style="background:var(--red-bg);color:var(--red)"><i class="fa-solid fa-building-columns"></i></div><div class="factor-text"><div class="factor-name">Market Session</div><div class="factor-desc" id="f-sess-desc">Active trading session multiplier</div></div><div class="factor-sig" id="f-sess-sig" style="background:var(--red-bg);color:var(--red)">—</div></div></div>
+    <footer>
+      <div class="footer-links">
+        <a class="footer-link" href="/about">About</a>
+        <a class="footer-link" href="/contact">Contact</a>
+        <a class="footer-link" href="/disclaimer">Disclaimer</a>
+      </div>
+      <div class="footer-disc">Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates, not financial advice.</div>
+      <div class="footer-copy">© 2026 XauTracker.com · Powered by TwelveData</div>
+    </footer>
 
-    <div class="disclaimer"><i class="fa-solid fa-circle-exclamation"></i>Not financial advice. Predictions are algorithmic estimates based on ATR volatility modelling and technical factors. XAU/USD carries significant market risk. Always consult a licensed financial professional before making any trading decision.</div>
-    <footer><div class="footer-links"><a class="footer-link" href="/about">About</a><a class="footer-link" href="/contact">Contact</a><a class="footer-link" href="/disclaimer">Disclaimer</a></div><div class="footer-disc">Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates, not financial advice. Consult a licensed professional before trading.</div><div class="footer-copy">© 2026 XauTracker.com &nbsp;·&nbsp; Powered by TwelveData</div></footer>
+  </div><!-- /content -->
+
+  <!-- Trial expired overlay -->
+  <div id="trial-expired-overlay">
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:32px 24px;max-width:340px;width:100%;text-align:center;">
+      <div style="width:52px;height:52px;border-radius:50%;background:var(--red-bg);border:1px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:22px;">⛔</div>
+      <div style="font-size:18px;font-weight:800;color:var(--ink);margin-bottom:10px;line-height:1.3;">Your access has expired</div>
+      <div style="font-size:13px;color:var(--ink-3);line-height:1.65;margin-bottom:24px;">Please contact us to reactivate your account.</div>
+      <a href="/contact" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:var(--ink);color:var(--bg);border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;">
+        <i class="fa-solid fa-envelope"></i> Contact Us
+      </a>
+      <button onclick="dashSignOut()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;width:100%;background:transparent;color:var(--ink-3);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
   </div>
+
+  <!-- Timeline popup overlay -->
   <div class="tl-overlay" id="tl-overlay" onclick="tlClosePopup()"></div>
 
-<div class="tl-popup" id="tl-popup">
-  <div class="tl-popup-handle"></div>
-  <div class="tl-popup-kicker" id="tl-popup-kicker">—</div>
-  <div class="tl-popup-signal" id="tl-popup-signal">—</div>
-  <div class="tl-popup-dir" id="tl-popup-dir"></div>
-  <div class="tl-popup-reason" id="tl-popup-reason">—</div>
-  <div class="tl-popup-divider"></div>
-  <div class="tl-popup-meta-row">
-    <span class="tl-popup-meta-label">Confidence</span>
-    <span class="tl-popup-meta-val" id="tl-popup-conf">—</span>
-  </div>
-  <div class="tl-popup-meta-row" id="tl-popup-range-row">
-    <span class="tl-popup-meta-label">±1σ band</span>
-    <span class="tl-popup-meta-val" id="tl-popup-range">—</span>
-  </div>
-  <button class="tl-popup-close" onclick="tlClosePopup()">
-    <i class="fa-solid fa-xmark"></i> Close me
-  </button>
-</div>
-</div>
-<div id="toast"></div>
-  <div id="trial-expired-overlay" style="display:none;position:fixed;inset:0;z-index:499;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);background:rgba(0,0,0,0.45);padding:24px;">
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:32px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.2);">
-    <div style="width:52px;height:52px;border-radius:50%;background:var(--red-bg);border:1px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:22px;"></div>
-    <div style="font-size:18px;font-weight:800;color:var(--ink);margin-bottom:10px;line-height:1.3;">Oops, your current access has expired</div>
-    <div style="font-size:13px;color:var(--ink-3);line-height:1.65;margin-bottom:24px;">Please contact us below to activate your account and continue accessing gold market predictions.</div>
-    <a href="/contact" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:var(--ink);color:var(--bg);border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;">
-      <i class="fa-solid fa-envelope"></i> Contact Us
-    </a>
-    <button onclick="dashSignOut()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;width:100%;background:transparent;color:var(--ink-3);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;">
-      <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+  <!-- Timeline bottom sheet -->
+  <div class="tl-popup" id="tl-popup">
+    <div class="tl-popup-handle"></div>
+    <div class="tl-popup-kicker" id="tl-popup-kicker">—</div>
+    <div class="tl-popup-signal" id="tl-popup-signal">—</div>
+    <div class="tl-popup-dir" id="tl-popup-dir"></div>
+    <div class="tl-popup-reason" id="tl-popup-reason">—</div>
+    <div class="tl-popup-divider"></div>
+    <div class="tl-popup-meta-row">
+      <span class="tl-popup-meta-label">Confidence</span>
+      <span class="tl-popup-meta-val" id="tl-popup-conf">—</span>
+    </div>
+    <div class="tl-popup-meta-row" id="tl-popup-range-row">
+      <span class="tl-popup-meta-label">±1σ band</span>
+      <span class="tl-popup-meta-val" id="tl-popup-range">—</span>
+    </div>
+    <button class="tl-popup-close" onclick="tlClosePopup()">
+      <i class="fa-solid fa-xmark"></i> Dismiss
     </button>
   </div>
-</div>
+
+</div><!-- /app -->
+<div id="toast"></div>
+
 <script src="js/api.js"></script>
+
 <script>
-  function openMenu(){ document.getElementById('drawer').classList.add('open'); document.getElementById('overlay').classList.add('open'); document.body.style.overflow='hidden'; }
-  function closeMenu(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); document.body.style.overflow=''; }
-  function applyTheme(theme){ document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('xau-theme', theme); const isDark=theme==='dark'; document.getElementById('sw').classList.toggle('on', isDark); document.getElementById('theme-icon').className=isDark?'fa-solid fa-sun':'fa-solid fa-moon'; document.getElementById('theme-label').textContent=isDark?'Light Mode':'Dark Mode'; }
-  function toggleTheme(){ const cur=document.documentElement.getAttribute('data-theme') || 'light'; applyTheme(cur==='dark'?'light':'dark'); }
-  applyTheme(localStorage.getItem('xau-theme') || 'light');
-</script>
-<script>
-/* ═══════════════════════════════════════════════════════════════════
-   REALISTIC GOLD PREDICTION ENGINE
-   ─────────────────────────────────────────────────────────────────
-   Core formula: σ(t) = ATR × √(t / 1440)
+/* ══════════════════════════════════════════════════════════════
+   THEME + MENU
+══════════════════════════════════════════════════════════════ */
+function openMenu()  { document.getElementById('drawer').classList.add('open'); document.getElementById('overlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeMenu() { document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); document.body.style.overflow=''; }
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('xau-theme', theme);
+  const isDark = theme === 'dark';
+  document.getElementById('sw').classList.toggle('on', isDark);
+  document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  document.getElementById('theme-label').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+}
+function toggleTheme() { applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
+applyTheme(localStorage.getItem('xau-theme') || 'light');
 
-   ATR (Average True Range) is the standard measure of daily
-   gold volatility — typically $20–$40 for XAU/USD.
-
-   The square-root-of-time rule (from Brownian motion theory)
-   scales that daily volatility down to any sub-day timeframe:
-
-     5 min:  ATR × √(5/1440)    = ATR × 0.0589  ≈ $1.2–$2.4
-     10 min: ATR × √(10/1440)   = ATR × 0.0833  ≈ $1.7–$3.3
-     15 min: ATR × √(15/1440)   = ATR × 0.1021  ≈ $2.0–$4.1
-     1 hour: ATR × √(60/1440)   = ATR × 0.2041  ≈ $4.1–$8.2
-     6 hour: ATR × √(360/1440)  = ATR × 0.5000  ≈ $10–$20
-     24 hour:ATR × √(1440/1440) = ATR × 1.0000  ≈ $20–$40
-
-   Drift is calculated separately in dollar terms from:
-     - Momentum score (based on today's % change)
-     - Session multiplier (NY session is most volatile)
-     - Mean reversion pull (larger moves attract counter-pressure)
-
-   Confidence degrades with time because uncertainty compounds.
-═══════════════════════════════════════════════════════════════════ */
-
-/* ── Format helpers ── */
-const fmtP = v => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+/* ══════════════════════════════════════════════════════════════
+   FORMAT HELPERS
+══════════════════════════════════════════════════════════════ */
+const fmtP = v => v.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
 const fmtD = v => (v >= 0 ? '+' : '') + v.toFixed(2);
 
-function chgHTML(target, base) {
-  const diff = target - base;
-  const pct  = (diff / base) * 100;
-  const up   = diff >= 0;
-  return `<span style="color:${up ? 'var(--green)' : 'var(--red)'}">`
-       + `${fmtD(diff)} (${fmtD(pct)}%)</span>`;
-}
-
-function badgeInfo(target, base, thresholdDollar) {
-  /* threshold = min dollar move to count as bull/bear
-     For short frames: $0.30. For longer: $1.00+ */
-  const diff = target - base;
-  if (diff >  thresholdDollar) return { cls: 'badge-bull', txt: 'BULL' };
-  if (diff < -thresholdDollar) return { cls: 'badge-bear', txt: 'BEAR' };
-  return { cls: 'badge-flat', txt: 'FLAT' };
-}
-
-/* ── Market session detection (UTC hours) ── */
+/* ══════════════════════════════════════════════════════════════
+   MARKET SESSION
+══════════════════════════════════════════════════════════════ */
 function getSessionInfo() {
   const h = new Date().getUTCHours();
-
-  /* Session definitions in UTC:
-     Asian:  00:00–08:00  (Tokyo / Sydney)  — low volatility
-     London: 07:00–16:00  (Frankfurt / London) — medium-high
-     NY:     13:00–21:00  (New York)         — highest volatility
-     Overlap London+NY: 13:00–16:00          — peak volatility */
-
-  const asian  = h >= 0  && h < 8;
-  const london = h >= 7  && h < 16;
-  const ny     = h >= 13 && h < 21;
+  const asian = h >= 0 && h < 8;
+  const london = h >= 7 && h < 16;
+  const ny = h >= 13 && h < 21;
   const overlap = london && ny;
-
   let sessionMultiplier, sessionLabel, volLabel;
-
-  if (overlap) {
-    sessionMultiplier = 1.35;
-    sessionLabel = 'London + NY Overlap';
-    volLabel = 'PEAK';
-  } else if (ny) {
-    sessionMultiplier = 1.20;
-    sessionLabel = 'New York';
-    volLabel = 'HIGH';
-  } else if (london) {
-    sessionMultiplier = 1.10;
-    sessionLabel = 'London';
-    volLabel = 'MEDIUM';
-  } else if (asian) {
-    sessionMultiplier = 0.70;
-    sessionLabel = 'Asian';
-    volLabel = 'LOW';
-  } else {
-    /* Off-hours gap */
-    sessionMultiplier = 0.55;
-    sessionLabel = 'Off-Hours';
-    volLabel = 'MINIMAL';
-  }
-
+  if (overlap)      { sessionMultiplier=1.35; sessionLabel='London + NY Overlap'; volLabel='PEAK'; }
+  else if (ny)      { sessionMultiplier=1.20; sessionLabel='New York'; volLabel='HIGH'; }
+  else if (london)  { sessionMultiplier=1.10; sessionLabel='London'; volLabel='MEDIUM'; }
+  else if (asian)   { sessionMultiplier=0.70; sessionLabel='Asian'; volLabel='LOW'; }
+  else              { sessionMultiplier=0.55; sessionLabel='Off-Hours'; volLabel='MINIMAL'; }
   return { asian, london, ny, overlap, sessionMultiplier, sessionLabel, volLabel };
 }
 
-/* ── ATR estimator ── */
+/* ══════════════════════════════════════════════════════════════
+   ATR ESTIMATOR
+══════════════════════════════════════════════════════════════ */
 function estimateATR(high, low, price, chp) {
-  /* In live mode we only have today's high, low, and 24h change.
-     We use these to estimate ATR:
-       - True range = high - low (best available)
-       - Expand it slightly for ATR since we don't have yesterday's close
-       - Clamp to realistic gold range: $10–$80 */
   const intradayRange = high - low;
   const changeRange   = Math.abs(chp / 100 * price) * 2;
-  const rawATR        = Math.max(intradayRange, changeRange);
-  /* Gold average daily ATR is ~$25–$35, clamp to be realistic */
-  return Math.min(Math.max(rawATR, 10), 80);
+  return Math.min(Math.max(Math.max(intradayRange, changeRange), 10), 80);
 }
 
-/* ── Core prediction engine ── */
+/* ══════════════════════════════════════════════════════════════
+   CORE PREDICTION ENGINE
+══════════════════════════════════════════════════════════════ */
 function buildPredictions(price, chp, high, low) {
-
-  /* Step 1: Estimate daily ATR */
   const atr = estimateATR(high, low, price, chp);
-
-  /* Step 2: Session context */
   const session = getSessionInfo();
-
-  /* Step 3: Momentum in dollar terms
-     chp is % change for the day. We convert to a dollar directional bias.
-     Scale it to a reasonable hourly drift — a 0.5% day = $15 on $3000 gold,
-     meaning roughly $0.60/hour directional component. */
   const dailyMomentumDollar = (chp / 100) * price;
-  const hourlyDrift         = dailyMomentumDollar / 24;
-
-  /* Step 4: Mean reversion pull
-     If price has moved far already today, counter-trend pressure builds.
-     We model this as a dampening factor on drift. */
-  const movePct    = Math.abs(chp);
-  const mrStrength = Math.min(movePct / 3.0, 0.80); /* 0–80% dampening */
-
-  /* Final effective drift per hour (dollar) — dampened by mean reversion */
+  const hourlyDrift = dailyMomentumDollar / 24;
+  const movePct = Math.abs(chp);
+  const mrStrength = Math.min(movePct / 3.0, 0.80);
   const effectiveDrift = hourlyDrift * (1 - mrStrength * 0.6);
 
-  /* Step 5: σ(t) = ATR × √(minutes / 1440) × sessionMultiplier
-     This gives us the 1-sigma expected move for each timeframe. */
   function sigma(minutes) {
     return atr * Math.sqrt(minutes / 1440) * session.sessionMultiplier;
   }
-
-  /* Step 6: Build each forecast
-     target = price + drift_for_timeframe + noise
-     noise  = small random perturbation within ±0.25σ
-     band   = ±1σ around the target (68% probability range) */
   function forecast(minutes) {
-    const s         = sigma(minutes);
-    const driftFrac = minutes / 60;           /* scale hourly drift to this frame */
-    const drift     = effectiveDrift * driftFrac;
-    const noise     = s * (Math.random() * 0.5 - 0.25); /* ±0.25σ random noise */
-    const target    = parseFloat((price + drift + noise).toFixed(2));
-    const bandLow   = parseFloat((target - s).toFixed(2));
-    const bandHigh  = parseFloat((target + s).toFixed(2));
-
-    /* Confidence: starts high for short frames, degrades for longer ones.
-       Also degrades when volatility is high (wide ATR). */
-    const baseConf  = Math.max(30, 96 - (minutes / 1440) * 55);
-    const volPenalty = Math.min((atr - 20) / 2, 15); /* ATR > $20 reduces confidence */
-    const conf      = Math.round(Math.max(28, baseConf - volPenalty));
-
+    const s        = sigma(minutes);
+    const drift    = effectiveDrift * (minutes / 60);
+    const noise    = s * (Math.random() * 0.5 - 0.25);
+    const target   = parseFloat((price + drift + noise).toFixed(2));
+    const bandLow  = parseFloat((target - s).toFixed(2));
+    const bandHigh = parseFloat((target + s).toFixed(2));
+    const baseConf = Math.max(30, 96 - (minutes / 1440) * 55);
+    const volPenalty = Math.min((atr - 20) / 2, 15);
+    const conf     = Math.round(Math.max(28, baseConf - volPenalty));
     return { target, bandLow, bandHigh, conf, sigma: s };
   }
-
   return {
-    atr,
-    session,
-    mrStrength,
-    effectiveDrift,
-    f5m:  forecast(5),
-    f10m: forecast(10),
-    f15m: forecast(15),
-    f1h:  forecast(60),
-    f6h:  forecast(360),
-    f24h: forecast(1440),
+    atr, session, mrStrength, effectiveDrift,
+    f1h: forecast(60), f6h: forecast(360), f24h: forecast(1440),
   };
 }
 
-  /* ── Entry timing engine ── */
-/* ── Signal-based entry engine ── */
+/* ══════════════════════════════════════════════════════════════
+   ENTRY SIGNAL ENGINE
+══════════════════════════════════════════════════════════════ */
 function computeEntrySignals(price, chp, high, low, atr, sess) {
+  const isUp       = chp >= 0;
+  const absMom     = Math.abs(chp);
+  const rangePos   = (price - low) / (high - low);
+  const pseudoRSI  = rangePos * 100;
+  const momStrong  = absMom >= 0.5;
+  const momMod     = absMom >= 0.2 && absMom < 0.5;
+  const overbought = pseudoRSI > 72;
+  const oversold   = pseudoRSI < 28;
+  const neutral    = !overbought && !oversold;
+  const highVol    = atr > 35;
+  const poorSess   = !(sess.overlap || sess.ny || sess.london);
 
-  /* ── Core signal ingredients ── */
-  const isUp        = chp >= 0;
-  const absMom      = Math.abs(chp);
-
-  /* Pseudo-RSI from intraday range position:
-     Where is price sitting within today's high-low range? */
-  const rangePos    = (price - low) / (high - low); /* 0 = at low, 1 = at high */
-  const pseudoRSI   = rangePos * 100;
-
-  /* Momentum strength */
-  const momStrong   = absMom >= 0.5;
-  const momModerate = absMom >= 0.2 && absMom < 0.5;
-  const momWeak     = absMom < 0.2;
-
-  /* Overbought / oversold via range position */
-  const overbought  = pseudoRSI > 72;
-  const oversold    = pseudoRSI < 28;
-  const neutral     = !overbought && !oversold;
-
-  /* Volatility context */
-  const highVol     = atr > 35;
-  const lowVol      = atr < 18;
-
-  /* Session quality */
-  const goodSession = sess.overlap || sess.ny || sess.london;
-  const poorSession = !goodSession; /* Asian / off-hours */
-
-  /* ── 1-Hour Entry ──
-     1h needs: momentum present, not overbought/oversold against direction,
-     decent session. Signal degrades in Asian hours. */
-  let sig1h, dir1h, reason1h, conf1h, badge1h;
-
-  if (poorSession) {
-    sig1h   = 'WAIT';
-    dir1h   = 'Low liquidity — avoid 1h entries';
-    reason1h = `Asian/off-hours session reduces follow-through. ATR: $${atr.toFixed(2)}`;
-    conf1h  = 38;
-    badge1h = { cls: 'badge-flat', txt: 'WAIT' };
-  } else if (momStrong && isUp && !overbought) {
-    sig1h   = 'ENTER LONG';
-    dir1h   = `Bullish · +${absMom.toFixed(2)}% momentum confirmed`;
-    reason1h = `Strong upward momentum, price not overbought (RSI≈${pseudoRSI.toFixed(0)}). Good 1h long setup.`;
-    conf1h  = highVol ? 70 : 78;
-    badge1h = { cls: 'badge-bull', txt: 'LONG' };
-  } else if (momStrong && !isUp && !oversold) {
-    sig1h   = 'ENTER SHORT';
-    dir1h   = `Bearish · ${chp.toFixed(2)}% momentum confirmed`;
-    reason1h = `Strong downward momentum, price not oversold (RSI≈${pseudoRSI.toFixed(0)}). Good 1h short setup.`;
-    conf1h  = highVol ? 70 : 78;
-    badge1h = { cls: 'badge-bear', txt: 'SHORT' };
-  } else if (momStrong && isUp && overbought) {
-    sig1h   = 'CAUTION';
-    dir1h   = 'Bullish momentum but overbought';
-    reason1h = `Price near day high (RSI≈${pseudoRSI.toFixed(0)}). Wait for a pullback before entering long.`;
-    conf1h  = 52;
-    badge1h = { cls: 'badge-flat', txt: 'WAIT' };
-  } else if (momStrong && !isUp && oversold) {
-    sig1h   = 'CAUTION';
-    dir1h   = 'Bearish momentum but oversold';
-    reason1h = `Price near day low (RSI≈${pseudoRSI.toFixed(0)}). Wait for a bounce before entering short.`;
-    conf1h  = 52;
-    badge1h = { cls: 'badge-flat', txt: 'WAIT' };
-  } else if (momModerate && isUp && neutral) {
-    sig1h   = 'ENTER LONG';
-    dir1h   = `Mild bullish · +${absMom.toFixed(2)}% · neutral RSI`;
-    reason1h = `Moderate upward move with neutral range position. Acceptable 1h long entry.`;
-    conf1h  = 62;
-    badge1h = { cls: 'badge-bull', txt: 'LONG' };
-  } else if (momModerate && !isUp && neutral) {
-    sig1h   = 'ENTER SHORT';
-    dir1h   = `Mild bearish · ${chp.toFixed(2)}% · neutral RSI`;
-    reason1h = `Moderate downward move with neutral range position. Acceptable 1h short entry.`;
-    conf1h  = 62;
-    badge1h = { cls: 'badge-bear', txt: 'SHORT' };
-  } else {
-    sig1h   = 'NO SIGNAL';
-    dir1h   = 'Momentum too weak for a 1h trade';
-    
-    conf1h  = 40;
-    badge1h = { cls: 'badge-flat', txt: 'SKIP' };
+  function mk(sig, dir, reason, conf, bTxt) {
+    const bCls = bTxt==='LONG' ? 'bull' : bTxt==='SHORT' ? 'bear' : bTxt==='FLAT' ? 'flat' : 'wait';
+    return { sig, dir, reason, conf, badgeTxt: bTxt, badgeCls: bCls };
   }
 
-  /* ── 4-Hour Entry ──
-     4h trades need stronger conviction. Requires momentum ≥ 0.4%
-     OR strong range position (overbought/oversold reversal setup).
-     Session matters less since 4h holds through sessions. */
-  let sig4h, dir4h, reason4h, conf4h, badge4h;
+  let e10m, e1h, e4h, e24h;
 
+  /* 10m */
+  if (poorSess) e10m = mk('WAIT','Low liquidity',`Asian/off-hours session. Poor conditions. ATR: $${atr.toFixed(2)}`,35,'WAIT');
+  else if (momStrong && isUp && !overbought) e10m = mk('ENTER LONG',`Bullish · +${absMom.toFixed(2)}% momentum`,`Strong momentum, not overbought (RSI≈${pseudoRSI.toFixed(0)}). 10m long scalp setup.`,highVol?65:74,'LONG');
+  else if (momStrong && !isUp && !oversold) e10m = mk('ENTER SHORT',`Bearish · ${chp.toFixed(2)}% momentum`,`Strong downward momentum, not oversold (RSI≈${pseudoRSI.toFixed(0)}). 10m short scalp setup.`,highVol?65:74,'SHORT');
+  else if (overbought && isUp) e10m = mk('CAUTION','Overbought — scalp risk high',`Price at day high (RSI≈${pseudoRSI.toFixed(0)}). 10m longs risk a sharp reversal.`,45,'WAIT');
+  else if (oversold && !isUp) e10m = mk('CAUTION','Oversold — scalp risk high',`Price at day low (RSI≈${pseudoRSI.toFixed(0)}). 10m shorts risk a snap-back.`,45,'WAIT');
+  else if (momMod && neutral) e10m = mk(isUp?'ENTER LONG':'ENTER SHORT',`Mild ${isUp?'bullish':'bearish'} · ${isUp?'+':''}${chp.toFixed(2)}%`,`Moderate momentum, neutral range. Acceptable 10m scalp.`,58,isUp?'LONG':'SHORT');
+  else e10m = mk('NO SIGNAL','Momentum too weak',`Insufficient conviction for a 10m trade.`,36,'SKIP');
+
+  /* 1h */
+  if (poorSess) e1h = mk('WAIT','Low liquidity — avoid 1h entries',`Asian/off-hours reduces follow-through. ATR: $${atr.toFixed(2)}`,38,'WAIT');
+  else if (momStrong && isUp && !overbought) e1h = mk('ENTER LONG',`Bullish · +${absMom.toFixed(2)}% confirmed`,`Strong upward momentum, not overbought (RSI≈${pseudoRSI.toFixed(0)}). Good 1h long setup.`,highVol?70:78,'LONG');
+  else if (momStrong && !isUp && !oversold) e1h = mk('ENTER SHORT',`Bearish · ${chp.toFixed(2)}% confirmed`,`Strong downward momentum, not oversold (RSI≈${pseudoRSI.toFixed(0)}). Good 1h short setup.`,highVol?70:78,'SHORT');
+  else if (momStrong && isUp && overbought) e1h = mk('CAUTION','Bullish but overbought',`Price near day high (RSI≈${pseudoRSI.toFixed(0)}). Wait for pullback before 1h long.`,52,'WAIT');
+  else if (momStrong && !isUp && oversold) e1h = mk('CAUTION','Bearish but oversold',`Price near day low (RSI≈${pseudoRSI.toFixed(0)}). Risk of snap-back on 1h.`,52,'WAIT');
+  else if (momMod && isUp && neutral) e1h = mk('ENTER LONG',`Mild bullish · +${absMom.toFixed(2)}% · neutral RSI`,`Moderate upward move, neutral range. Acceptable 1h long.`,62,'LONG');
+  else if (momMod && !isUp && neutral) e1h = mk('ENTER SHORT',`Mild bearish · ${chp.toFixed(2)}% · neutral RSI`,`Moderate downward move, neutral range. Acceptable 1h short.`,62,'SHORT');
+  else e1h = mk('NO SIGNAL','Momentum too weak for 1h trade',`Weak momentum or conflicting signals.`,40,'SKIP');
+
+  /* 4h */
   const strongBull4h = absMom >= 0.4 && isUp && !overbought;
   const strongBear4h = absMom >= 0.4 && !isUp && !oversold;
-  const reversalLong = oversold && absMom < 0.6;   /* oversold + not crashing = bounce candidate */
-  const reversalShort = overbought && absMom < 0.6; /* overbought + not surging = fade candidate */
+  if (strongBull4h) e4h = mk('ENTER LONG',`Bullish · +${absMom.toFixed(2)}% · room to run`,`Momentum strong for 4h trade. Not overbought (RSI≈${pseudoRSI.toFixed(0)}).`,sess.overlap?82:sess.ny?78:70,'LONG');
+  else if (strongBear4h) e4h = mk('ENTER SHORT',`Bearish · ${chp.toFixed(2)}% · room to fall`,`Momentum strong for 4h trade. Not oversold (RSI≈${pseudoRSI.toFixed(0)}).`,sess.overlap?82:sess.ny?78:70,'SHORT');
+  else if (oversold && absMom < 0.6) e4h = mk('REVERSAL LONG',`Oversold bounce · RSI≈${pseudoRSI.toFixed(0)}`,`Price near day low, declining momentum. Counter-trend 4h long possible. High risk.`,58,'LONG');
+  else if (overbought && absMom < 0.6) e4h = mk('REVERSAL SHORT',`Overbought fade · RSI≈${pseudoRSI.toFixed(0)}`,`Price near day high, weakening momentum. Counter-trend 4h short possible. High risk.`,58,'SHORT');
+  else if (absMom >= 0.4 && isUp && overbought) e4h = mk('WAIT','Bullish but overextended',`+${absMom.toFixed(2)}% already baked in. RSI≈${pseudoRSI.toFixed(0)}. Wait for 4h pullback.`,48,'WAIT');
+  else if (absMom >= 0.4 && !isUp && oversold) e4h = mk('WAIT','Bearish but oversold',`${chp.toFixed(2)}% drop extended. RSI≈${pseudoRSI.toFixed(0)}. Risk of snap-back.`,48,'WAIT');
+  else e4h = mk('NO SIGNAL','Insufficient momentum for 4h trade',`No clear 4h entry setup.`,35,'SKIP');
 
-  if (strongBull4h) {
-    sig4h   = 'ENTER LONG';
-    dir4h   = `Bullish · +${absMom.toFixed(2)}% · room to run`;
-    reason4h = `Momentum strong enough for 4h trade. Price not overbought (RSI≈${pseudoRSI.toFixed(0)}). Trend favors longs.`;
-    conf4h  = sess.overlap ? 82 : sess.ny ? 78 : 70;
-    badge4h = { cls: 'badge-bull', txt: 'LONG' };
-  } else if (strongBear4h) {
-    sig4h   = 'ENTER SHORT';
-    dir4h   = `Bearish · ${chp.toFixed(2)}% · room to fall`;
-    reason4h = `Momentum strong enough for 4h trade. Price not oversold (RSI≈${pseudoRSI.toFixed(0)}). Trend favors shorts.`;
-    conf4h  = sess.overlap ? 82 : sess.ny ? 78 : 70;
-    badge4h = { cls: 'badge-bear', txt: 'SHORT' };
-  } else if (reversalLong) {
-    sig4h   = 'REVERSAL LONG';
-    dir4h   = `Oversold bounce setup · RSI≈${pseudoRSI.toFixed(0)}`;
-    reason4h = `Price near day low with declining momentum. Counter-trend 4h long possible. High risk.`;
-    conf4h  = 58;
-    badge4h = { cls: 'badge-bull', txt: 'LONG' };
-  } else if (reversalShort) {
-    sig4h   = 'REVERSAL SHORT';
-    dir4h   = `Overbought fade setup · RSI≈${pseudoRSI.toFixed(0)}`;
-    reason4h = `Price near day high with weakening momentum. Counter-trend 4h short possible. High risk.`;
-    conf4h  = 58;
-    badge4h = { cls: 'badge-bear', txt: 'SHORT' };
-  } else if (absMom >= 0.4 && isUp && overbought) {
-    sig4h   = 'WAIT';
-    dir4h   = 'Bullish but overextended for 4h';
-    reason4h = `+${absMom.toFixed(2)}% move already baked in. RSI≈${pseudoRSI.toFixed(0)}. Wait for 4h pullback.`;
-    conf4h  = 48;
-    badge4h = { cls: 'badge-flat', txt: 'WAIT' };
-  } else if (absMom >= 0.4 && !isUp && oversold) {
-    sig4h   = 'WAIT';
-    dir4h   = 'Bearish but oversold for 4h';
-    reason4h = `${chp.toFixed(2)}% drop already extended. RSI≈${pseudoRSI.toFixed(0)}. Risk of snap-back on 4h.`;
-    conf4h  = 48;
-    badge4h = { cls: 'badge-flat', txt: 'WAIT' };
-  } else {
-    sig4h   = 'NO SIGNAL';
-    dir4h   = 'Insufficient momentum for a 4h trade';
-   
-    conf4h  = 35;
-    badge4h = { cls: 'badge-flat', txt: 'SKIP' };
-  }
+  /* 24h */
+  const trendBull = absMom >= 0.6 && isUp && rangePos > 0.45 && rangePos < 0.88;
+  const trendBear = absMom >= 0.6 && !isUp && rangePos < 0.55 && rangePos > 0.12;
+  if (trendBull) e24h = mk('ENTER LONG',`Strong bullish trend · +${absMom.toFixed(2)}%`,`Strong momentum in mid-range. Good daily long setup.`,highVol?72:80,'LONG');
+  else if (trendBear) e24h = mk('ENTER SHORT',`Strong bearish trend · ${chp.toFixed(2)}%`,`Strong momentum in mid-range. Good daily short setup.`,highVol?72:80,'SHORT');
+  else if (pseudoRSI < 20 && absMom < 1.0) e24h = mk('LONG (REVERSAL)',`Extreme oversold · RSI≈${pseudoRSI.toFixed(0)}`,`Price at extreme low. Mean reversion setup for daily long.`,60,'LONG');
+  else if (pseudoRSI > 80 && absMom < 1.0) e24h = mk('SHORT (REVERSAL)',`Extreme overbought · RSI≈${pseudoRSI.toFixed(0)}`,`Price at extreme high. Mean reversion setup for daily short.`,60,'SHORT');
+  else if (absMom >= 0.6 && isUp && overbought) e24h = mk('WAIT','Bullish but 24h overextended',`Move already extended. Wait for a healthier entry.`,45,'WAIT');
+  else if (absMom >= 0.6 && !isUp && oversold) e24h = mk('WAIT','Bearish but 24h overextended',`Drop already extended. Risk of reversal.`,45,'WAIT');
+  else e24h = mk('NO SIGNAL','No clear daily trend',`Insufficient conviction for a 24h trade.`,32,'SKIP');
 
-  /* ── 24-Hour Entry ──
-     Daily trades require the cleanest signals: strong momentum AND
-     trending range position (not extreme). Contrarian entries only
-     on very oversold/overbought extremes. */
-  let sig24h, dir24h, reason24h, conf24h, badge24h;
-
-  const trendingBull = absMom >= 0.6 && isUp && rangePos > 0.45 && rangePos < 0.88;
-  const trendingBear = absMom >= 0.6 && !isUp && rangePos < 0.55 && rangePos > 0.12;
-  const extremeOversold  = pseudoRSI < 20 && absMom < 1.0;
-  const extremeOverbought = pseudoRSI > 80 && absMom < 1.0;
-
-  if (trendingBull) {
-    sig24h   = 'ENTER LONG';
-    dir24h   = `Strong bullish trend · +${absMom.toFixed(2)}%`;
-   
-    conf24h  = highVol ? 72 : 80;
-    badge24h = { cls: 'badge-bull', txt: 'LONG' };
-  } else if (trendingBear) {
-    sig24h   = 'ENTER SHORT';
-    dir24h   = `Strong bearish trend · ${chp.toFixed(2)}%`;
-    
-    conf24h  = highVol ? 72 : 80;
-    badge24h = { cls: 'badge-bear', txt: 'SHORT' };
-  } else if (extremeOversold) {
-    sig24h   = 'LONG (REVERSAL)';
-    dir24h   = `Extreme oversold · RSI≈${pseudoRSI.toFixed(0)} · mean reversion`;
-    
-    conf24h  = 60;
-    badge24h = { cls: 'badge-bull', txt: 'LONG' };
-  } else if (extremeOverbought) {
-    sig24h   = 'SHORT (REVERSAL)';
-    dir24h   = `Extreme overbought · RSI≈${pseudoRSI.toFixed(0)} · mean reversion`;
-    
-    conf24h  = 60;
-    badge24h = { cls: 'badge-bear', txt: 'SHORT' };
-  } else if (absMom >= 0.6 && isUp && overbought) {
-    sig24h   = 'WAIT';
-    dir24h   = 'Bullish but 24h entry overextended';
-    
-    conf24h  = 45;
-    badge24h = { cls: 'badge-flat', txt: 'WAIT' };
-  } else if (absMom >= 0.6 && !isUp && oversold) {
-    sig24h   = 'WAIT';
-    dir24h   = 'Bearish but 24h entry overextended';
-    
-    conf24h  = 45;
-    badge24h = { cls: 'badge-flat', txt: 'WAIT' };
-  } else {
-    sig24h   = 'NO SIGNAL';
-    dir24h   = 'No clear daily trend to trade';
-    
-    conf24h  = 32;
-    badge24h = { cls: 'badge-flat', txt: 'SKIP' };
-  }
-
-  let sig10m, dir10m, reason10m, conf10m, badge10m;
-
-if (poorSession) {
-  sig10m   = 'WAIT';
-  dir10m   = 'Low liquidity — avoid 10m entries';
-  reason10m = `Asian/off-hours session. Poor conditions for short entries. ATR: $${atr.toFixed(2)}`;
-  conf10m  = 35;
-  badge10m = { cls: 'badge-flat', txt: 'WAIT' };
-} else if (momStrong && isUp && !overbought) {
-  sig10m   = 'ENTER LONG';
-  dir10m   = `Bullish · +${absMom.toFixed(2)}% momentum`;
-  reason10m = `Strong momentum, not overbought (RSI≈${pseudoRSI.toFixed(0)}). Quick 10m long scalp setup.`;
-  conf10m  = highVol ? 65 : 74;
-  badge10m = { cls: 'badge-bull', txt: 'LONG' };
-} else if (momStrong && !isUp && !oversold) {
-  sig10m   = 'ENTER SHORT';
-  dir10m   = `Bearish · ${chp.toFixed(2)}% momentum`;
-  reason10m = `Strong downward momentum, not oversold (RSI≈${pseudoRSI.toFixed(0)}). Quick 10m short scalp setup.`;
-  conf10m  = highVol ? 65 : 74;
-  badge10m = { cls: 'badge-bear', txt: 'SHORT' };
-} else if (overbought && isUp) {
-  sig10m   = 'CAUTION';
-  dir10m   = 'Overbought — scalp risk is high';
-  reason10m = `Price at day high range (RSI≈${pseudoRSI.toFixed(0)}). 10m longs risk a sharp reversal.`;
-  conf10m  = 45;
-  badge10m = { cls: 'badge-flat', txt: 'WAIT' };
-} else if (oversold && !isUp) {
-  sig10m   = 'CAUTION';
-  dir10m   = 'Oversold — scalp risk is high';
-  reason10m = `Price at day low range (RSI≈${pseudoRSI.toFixed(0)}). 10m shorts risk a snap-back.`;
-  conf10m  = 45;
-  badge10m = { cls: 'badge-flat', txt: 'WAIT' };
-} else if (momModerate && neutral) {
-  sig10m   = isUp ? 'ENTER LONG' : 'ENTER SHORT';
-  dir10m   = `Mild ${isUp ? 'bullish' : 'bearish'} · ${isUp ? '+' : ''}${chp.toFixed(2)}%`;
-  reason10m = `Moderate momentum, neutral range. Acceptable 10m scalp in trend direction.`;
-  conf10m  = 58;
-  badge10m = isUp ? { cls: 'badge-bull', txt: 'LONG' } : { cls: 'badge-bear', txt: 'SHORT' };
-} else {
-  sig10m   = 'NO SIGNAL';
-  dir10m   = 'Momentum too weak for a 10m scalp';
-  reason10m = `Insufficient directional conviction for a 10-minute trade.`;
-  conf10m  = 36;
-  badge10m = { cls: 'badge-flat', txt: 'SKIP' };
+  return { e10m, e1h, e4h, e24h };
 }
 
-  return {
-    e10m: { sig: sig10m, dir: dir10m, reason: reason10m, conf: conf10m, badge: badge10m },
-    e1h:  { sig: sig1h,  dir: dir1h,  reason: reason1h,  conf: conf1h,  badge: badge1h  },
-    e4h:  { sig: sig4h,  dir: dir4h,  reason: reason4h,  conf: conf4h,  badge: badge4h  },
-    e24h: { sig: sig24h, dir: dir24h, reason: reason24h, conf: conf24h, badge: badge24h },
-  };
-}
-
-function renderEntrySignals(price, chp, high, low, atr, sess) {
-  const e = computeEntrySignals(price, chp, high, low, atr, sess);
-
-  function applySignal(sigId, dirId, reasonId, badgeId, confId, confLblId, data, delay) {
-    document.getElementById(sigId).textContent    = data.sig;
-    document.getElementById(dirId).innerHTML      =
-      `<span style="color:${data.badge.cls === 'badge-bull' ? 'var(--green)' : data.badge.cls === 'badge-bear' ? 'var(--red)' : 'var(--gold)'}">${data.dir}</span>`;
-    document.getElementById(reasonId).textContent = data.reason;
-
-    const badgeEl       = document.getElementById(badgeId);
-    badgeEl.className   = 'tl-badge ' + data.badge.cls;
-    badgeEl.textContent = data.badge.txt;
-
-    setTimeout(() => {
-      const fill       = document.getElementById(confId);
-      fill.style.width = data.conf + '%';
-      fill.className   = 'conf-fill ' + (data.conf >= 75 ? 'high' : data.conf >= 55 ? 'medium' : 'low');
-      document.getElementById(confLblId).textContent = data.conf + '% conf.';
-    }, delay);
-  }
-
-  applySignal('entry-10m-signal', 'entry-10m-dir', 'entry-10m-reason', 'entry-10m-badge', 'conf-entry-10m', 'conf-entry-10m-lbl', e.e10m, 100);
-  applySignal('entry-1h-signal',  'entry-1h-dir',  'entry-1h-reason',  'entry-1h-badge',  'conf-entry-1h',  'conf-entry-1h-lbl',  e.e1h,  150);
-  applySignal('entry-4h-signal',  'entry-4h-dir',  'entry-4h-reason',  'entry-4h-badge',  'conf-entry-4h',  'conf-entry-4h-lbl',  e.e4h,  250);
-  applySignal('entry-24h-signal', 'entry-24h-dir', 'entry-24h-reason', 'entry-24h-badge', 'conf-entry-24h', 'conf-entry-24h-lbl', e.e24h, 350);
-}
-
-function renderEntryWindows(sess, chp, atr, price) {
-  const e = computeEntryWindows(sess, chp, atr, price);
-
-  function applyEntry(timeId, windowId, reasonId, badgeId, confId, confLblId, data, delay) {
-    document.getElementById(timeId).textContent   = data.time;
-    document.getElementById(windowId).textContent = data.window;
-    document.getElementById(reasonId).textContent = data.reason;
-
-    const badgeEl = document.getElementById(badgeId);
-    badgeEl.className   = 'tl-badge ' + data.badge.cls;
-    badgeEl.textContent = data.badge.txt;
-
-    setTimeout(() => {
-      const fill = document.getElementById(confId);
-      fill.style.width = data.conf + '%';
-      fill.className   = 'conf-fill ' + (data.conf >= 80 ? 'high' : data.conf >= 65 ? 'medium' : 'low');
-      document.getElementById(confLblId).textContent = data.conf + '% conf.';
-    }, delay);
-  }
-
-  applyEntry('entry-1h-time',  'entry-1h-window',  'entry-1h-reason',  'entry-1h-badge',  'conf-entry-1h',  'conf-entry-1h-lbl',  e.entry1h,  150);
-  applyEntry('entry-4h-time',  'entry-4h-window',  'entry-4h-reason',  'entry-4h-badge',  'conf-entry-4h',  'conf-entry-4h-lbl',  e.entry4h,  250);
-  applyEntry('entry-24h-time', 'entry-24h-window', 'entry-24h-reason', 'entry-24h-badge', 'conf-entry-24h', 'conf-entry-24h-lbl', e.entry24h, 350);
-}
-
-/* ── Render a single timeline row ── */
-function renderRow(ids, target, base, bandLow, bandHigh, conf, delay, threshold) {
-  document.getElementById(ids.price).textContent   = '$' + fmtP(target);
-  document.getElementById(ids.chg).innerHTML       = chgHTML(target, base);
-  document.getElementById(ids.range).textContent   = `±1σ band  $${fmtP(bandLow)} – $${fmtP(bandHigh)}`;
-
-  const badge = badgeInfo(target, base, threshold);
-  const badgeEl = document.getElementById(ids.badge);
-  badgeEl.className   = 'tl-badge ' + badge.cls;
-  badgeEl.textContent = badge.txt;
-
-  /* Stagger confidence bar animation */
-  setTimeout(() => {
-    const fillEl = document.getElementById(ids.conf);
-    fillEl.style.width = conf + '%';
-    /* Colour by confidence level */
-    fillEl.className = 'conf-fill ' + (conf >= 80 ? 'high' : conf >= 55 ? 'medium' : 'low');
-    document.getElementById(ids.confLbl).textContent = conf + '% conf.';
-  }, delay);
-}
-
-/* ── Main render ── */
-function renderPredict(d, isDemo) {
-  const { price, chp, high, low, ch } = d;
-  updatePageTitle(price, ch);
-  checkMarketStatus();
-  const isUp = ch >= 0;
-
-  /* ── Live price strip ── */
-  document.getElementById('strip-price').textContent = fmtP(price);
-  document.getElementById('pred-high').textContent = '$' + fmtP(d.high);
-document.getElementById('pred-low').textContent  = '$' + fmtP(d.low);
-document.getElementById('pred-open').textContent = '$' + fmtP(d.open);
-  const chgEl = document.getElementById('strip-change');
-  chgEl.textContent = `${isUp ? '+' : ''}${fmtD(ch)} (${fmtD(chp)}%)`;
-  chgEl.className   = 'live-change ' + (isUp ? 'up' : 'down');
-
-  /* ── Key levels
-     S1/S2 and R1/R2 are derived from today's range using floor pivot logic.
-     Pivot = (High + Low + Close) / 3
-     R1 = (2 × Pivot) − Low
-     R2 = Pivot + (High − Low)
-     S1 = (2 × Pivot) − High
-     S2 = Pivot − (High − Low) */
-  const pivot = (high + low + price) / 3;
-  const r1    = 2 * pivot - low;
-  const r2    = pivot + (high - low);
-  const s1    = 2 * pivot - high;
-  const s2    = pivot - (high - low);
-
-  document.getElementById('lvl-curr').textContent = '$' + fmtP(price);
-  document.getElementById('lvl-r1').textContent   = '$' + fmtP(r1);
-  document.getElementById('lvl-r2').textContent   = '$' + fmtP(r2);
-  document.getElementById('lvl-s1').textContent   = '$' + fmtP(s1);
-  document.getElementById('lvl-s2').textContent   = '$' + fmtP(s2);
-
-  /* ── Build all predictions ── */
-  const pred = buildPredictions(price, chp, high, low);
-  const atr  = pred.atr;
-  const sess = pred.session;
-  renderEntrySignals(price, chp, high, low, atr, sess);
-
-  /* ── ATR badge ── */
-  document.getElementById('strip-atr').textContent    = '$' + atr.toFixed(2);
-  document.getElementById('strip-updated').textContent =
-    (isDemo ? '⚠ demo · ' : '') + 'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  /* ── Session chips ── */
-  document.getElementById('sess-asian').classList.toggle('active',  sess.asian && !sess.london);
-  document.getElementById('sess-london').classList.toggle('active', sess.london);
-  document.getElementById('sess-ny').classList.toggle('active',     sess.ny);
-  document.getElementById('sess-vol-label').textContent = sess.volLabel + ' VOL';
-
-  /* ── NOW ── */
-  renderTimeline(d);
-
-  /* ── Signals
-     Built from: momentum direction, RSI-like overextension, session */
-  const extendedMove = Math.abs(chp) > 1.5; /* price has moved a lot today */
-  const rng          = 0.3 + Math.random() * 0.4; /* controlled randomness 0.3–0.7 */
-
-  let buy, hold, sell;
-  if (extendedMove) {
-    /* Overextended — higher hold/sell regardless of direction */
-    if (isUp)  { buy = Math.round(30 + rng * 15); sell = Math.round(20 + rng * 15); }
-    else       { sell = Math.round(30 + rng * 15); buy  = Math.round(20 + rng * 15); }
-    hold = 100 - buy - sell;
-  } else {
-    /* Normal day — momentum-weighted */
-    if (isUp)  { buy = Math.round(45 + rng * 20); hold = Math.round((100 - buy) * 0.55); sell = 100 - buy - hold; }
-    else       { sell = Math.round(45 + rng * 20); hold = Math.round((100 - sell) * 0.55); buy = 100 - sell - hold; }
-  }
-  /* Clamp all to positive */
-  buy  = Math.max(buy,  5);
-  sell = Math.max(sell, 5);
-  hold = Math.max(100 - buy - sell, 5);
-
-  setTimeout(() => {
-    document.getElementById('sig-buy').style.width   = buy + '%';
-    document.getElementById('sig-hold').style.width  = hold + '%';
-    document.getElementById('sig-sell').style.width  = sell + '%';
-    document.getElementById('sig-buy-pct').textContent  = buy + '%';
-    document.getElementById('sig-hold-pct').textContent = hold + '%';
-    document.getElementById('sig-sell-pct').textContent = sell + '%';
-  }, 300);
-
-  /* ── Sentiment ── */
-  const score = buy - sell;
-  const [emoji, label] =
-    score > 25  ? ['🟢', 'BULLISH']        :
-    score > 10  ? ['🔼', 'MILDLY BULLISH'] :
-    score > -10 ? ['⚖️', 'NEUTRAL']        :
-    score > -25 ? ['🔽', 'MILDLY BEARISH'] :
-                  ['🔴', 'BEARISH'];
-  document.getElementById('sentiment-emoji').textContent = emoji;
-  document.getElementById('sentiment-txt').textContent   = label;
-
-  /* ── Factor cards ── */
-
-  /* ATR factor */
-  const atrCat = atr < 20 ? 'LOW' : atr < 35 ? 'NORMAL' : 'HIGH';
-  document.getElementById('f-atr-desc').textContent =
-    `Daily range $${atr.toFixed(2)} — ${atrCat.toLowerCase()} volatility environment`;
-  document.getElementById('f-atr-sig').textContent  = '$' + atr.toFixed(2);
-
-  /* Momentum factor */
-  const momStr  = Math.abs(chp) < 0.3 ? 'WEAK' : Math.abs(chp) < 0.8 ? 'MODERATE' : 'STRONG';
-  document.getElementById('f-mom-desc').textContent =
-    `${isUp ? 'Positive' : 'Negative'} ${Math.abs(chp).toFixed(2)}% move today`;
-  document.getElementById('f-mom-sig').textContent  = (isUp ? '+' : '') + chp.toFixed(2) + '%';
-  document.getElementById('f-mom-sig').style.background = isUp ? 'var(--green-dim)' : 'var(--red-dim)';
-  document.getElementById('f-mom-sig').style.color      = isUp ? 'var(--green)'     : 'var(--red)';
-
-  /* Intraday volatility vs ATR */
-  const intradayRangePct = ((high - low) / atr * 100).toFixed(0);
-  const volCat = intradayRangePct < 40 ? 'QUIET' : intradayRangePct < 80 ? 'NORMAL' : 'WIDE';
-  document.getElementById('f-vol-desc').textContent =
-    `Today's range $${(high-low).toFixed(2)} = ${intradayRangePct}% of ATR`;
-  document.getElementById('f-vol-sig').textContent  = volCat;
-
-  /* Mean reversion */
-  const mrLabel = pred.mrStrength < 0.2 ? 'LOW' : pred.mrStrength < 0.5 ? 'MODERATE' : 'HIGH';
-  document.getElementById('f-mr-sig').textContent   = mrLabel;
-
-  /* Session factor */
-  document.getElementById('f-sess-desc').textContent =
-    `${sess.sessionLabel} session · ${sess.volLabel.toLowerCase()} activity`;
-  document.getElementById('f-sess-sig').textContent  = `×${sess.sessionMultiplier.toFixed(2)}`;
-  document.getElementById('f-sess-sig').style.background =
-    sess.sessionMultiplier >= 1.2 ? 'var(--red-dim)'   :
-    sess.sessionMultiplier >= 1.0 ? 'var(--gold-glow)' : 'var(--bg-muted)';
-  document.getElementById('f-sess-sig').style.color =
-    sess.sessionMultiplier >= 1.2 ? 'var(--red)'   :
-    sess.sessionMultiplier >= 1.0 ? 'var(--gold)'  : 'var(--txt-3)';
-}
-
-/* ── Refresh button ── */
-document.getElementById('refresh-btn').addEventListener('click', async function () {
-  this.classList.add('spin');
-  const d = await fetchGoldPrice();
-  if (d) { Object.assign(window.GOLD_STATE, d); renderPredict(d, false); showToast('✓ Updated via ' + d.source); }
-  else     showToast('⚠ APIs unavailable');
-  setTimeout(() => this.classList.remove('spin'), 700);
-});
-
-/* ── Nav ── */
-setActiveNav();
-checkMarketStatus();
-
-/* ── Init ── */
-loadPrice(renderPredict);
-setInterval(() => loadPrice(renderPredict), 10000);
-
-  /* ── Drawer menu compatibility ── */
-function toggleMenu() {
-  const drawer = document.getElementById('drawer');
-  if (drawer.classList.contains('open')) closeMenu();
-  else openMenu();
-}
-
-  /* ── Market closed check ── */
-function isMarketClosed() {
-  const now     = new Date();
-  const utcDay  = now.getUTCDay();    /* 0=Sun, 1=Mon ... 6=Sat */
-  const utcHour = now.getUTCHours();
-  const utcMin  = now.getUTCMinutes();
-
-  /* Market closes Friday 22:00 UTC, reopens Sunday 22:00 UTC */
-  if (utcDay === 6) return true;                                      /* all Saturday */
-  if (utcDay === 5 && utcHour >= 22) return true;                    /* Friday after 22:00 UTC */
-  if (utcDay === 0 && (utcHour < 22 || (utcHour === 22 && utcMin === 0))) return true; /* Sunday before 22:00 UTC */
-
-  return false;
-}
-
-function showMarketClosedBanner() {
-  /* Don't add twice */
-  if (document.getElementById('market-closed-banner')) return;
-
-  const now       = new Date();
-  const utcDay    = now.getUTCDay();
-  const utcHour   = now.getUTCHours();
-
-  /* Calculate minutes until Sunday 22:00 UTC */
-  let minsUntilOpen;
-  if (utcDay === 6) {
-    /* Saturday — opens in ~(22 + 24 - utcHour) hours roughly */
-    minsUntilOpen = ((0 - utcDay + 7) * 24 * 60) + (22 * 60) - (utcHour * 60) - now.getUTCMinutes();
-    /* Simpler: minutes from now to next Sunday 22:00 UTC */
-    const nextOpen = new Date(now);
-    nextOpen.setUTCDate(now.getUTCDate() + (7 - utcDay));
-    nextOpen.setUTCHours(22, 0, 0, 0);
-    minsUntilOpen = Math.round((nextOpen - now) / 60000);
-  } else if (utcDay === 5) {
-    /* Friday after close */
-    const nextOpen = new Date(now);
-    nextOpen.setUTCDate(now.getUTCDate() + 2);
-    nextOpen.setUTCHours(22, 0, 0, 0);
-    minsUntilOpen = Math.round((nextOpen - now) / 60000);
-  } else {
-    /* Sunday before 22:00 */
-    const nextOpen = new Date(now);
-    nextOpen.setUTCHours(22, 0, 0, 0);
-    minsUntilOpen = Math.round((nextOpen - now) / 60000);
-  }
-
-  const hoursLeft = Math.floor(minsUntilOpen / 60);
-  const minsLeft  = minsUntilOpen % 60;
-  const countdown = hoursLeft > 0
-    ? `${hoursLeft}h ${minsLeft}m`
-    : `${minsLeft}m`;
-
-  const banner = document.createElement('div');
-  banner.id = 'market-closed-banner';
-  banner.innerHTML = `
-    <div style="margin:0 16px 12px;padding:20px 18px;
-                background:rgba(110,127,153,0.08);
-                border:1px solid rgba(110,127,153,0.2);
-                border-radius:14px;text-align:center;">
-      
-      <div style="font-size:16px;font-weight:800;color:var(--txt-1);margin-bottom:6px;">
-        Market is Closed
-      </div>
-      <div style="font-size:12px;color:var(--txt-2);line-height:1.7;margin-bottom:14px;">
-        Gold market is closed for the weekend.<br>
-        Go touch some grass, it reopens in
-        <strong style="color:var(--gold);">${countdown}</strong>.
-      </div>
-      <div style="display:flex;align-items:center;justify-content:center;gap:6px;
-                  font-size:11px;color:var(--txt-3);font-family:'Space Mono',monospace;">
-        <span style="width:6px;height:6px;border-radius:50%;background:var(--txt-3);display:inline-block;"></span>
-        MARKET CLOSED · Opens Sunday 22:00 UTC
-      </div>
-    </div>`;
-
-  /* Insert right after the live-strip */
-  const liveStrip = document.querySelector('.live-strip');
-  if (liveStrip) {
-    liveStrip.insertAdjacentElement('afterend', banner);
-  }
-}
-
-function checkMarketStatus() {
-  if (isMarketClosed()) {
-    showMarketClosedBanner();
-    /* Dim the signals to show they're stale */
-    document.querySelectorAll('.predict-card, .live-strip, .session-row').forEach(el => {
-      el.style.opacity = '0.45';
-      el.style.pointerEvents = 'none';
-    });
-    /* Keep banner itself fully visible */
-    const banner = document.getElementById('market-closed-banner');
-    if (banner) { banner.style.opacity = '1'; banner.style.pointerEvents = 'all'; }
-
-    /* Update page title */
-    document.title = 'Xauusd Forecast - XauTracker.com';
-  }
-}
-
-  /* ── Live price in page title ── */
-function updatePageTitle(price, ch) {
-  if (isMarketClosed()) return; /* don't overwrite closed banner title */
-  const isUp  = ch >= 0;
-  const arrow = isUp ? '▲' : '▼';
-  document.title = `${arrow} $${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} · XAU/USD`;
-}
-</script>
-<script>
-    /* Stores popup data keyed by row id */
+/* ══════════════════════════════════════════════════════════════
+   TIMELINE RENDER ENGINE
+══════════════════════════════════════════════════════════════ */
 const tlPopupStore = {};
 
-/* ── Confidence bar color ── */
 function tlConfColor(c) {
-  if (c >= 75) return 'var(--green)';
-  if (c >= 55) return 'var(--gold)';
-  return 'var(--red)';
+  return c >= 75 ? 'var(--green)' : c >= 55 ? 'var(--gold)' : 'var(--red)';
 }
 
-/* ── Apply badge class + text to an element ── */
-function tlApplyBadge(el, type) {
-  /* type: 'bull' | 'bear' | 'flat' | 'wait' | 'live' */
-  el.className = 'tl-badge ' + type;
-  const labels = { bull: 'LONG', bear: 'SHORT', flat: 'FLAT', wait: 'SKIP', live: 'LIVE' };
-  el.textContent = labels[type] || type.toUpperCase();
-}
-
-/* ── Infer badge type from diff ── */
-function tlBadgeFromDiff(diff, threshold) {
-  if (diff > threshold)  return 'bull';
-  if (diff < -threshold) return 'bear';
-  return 'flat';
-}
-
-/* ── Render a single signal row ── */
-function tlRenderSignalRow(key, frame, sig) {
-  const ids = {
-    '10m':     { val: 'tl-sig-10m',  conf: 'tl-conf-10m',     pct: 'tl-conf-10m-pct',     badge: 'tl-badge-10m'      },
-    '1h':      { val: 'tl-sig-1h',   conf: 'tl-conf-1h',      pct: 'tl-conf-1h-pct',      badge: 'tl-badge-1h'       },
-    '4h':      { val: 'tl-sig-4h',   conf: 'tl-conf-4h',      pct: 'tl-conf-4h-pct',      badge: 'tl-badge-4h'       },
-    '24h-sig': { val: 'tl-sig-24h',  conf: 'tl-conf-24h-sig', pct: 'tl-conf-24h-sig-pct', badge: 'tl-badge-24h-sig'  },
+function tlRenderSignalRow(key, frameLabel, sig) {
+  const map = {
+    '10m':     { val:'tl-sig-10m',  conf:'tl-conf-10m',     pct:'tl-conf-10m-pct',     badge:'tl-badge-10m'     },
+    '1h':      { val:'tl-sig-1h',   conf:'tl-conf-1h',      pct:'tl-conf-1h-pct',      badge:'tl-badge-1h'      },
+    '4h':      { val:'tl-sig-4h',   conf:'tl-conf-4h',      pct:'tl-conf-4h-pct',      badge:'tl-badge-4h'      },
+    '24h-sig': { val:'tl-sig-24h',  conf:'tl-conf-24h-sig', pct:'tl-conf-24h-sig-pct', badge:'tl-badge-24h-sig' },
   };
-  const id = ids[key];
-  if (!id) return;
+  const id = map[key]; if (!id) return;
 
   document.getElementById(id.val).textContent = sig.sig;
-
-  const badgeEl = document.getElementById(id.badge);
-  /* Derive badge type from signal text */
-  let bType = 'wait';
-  if (sig.badgeTxt === 'LONG')  bType = 'bull';
-  if (sig.badgeTxt === 'SHORT') bType = 'bear';
-  if (sig.badgeTxt === 'FLAT')  bType = 'flat';
-  badgeEl.className   = 'tl-badge ' + bType;
-  badgeEl.textContent = sig.badgeTxt;
+  const b = document.getElementById(id.badge);
+  b.className   = 'tl-badge ' + sig.badgeCls;
+  b.textContent = sig.badgeTxt;
 
   setTimeout(() => {
     const fill = document.getElementById(id.conf);
@@ -1535,33 +1064,30 @@ function tlRenderSignalRow(key, frame, sig) {
   }, 150);
 
   tlPopupStore[key] = {
-    kicker: frame + ' entry signal',
-    signal: sig.sig,
-    dir:    sig.dir,
-    reason: sig.reason,
-    conf:   sig.conf + '%',
-    range:  null,
-    dirColor: sig.badgeTxt === 'LONG' ? 'var(--green)' : sig.badgeTxt === 'SHORT' ? 'var(--red)' : 'var(--gold)',
+    kicker:   frameLabel + ' entry signal',
+    signal:   sig.sig,
+    dir:      sig.dir,
+    reason:   sig.reason,
+    conf:     sig.conf + '%',
+    range:    null,
+    dirColor: sig.badgeCls === 'bull' ? 'var(--green)' : sig.badgeCls === 'bear' ? 'var(--red)' : 'var(--gold)',
   };
 }
 
-/* ── Render a single forecast row ── */
-function tlRenderFcRow(key, frame, fc, basePrice) {
-  const ids = {
-    'fc-1h':  { val: 'tl-fc-1h',  conf: 'tl-conf-fc-1h',  pct: 'tl-conf-fc-1h-pct',  badge: 'tl-fc-badge-1h'  },
-    'fc-6h':  { val: 'tl-fc-6h',  conf: 'tl-conf-fc-6h',  pct: 'tl-conf-fc-6h-pct',  badge: 'tl-fc-badge-6h'  },
-    'fc-24h': { val: 'tl-fc-24h', conf: 'tl-conf-fc-24h', pct: 'tl-conf-fc-24h-pct', badge: 'tl-fc-badge-24h' },
+function tlRenderFcRow(key, frameLabel, fc, basePrice) {
+  const map = {
+    'fc-1h':  { val:'tl-fc-1h',  conf:'tl-conf-fc-1h',  pct:'tl-conf-fc-1h-pct',  badge:'tl-fc-badge-1h'  },
+    'fc-6h':  { val:'tl-fc-6h',  conf:'tl-conf-fc-6h',  pct:'tl-conf-fc-6h-pct',  badge:'tl-fc-badge-6h'  },
+    'fc-24h': { val:'tl-fc-24h', conf:'tl-conf-fc-24h', pct:'tl-conf-fc-24h-pct', badge:'tl-fc-badge-24h' },
   };
-  const id = ids[key];
-  if (!id) return;
+  const id = map[key]; if (!id) return;
 
   document.getElementById(id.val).textContent = '$' + fmtP(fc.target);
-
   const diff  = fc.target - basePrice;
-  const bType = tlBadgeFromDiff(diff, 1.5);
-  const badgeEl = document.getElementById(id.badge);
-  badgeEl.className   = 'tl-badge ' + bType;
-  badgeEl.textContent = bType === 'bull' ? 'BULL' : bType === 'bear' ? 'BEAR' : 'FLAT';
+  const bType = diff > 1.5 ? 'bull' : diff < -1.5 ? 'bear' : 'flat';
+  const b = document.getElementById(id.badge);
+  b.className   = 'tl-badge ' + bType;
+  b.textContent = bType === 'bull' ? 'BULL' : bType === 'bear' ? 'BEAR' : 'FLAT';
 
   setTimeout(() => {
     const fill = document.getElementById(id.conf);
@@ -1570,67 +1096,53 @@ function tlRenderFcRow(key, frame, fc, basePrice) {
     document.getElementById(id.pct).textContent = fc.conf + '%';
   }, 200);
 
-  const pct = ((diff / basePrice) * 100);
+  const pct = (diff / basePrice) * 100;
   tlPopupStore[key] = {
-    kicker:   frame + ' price forecast',
+    kicker:   frameLabel + ' price forecast',
     signal:   '$' + fmtP(fc.target),
     dir:      (diff >= 0 ? '+' : '') + fmtD(diff) + '  (' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%)',
-    reason:   'ATR-based σ(t) = ATR × √(t / 1440) forecast. The ±1σ band below shows the 68% probability range for this timeframe.',
+    reason:   'ATR-based σ(t) = ATR × √(t / 1440) forecast. The ±1σ band shows the 68% probability range for this timeframe.',
     conf:     fc.conf + '%',
     range:    '$' + fmtP(fc.bandLow) + ' – $' + fmtP(fc.bandHigh),
     dirColor: diff >= 0 ? 'var(--green)' : 'var(--red)',
   };
 }
 
-/* ── Main timeline render — call this from renderPredict() ── */
 function renderTimeline(d) {
   const { price, chp, high, low } = d;
 
-  /* Now row */
-  document.getElementById('tl-now-price').textContent =
-    '$' + fmtP(price);
+  document.getElementById('tl-now-price').textContent = '$' + fmtP(price);
   document.getElementById('tl-now-time').textContent =
-    new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
 
-  /* Build data */
   const pred = buildPredictions(price, chp, high, low);
   const sigs = computeEntrySignals(price, chp, high, low, pred.atr, pred.session);
 
-  /* Entry signal rows */
   tlRenderSignalRow('10m',     '10 min',  sigs.e10m);
   tlRenderSignalRow('1h',      '1 hour',  sigs.e1h);
   tlRenderSignalRow('4h',      '4 hour',  sigs.e4h);
   tlRenderSignalRow('24h-sig', '24 hour', sigs.e24h);
 
-  /* Forecast rows */
   tlRenderFcRow('fc-1h',  '1 hour',  pred.f1h,  price);
   tlRenderFcRow('fc-6h',  '6 hour',  pred.f6h,  price);
   tlRenderFcRow('fc-24h', '24 hour', pred.f24h, price);
+
+  return pred; /* pass back so renderPredict can use atr/session */
 }
 
 /* ── Popup open/close ── */
 function tlOpenPopup(key) {
-  const d = tlPopupStore[key];
-  if (!d) return;
-
+  const d = tlPopupStore[key]; if (!d) return;
   document.getElementById('tl-popup-kicker').textContent  = d.kicker;
   document.getElementById('tl-popup-signal').textContent  = d.signal;
-
   const dirEl = document.getElementById('tl-popup-dir');
-  dirEl.textContent  = d.dir;
-  dirEl.style.color  = d.dirColor || 'var(--ink-2)';
-
-  document.getElementById('tl-popup-reason').textContent = d.reason;
-  document.getElementById('tl-popup-conf').textContent   = d.conf;
-
+  dirEl.textContent = d.dir;
+  dirEl.style.color = d.dirColor || 'var(--ink-2)';
+  document.getElementById('tl-popup-reason').textContent  = d.reason;
+  document.getElementById('tl-popup-conf').textContent    = d.conf;
   const rangeRow = document.getElementById('tl-popup-range-row');
-  if (d.range) {
-    document.getElementById('tl-popup-range').textContent = d.range;
-    rangeRow.style.display = 'flex';
-  } else {
-    rangeRow.style.display = 'none';
-  }
-
+  if (d.range) { document.getElementById('tl-popup-range').textContent = d.range; rangeRow.style.display = 'flex'; }
+  else          { rangeRow.style.display = 'none'; }
   document.getElementById('tl-overlay').classList.add('open');
   document.getElementById('tl-popup').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1642,12 +1154,188 @@ function tlClosePopup() {
   document.body.style.overflow = '';
 }
 
-/* Close on Escape key */
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') tlClosePopup();
+document.addEventListener('keydown', e => { if (e.key === 'Escape') tlClosePopup(); });
+
+/* ══════════════════════════════════════════════════════════════
+   MAIN RENDER
+══════════════════════════════════════════════════════════════ */
+function renderPredict(d, isDemo) {
+  const { price, chp, high, low, ch } = d;
+  const isUp = ch >= 0;
+
+  updatePageTitle(price, ch);
+  checkMarketStatus();
+
+  /* Live strip */
+  document.getElementById('strip-price').textContent = fmtP(price);
+  document.getElementById('pred-high').textContent   = '$' + fmtP(high);
+  document.getElementById('pred-low').textContent    = '$' + fmtP(low);
+  document.getElementById('pred-open').textContent   = '$' + fmtP(d.open);
+  const chgEl = document.getElementById('strip-change');
+  chgEl.textContent = `${isUp?'+':''}${fmtD(ch)} (${fmtD(chp)}%)`;
+  chgEl.className   = 'live-change ' + (isUp ? 'up' : 'down');
+
+  /* Key levels (floor pivot) */
+  const pivot = (high + low + price) / 3;
+  const r1 = 2*pivot - low,   r2 = pivot + (high-low);
+  const s1 = 2*pivot - high,  s2 = pivot - (high-low);
+  document.getElementById('lvl-curr').textContent = '$' + fmtP(price);
+  document.getElementById('lvl-r1').textContent   = '$' + fmtP(r1);
+  document.getElementById('lvl-r2').textContent   = '$' + fmtP(r2);
+  document.getElementById('lvl-s1').textContent   = '$' + fmtP(s1);
+  document.getElementById('lvl-s2').textContent   = '$' + fmtP(s2);
+
+  /* Timeline (new) */
+  const pred = renderTimeline(d);
+  const atr  = pred.atr;
+  const sess = pred.session;
+
+  /* ATR badge */
+  document.getElementById('strip-atr').textContent    = '$' + atr.toFixed(2);
+  document.getElementById('strip-updated').textContent =
+    (isDemo ? '⚠ demo · ' : '') + 'Updated ' +
+    new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+
+  /* Session chips */
+  document.getElementById('sess-asian').classList.toggle('active',  sess.asian && !sess.london);
+  document.getElementById('sess-london').classList.toggle('active', sess.london);
+  document.getElementById('sess-ny').classList.toggle('active',     sess.ny);
+  document.getElementById('sess-vol-label').textContent = sess.volLabel + ' VOL';
+
+  /* Market signal */
+  const extendedMove = Math.abs(chp) > 1.5;
+  const rng = 0.3 + Math.random() * 0.4;
+  let buy, hold, sell;
+  if (extendedMove) {
+    if (isUp)  { buy=Math.round(30+rng*15); sell=Math.round(20+rng*15); }
+    else       { sell=Math.round(30+rng*15); buy=Math.round(20+rng*15); }
+    hold = 100-buy-sell;
+  } else {
+    if (isUp)  { buy=Math.round(45+rng*20); hold=Math.round((100-buy)*0.55); sell=100-buy-hold; }
+    else       { sell=Math.round(45+rng*20); hold=Math.round((100-sell)*0.55); buy=100-sell-hold; }
+  }
+  buy=Math.max(buy,5); sell=Math.max(sell,5); hold=Math.max(100-buy-sell,5);
+  setTimeout(() => {
+    document.getElementById('sig-buy').style.width    = buy + '%';
+    document.getElementById('sig-hold').style.width   = hold + '%';
+    document.getElementById('sig-sell').style.width   = sell + '%';
+    document.getElementById('sig-buy-pct').textContent  = buy + '%';
+    document.getElementById('sig-hold-pct').textContent = hold + '%';
+    document.getElementById('sig-sell-pct').textContent = sell + '%';
+  }, 300);
+
+  /* Sentiment */
+  const score = buy - sell;
+  const [emoji, label] =
+    score > 25  ? ['🟢','BULLISH'] : score > 10  ? ['🔼','MILDLY BULLISH'] :
+    score > -10 ? ['⚖️','NEUTRAL'] : score > -25 ? ['🔽','MILDLY BEARISH'] : ['🔴','BEARISH'];
+  document.getElementById('sentiment-emoji').textContent = emoji;
+  document.getElementById('sentiment-txt').textContent   = label;
+
+  /* Factor cards */
+  const atrCat = atr < 20 ? 'LOW' : atr < 35 ? 'NORMAL' : 'HIGH';
+  document.getElementById('f-atr-desc').textContent = `Daily range $${atr.toFixed(2)} — ${atrCat.toLowerCase()} volatility`;
+  document.getElementById('f-atr-sig').textContent  = '$' + atr.toFixed(2);
+
+  document.getElementById('f-mom-desc').textContent = `${isUp?'Positive':'Negative'} ${Math.abs(chp).toFixed(2)}% move today`;
+  document.getElementById('f-mom-sig').textContent  = (isUp?'+':'') + chp.toFixed(2) + '%';
+  document.getElementById('f-mom-sig').style.background = isUp ? 'var(--green-bg)' : 'var(--red-bg)';
+  document.getElementById('f-mom-sig').style.color      = isUp ? 'var(--green)'    : 'var(--red)';
+
+  const rangePct = ((high-low)/atr*100).toFixed(0);
+  const volCat   = rangePct < 40 ? 'QUIET' : rangePct < 80 ? 'NORMAL' : 'WIDE';
+  document.getElementById('f-vol-desc').textContent = `Today's range $${(high-low).toFixed(2)} = ${rangePct}% of ATR`;
+  document.getElementById('f-vol-sig').textContent  = volCat;
+
+  const mrLabel = pred.mrStrength < 0.2 ? 'LOW' : pred.mrStrength < 0.5 ? 'MODERATE' : 'HIGH';
+  document.getElementById('f-mr-sig').textContent = mrLabel;
+
+  document.getElementById('f-sess-desc').textContent = `${sess.sessionLabel} · ${sess.volLabel.toLowerCase()} activity`;
+  document.getElementById('f-sess-sig').textContent  = `×${sess.sessionMultiplier.toFixed(2)}`;
+  document.getElementById('f-sess-sig').style.background =
+    sess.sessionMultiplier >= 1.2 ? 'var(--red-bg)'  :
+    sess.sessionMultiplier >= 1.0 ? 'var(--gold-bg)' : 'var(--bg-3)';
+  document.getElementById('f-sess-sig').style.color =
+    sess.sessionMultiplier >= 1.2 ? 'var(--red)'  :
+    sess.sessionMultiplier >= 1.0 ? 'var(--gold)' : 'var(--ink-3)';
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MARKET CLOSED BANNER
+══════════════════════════════════════════════════════════════ */
+function isMarketClosed() {
+  const now = new Date();
+  const d   = now.getUTCDay(), h = now.getUTCHours(), m = now.getUTCMinutes();
+  if (d === 6) return true;
+  if (d === 5 && h >= 22) return true;
+  if (d === 0 && (h < 22 || (h === 22 && m === 0))) return true;
+  return false;
+}
+
+function showMarketClosedBanner() {
+  if (document.getElementById('market-closed-banner')) return;
+  const now = new Date();
+  const d   = now.getUTCDay();
+  const nextOpen = new Date(now);
+  if (d === 6)      { nextOpen.setUTCDate(now.getUTCDate() + (7 - d)); nextOpen.setUTCHours(22,0,0,0); }
+  else if (d === 5) { nextOpen.setUTCDate(now.getUTCDate() + 2); nextOpen.setUTCHours(22,0,0,0); }
+  else              { nextOpen.setUTCHours(22,0,0,0); }
+  const mins  = Math.round((nextOpen - now) / 60000);
+  const h2    = Math.floor(mins / 60), m2 = mins % 60;
+  const cd    = h2 > 0 ? `${h2}h ${m2}m` : `${m2}m`;
+
+  const banner = document.createElement('div');
+  banner.id = 'market-closed-banner';
+  banner.innerHTML = `
+    <div style="padding:20px 18px;background:var(--bg-2);border:1px solid var(--border);
+                border-radius:12px;text-align:center;">
+      <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px;">Market is Closed</div>
+      <div style="font-size:12px;color:var(--ink-3);line-height:1.7;margin-bottom:10px;">
+        Gold market reopens in <strong style="color:var(--gold)">${cd}</strong>
+      </div>
+      <div style="font-size:10px;color:var(--ink-4);letter-spacing:.04em;text-transform:uppercase;">
+        Opens Sunday 22:00 UTC
+      </div>
+    </div>`;
+  const strip = document.querySelector('.live-strip');
+  if (strip) strip.insertAdjacentElement('afterend', banner);
+}
+
+function checkMarketStatus() {
+  if (!isMarketClosed()) return;
+  showMarketClosedBanner();
+  document.querySelectorAll('.tl-outer-card,.predict-card,.live-strip,.session-row,.algo-note').forEach(el => {
+    el.style.opacity = '0.45'; el.style.pointerEvents = 'none';
+  });
+  const b = document.getElementById('market-closed-banner');
+  if (b) { b.style.opacity='1'; b.style.pointerEvents='all'; }
+}
+
+function updatePageTitle(price, ch) {
+  if (isMarketClosed()) return;
+  const arrow = ch >= 0 ? '▲' : '▼';
+  document.title = `${arrow} $${fmtP(price)} · XAU/USD`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   REFRESH + INIT
+══════════════════════════════════════════════════════════════ */
+document.getElementById('refresh-btn').addEventListener('click', async function() {
+  this.style.transform = 'rotate(360deg)';
+  this.style.transition = 'transform .6s';
+  setTimeout(() => { this.style.transform=''; this.style.transition=''; }, 700);
+  const d = await fetchGoldPrice();
+  if (d) { Object.assign(window.GOLD_STATE, d); renderPredict(d, false); showToast('✓ Updated via ' + d.source); }
+  else     showToast('⚠ APIs unavailable');
 });
-    
+
+setActiveNav();
+checkMarketStatus();
+loadPrice(renderPredict);
+setInterval(() => loadPrice(renderPredict), 10000);
 </script>
+
+<!-- Firebase auth guard -->
 <script type="module">
   import { fbConfig } from '/js/firebase-config.js';
   import { initializeApp, getApps }
@@ -1657,197 +1345,74 @@ document.addEventListener('keydown', e => {
   import { getFirestore, doc, getDoc, updateDoc, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  
-
-  const app = getApps().length ? getApps()[0] : initializeApp(fbConfig);
+  const app  = getApps().length ? getApps()[0] : initializeApp(fbConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
   onAuthStateChanged(auth, async user => {
-    if (!user) {
-      window.location.replace('login.html');
-      return;
-    }
-
+    if (!user) { window.location.replace('login.html'); return; }
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
-
-      if (!snap.exists()) {
-        window.location.replace('subscribe.html');
-        return;
-      }
-
+      if (!snap.exists()) { window.location.replace('subscribe.html'); return; }
       const d   = snap.data();
       const now = Date.now();
+      const trialActive  = d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now;
+      const subActive    = d.subscriptionStatus === 'active' && d.currentPeriodEnd && new Date(d.currentPeriodEnd).getTime() > now;
+      const manualActive = d.manualAccess === true && (!d.manualAccessExpiresAt || new Date(d.manualAccessExpiresAt).getTime() > now);
 
-      const trialActive =
-        d.trialEndsAt &&
-        new Date(d.trialEndsAt).getTime() > now;
-
-      const subscriptionActive =
-        d.subscriptionStatus === 'active' &&
-        d.currentPeriodEnd &&
-        new Date(d.currentPeriodEnd).getTime() > now;
-
-      const manualActive =
-        d.manualAccess === true &&
-        (!d.manualAccessExpiresAt ||
-          new Date(d.manualAccessExpiresAt).getTime() > now);
-
-      if (trialActive || subscriptionActive || manualActive) {
-          /* access granted - render dashboard */
-  renderDashboard(user, d, now);
-  updateDoc(doc(db, 'users', user.uid), { lastSeen: serverTimestamp() })
-    .then(() => console.log('lastSeen written'))
-    .catch(e => console.error('lastSeen error:', e));
-  return;
-}
-
-      /* Trial expired — show popup instead of redirecting */
-const overlay = document.getElementById('trial-expired-overlay');
-overlay.style.display = 'flex';
-overlay.style.alignItems = 'center';
-overlay.style.justifyContent = 'center';
-
-    } catch (e) {
-      console.error('Guard error:', e.message);
-    }
+      if (trialActive || subActive || manualActive) {
+        renderDashboard(user, d, now);
+        updateDoc(doc(db, 'users', user.uid), { lastSeen: serverTimestamp() }).catch(()=>{});
+        return;
+      }
+      /* Expired */
+      const ov = document.getElementById('trial-expired-overlay');
+      ov.style.display = 'flex'; ov.style.alignItems = 'center'; ov.style.justifyContent = 'center';
+    } catch(e) { console.error('Guard error:', e.message); }
   });
 
   function renderDashboard(user, d, now) {
-  document.getElementById('account-dashboard').style.display = 'block';
-  document.getElementById('dash-email').textContent = user.email;
+    document.getElementById('account-dashboard').style.display = 'block';
+    document.getElementById('dash-email').textContent = user.email;
 
-  const trialActive =
-    d.trialEndsAt &&
-    new Date(d.trialEndsAt).getTime() > now;
+    const trialActive  = d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now;
+    const subActive    = d.subscriptionStatus === 'active' && d.currentPeriodEnd && new Date(d.currentPeriodEnd).getTime() > now;
+    const manualActive = d.manualAccess === true && (!d.manualAccessExpiresAt || new Date(d.manualAccessExpiresAt).getTime() > now);
 
-  const subscriptionActive =
-    d.subscriptionStatus === 'active' &&
-    d.currentPeriodEnd &&
-    new Date(d.currentPeriodEnd).getTime() > now;
+    const badgeEl      = document.getElementById('dash-status-badge');
+    const accessTextEl = document.getElementById('dash-access-text');
+    const actionsEl    = document.getElementById('dash-actions');
 
-  const manualActive =
-    d.manualAccess === true &&
-    (!d.manualAccessExpiresAt ||
-      new Date(d.manualAccessExpiresAt).getTime() > now);
+    const signOutBtn = `<button onclick="dashSignOut()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;background:transparent;color:var(--ink-2);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>`;
 
-  const badgeEl      = document.getElementById('dash-status-badge');
-  const accessTextEl = document.getElementById('dash-access-text');
-  const actionsEl    = document.getElementById('dash-actions');
-
-  if (subscriptionActive) {
-    const end  = new Date(d.currentPeriodEnd);
-    const days = Math.ceil((end.getTime() - now) / (1000 * 60 * 60 * 24));
-    const cancelled = d.subscriptionStatus === 'cancelled';
-
-    badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;
-      background:var(--green-dim);color:var(--green);">
-      <i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px;"></i>
-      ${cancelled ? 'CANCELLING' : 'ACTIVE'}</span>`;
-
-    accessTextEl.innerHTML = `Subscription ${cancelled ? 'cancels' : 'renews'} 
-      <strong style="color:var(--green);">${end.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})}</strong><br>
-      <span style="font-size:11px;color:var(--txt-2);">${days} day${days !== 1 ? 's' : ''} remaining</span>`;
-
-    actionsEl.innerHTML = `
-      <a href="subscribe.html" style="flex:1;display:flex;align-items:center;justify-content:center;
-        gap:7px;padding:11px;background:var(--gold);color:#000;border-radius:10px;
-        font-family:'Syne',sans-serif;font-size:13px;font-weight:800;text-decoration:none;">
-        <i class="fa-solid fa-crown"></i> Renew
-      </a>
-      ${!cancelled ? `
-      <button onclick="cancelSub()" style="flex:1;display:flex;align-items:center;
-        justify-content:center;gap:7px;padding:11px;background:transparent;
-        color:var(--red);border:1px solid rgba(255,69,97,0.3);border-radius:10px;
-        font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
-        <i class="fa-solid fa-ban"></i> Cancel
-      </button>` : ''}
-      <button onclick="dashSignOut()" style="flex:1;display:flex;align-items:center;
-        justify-content:center;gap:7px;padding:11px;background:transparent;color:var(--txt-2);
-        border:1px solid var(--border);border-radius:10px;font-family:'Syne',sans-serif;
-        font-size:13px;font-weight:700;cursor:pointer;">
-        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
-      </button>`;
-
-  } else if (trialActive) {
-    const end  = new Date(d.trialEndsAt);
-    const ms   = end.getTime() - now;
-    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
-    const hrs  = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-    badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;
-      background:var(--gold-glow);color:var(--gold);">
-      <i class="fa-solid fa-clock" style="font-size:6px;margin-right:4px;"></i>TRIAL</span>`;
-
-    accessTextEl.innerHTML = `Free trial &nbsp;·&nbsp;
-      <strong style="color:var(--gold);">${days}d ${hrs}h remaining</strong><br>
-      <span style="font-size:11px;color:var(--txt-2);">Automatic subscriptions is in test mode, contact us below to subscribe</span>`;
-
-    actionsEl.innerHTML = `
-      <a href="/contact" style="flex:1;display:flex;align-items:center;justify-content:center;
-        gap:7px;padding:11px;background:var(--gold);color:#000;border-radius:10px;
-        font-family:'Syne',sans-serif;font-size:13px;font-weight:800;text-decoration:none;">
-        Contact Us
-      </a>
-      <button onclick="dashSignOut()" style="flex:1;display:flex;align-items:center;
-        justify-content:center;gap:7px;padding:11px;background:transparent;color:var(--txt-2);
-        border:1px solid var(--border);border-radius:10px;font-family:'Syne',sans-serif;
-        font-size:13px;font-weight:700;cursor:pointer;">
-        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
-      </button>`;
-
-  } else if (manualActive) {
-    const expiry = d.manualAccessExpiresAt
-      ? new Date(d.manualAccessExpiresAt).toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})
-      : 'Permanent';
-
-    badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;
-      background:var(--green-dim);color:var(--green);">
-      <i class="fa-solid fa-key" style="font-size:6px;margin-right:4px;"></i>GRANTED</span>`;
-
-    accessTextEl.innerHTML = `Manual access granted<br>
-      <span style="font-size:11px;color:var(--txt-2);">Expires: ${expiry}</span>`;
-
-    actionsEl.innerHTML = `
-      <button onclick="dashSignOut()" style="flex:1;display:flex;align-items:center;
-        justify-content:center;gap:7px;padding:11px;background:transparent;color:var(--txt-2);
-        border:1px solid var(--border);border-radius:10px;font-family:'Syne',sans-serif;
-        font-size:13px;font-weight:700;cursor:pointer;">
-        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
-      </button>`;
-  }
-}
-
-window.cancelSub = async () => {
-  if (!confirm('Cancel your subscription? You keep access until your current period ends.')) return;
-  try {
-    const token = await auth.currentUser.getIdToken();
-    const res   = await fetch('/api/cancel-subscription', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ userToken: token }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      alert('Subscription cancelled. You keep access until your period ends.');
-      window.location.reload();
-    } else {
-      alert('Failed: ' + data.error);
+    if (subActive) {
+      const end  = new Date(d.currentPeriodEnd);
+      const days = Math.ceil((end - now) / 86400000);
+      badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;background:var(--green-bg);color:var(--green);"><i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px;"></i>ACTIVE</span>`;
+      accessTextEl.innerHTML = `Subscription renews <strong style="color:var(--green)">${end.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})}</strong><br><span style="font-size:11px;color:var(--ink-3)">${days} day${days!==1?'s':''} remaining</span>`;
+      actionsEl.innerHTML = `<a href="subscribe.html" style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;background:var(--gold);color:#000;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;"><i class="fa-solid fa-crown"></i> Renew</a>${signOutBtn}`;
+    } else if (trialActive) {
+      const end  = new Date(d.trialEndsAt);
+      const ms   = end - now;
+      const days = Math.floor(ms / 86400000);
+      const hrs  = Math.floor((ms % 86400000) / 3600000);
+      badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;background:var(--gold-bg);color:var(--gold);"><i class="fa-solid fa-clock" style="font-size:6px;margin-right:4px;"></i>TRIAL</span>`;
+      accessTextEl.innerHTML = `Free trial · <strong style="color:var(--gold)">${days}d ${hrs}h remaining</strong><br><span style="font-size:11px;color:var(--ink-3)">Contact us to subscribe</span>`;
+      actionsEl.innerHTML = `<a href="/contact" style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;background:var(--gold);color:#000;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;">Contact Us</a>${signOutBtn}`;
+    } else if (manualActive) {
+      const expiry = d.manualAccessExpiresAt ? new Date(d.manualAccessExpiresAt).toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'}) : 'Permanent';
+      badgeEl.innerHTML = `<span style="font-size:10px;padding:2px 10px;border-radius:10px;background:var(--green-bg);color:var(--green);"><i class="fa-solid fa-key" style="font-size:6px;margin-right:4px;"></i>GRANTED</span>`;
+      accessTextEl.innerHTML = `Manual access granted<br><span style="font-size:11px;color:var(--ink-3)">Expires: ${expiry}</span>`;
+      actionsEl.innerHTML = signOutBtn;
     }
-  } catch (e) {
-    alert('Error: ' + e.message);
   }
-};
 
-window.dashSignOut = async () => {
-  const { signOut } = await import(
-    "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
-  );
-  await signOut(auth);
-  window.location.replace('login.html');
-};
+  window.dashSignOut = async () => {
+    const { signOut } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+    await signOut(auth);
+    window.location.replace('login.html');
+  };
 </script>
-  
+
 </body>
 </html>
