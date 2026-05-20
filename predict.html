@@ -199,6 +199,272 @@
   font-size: 10px;
   margin-right: 4px;
 }
+  /* ── Timeline cards ── */
+  .tl-outer-card {
+    margin: 0 16px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .tl-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px 0;
+  }
+
+  .tl-card-header-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--ink-3);
+    padding: 0;
+  }
+
+  .tl-card-header i {
+    font-size: 12px;
+    color: var(--ink-4);
+  }
+
+  /* ── Individual rows ── */
+  .tl-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tl-row:last-child {
+    border-bottom: none;
+  }
+
+  .tl-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--border);
+  }
+
+  .tl-dot.live {
+    background: var(--green);
+    box-shadow: 0 0 0 3px var(--green-bg);
+  }
+
+  .tl-frame {
+    font-size: 12px;
+    color: var(--ink-2);
+    width: 52px;
+    flex-shrink: 0;
+  }
+
+  .tl-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tl-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+  }
+
+  .tl-conf-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 4px;
+  }
+
+  .tl-conf-bar {
+    width: 56px;
+    height: 3px;
+    background: var(--bg-3);
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .tl-conf-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .9s ease;
+  }
+
+  .tl-conf-pct {
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+
+  .tl-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: .04em;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .tl-badge.bull  { background: var(--green-bg); color: var(--green); }
+  .tl-badge.bear  { background: var(--red-bg);   color: var(--red);   }
+  .tl-badge.flat  { background: var(--gold-bg);  color: var(--gold);  }
+  .tl-badge.wait  { background: var(--bg-3);     color: var(--ink-3); }
+  .tl-badge.live-badge { background: var(--green-bg); color: var(--green); }
+
+  .tl-info-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--ink-3);
+    font-size: 14px;
+    transition: background .14s, color .14s;
+  }
+
+  .tl-info-btn:hover {
+    background: var(--bg-2);
+    color: var(--ink);
+  }
+
+  /* ── Overlay + bottom sheet popup ── */
+  .tl-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .42);
+    z-index: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .22s;
+  }
+
+  .tl-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .tl-popup {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg);
+    border-radius: 20px 20px 0 0;
+    border-top: 1px solid var(--border);
+    z-index: 601;
+    padding: 0 20px 36px;
+    max-height: 80vh;
+    overflow-y: auto;
+    transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .tl-popup.open {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .tl-popup-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    margin: 14px auto 20px;
+  }
+
+  .tl-popup-kicker {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--ink-4);
+    margin-bottom: 6px;
+  }
+
+  .tl-popup-signal {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .tl-popup-dir {
+    font-size: 13px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .tl-popup-reason {
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.65;
+    background: var(--bg-2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+
+  .tl-popup-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 14px 0;
+  }
+
+  .tl-popup-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+  }
+
+  .tl-popup-meta-label {
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  .tl-popup-meta-val {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: right;
+    max-width: 200px;
+  }
+
+  .tl-popup-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px;
+    margin-top: 16px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .14s;
+  }
+
+  .tl-popup-close:hover {
+    background: var(--bg-3);
+  }
+
   </style>
 </head>
 <body>
@@ -253,24 +519,152 @@
       <div class="session-chip" id="sess-vol" style="margin-left:auto;"><i class="fa-solid fa-wave-square" style="font-size:9px;"></i><span id="sess-vol-label">—</span></div>
     </div>
 
-    <div class="predict-card">
-      <h3><i class="fa-solid fa-clock-rotate-left"></i>Price Prediction Timeline</h3>
-      <div class="timeline-container">
-        <div class="tl-group-label">Current Price</div>
-        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot now"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label"><i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px;color:var(--green)"></i>Live · Right Now</div><div class="tl-price" id="pred-now">—</div><div class="tl-range" id="pred-now-time"></div></div><div class="tl-badge badge-live">LIVE</div></div>
-        <div class="tl-group-label">Trade Entry Signals · Signal-Based</div>
-        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label">10-Min Trade · Entry Signal</div><div class="tl-price" id="entry-10m-signal">—</div><div class="tl-sub" id="entry-10m-dir"></div><div class="tl-range" id="entry-10m-reason"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill high" id="conf-entry-10m" style="width:0%"></div></div><span class="conf-label" id="conf-entry-10m-lbl">—</span></div></div><div class="tl-badge" id="entry-10m-badge">—</div></div>
-        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label">1-Hour Trade · Entry Signal</div>
-          <div class="tl-price" id="entry-1h-signal">—</div><div class="tl-sub" id="entry-1h-dir"></div><div class="tl-range" id="entry-1h-reason"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill high" id="conf-entry-1h" style="width:0%"></div></div><span class="conf-label" id="conf-entry-1h-lbl">—</span></div></div><div class="tl-badge" id="entry-1h-badge">—</div></div>
-        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label">4-Hour Trade · Entry Signal</div><div class="tl-price" id="entry-4h-signal">—</div><div class="tl-sub" id="entry-4h-dir"></div><div class="tl-range" id="entry-4h-reason"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill medium" id="conf-entry-4h" style="width:0%"></div></div><span class="conf-label" id="conf-entry-4h-lbl">—</span></div></div><div class="tl-badge" id="entry-4h-badge">—</div></div>
-        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div></div><div class="tl-body"><div class="tl-label">24-Hour Trade · Entry Signal</div><div class="tl-price" id="entry-24h-signal">—</div><div class="tl-sub" id="entry-24h-dir"></div><div class="tl-range" id="entry-24h-reason"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill low" id="conf-entry-24h" style="width:0%"></div></div><span class="conf-label" id="conf-entry-24h-lbl">—</span></div></div><div class="tl-badge" id="entry-24h-badge">—</div></div>
-        <div class="tl-group-label">Medium-Term · Session Moves</div>
-        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label">1 Hour Forecast</div><div class="tl-price" id="pred-1h">—</div><div class="tl-sub" id="pred-1h-chg"></div><div class="tl-range" id="pred-1h-range"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill medium" id="conf-1h" style="width:0%"></div></div><span class="conf-label" id="conf-1h-lbl">—</span></div></div><div class="tl-badge" id="pred-1h-badge">—</div></div>
-        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-label">6 Hour Forecast</div><div class="tl-price" id="pred-6h">—</div><div class="tl-sub" id="pred-6h-chg"></div><div class="tl-range" id="pred-6h-range"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill low" id="conf-6h" style="width:0%"></div></div><span class="conf-label" id="conf-6h-lbl">—</span></div></div><div class="tl-badge" id="pred-6h-badge">—</div></div>
-        <div class="tl-group-label">Long-Term · Daily View</div>
-        <div class="timeline-row"><div class="tl-dot-col"><div class="tl-dot done"></div></div><div class="tl-body"><div class="tl-label">24 Hour Forecast</div><div class="tl-price" id="pred-24h">—</div><div class="tl-sub" id="pred-24h-chg"></div><div class="tl-range" id="pred-24h-range"></div><div class="tl-conf-row"><div class="conf-bar"><div class="conf-fill low" id="conf-24h" style="width:0%"></div></div><span class="conf-label" id="conf-24h-lbl">—</span></div></div><div class="tl-badge" id="pred-24h-badge">—</div></div>
+  <!-- Entry Signals card -->
+<div class="tl-outer-card">
+  <div class="tl-card-header">
+    <i class="fa-solid fa-bolt"></i>
+    <span class="tl-card-header-label">Entry Signals</span>
+  </div>
+
+  <!-- Live / Now row -->
+  <div class="tl-row">
+    <div class="tl-dot live"></div>
+    <span class="tl-frame">Now</span>
+    <div class="tl-main">
+      <div class="tl-value" id="tl-now-price">—</div>
+      <div style="font-size:11px;color:var(--ink-3);margin-top:3px;" id="tl-now-time"></div>
+    </div>
+    <span class="tl-badge live-badge">LIVE</span>
+    <div style="width:30px;flex-shrink:0;"></div>
+  </div>
+
+  <!-- 10 min -->
+  <div class="tl-row">
+    <div class="tl-dot"></div>
+    <span class="tl-frame">10 min</span>
+    <div class="tl-main">
+      <div class="tl-value" id="tl-sig-10m">—</div>
+      <div class="tl-conf-row">
+        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-10m" style="width:0%"></div></div>
+        <span class="tl-conf-pct" id="tl-conf-10m-pct">—</span>
       </div>
     </div>
+    <span class="tl-badge" id="tl-badge-10m">—</span>
+    <button class="tl-info-btn" onclick="tlOpenPopup('10m')" aria-label="10 min signal details">
+      <i class="fa-solid fa-circle-info"></i>
+    </button>
+  </div>
+
+  <!-- 1 hour -->
+  <div class="tl-row">
+    <div class="tl-dot"></div>
+    <span class="tl-frame">1 hour</span>
+    <div class="tl-main">
+      <div class="tl-value" id="tl-sig-1h">—</div>
+      <div class="tl-conf-row">
+        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-1h" style="width:0%"></div></div>
+        <span class="tl-conf-pct" id="tl-conf-1h-pct">—</span>
+      </div>
+    </div>
+    <span class="tl-badge" id="tl-badge-1h">—</span>
+    <button class="tl-info-btn" onclick="tlOpenPopup('1h')" aria-label="1 hour signal details">
+      <i class="fa-solid fa-circle-info"></i>
+    </button>
+  </div>
+
+  <!-- 4 hour -->
+  <div class="tl-row">
+    <div class="tl-dot"></div>
+    <span class="tl-frame">4 hour</span>
+    <div class="tl-main">
+      <div class="tl-value" id="tl-sig-4h">—</div>
+      <div class="tl-conf-row">
+        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-4h" style="width:0%"></div></div>
+        <span class="tl-conf-pct" id="tl-conf-4h-pct">—</span>
+      </div>
+    </div>
+    <span class="tl-badge" id="tl-badge-4h">—</span>
+    <button class="tl-info-btn" onclick="tlOpenPopup('4h')" aria-label="4 hour signal details">
+      <i class="fa-solid fa-circle-info"></i>
+    </button>
+  </div>
+
+  <!-- 24 hour signal -->
+  <div class="tl-row">
+    <div class="tl-dot"></div>
+    <span class="tl-frame">24 hour</span>
+    <div class="tl-main">
+      <div class="tl-value" id="tl-sig-24h">—</div>
+      <div class="tl-conf-row">
+        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-24h-sig" style="width:0%"></div></div>
+        <span class="tl-conf-pct" id="tl-conf-24h-sig-pct">—</span>
+      </div>
+    </div>
+    <span class="tl-badge" id="tl-badge-24h-sig">—</span>
+    <button class="tl-info-btn" onclick="tlOpenPopup('24h-sig')" aria-label="24 hour signal details">
+      <i class="fa-solid fa-circle-info"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Price Forecast card -->
+<div class="tl-outer-card">
+  <div class="tl-card-header">
+    <i class="fa-solid fa-chart-line"></i>
+    <span class="tl-card-header-label">Price Forecast</span>
+  </div>
+
+  <!-- 1 hour forecast -->
+  <div class="tl-row">
+    <div class="tl-dot"></div>
+    <span class="tl-frame">1 hour</span>
+    <div class="tl-main">
+      <div class="tl-value" id="tl-fc-1h">—</div>
+      <div class="tl-conf-row">
+        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-fc-1h" style="width:0%"></div></div>
+        <span class="tl-conf-pct" id="tl-conf-fc-1h-pct">—</span>
+      </div>
+    </div>
+    <span class="tl-badge" id="tl-fc-badge-1h">—</span>
+    <button class="tl-info-btn" onclick="tlOpenPopup('fc-1h')" aria-label="1 hour forecast details">
+      <i class="fa-solid fa-circle-info"></i>
+    </button>
+  </div>
+
+  <!-- 6 hour forecast -->
+  <div class="tl-row">
+    <div class="tl-dot"></div>
+    <span class="tl-frame">6 hour</span>
+    <div class="tl-main">
+      <div class="tl-value" id="tl-fc-6h">—</div>
+      <div class="tl-conf-row">
+        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-fc-6h" style="width:0%"></div></div>
+        <span class="tl-conf-pct" id="tl-conf-fc-6h-pct">—</span>
+      </div>
+    </div>
+    <span class="tl-badge" id="tl-fc-badge-6h">—</span>
+    <button class="tl-info-btn" onclick="tlOpenPopup('fc-6h')" aria-label="6 hour forecast details">
+      <i class="fa-solid fa-circle-info"></i>
+    </button>
+  </div>
+
+  <!-- 24 hour forecast -->
+  <div class="tl-row">
+    <div class="tl-dot"></div>
+    <span class="tl-frame">24 hour</span>
+    <div class="tl-main">
+      <div class="tl-value" id="tl-fc-24h">—</div>
+      <div class="tl-conf-row">
+        <div class="tl-conf-bar"><div class="tl-conf-fill" id="tl-conf-fc-24h" style="width:0%"></div></div>
+        <span class="tl-conf-pct" id="tl-conf-fc-24h-pct">—</span>
+      </div>
+    </div>
+    <span class="tl-badge" id="tl-fc-badge-24h">—</span>
+    <button class="tl-info-btn" onclick="tlOpenPopup('fc-24h')" aria-label="24 hour forecast details">
+      <i class="fa-solid fa-circle-info"></i>
+    </button>
+  </div>
+</div>
 
     <div class="predict-card"><h3><i class="fa-solid fa-gauge-high"></i>Market Signal</h3><div class="signal-grid"><div class="sig-gauge-row"><span class="sig-name" style="color:var(--green)">BUY</span><div class="sig-gauge-bar"><div class="sig-gauge-fill buy" id="sig-buy" style="width:0%"></div></div><span class="sig-pct" id="sig-buy-pct" style="color:var(--green)">—</span></div><div class="sig-gauge-row"><span class="sig-name" style="color:var(--gold)">HLD</span><div class="sig-gauge-bar"><div class="sig-gauge-fill hold" id="sig-hold" style="width:0%"></div></div><span class="sig-pct" id="sig-hold-pct" style="color:var(--gold)">—</span></div><div class="sig-gauge-row"><span class="sig-name" style="color:var(--red)">SELL</span><div class="sig-gauge-bar"><div class="sig-gauge-fill sell" id="sig-sell" style="width:0%"></div></div><span class="sig-pct" id="sig-sell-pct" style="color:var(--red)">—</span></div></div></div>
     <div class="predict-card"><h3><i class="fa-solid fa-heart-pulse"></i>Market Sentiment</h3><div class="sentiment-arc"><div class="sentiment-big" id="sentiment-emoji">⚖️</div><div class="sentiment-lbl" id="sentiment-txt">Calculating...</div></div></div>
@@ -280,6 +674,27 @@
     <div class="disclaimer"><i class="fa-solid fa-circle-exclamation"></i>Not financial advice. Predictions are algorithmic estimates based on ATR volatility modelling and technical factors. XAU/USD carries significant market risk. Always consult a licensed financial professional before making any trading decision.</div>
     <footer><div class="footer-links"><a class="footer-link" href="/about">About</a><a class="footer-link" href="/contact">Contact</a><a class="footer-link" href="/disclaimer">Disclaimer</a></div><div class="footer-disc">Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates, not financial advice. Consult a licensed professional before trading.</div><div class="footer-copy">© 2026 XauTracker.com &nbsp;·&nbsp; Powered by TwelveData</div></footer>
   </div>
+  <div class="tl-overlay" id="tl-overlay" onclick="tlClosePopup()"></div>
+
+<div class="tl-popup" id="tl-popup">
+  <div class="tl-popup-handle"></div>
+  <div class="tl-popup-kicker" id="tl-popup-kicker">—</div>
+  <div class="tl-popup-signal" id="tl-popup-signal">—</div>
+  <div class="tl-popup-dir" id="tl-popup-dir"></div>
+  <div class="tl-popup-reason" id="tl-popup-reason">—</div>
+  <div class="tl-popup-divider"></div>
+  <div class="tl-popup-meta-row">
+    <span class="tl-popup-meta-label">Confidence</span>
+    <span class="tl-popup-meta-val" id="tl-popup-conf">—</span>
+  </div>
+  <div class="tl-popup-meta-row" id="tl-popup-range-row">
+    <span class="tl-popup-meta-label">±1σ band</span>
+    <span class="tl-popup-meta-val" id="tl-popup-range">—</span>
+  </div>
+  <button class="tl-popup-close" onclick="tlClosePopup()">
+    <i class="fa-solid fa-xmark"></i> Close me
+  </button>
+</div>
 </div>
 <div id="toast"></div>
   <div id="trial-expired-overlay" style="display:none;position:fixed;inset:0;z-index:499;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);background:rgba(0,0,0,0.45);padding:24px;">
@@ -851,24 +1266,7 @@ document.getElementById('pred-open').textContent = '$' + fmtP(d.open);
   document.getElementById('sess-vol-label').textContent = sess.volLabel + ' VOL';
 
   /* ── NOW ── */
-  document.getElementById('pred-now').textContent    = '$' + fmtP(price);
-  document.getElementById('pred-now-time').textContent =
-    new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-  /* ── Timeline rows ── */
-  
-  renderRow(
-    { price:'pred-1h',  chg:'pred-1h-chg',  range:'pred-1h-range',  badge:'pred-1h-badge',  conf:'conf-1h',  confLbl:'conf-1h-lbl'  },
-    pred.f1h.target, price, pred.f1h.bandLow, pred.f1h.bandHigh, pred.f1h.conf, 450, 1.50
-  );
-  renderRow(
-    { price:'pred-6h',  chg:'pred-6h-chg',  range:'pred-6h-range',  badge:'pred-6h-badge',  conf:'conf-6h',  confLbl:'conf-6h-lbl'  },
-    pred.f6h.target, price, pred.f6h.bandLow, pred.f6h.bandHigh, pred.f6h.conf, 550, 4.00
-  );
-  renderRow(
-    { price:'pred-24h', chg:'pred-24h-chg', range:'pred-24h-range', badge:'pred-24h-badge', conf:'conf-24h', confLbl:'conf-24h-lbl' },
-    pred.f24h.target, price, pred.f24h.bandLow, pred.f24h.bandHigh, pred.f24h.conf, 650, 8.00
-  );
+  renderTimeline(d);
 
   /* ── Signals
      Built from: momentum direction, RSI-like overextension, session */
@@ -1080,6 +1478,175 @@ function updatePageTitle(price, ch) {
   const arrow = isUp ? '▲' : '▼';
   document.title = `${arrow} $${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} · XAU/USD`;
 }
+</script>
+<script>
+    /* Stores popup data keyed by row id */
+const tlPopupStore = {};
+
+/* ── Confidence bar color ── */
+function tlConfColor(c) {
+  if (c >= 75) return 'var(--green)';
+  if (c >= 55) return 'var(--gold)';
+  return 'var(--red)';
+}
+
+/* ── Apply badge class + text to an element ── */
+function tlApplyBadge(el, type) {
+  /* type: 'bull' | 'bear' | 'flat' | 'wait' | 'live' */
+  el.className = 'tl-badge ' + type;
+  const labels = { bull: 'LONG', bear: 'SHORT', flat: 'FLAT', wait: 'SKIP', live: 'LIVE' };
+  el.textContent = labels[type] || type.toUpperCase();
+}
+
+/* ── Infer badge type from diff ── */
+function tlBadgeFromDiff(diff, threshold) {
+  if (diff > threshold)  return 'bull';
+  if (diff < -threshold) return 'bear';
+  return 'flat';
+}
+
+/* ── Render a single signal row ── */
+function tlRenderSignalRow(key, frame, sig) {
+  const ids = {
+    '10m':     { val: 'tl-sig-10m',  conf: 'tl-conf-10m',     pct: 'tl-conf-10m-pct',     badge: 'tl-badge-10m'      },
+    '1h':      { val: 'tl-sig-1h',   conf: 'tl-conf-1h',      pct: 'tl-conf-1h-pct',      badge: 'tl-badge-1h'       },
+    '4h':      { val: 'tl-sig-4h',   conf: 'tl-conf-4h',      pct: 'tl-conf-4h-pct',      badge: 'tl-badge-4h'       },
+    '24h-sig': { val: 'tl-sig-24h',  conf: 'tl-conf-24h-sig', pct: 'tl-conf-24h-sig-pct', badge: 'tl-badge-24h-sig'  },
+  };
+  const id = ids[key];
+  if (!id) return;
+
+  document.getElementById(id.val).textContent = sig.sig;
+
+  const badgeEl = document.getElementById(id.badge);
+  /* Derive badge type from signal text */
+  let bType = 'wait';
+  if (sig.badgeTxt === 'LONG')  bType = 'bull';
+  if (sig.badgeTxt === 'SHORT') bType = 'bear';
+  if (sig.badgeTxt === 'FLAT')  bType = 'flat';
+  badgeEl.className   = 'tl-badge ' + bType;
+  badgeEl.textContent = sig.badgeTxt;
+
+  setTimeout(() => {
+    const fill = document.getElementById(id.conf);
+    fill.style.width      = sig.conf + '%';
+    fill.style.background = tlConfColor(sig.conf);
+    document.getElementById(id.pct).textContent = sig.conf + '%';
+  }, 150);
+
+  tlPopupStore[key] = {
+    kicker: frame + ' entry signal',
+    signal: sig.sig,
+    dir:    sig.dir,
+    reason: sig.reason,
+    conf:   sig.conf + '%',
+    range:  null,
+    dirColor: sig.badgeTxt === 'LONG' ? 'var(--green)' : sig.badgeTxt === 'SHORT' ? 'var(--red)' : 'var(--gold)',
+  };
+}
+
+/* ── Render a single forecast row ── */
+function tlRenderFcRow(key, frame, fc, basePrice) {
+  const ids = {
+    'fc-1h':  { val: 'tl-fc-1h',  conf: 'tl-conf-fc-1h',  pct: 'tl-conf-fc-1h-pct',  badge: 'tl-fc-badge-1h'  },
+    'fc-6h':  { val: 'tl-fc-6h',  conf: 'tl-conf-fc-6h',  pct: 'tl-conf-fc-6h-pct',  badge: 'tl-fc-badge-6h'  },
+    'fc-24h': { val: 'tl-fc-24h', conf: 'tl-conf-fc-24h', pct: 'tl-conf-fc-24h-pct', badge: 'tl-fc-badge-24h' },
+  };
+  const id = ids[key];
+  if (!id) return;
+
+  document.getElementById(id.val).textContent = '$' + fmtP(fc.target);
+
+  const diff  = fc.target - basePrice;
+  const bType = tlBadgeFromDiff(diff, 1.5);
+  const badgeEl = document.getElementById(id.badge);
+  badgeEl.className   = 'tl-badge ' + bType;
+  badgeEl.textContent = bType === 'bull' ? 'BULL' : bType === 'bear' ? 'BEAR' : 'FLAT';
+
+  setTimeout(() => {
+    const fill = document.getElementById(id.conf);
+    fill.style.width      = fc.conf + '%';
+    fill.style.background = tlConfColor(fc.conf);
+    document.getElementById(id.pct).textContent = fc.conf + '%';
+  }, 200);
+
+  const pct = ((diff / basePrice) * 100);
+  tlPopupStore[key] = {
+    kicker:   frame + ' price forecast',
+    signal:   '$' + fmtP(fc.target),
+    dir:      (diff >= 0 ? '+' : '') + fmtD(diff) + '  (' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%)',
+    reason:   'ATR-based σ(t) = ATR × √(t / 1440) forecast. The ±1σ band below shows the 68% probability range for this timeframe.',
+    conf:     fc.conf + '%',
+    range:    '$' + fmtP(fc.bandLow) + ' – $' + fmtP(fc.bandHigh),
+    dirColor: diff >= 0 ? 'var(--green)' : 'var(--red)',
+  };
+}
+
+/* ── Main timeline render — call this from renderPredict() ── */
+function renderTimeline(d) {
+  const { price, chp, high, low } = d;
+
+  /* Now row */
+  document.getElementById('tl-now-price').textContent =
+    '$' + fmtP(price);
+  document.getElementById('tl-now-time').textContent =
+    new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  /* Build data */
+  const pred = buildPredictions(price, chp, high, low);
+  const sigs = computeEntrySignals(price, chp, high, low, pred.atr, pred.session);
+
+  /* Entry signal rows */
+  tlRenderSignalRow('10m',     '10 min',  sigs.e10m);
+  tlRenderSignalRow('1h',      '1 hour',  sigs.e1h);
+  tlRenderSignalRow('4h',      '4 hour',  sigs.e4h);
+  tlRenderSignalRow('24h-sig', '24 hour', sigs.e24h);
+
+  /* Forecast rows */
+  tlRenderFcRow('fc-1h',  '1 hour',  pred.f1h,  price);
+  tlRenderFcRow('fc-6h',  '6 hour',  pred.f6h,  price);
+  tlRenderFcRow('fc-24h', '24 hour', pred.f24h, price);
+}
+
+/* ── Popup open/close ── */
+function tlOpenPopup(key) {
+  const d = tlPopupStore[key];
+  if (!d) return;
+
+  document.getElementById('tl-popup-kicker').textContent  = d.kicker;
+  document.getElementById('tl-popup-signal').textContent  = d.signal;
+
+  const dirEl = document.getElementById('tl-popup-dir');
+  dirEl.textContent  = d.dir;
+  dirEl.style.color  = d.dirColor || 'var(--ink-2)';
+
+  document.getElementById('tl-popup-reason').textContent = d.reason;
+  document.getElementById('tl-popup-conf').textContent   = d.conf;
+
+  const rangeRow = document.getElementById('tl-popup-range-row');
+  if (d.range) {
+    document.getElementById('tl-popup-range').textContent = d.range;
+    rangeRow.style.display = 'flex';
+  } else {
+    rangeRow.style.display = 'none';
+  }
+
+  document.getElementById('tl-overlay').classList.add('open');
+  document.getElementById('tl-popup').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function tlClosePopup() {
+  document.getElementById('tl-overlay').classList.remove('open');
+  document.getElementById('tl-popup').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* Close on Escape key */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') tlClosePopup();
+});
+    
 </script>
 <script type="module">
   import { fbConfig } from '/js/firebase-config.js';
