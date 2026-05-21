@@ -1,0 +1,12 @@
+node_modules
+.next
+.env.local
+npm-debug.log*
+
+# Prevent binary assets in Codex-managed migration branch
+public/legacy/*.png
+public/legacy/*.jpg
+public/legacy/*.jpeg
+public/legacy/*.gif
+public/legacy/*.webp
+public/legacy/*.ico

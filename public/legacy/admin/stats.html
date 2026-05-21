@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <script>
+    (function(){var t=localStorage.getItem('xau-theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>User Stats · XauTracker Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    [data-theme="light"]{--bg:#ffffff;--bg-2:#f6f6f4;--bg-3:#eeede9;--ink:#0a0a0a;--ink-2:#444;--ink-3:#888;--ink-4:#bbb;--border:#e0dedd;--green:#1a7a4a;--green-bg:#e8f5ee;--red:#b83232;--red-bg:#fdf0f0;--gold:#9a6e00;--gold-bg:#fff6d8;--radius:14px}
+    [data-theme="dark"]{--bg:#0e0e0e;--bg-2:#181818;--bg-3:#222;--ink:#f0f0f0;--ink-2:#aaa;--ink-3:#666;--ink-4:#444;--border:#2a2a2a;--green:#3dba72;--green-bg:#0d2a1a;--red:#e05555;--red-bg:#2a0d0d;--gold:#c8962a;--gold-bg:#2b2109;--radius:14px}
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;transition:background .22s,color .22s}
+
+    /* ── Layout ── */
+    #page{max-width:960px;margin:0 auto;padding:0 20px 60px;}
+
+    /* ── Topbar ── */
+    #topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);margin-bottom:28px;gap:12px;flex-wrap:wrap;}
+    .topbar-left{display:flex;align-items:center;gap:10px;}
+    .logo{width:34px;height:34px;background:var(--gold-bg);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:15px;}
+    .wordmark{font-size:16px;font-weight:800;color:var(--ink);}
+    .wordmark span{color:var(--gold);}
+    .topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+    /* ── Buttons ── */
+    .btn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;border:none;transition:all .18s;}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--ink-2);}
+    .btn-outline:hover{border-color:var(--ink-3);color:var(--ink);}
+    .btn-gold{background:var(--ink);color:var(--bg);}
+    .btn-gold:hover{opacity:.85;}
+    .btn-sm{padding:6px 11px;font-size:11px;}
+    .btn-icon{width:32px;height:32px;padding:0;justify-content:center;border-radius:8px;}
+
+    /* ── Theme toggle ── */
+    .theme-btn{background:var(--bg-2);border:1px solid var(--border);color:var(--ink-2);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .18s;}
+    .theme-btn:hover{border-color:var(--ink-3);color:var(--ink);}
+
+    /* ── Login screen ── */
+    #login-screen{min-height:80vh;display:flex;align-items:center;justify-content:center;}
+    .login-box{width:100%;max-width:360px;background:var(--bg-2);border:1px solid var(--border);border-radius:18px;padding:28px;}
+    .login-logo{width:44px;height:44px;border-radius:14px;background:var(--gold-bg);color:var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:18px;}
+    .login-box h2{text-align:center;font-size:20px;font-weight:800;margin-bottom:4px;}
+    .login-box p{text-align:center;font-size:13px;color:var(--ink-3);margin-bottom:18px;}
+    label{display:block;font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.09em;margin:12px 0 6px;font-weight:700;}
+    input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--ink);font-size:14px;padding:11px 13px;outline:none;transition:border-color .2s;}
+    input:focus{border-color:var(--gold);}
+    #login-err{color:var(--red);font-size:12px;margin-top:8px;display:none;}
+
+    /* ── Admin app ── */
+    #admin-app{display:none;}
+
+    /* ── Summary cards ── */
+    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+    @media(max-width:640px){.summary-grid{grid-template-columns:repeat(2,1fr);}}
+    .sum-card{background:var(--bg-2);border:1px solid var(--border);border-radius:14px;padding:16px;}
+    .sum-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);margin-bottom:8px;}
+    .sum-val{font-size:28px;font-weight:800;color:var(--ink);line-height:1;}
+    .sum-sub{font-size:11px;color:var(--ink-3);margin-top:4px;}
+
+    /* ── Controls row ── */
+    .controls{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+    .search-wrap{flex:1;min-width:200px;position:relative;}
+    .search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-size:13px;pointer-events:none;}
+    .search-input{width:100%;padding:10px 12px 10px 34px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;color:var(--ink);font-size:13px;outline:none;transition:border-color .2s;}
+    .search-input:focus{border-color:var(--gold);}
+    .filter-select{padding:10px 12px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;color:var(--ink);font-size:13px;outline:none;cursor:pointer;}
+    .filter-select:focus{border-color:var(--gold);}
+
+    /* ── Table ── */
+    .table-wrap{background:var(--bg-2);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+    table{width:100%;border-collapse:collapse;}
+    thead th{padding:12px 16px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);border-bottom:1px solid var(--border);white-space:nowrap;background:var(--bg-2);}
+    tbody tr{transition:background .13s;}
+    tbody tr:hover{background:var(--bg-3);}
+    tbody td{padding:13px 16px;font-size:13px;color:var(--ink-2);border-bottom:1px solid var(--border);vertical-align:middle;}
+    tbody tr:last-child td{border-bottom:none;}
+    .td-email{font-weight:600;color:var(--ink);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .td-mono{font-variant-numeric:tabular-nums;font-size:12px;}
+
+    /* ── Status badges ── */
+    .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+    .badge-pro{background:var(--green-bg);color:var(--green);}
+    .badge-trial{background:var(--gold-bg);color:var(--gold);}
+    .badge-manual{background:rgba(100,100,255,0.1);color:#6060dd;}
+    .badge-expired{background:var(--red-bg);color:var(--red);}
+    .badge-none{background:var(--bg-3);color:var(--ink-3);}
+
+    /* ── Pagination ── */
+    .pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+    .page-info{font-size:12px;color:var(--ink-3);}
+    .page-btns{display:flex;gap:6px;}
+    .page-btn{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--ink-2);transition:all .15s;}
+    .page-btn:hover:not(:disabled){border-color:var(--ink-3);color:var(--ink);}
+    .page-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+    /* ── Empty / loading states ── */
+    .state-row td{text-align:center;padding:40px;color:var(--ink-3);font-size:13px;}
+    .state-row i{display:block;font-size:28px;margin-bottom:10px;color:var(--ink-4);}
+
+    /* ── Toast ── */
+    #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:all .28s;pointer-events:none;z-index:300;white-space:nowrap;}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  </style>
+</head>
+<body>
+<div id="page">
+  <div id="topbar">
+    <div class="topbar-left">
+      <div class="logo"><i class="fa-solid fa-coins"></i></div>
+      <span class="wordmark">XauTracker <span>Admin</span></span>
+    </div>
+    <div class="topbar-right">
+      <a href="../admin.html" class="btn btn-outline btn-sm"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+      <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme"><i id="theme-icon" class="fa-solid fa-moon"></i></button>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+    </div>
+  </div>
+
+  <!-- ── Login screen ── -->
+  <div id="login-screen">
+    <div class="login-box">
+      <div class="login-logo"><i class="fa-solid fa-lock"></i></div>
+      <h2>Admin Access</h2>
+      <p>Sign in to view user stats</p>
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="you@email.com" />
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" />
+      <p id="login-err"></p>
+      <button class="btn btn-gold" style="width:100%;margin-top:14px;justify-content:center;" onclick="doLogin()">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Admin app ── -->
+  <div id="admin-app">
+
+    <!-- Summary cards -->
+    <div class="summary-grid">
+      <div class="sum-card">
+        <div class="sum-label">Total Users</div>
+        <div class="sum-val" id="stat-total">—</div>
+        <div class="sum-sub">all registered</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-label">Pro</div>
+        <div class="sum-val" id="stat-pro" style="color:var(--green);">—</div>
+        <div class="sum-sub">active subscribers</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-label">Trial</div>
+        <div class="sum-val" id="stat-trial" style="color:var(--gold);">—</div>
+        <div class="sum-sub">active trials</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-label">Manual</div>
+        <div class="sum-val" id="stat-manual" style="color:#6060dd;">—</div>
+        <div class="sum-sub">granted access</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="search-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input class="search-input" id="search-input" type="text" placeholder="Search by email..." />
+      </div>
+      <select class="filter-select" id="filter-status">
+        <option value="all">All Statuses</option>
+        <option value="pro">Pro</option>
+        <option value="trial">Trial</option>
+        <option value="manual">Manual</option>
+        <option value="expired">Expired</option>
+        <option value="none">No Access</option>
+      </select>
+      <button class="btn btn-outline btn-sm" onclick="exportCSV()">
+        <i class="fa-solid fa-download"></i> Export CSV
+      </button>
+      <button class="btn btn-outline btn-sm" onclick="loadUsers()">
+        <i class="fa-solid fa-rotate-right"></i> Refresh
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Registered</th>
+            <th>Last Seen</th>
+            <th>Expires / Ends</th>
+          </tr>
+        </thead>
+        <tbody id="user-tbody">
+          <tr class="state-row">
+            <td colspan="5"><i class="fa-solid fa-spinner fa-spin"></i>Loading users...</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span class="page-info" id="page-info">—</span>
+        <div class="page-btns">
+          <button class="page-btn" id="btn-prev" onclick="changePage(-1)" disabled>← Prev</button>
+          <button class="page-btn" id="btn-next" onclick="changePage(1)" disabled>Next →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div id="toast"></div>
+
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, getDocs, orderBy, query }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVUXlnWPqtVQnqxHNyABktkFxnRj3mFvs",
+    authDomain: "xautracker.firebaseapp.com",
+    projectId: "xautracker",
+    storageBucket: "xautracker.firebasestorage.app",
+    messagingSenderId: "831752609455",
+    appId: "1:831752609455:web:ea9be478691744afa73e5a"
+  };
+
+  const ADMIN_EMAIL = 'ifexxy9@gmail.com'; // your admin email
+  const PAGE_SIZE   = 30;
+
+  const app  = initializeApp(firebaseConfig, 'stats-page');
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  let allUsers    = [];
+  let filtered    = [];
+  let currentPage = 1;
+
+  /* ── Auth ── */
+  onAuthStateChanged(auth, user => {
+    if (user && user.email === ADMIN_EMAIL) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-app').style.display    = 'block';
+      loadUsers();
+    } else if (user) {
+      /* logged in but not admin */
+      signOut(auth);
+      showLoginErr('Access denied.');
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('admin-app').style.display    = 'none';
+    }
+  });
+
+  window.doLogin = async () => {
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-pass').value;
+    showLoginErr('');
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch {
+      showLoginErr('Incorrect email or password.');
+    }
+  };
+
+  window.doLogout = () => signOut(auth);
+
+  function showLoginErr(msg) {
+    const el = document.getElementById('login-err');
+    el.textContent    = msg;
+    el.style.display  = msg ? 'block' : 'none';
+  }
+
+  /* ── Status logic ── */
+  function getStatusInfo(u) {
+    const now = Date.now();
+
+    if (u.manualAccess === true) {
+      if (!u.manualAccessExpiresAt) return { label: 'Manual', key: 'manual', cls: 'badge-manual' };
+      const exp = toMs(u.manualAccessExpiresAt);
+      if (exp > now) return { label: 'Manual', key: 'manual', cls: 'badge-manual' };
+      return { label: 'Manual (Expired)', key: 'expired', cls: 'badge-expired' };
+    }
+
+    if (u.subscriptionStatus === 'active' && u.currentPeriodEnd) {
+      const exp = toMs(u.currentPeriodEnd);
+      if (exp > now) return { label: 'Pro', key: 'pro', cls: 'badge-pro' };
+      return { label: 'Pro (Expired)', key: 'expired', cls: 'badge-expired' };
+    }
+
+    if (u.trialEndsAt) {
+      const exp = toMs(u.trialEndsAt);
+      if (exp > now) return { label: 'Trial', key: 'trial', cls: 'badge-trial' };
+      return { label: 'Trial Expired', key: 'expired', cls: 'badge-expired' };
+    }
+
+    return { label: 'No Access', key: 'none', cls: 'badge-none' };
+  }
+
+  function getExpiry(u) {
+    const now = Date.now();
+    if (u.manualAccess && u.manualAccessExpiresAt) return fmtDate(toMs(u.manualAccessExpiresAt));
+    if (u.manualAccess && !u.manualAccessExpiresAt) return 'Permanent';
+    if (u.subscriptionStatus === 'active' && u.currentPeriodEnd) return fmtDate(toMs(u.currentPeriodEnd));
+    if (u.trialEndsAt) return fmtDate(toMs(u.trialEndsAt));
+    return '—';
+  }
+
+  function toMs(val) {
+    if (!val) return 0;
+    if (typeof val.toDate === 'function') return val.toDate().getTime();
+    return new Date(val).getTime();
+  }
+
+  function fmtDate(ms) {
+    if (!ms) return '—';
+    return new Date(ms).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function timeAgo(ms) {
+    if (!ms) return 'Never';
+    const diff = Date.now() - ms;
+    const mins  = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days  = Math.floor(diff / 86400000);
+    if (mins < 2)   return 'Just now';
+    if (mins < 60)  return `${mins}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7)   return `${days}d ago`;
+    return fmtDate(ms);
+  }
+
+  /* ── Load users ── */
+  window.loadUsers = async () => {
+    setTableLoading();
+    try {
+      const q    = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      allUsers   = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+      applyFilters();
+      renderSummary();
+      showToast(`✓ Loaded ${allUsers.length} users`);
+    } catch (e) {
+      console.error(e);
+      setTableError('Failed to load users: ' + e.message);
+    }
+  };
+
+  /* ── Summary ── */
+  function renderSummary() {
+    const now = Date.now();
+    const pro     = allUsers.filter(u => getStatusInfo(u).key === 'pro').length;
+    const trial   = allUsers.filter(u => getStatusInfo(u).key === 'trial').length;
+    const manual  = allUsers.filter(u => getStatusInfo(u).key === 'manual').length;
+    document.getElementById('stat-total').textContent  = allUsers.length;
+    document.getElementById('stat-pro').textContent    = pro;
+    document.getElementById('stat-trial').textContent  = trial;
+    document.getElementById('stat-manual').textContent = manual;
+  }
+
+  /* ── Filter + search ── */
+  function applyFilters() {
+    const q      = document.getElementById('search-input').value.toLowerCase().trim();
+    const status = document.getElementById('filter-status').value;
+
+    filtered = allUsers.filter(u => {
+      const matchSearch = !q || (u.email || '').toLowerCase().includes(q);
+      const matchStatus = status === 'all' || getStatusInfo(u).key === status;
+      return matchSearch && matchStatus;
+    });
+
+    currentPage = 1;
+    renderPage();
+  }
+
+  document.getElementById('search-input').addEventListener('input', applyFilters);
+  document.getElementById('filter-status').addEventListener('change', applyFilters);
+
+  /* ── Render table page ── */
+  function renderPage() {
+    const total      = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    const start      = (currentPage - 1) * PAGE_SIZE;
+    const slice      = filtered.slice(start, start + PAGE_SIZE);
+
+    const tbody = document.getElementById('user-tbody');
+
+    if (!slice.length) {
+      tbody.innerHTML = `<tr class="state-row"><td colspan="5"><i class="fa-solid fa-users-slash"></i>No users match your search.</td></tr>`;
+    } else {
+      tbody.innerHTML = slice.map(u => {
+        const status    = getStatusInfo(u);
+        const registered = u.createdAt ? fmtDate(toMs(u.createdAt)) : '—';
+        const lastSeen   = u.lastSeen  ? timeAgo(toMs(u.lastSeen))  : 'Never';
+        const expiry     = getExpiry(u);
+
+        return `<tr>
+          <td class="td-email" title="${u.email || u._id}">${u.email || u._id}</td>
+          <td><span class="badge ${status.cls}">${status.label}</span></td>
+          <td class="td-mono">${registered}</td>
+          <td class="td-mono">${lastSeen}</td>
+          <td class="td-mono">${expiry}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    document.getElementById('page-info').textContent =
+      `${total} user${total !== 1 ? 's' : ''} · Page ${currentPage} of ${totalPages}`;
+    document.getElementById('btn-prev').disabled = currentPage <= 1;
+    document.getElementById('btn-next').disabled = currentPage >= totalPages;
+  }
+
+  window.changePage = (dir) => {
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    currentPage = Math.min(Math.max(1, currentPage + dir), totalPages);
+    renderPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  /* ── Export CSV ── */
+  window.exportCSV = () => {
+    if (!filtered.length) { showToast('⚠ Nothing to export'); return; }
+    const headers = ['Email', 'Status', 'Registered', 'Last Seen', 'Expires'];
+    const rows    = filtered.map(u => [
+      u.email || u._id,
+      getStatusInfo(u).label,
+      u.createdAt ? fmtDate(toMs(u.createdAt)) : '',
+      u.lastSeen  ? fmtDate(toMs(u.lastSeen))  : 'Never',
+      getExpiry(u),
+    ]);
+    const csv  = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `xautracker-users-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`✓ Exported ${filtered.length} rows`);
+  };
+
+  /* ── Table states ── */
+  function setTableLoading() {
+    document.getElementById('user-tbody').innerHTML =
+      `<tr class="state-row"><td colspan="5"><i class="fa-solid fa-spinner fa-spin"></i>Loading users...</td></tr>`;
+  }
+
+  function setTableError(msg) {
+    document.getElementById('user-tbody').innerHTML =
+      `<tr class="state-row"><td colspan="5"><i class="fa-solid fa-circle-exclamation"></i>${msg}</td></tr>`;
+  }
+
+  /* ── Toast ── */
+  window.showToast = (msg) => {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  };
+
+  /* ── Enter key on login ── */
+  document.getElementById('login-pass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.doLogin();
+  });
+</script>
+
+<script>
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('xau-theme', theme);
+    const isDark = theme === 'dark';
+    document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  }
+  function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  }
+  applyTheme(localStorage.getItem('xau-theme') || 'light');
+</script>
+</body>
+</html>

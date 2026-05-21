@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1T072J6769"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1T072J6769');
+    /* Apply saved theme before paint to prevent flash */
+    (function(){
+      var t = localStorage.getItem('xau-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Welcome to XauTracker - Forecast Realtime Gold Prices</title>
+  <meta name="description" content="Forecast live XAU/USD gold spot prices in real time using ATR advanced method" />
+  <meta name="keywords" content="XAUUSD, gold price live, gold spot price, gold trading, gold tracker" />
+  <meta name="author" content="XAU Tracker" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.xautracker.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.xautracker.com/" />
+  <meta property="og:title" content="Welcome to XauTracker - Forecast Realtime Gold Prices" />
+  <meta property="og:description" content="Forecast live XAU/USD gold spot prices in real time." />
+  <meta property="og:image" content="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/file_0000000070fc71fbbb1c04887132a79a.png" />
+  <meta property="og:site_name" content="XAU Tracker" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="XauTracker — Real-Time Gold Price & Forecast" />
+  <meta name="twitter:image" content="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/file_0000000070fc71fbbb1c04887132a79a.png" />
+  <link rel="icon" type="image/png" href="https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    /* ══ THEME TOKENS ══ */
+    [data-theme="light"] {
+      --bg:       #ffffff;
+      --bg-2:     #f6f6f4;
+      --bg-3:     #eeede9;
+      --ink:      #0a0a0a;
+      --ink-2:    #444444;
+      --ink-3:    #888888;
+      --ink-4:    #bbbbbb;
+      --border:   #e0dedd;
+      --green:    #1a7a4a;
+      --green-bg: #e8f5ee;
+      --red:      #b83232;
+      --red-bg:   #fdf0f0;
+      --gold:     #9a6e00;
+    }
+
+    [data-theme="dark"] {
+      --bg:       #0e0e0e;
+      --bg-2:     #181818;
+      --bg-3:     #222222;
+      --ink:      #f0f0f0;
+      --ink-2:    #aaaaaa;
+      --ink-3:    #666666;
+      --ink-4:    #444444;
+      --border:   #2a2a2a;
+      --green:    #3dba72;
+      --green-bg: #0d2a1a;
+      --red:      #e05555;
+      --red-bg:   #2a0d0d;
+      --gold:     #c8962a;
+    }
+
+    /* ══ RESET ══ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.22s, color 0.22s;
+    }
+
+    #app {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ══ TOPBAR ══ */
+    #topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: background 0.22s, border-color 0.22s;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: var(--ink);
+      font-size: 15px;
+      transition: background 0.14s;
+    }
+
+    .menu-btn:hover { background: var(--bg-2); }
+
+    .topbar-wordmark {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--green);
+      background: var(--green-bg);
+      padding: 4px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+      transition: background 0.22s, color 0.22s;
+    }
+
+    .live-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: blink 1.6s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.25; }
+    }
+
+    #topbar-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      transition: color 0.22s;
+    }
+
+    /* ══ DRAWER ══ */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.42);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s;
+    }
+
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .drawer {
+      position: fixed;
+      top: 0; left: 0;
+      width: 268px;
+      height: 100%;
+      background: var(--bg);
+      z-index: 201;
+      transform: translateX(-100%);
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), background 0.22s;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+    }
+
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .drawer-brand {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .drawer-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 30px; height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: var(--ink-3);
+      font-size: 13px;
+      transition: background 0.14s;
+    }
+
+    .drawer-close:hover { background: var(--bg-2); }
+
+    .drawer-nav {
+      flex: 1;
+      padding: 8px;
+      overflow-y: auto;
+    }
+
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 12px;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-2);
+      text-decoration: none;
+      transition: background 0.13s, color 0.13s;
+    }
+
+    .drawer-item:hover {
+      background: var(--bg-2);
+      color: var(--ink);
+    }
+
+    .drawer-item i {
+      width: 18px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--ink-3);
+    }
+
+    .drawer-sep {
+      height: 1px;
+      background: var(--border);
+      margin: 6px 8px;
+    }
+
+    /* Theme toggle pinned to drawer bottom */
+    .drawer-footer {
+      padding: 12px 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .theme-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--bg-2);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.14s;
+    }
+
+    .theme-row:hover { background: var(--bg-3); }
+
+    .theme-row-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    .theme-row-label i { font-size: 13px; color: var(--ink-3); width: 16px; text-align: center; }
+
+    .sw {
+      width: 38px; height: 22px;
+      background: var(--border);
+      border-radius: 11px;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .sw.on { background: var(--ink); }
+
+    .sw-knob {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--bg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .sw.on .sw-knob { transform: translateX(16px); }
+
+    /* ══ CONTENT ══ */
+    #content { flex: 1; }
+
+    /* ══ HERO ══ */
+    .hero {
+      padding: 30px 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-pair {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+      margin-bottom: 14px;
+      transition: color 0.22s;
+    }
+
+    .hero-price {
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+      letter-spacing: -2px;
+      margin-bottom: 10px;
+      font-variant-numeric: tabular-nums;
+      transition: color 0.22s;
+    }
+
+    .hero-price .sym {
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--ink-3);
+      letter-spacing: 0;
+    }
+
+    .hero-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 11px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      transition: background 0.22s, color 0.22s;
+    }
+
+    .hero-change.up   { background: var(--green-bg); color: var(--green); }
+    .hero-change.down { background: var(--red-bg);   color: var(--red); }
+
+    .hero-updated {
+      font-size: 10px;
+      color: var(--ink-4);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.22s;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--border);
+      margin-top: 20px;
+      transition: border-color 0.22s;
+    }
+
+    .stat-cell {
+      padding: 12px 0;
+      border-right: 1px solid var(--border);
+      transition: border-color 0.22s;
+    }
+
+    .stat-cell:last-child { border-right: none; }
+
+    .stat-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+      margin-bottom: 4px;
+      transition: color 0.22s;
+    }
+
+    .stat-v {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      transition: color 0.22s;
+    }
+
+    .stat-v.up   { color: var(--green); }
+    .stat-v.down { color: var(--red); }
+    .stat-v.gold { color: var(--gold); }
+
+    /* ══ BID / ASK ══ */
+    .bidask {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+      transition: border-color 0.22s;
+    }
+
+    .ba-cell {
+      padding: 16px 20px;
+      border-right: 1px solid var(--border);
+      transition: border-color 0.22s;
+    }
+
+    .ba-cell:last-child { border-right: none; }
+
+    .ba-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+      margin-bottom: 5px;
+      transition: color 0.22s;
+    }
+
+    .ba-val {
+      font-size: 20px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ba-val.bid { color: var(--green); }
+    .ba-val.ask { color: var(--red); }
+
+    /* ══ FEATURE CARDS ══ */
+    .features {
+      padding: 20px 0 20px 20px;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-bottom: 1px solid var(--border);
+      transition: border-color 0.22s;
+    }
+
+    .features::-webkit-scrollbar { display: none; }
+
+    .feat {
+      flex-shrink: 0;
+      width: 176px;
+      background: var(--bg-2);
+      border-radius: 10px;
+      padding: 15px 14px;
+      transition: background 0.22s;
+    }
+
+    .feat:last-child { margin-right: 20px; }
+
+    .feat-icon {
+      font-size: 15px;
+      color: var(--ink-3);
+      margin-bottom: 10px;
+      transition: color 0.22s;
+    }
+
+    .feat-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+      transition: color 0.22s;
+    }
+
+    .feat-desc {
+      font-size: 11px;
+      color: var(--ink-3);
+      line-height: 1.55;
+      transition: color 0.22s;
+    }
+
+    /* ══ CTA ══ */
+    .cta {
+      padding: 26px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: border-color 0.22s;
+    }
+
+    .cta h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.25;
+      letter-spacing: -0.4px;
+      margin-bottom: 8px;
+      transition: color 0.22s;
+    }
+
+    .cta-sub {
+      font-size: 13px;
+      color: var(--ink-3);
+      line-height: 1.65;
+      margin-bottom: 20px;
+      transition: color 0.22s;
+    }
+
+    .auth-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      background: var(--bg-2);
+      margin-bottom: 14px;
+      transition: background 0.22s, border-color 0.22s;
+    }
+
+    .trial-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--green);
+      background: var(--green-bg);
+      padding: 4px 9px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      transition: background 0.22s, color 0.22s;
+    }
+
+    .auth-copy {
+      font-size: 13px;
+      color: var(--ink-2);
+      line-height: 1.6;
+      margin-bottom: 14px;
+      transition: color 0.22s;
+    }
+
+    .auth-copy strong { color: var(--ink); }
+
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px;
+      background: var(--ink);
+      color: var(--bg);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 8px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.16s, background 0.22s, color 0.22s;
+      margin-bottom: 8px;
+    }
+
+    .btn-primary:hover { opacity: 0.8; }
+
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      color: var(--ink-2);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.16s, color 0.16s;
+    }
+
+    .btn-secondary:hover { border-color: var(--ink-2); color: var(--ink); }
+
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      transition: background 0.22s, border-color 0.22s;
+    }
+
+    .user-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--bg-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--ink-3);
+      flex-shrink: 0;
+      transition: background 0.22s;
+    }
+
+    .user-status {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--green);
+      margin-bottom: 2px;
+      transition: color 0.22s;
+    }
+
+    .user-email {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 185px;
+      transition: color 0.22s;
+    }
+
+    .auth-skel {
+      height: 46px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--bg-3) 25%, var(--bg-2) 50%, var(--bg-3) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .contact-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-wa {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 12px;
+      background: #25D366;
+      color: #000;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: opacity 0.16s;
+    }
+
+    .btn-wa:hover { opacity: 0.85; }
+
+    .btn-mail {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 12px;
+      background: transparent;
+      color: var(--ink-2);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: all 0.16s;
+    }
+
+    .btn-mail:hover { border-color: var(--ink-2); color: var(--ink); }
+
+    /* ══ HOW IT WORKS ══ */
+    .how {
+      padding: 26px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: border-color 0.22s;
+    }
+
+    .sec-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+      margin-bottom: 18px;
+      transition: color 0.22s;
+    }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+      transition: border-color 0.22s;
+    }
+
+    .step:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .step-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-4);
+      width: 22px;
+      flex-shrink: 0;
+      padding-top: 1px;
+      transition: color 0.22s;
+    }
+
+    .step-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 3px;
+      transition: color 0.22s;
+    }
+
+    .step-body {
+      font-size: 12px;
+      color: var(--ink-3);
+      line-height: 1.6;
+      transition: color 0.22s;
+    }
+
+    .step-body code {
+      font-family: monospace;
+      font-size: 11px;
+      background: var(--bg-3);
+      padding: 1px 4px;
+      border-radius: 3px;
+      color: var(--gold);
+      transition: background 0.22s, color 0.22s;
+    }
+
+    /* ══ FOOTER ══ */
+    footer {
+      padding: 24px 20px 40px;
+      border-top: 1px solid var(--border);
+      transition: border-color 0.22s;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .footer-link {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-3);
+      text-decoration: none;
+      padding: 6px 13px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      transition: all 0.15s;
+    }
+
+    .footer-link:hover { border-color: var(--ink-3); color: var(--ink); }
+
+    .footer-disc {
+      font-size: 11px;
+      color: var(--ink-4);
+      line-height: 1.65;
+      padding: 12px 14px;
+      background: var(--bg-2);
+      border-radius: 8px;
+      margin-bottom: 14px;
+      transition: background 0.22s, color 0.22s;
+    }
+
+    .footer-copy {
+      font-size: 10px;
+      color: var(--ink-4);
+      letter-spacing: 0.03em;
+      transition: color 0.22s;
+    }
+
+    /* ══ TOAST ══ */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: var(--bg);
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.28s;
+      pointer-events: none;
+      z-index: 300;
+      white-space: nowrap;
+    }
+
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<!-- Drawer -->
+<nav class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span class="drawer-brand">XauTracker</span>
+    <button class="drawer-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <div class="drawer-nav">
+    <a class="drawer-item" href="/">Home</a>
+    <a class="drawer-item" href="/news">News</a>
+    <a class="drawer-item" href="/trends">Trends</a>
+    <a class="drawer-item" href="/minds">Minds</a>
+    <a class="drawer-item" href="/predict">Forecast</a>
+    <div class="drawer-sep"></div>
+    <a class="drawer-item" href="/about">About</a>
+    <a class="drawer-item" href="/disclaimer">Disclaimer</a>
+    <a class="drawer-item" href="/contact">Contact</a>
+  </div>
+
+  <!-- Theme toggle — pinned to bottom -->
+  <div class="drawer-footer">
+    <div class="theme-row" onclick="toggleTheme()">
+      <div class="theme-row-label">
+        <i id="theme-icon" class="fa-solid fa-moon"></i>
+        <span id="theme-label">Dark Mode</span>
+      </div>
+      <div class="sw" id="sw">
+        <div class="sw-knob"></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="app">
+
+  <!-- Topbar -->
+  <div id="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="openMenu()"><i class="fa-solid fa-bars"></i></button>
+      <span class="topbar-wordmark">XauTracker</span>
+    </div>
+    <div class="topbar-right">
+      <div class="live-chip"><div class="live-dot"></div>LIVE</div>
+      
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- Hero -->
+   
+    <!-- Feature cards -->
+    <div class="features">
+      <div class="feat">
+        <div class="feat-icon"></div>
+        <div class="feat-name">Numbers Don't Lie</div>
+        <div class="feat-desc">We used ATR model to forecast across 1hr, 4hr and 24h timeframe.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon"></div>
+        <div class="feat-name">Trend Analysis</div>
+        <div class="feat-desc">MA20, MA50, RSI(14) and multi-timeframe technical charts.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon"></div>
+        <div class="feat-name">Market News</div>
+        <div class="feat-desc">Live gold market headlines from major financial outlets.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon"></div>
+        <div class="feat-name">Real-Time</div>
+        <div class="feat-desc">Prices refreshed every 10 seconds via TwelveData API.</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <section class="cta">
+      <h1>Trade Gold<br>like a Pro.</h1>
+      <p class="cta-sub">Whether you're a pro trader or a newbie, we have the right tools to supercharge your gold trading experience. Join traders who rely on XauTracker every day to make profit with minimal loss.</p>
+
+      <div class="auth-card">
+        <div id="auth-inner"><div class="auth-skel"></div></div>
+      </div>
+
+      <div class="contact-row">
+        <a href="https://wa.me/2348131560586" target="_blank" class="btn-wa">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp
+        </a>
+        <a href="/contact" class="btn-mail">
+          <i class="fa-solid fa-envelope"></i> Email Us
+        </a>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="how">
+      <div class="sec-label">How it Works</div>
+      <div class="step">
+        <div class="step-num">01</div>
+        <div>
+          <div class="step-title">Live Price Feed</div>
+          <div class="step-body">Real-time XAU/USD spot prices from TwelveData, refreshed every 60 seconds.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div>
+          <div class="step-title">ATR Volatility Model</div>
+          <div class="step-body">Uses <code>ATR × √(t/1440)</code> — the square-root-of-time formula — for realistic price bands.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div>
+          <div class="step-title">Session Awareness</div>
+          <div class="step-body">Adjusts for Asian, London and New York sessions. Peak overlap gets a higher volatility multiplier.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div>
+          <div class="step-title">Momentum & Reversion</div>
+          <div class="step-body">Drift weighted by today's momentum and dampened by mean-reversion pressure.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-links">
+        <a class="footer-link" href="/about">About</a>
+        <a class="footer-link" href="/contact">Contact</a>
+        <a class="footer-link" href="/disclaimer">Disclaimer</a>
+      </div>
+      <div class="footer-disc">
+        Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates, not financial advice. Consult a licensed professional before trading.
+      </div>
+      <div class="footer-copy">© 2026 XauTracker.com &nbsp;·&nbsp; Powered by TwelveData</div>
+    </footer>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+
+
+<script>
+  /* ── Format ── */
+  function fmtP(v) {
+    return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  
+
+  /* ── Toast ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  /* ── Drawer ── */
+  function openMenu() {
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ── Theme ── */
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('xau-theme', theme);
+    const isDark = theme === 'dark';
+    document.getElementById('sw').classList.toggle('on', isDark);
+    document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    document.getElementById('theme-label').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+  }
+
+  function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  }
+
+  /* Sync UI with saved theme on load */
+  applyTheme(localStorage.getItem('xau-theme') || 'light');
+
+  /* ── Init ── */
+ 
+</script>
+
+<!-- Firebase auth-aware CTA -->
+<script type="module">
+  import { fbConfig } from './js/firebase-config.js';
+  import { initializeApp, getApps }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+  const fbApp = getApps().length ? getApps()[0] : initializeApp(fbConfig);
+  const auth  = getAuth(fbApp);
+  const inner = document.getElementById('auth-inner');
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      inner.innerHTML = `
+        <div class="user-row">
+          <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <div class="user-status">Signed In</div>
+            <div class="user-email">${user.email}</div>
+          </div>
+        </div>
+        <a href="/predict" class="btn-primary">Open Gold Forecast</a>        <button onclick="dashSignOut()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;width:100%;background:transparent;color:var(--ink-3);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;">
+      <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+    </button>`;
+    } else {
+      inner.innerHTML = `
+        <div class="trial-badge">7-Day Free Trial &nbsp;·&nbsp; No Payment Required</div>
+        <p class="auth-copy">
+          <strong>Two steps</strong> to get started, just email and password.
+          Full forecast dashboard free for 7 days.
+        </p>
+        <a href="/signup" class="btn-primary">
+          <i class="fa-solid fa-rocket" style="font-size:12px;"></i>
+          Create Free Account
+        </a>
+        <a href="/login" class="btn-secondary">Sign In</a>`;
+    }
+  });
+  
+  window.dashSignOut = async () => {
+  const { signOut } = await import(
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+  );
+  await signOut(auth);
+  window.location.replace('index.html');
+};
+</script>
+
+</body>
+</html>
