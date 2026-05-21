@@ -596,13 +596,18 @@
     <div style="padding:14px 16px 0;">
       <button onclick="tlOpenHowTo()" style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-family:inherit;transition:background .14s;">
         <div style="display:flex;align-items:center;gap:10px;">
-          
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i class="fa-solid fa-circle-question" style="color:var(--gold);font-size:14px;"></i>
-          
+          </div>
           <span style="font-size:13px;font-weight:700;color:var(--ink);text-align:left;">How to use the Forecast Tools</span>
         </div>
         <i class="fa-solid fa-chevron-right" style="color:var(--ink-4);font-size:11px;flex-shrink:0;"></i>
       </button>
+    </div>
+
+    <!-- TradingView Widget -->
+    <div id="tv-widget-wrap" style="margin:14px 16px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;height:400px;">
+      <div id="tv-widget-container" style="height:100%;"></div>
     </div>
 
     <!-- Algo note -->
@@ -876,7 +881,7 @@
 
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
       <div style="width:36px;height:36px;border-radius:9px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-
+        <i class="fa-solid fa-circle-question" style="color:var(--gold);font-size:16px;"></i>
       </div>
       <div style="font-size:17px;font-weight:700;color:var(--ink);line-height:1.2;">How to use the Forecast Tools</div>
     </div>
@@ -983,6 +988,34 @@ function applyTheme(theme) {
   document.getElementById('sw').classList.toggle('on', isDark);
   document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
   document.getElementById('theme-label').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+  renderTVWidget(theme);
+}
+
+/* ── TradingView Widget ── */
+function renderTVWidget(theme) {
+  const container = document.getElementById('tv-widget-container');
+  container.innerHTML = '';
+  const script = document.createElement('script');
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.async = true;
+  script.innerHTML = JSON.stringify({
+    autosize: true,
+    symbol: 'OANDA:XAUUSD',
+    interval: '60',
+    timezone: 'Etc/UTC',
+    theme: theme === 'dark' ? 'dark' : 'light',
+    style: '1',
+    locale: 'en',
+    backgroundColor: theme === 'dark' ? '#0e0e0e' : '#ffffff',
+    gridColor: theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+    hide_top_toolbar: false,
+    hide_legend: false,
+    save_image: false,
+    calendar: false,
+    hide_volume: false,
+    support_host: 'https://www.tradingview.com',
+  });
+  container.appendChild(script);
 }
 function toggleTheme() { applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
 applyTheme(localStorage.getItem('xau-theme') || 'light');
