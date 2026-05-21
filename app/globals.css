@@ -2,4 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-body { @apply bg-bg text-txt; }
+:root {
+  --bg: #070c12;
+  --bg-card: #0e1622;
+  --bg-muted: #121c2a;
+  --gold: #d4a72c;
+  --gold-dim: #7a5e12;
+  --gold-glow: rgba(212,167,44,0.12);
+  --green: #00d48f;
+  --green-dim: rgba(0,212,143,0.12);
+  --red: #ff4561;
+  --txt-1: #e8edf5;
+  --txt-2: #6e7f99;
+  --txt-3: #3a4a60;
+  --border: rgba(255,255,255,0.08);
+}
+
+html, body { background: var(--bg); color: var(--txt-1); }
+body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+
+.card { @apply rounded-2xl border p-4; background: var(--bg-card); border-color: var(--border); }
+.mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
