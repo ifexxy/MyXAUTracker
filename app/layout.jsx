@@ -1,16 +1,16 @@
 import './globals.css';
 import { Providers } from '../components/providers';
+import { Shell } from '../components/ui/shell';
 
-export const metadata = {
-  title: 'XAU Tracker',
-  description: 'Gold price, auth, and market news',
-};
+export const metadata = { title: 'XAU Tracker' };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body style={{ margin: 0 }}>
-        <Providers>{children}</Providers>
+      <body>
+        <Providers>
+          <Shell>{children}</Shell>
+        </Providers>
       </body>
     </html>
   );
