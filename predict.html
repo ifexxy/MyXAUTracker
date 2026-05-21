@@ -592,6 +592,19 @@
       </div>
     </div>
 
+    <!-- How to use button -->
+    <div style="padding:14px 16px 0;">
+      <button onclick="tlOpenHowTo()" style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-family:inherit;transition:background .14s;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          
+            <i class="fa-solid fa-circle-question" style="color:var(--gold);font-size:14px;"></i>
+          
+          <span style="font-size:13px;font-weight:700;color:var(--ink);text-align:left;">How to use the Forecast Tools</span>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--ink-4);font-size:11px;flex-shrink:0;"></i>
+      </button>
+    </div>
+
     <!-- Algo note -->
     <div class="algo-note">
       <i class="fa-solid fa-microchip"></i>
@@ -852,6 +865,80 @@
         <i class="fa-solid fa-right-from-bracket"></i> Sign Out
       </button>
     </div>
+  </div>
+
+  <!-- How to use popup overlay -->
+  <div class="tl-overlay" id="howto-overlay" onclick="tlCloseHowTo()"></div>
+
+  <!-- How to use bottom sheet -->
+  <div class="tl-popup" id="howto-popup">
+    <div class="tl-popup-handle"></div>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+      <div style="width:36px;height:36px;border-radius:9px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+
+      </div>
+      <div style="font-size:17px;font-weight:700;color:var(--ink);line-height:1.2;">How to use the Forecast Tools</div>
+    </div>
+
+    <!-- Warning pill -->
+    <div style="display:flex;align-items:flex-start;gap:10px;background:var(--red-bg);border:1px solid rgba(184,50,50,0.18);border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+      <i class="fa-solid fa-triangle-exclamation" style="color:var(--red);font-size:14px;flex-shrink:0;margin-top:1px;"></i>
+      <div style="font-size:13px;color:var(--ink-2);line-height:1.65;">
+        <strong style="color:var(--ink);">Attention:</strong> Trading Gold carries high significant risk, you could lose all or part of your capital, always do your analysis, read our <a href="/disclaimer" style="color:var(--red);font-weight:700;text-decoration:none;">disclaimer</a>.
+      </div>
+    </div>
+
+    <div style="font-size:13px;color:var(--ink-2);line-height:1.65;margin-bottom:16px;">
+      The forecast tools uses ATR modelling and carries sections like:
+    </div>
+
+    <!-- Sections -->
+    <div style="display:flex;flex-direction:column;gap:1px;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;">
+
+      <div style="padding:13px 14px;background:var(--bg-2);border-bottom:1px solid var(--border);">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:3px;">Entry Signals</div>
+        <div style="font-size:12px;color:var(--ink-3);line-height:1.6;">It forecasts how your next trade should go depending on the votality of gold at that time.</div>
+      </div>
+
+      <div style="padding:13px 14px;background:var(--bg-2);border-bottom:1px solid var(--border);">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:3px;">Price Forecast</div>
+        <div style="font-size:12px;color:var(--ink-3);line-height:1.6;">It predicts what range gold would be trading at at a particular time.</div>
+      </div>
+
+      <div style="padding:13px 14px;background:var(--bg-2);border-bottom:1px solid var(--border);">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:3px;">Market Signal</div>
+        <div style="font-size:12px;color:var(--ink-3);line-height:1.6;">The current market trend</div>
+      </div>
+
+      <div style="padding:13px 14px;background:var(--bg-2);border-bottom:1px solid var(--border);">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:3px;">Market Sentiment</div>
+        <div style="font-size:12px;color:var(--ink-3);line-height:1.6;">The current market trend based on the chart</div>
+      </div>
+
+      <div style="padding:13px 14px;background:var(--bg-2);border-bottom:1px solid var(--border);">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:3px;">Price Levels</div>
+        <div style="font-size:12px;color:var(--ink-3);line-height:1.6;">The support and resistance of the xauusd chart</div>
+      </div>
+
+      <div style="padding:13px 14px;background:var(--bg-2);">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:3px;">Model</div>
+        <div style="font-size:12px;color:var(--ink-3);line-height:1.6;">This carries other necessary information regarding gold, what session is on, the current volatility etc.</div>
+      </div>
+
+    </div>
+
+    <!-- Note -->
+    <div style="background:var(--gold-bg);border:1px solid rgba(154,110,0,0.18);border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+      <div style="font-size:12px;color:var(--ink-2);line-height:1.7;">
+        It's important to note that you should use this tool as a guide, as a personal help to making better profitable trades and not to follow the forecasts blindly, always follow the market as gold can be very intimidating even if you're a exp
+erienced trader.
+      </div>
+    </div>
+
+    <button class="tl-popup-close" onclick="tlCloseHowTo()">
+      <i class="fa-solid fa-xmark"></i> Close
+    </button>
   </div>
 
   <!-- Timeline popup overlay -->
@@ -1154,7 +1241,19 @@ function tlClosePopup() {
   document.body.style.overflow = '';
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') tlClosePopup(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { tlClosePopup(); tlCloseHowTo(); } });
+
+/* ── How To popup ── */
+function tlOpenHowTo() {
+  document.getElementById('howto-overlay').classList.add('open');
+  document.getElementById('howto-popup').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function tlCloseHowTo() {
+  document.getElementById('howto-overlay').classList.remove('open');
+  document.getElementById('howto-popup').classList.remove('open');
+  document.body.style.overflow = '';
+}
 
 /* ══════════════════════════════════════════════════════════════
    MAIN RENDER
