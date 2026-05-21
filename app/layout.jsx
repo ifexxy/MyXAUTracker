@@ -1,3 +1,4 @@
+import './globals.css';
 import { Providers } from '../components/providers';
 import { LayoutShell } from '../components/layout-shell';
 

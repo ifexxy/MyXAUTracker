@@ -4,28 +4,23 @@ import { useEffect, useState } from 'react';
 
 export default function HomePage() {
   const [data, setData] = useState(null);
-  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('/api/price')
-      .then((r) => r.json())
-      .then(setData)
-      .catch((e) => setError(e.message));
+    fetch('/api/price').then((r) => r.json()).then(setData).catch(() => setData(null));
   }, []);
 
   return (
     <section>
-      <h2>Live XAU/USD</h2>
-      {error && <p>{error}</p>}
-      {!data ? <p>Loading...</p> : (
-        <ul>
-          <li>Price: {data.price}</li>
-          <li>Open: {data.open}</li>
-          <li>High: {data.high}</li>
-          <li>Low: {data.low}</li>
-          <li>Source: {data.source}</li>
-        </ul>
-      )}
+      <div className="card">
+        <h2>Live XAU/USD</h2>
+        {!data ? <p>Loading...</p> : (
+          <>
+            <p className="mono" style={{ fontSize: 36, margin: '6px 0' }}>${data.price}</p>
+            <p className="mono">Open: {data.open} · High: {data.high} · Low: {data.low}</p>
+            <p>Source: {data.source}</p>
+          </>
+        )}
+      </div>
     </section>
   );
 }

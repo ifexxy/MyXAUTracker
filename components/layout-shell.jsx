@@ -9,26 +9,31 @@ export function LayoutShell({ children }) {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div>
-      <header style={{ display: 'flex', gap: 12, padding: 12, borderBottom: '1px solid #ccc' }}>
-        <button onClick={() => setOpen(!open)}>☰</button>
-        <h1 style={{ margin: 0, fontSize: 18 }}>XAU Tracker</h1>
-        <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} style={{ marginLeft: 'auto' }}>
-          Toggle Theme
-        </button>
+    <div id="app-shell">
+      <header id="topbar">
+        <div className="topbar-left">
+          <button className="menu-btn" onClick={() => setOpen(true)}>☰</button>
+          <div className="wordmark">XAU Tracker</div>
+        </div>
+        <div className="topbar-right">
+          <div className="live-chip">● LIVE</div>
+          <button className="theme-btn" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>🌓</button>
+        </div>
       </header>
-      <div style={{ display: 'flex' }}>
-        {open && (
-          <aside style={{ minWidth: 220, borderRight: '1px solid #ccc', padding: 12 }}>
-            <nav style={{ display: 'grid', gap: 8 }}>
-              <Link href="/">Home</Link>
-              <Link href="/news">News</Link>
-              <Link href="/login">Login</Link>
-            </nav>
-          </aside>
-        )}
-        <main style={{ padding: 16, width: '100%' }}>{children}</main>
-      </div>
+
+      {open && <div className="drawer-overlay" onClick={() => setOpen(false)} />}
+      {open && (
+        <aside className="drawer">
+          <button className="drawer-close" onClick={() => setOpen(false)}>✕</button>
+          <nav>
+            <Link href="/" onClick={() => setOpen(false)}>Home</Link>
+            <Link href="/news" onClick={() => setOpen(false)}>News</Link>
+            <Link href="/login" onClick={() => setOpen(false)}>Login</Link>
+          </nav>
+        </aside>
+      )}
+
+      <main>{children}</main>
     </div>
   );
 }
