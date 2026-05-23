@@ -11,10 +11,9 @@ interface DrawerProps {
 
 const NAV_ITEMS = [
   { href: '/', label: 'Home' },
-  { href: '/news', label: 'News' },
-  { href: '/trends', label: 'Trends' },
   { href: '/minds', label: 'Minds' },
-  { href: '/predict', label: 'Forecast' },
+  { href: '/predict', label: 'XAU Forecast' },
+  { href: '/predict/bitcion', label: 'BTC Forecast' },
 ];
 
 const BOTTOM_NAV = [
