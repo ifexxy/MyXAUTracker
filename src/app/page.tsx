@@ -1,108 +1,86 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { useGoldPrice } from '@/contexts/GoldPriceContext';
-import { fmtPrice, fmtChange } from '@/lib/api';
 import Footer from '@/components/Footer';
 
 export default function HomePage() {
   const { user, loading, signOut } = useAuth();
-  const { price } = useGoldPrice();
+  const [authInner, setAuthInner] = useState<React.ReactNode>(null);
 
-  const ch = price?.ch ?? 0;
-  const isUp = ch >= 0;
+  useEffect(() => {
+    if (loading) {
+      setAuthInner(<div className="auth-skel" style={{ height: 46, borderRadius: 8, background: 'linear-gradient(90deg, var(--bg-3) 25%, var(--bg-2) 50%, var(--bg-3) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />);
+    } else if (user) {
+      setAuthInner(
+        <>
+          <div className="flex items-center gap-[10px] p-[10px_12px] mb-[12px] rounded-[8px]" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+            <div className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[13px]" style={{ background: 'var(--bg-3)', color: 'var(--ink-3)', flexShrink: 0 }}>
+              <i className="fa-solid fa-user" />
+            </div>
+            <div>
+              <div className="text-[9px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--green)', marginBottom: 2 }}>Signed In</div>
+              <div className="text-[12px] font-semibold" style={{ color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 185 }}>{user.email}</div>
+            </div>
+          </div>
+          <Link href="/predict" className="flex items-center justify-center gap-[8px] w-full py-[14px] text-[14px] font-bold rounded-[8px] no-underline mb-[8px]" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
+            Open Gold Forecast
+          </Link>
+          <button onClick={signOut} className="flex items-center justify-center gap-[8px] w-full py-[12px] text-[13px] font-semibold rounded-[10px] cursor-pointer" style={{ background: 'transparent', color: 'var(--ink-3)', border: '1px solid var(--border)' }}>
+            <i className="fa-solid fa-right-from-bracket" /> Sign Out
+          </button>
+        </>
+      );
+    } else {
+      setAuthInner(
+        <>
+          <div className="inline-flex items-center gap-[5px] text-[10px] font-bold px-[9px] py-[4px] rounded-full mb-[10px]" style={{ color: 'var(--green)', background: 'var(--green-bg)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            7-Day Free Trial · No Payment Required
+          </div>
+          <p className="text-[13px] mb-[14px]" style={{ color: 'var(--ink-2)', lineHeight: 1.6 }}>
+            <strong style={{ color: 'var(--ink)' }}>Two steps</strong> to get started, just email and password. Full forecast dashboard free for 7 days.
+          </p>
+          <Link href="/signup" className="flex items-center justify-center gap-[8px] w-full py-[14px] text-[14px] font-bold rounded-[8px] no-underline mb-[8px]" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
+            <i className="fa-solid fa-rocket" style={{ fontSize: 12 }} /> Create Free Account
+          </Link>
+          <Link href="/login" className="flex items-center justify-center w-full py-[13px] text-[14px] font-semibold rounded-[8px] no-underline" style={{ background: 'transparent', color: 'var(--ink-2)', border: '1px solid var(--border)' }}>
+            Sign In
+          </Link>
+        </>
+      );
+    }
+  }, [user, loading, signOut]);
 
   return (
     <>
-      <section className="px-[20px] py-[30px_24px]" style={{ borderBottom: '1px solid var(--border)' }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 14 }}>
-          XAU/USD Spot
-        </div>
-        <div style={{ fontSize: 56, fontWeight: 700, color: 'var(--ink)', lineHeight: 1, letterSpacing: -2, marginBottom: 10, fontVariantNumeric: 'tabular-nums' }}>
-          <span style={{ fontSize: 26, fontWeight: 400, color: 'var(--ink-3)', letterSpacing: 0 }}>$</span>
-          {price ? fmtPrice(price.price) : '—'}
-        </div>
-        <div
-          className={`inline-flex items-center gap-[5px] text-[12px] font-bold px-[11px] py-[5px] rounded-[4px] mb-[8px] ${isUp ? 'up' : 'down'}`}
-          style={{
-            background: isUp ? 'var(--green-bg)' : 'var(--red-bg)',
-            color: isUp ? 'var(--green)' : 'var(--red)',
-          }}
-        >
-          {fmtChange(ch)} ({price?.chp?.toFixed(2) ?? '—'}%)
-        </div>
-        <div style={{ fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-          {price?.source ?? '—'} · Updated {price ? 'just now' : '—'}
-        </div>
-      </section>
-
-      <div className="features flex gap-[10px] px-0 py-[20px_0_20px_20px] overflow-x-auto" style={{ borderBottom: '1px solid var(--border)' }}>
+      {/* Feature cards */}
+      <div className="flex gap-[10px] overflow-x-auto px-0 py-[20px_0_20px_20px]" style={{ borderBottom: '1px solid var(--border)', WebkitOverflowScrolling: 'touch' }}>
         {[
-          { name: 'Numbers Don\'t Lie', desc: 'We used ATR model to forecast across 1hr, 4hr and 24h timeframe.', icon: 'fa-chart-simple' },
-          { name: 'Trend Analysis', desc: 'MA20, MA50, RSI(14) and multi-timeframe technical charts.', icon: 'fa-chart-line' },
-          { name: 'Market News', desc: 'Live gold market headlines from major financial outlets.', icon: 'fa-newspaper' },
-          { name: 'Real-Time', desc: 'Prices refreshed every 10 seconds via TwelveData API.', icon: 'fa-clock' },
+          { name: 'Numbers Don\'t Lie', desc: 'We used ATR model to forecast across 1hr, 4hr and 24h timeframe.' },
+          { name: 'Trend Analysis', desc: 'MA20, MA50, RSI(14) and multi-timeframe technical charts.' },
+          { name: 'Market News', desc: 'Live gold market headlines from major financial outlets.' },
+          { name: 'Real-Time', desc: 'Prices refreshed every 10 seconds via TwelveData API.' },
         ].map((f, i) => (
-          <div key={i} className="feat flex-shrink-0 w-[176px] rounded-[10px] px-[14px] py-[15px]" style={{ background: 'var(--bg-2)' }}>
-            <div className="feat-icon flex items-center justify-center w-[32px] h-[32px] rounded-[8px] mb-[8px]" style={{ background: 'var(--gold-bg)', color: 'var(--gold)' }}>
-              <i className={`fa-solid ${f.icon}`} style={{ fontSize: 14 }} />
-            </div>
-            <div className="feat-name text-[13px] font-bold mb-[4px]" style={{ color: 'var(--ink)' }}>{f.name}</div>
-            <div className="feat-desc text-[11px]" style={{ color: 'var(--ink-3)', lineHeight: 1.55 }}>{f.desc}</div>
+          <div key={i} className="flex-shrink-0 w-[176px] rounded-[10px] px-[14px] py-[15px]" style={{ background: 'var(--bg-2)' }}>
+            <div className="text-[15px] mb-[10px]" style={{ color: 'var(--ink-3)' }}></div>
+            <div className="text-[13px] font-bold mb-[4px]" style={{ color: 'var(--ink)' }}>{f.name}</div>
+            <div className="text-[11px]" style={{ color: 'var(--ink-3)', lineHeight: 1.55 }}>{f.desc}</div>
           </div>
         ))}
       </div>
 
-      <section className="px-[20px] py-[26px]" style={{ borderBottom: '1px solid var(--border)' }}>
+      {/* CTA */}
+      <section style={{ padding: '26px 20px', borderBottom: '1px solid var(--border)' }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.25, letterSpacing: -0.4, marginBottom: 8 }}>
           Trade Gold<br />like a Pro.
         </h1>
-        <p className="text-[13px] mb-[20px]" style={{ color: 'var(--ink-3)', lineHeight: 1.65 }}>
-          Whether you&apos;re a pro trader or a newbie, we have the right tools to supercharge your gold trading experience.
+        <p style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.65, marginBottom: 20 }}>
+          Whether you&apos;re a pro trader or a newbie, we have the right tools to supercharge your gold trading experience. Join traders who rely on XauTracker every day to make profit with minimal loss.
         </p>
 
         <div style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 16, background: 'var(--bg-2)', marginBottom: 14 }}>
-          {loading ? (
-            <div className="h-[46px] rounded-[8px]" style={{
-              background: 'linear-gradient(90deg, var(--bg-3) 25%, var(--bg-2) 50%, var(--bg-3) 75%)',
-              backgroundSize: '200% 100%',
-              animation: 'shimmer 1.4s infinite',
-            }} />
-          ) : user ? (
-            <>
-              <div className="flex items-center gap-[10px] px-[12px] py-[10px] rounded-[8px] mb-[12px]" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
-                <div className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[13px]" style={{ background: 'var(--bg-3)', color: 'var(--ink-3)', flexShrink: 0 }}>
-                  <i className="fa-solid fa-user" />
-                </div>
-                <div>
-                  <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--green)' }}>Signed In</div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 185 }}>{user.email}</div>
-                </div>
-              </div>
-              <Link href="/predict" className="flex items-center justify-center gap-[8px] w-full py-[14px] text-[14px] font-bold rounded-[8px] no-underline mb-[8px]" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
-                Open Gold Forecast
-              </Link>
-              <button onClick={signOut} className="flex items-center justify-center gap-[8px] w-full py-[12px] text-[13px] font-semibold rounded-[10px] cursor-pointer" style={{ background: 'transparent', color: 'var(--ink-3)', border: '1px solid var(--border)' }}>
-                <i className="fa-solid fa-right-from-bracket" /> Sign Out
-              </button>
-            </>
-          ) : (
-            <>
-              <div className="inline-flex items-center gap-[5px] text-[10px] font-bold px-[9px] py-[4px] rounded-full mb-[10px]" style={{ color: 'var(--green)', background: 'var(--green-bg)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                7-Day Free Trial · No Payment Required
-              </div>
-              <p className="text-[13px] mb-[14px]" style={{ color: 'var(--ink-2)', lineHeight: 1.6 }}>
-                <strong style={{ color: 'var(--ink)' }}>Two steps</strong> to get started, just email and password. Full forecast dashboard free for 7 days.
-              </p>
-              <Link href="/signup" className="flex items-center justify-center gap-[8px] w-full py-[14px] text-[14px] font-bold rounded-[8px] no-underline mb-[8px]" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
-                <i className="fa-solid fa-rocket" style={{ fontSize: 12 }} /> Create Free Account
-              </Link>
-              <Link href="/login" className="flex items-center justify-center w-full py-[13px] text-[14px] font-semibold rounded-[8px] no-underline" style={{ background: 'transparent', color: 'var(--ink-2)', border: '1px solid var(--border)' }}>
-                Sign In
-              </Link>
-            </>
-          )}
+          {authInner}
         </div>
 
         <div className="grid grid-cols-2 gap-[8px]">
@@ -115,7 +93,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="px-[20px] py-[26px]" style={{ borderBottom: '1px solid var(--border)' }}>
+      {/* How it Works */}
+      <section style={{ padding: '26px 20px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 18 }}>
           How it Works
         </div>
