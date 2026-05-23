@@ -12,7 +12,7 @@ import Footer from '@/components/Footer';
 
 export default function SubscribePage() {
   const router = useRouter();
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading, signOut, getIdToken } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [statusHtml, setStatusHtml] = useState('');
@@ -52,11 +52,8 @@ export default function SubscribePage() {
   const startPayment = async () => {
     if (!user) { showToast('Please wait, loading your account...'); return; }
     setPayLoading(true);
-    let userToken;
-    try {
-      userToken = await user.getIdToken();
-      if (!userToken) { showToast('Auth error, please refresh the page'); setPayLoading(false); return; }
-    } catch { showToast('Auth error, please refresh the page'); setPayLoading(false); return; }
+    const userToken = await getIdToken();
+  if (!userToken) { showToast('Auth error, please refresh the page'); setPayLoading(false); return; }
     (window as any).FlutterwaveCheckout({
       public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || '',
       tx_ref: 'xau-' + Date.now() + '-' + (user?.uid || '').slice(0, 8),
