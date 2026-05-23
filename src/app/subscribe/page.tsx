@@ -58,7 +58,7 @@ export default function SubscribePage() {
       if (!userToken) { showToast('Auth error, please refresh the page'); setPayLoading(false); return; }
     } catch { showToast('Auth error, please refresh the page'); setPayLoading(false); return; }
     (window as any).FlutterwaveCheckout({
-      public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || '',',
+      public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || '',
       tx_ref: 'xau-' + Date.now() + '-' + (user?.uid || '').slice(0, 8),
       amount: 9900,
       currency: 'NGN',
