@@ -13,7 +13,7 @@ const NAV_ITEMS = [
   { href: '/', label: 'Home' },
   { href: '/minds', label: 'Minds' },
   { href: '/predict', label: 'XAU Forecast' },
-  { href: '/predict/bitcion', label: 'BTC Forecast' },
+  { href: '/predict/bitcoin', label: 'BTC Forecast' },
 ];
 
 const BOTTOM_NAV = [
