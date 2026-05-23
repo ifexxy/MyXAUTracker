@@ -69,7 +69,7 @@ export default function SubscribePage() {
       },
       customizations: {
         title: 'XauTracker',
-        description: 'Monthly Forecast Access — ₦9,900',
+        description: 'Monthly Access — ₦9,900',
         logo: 'https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png',
       },
       callback: async (response: any) => {
