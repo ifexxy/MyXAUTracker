@@ -58,7 +58,7 @@ export default function SubscribePage() {
       if (!userToken) { showToast('Auth error, please refresh the page'); setPayLoading(false); return; }
     } catch { showToast('Auth error, please refresh the page'); setPayLoading(false); return; }
     (window as any).FlutterwaveCheckout({
-      public_key: 'FLWPUBK_TEST-a8050bdbca5d54c821af221df56f15ea-X',
+      public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || '',',
       tx_ref: 'xau-' + Date.now() + '-' + (user?.uid || '').slice(0, 8),
       amount: 9900,
       currency: 'NGN',
@@ -144,13 +144,7 @@ export default function SubscribePage() {
         </div>
       </nav>
 
-      <div id="topbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 18px', borderBottom: '1px solid var(--border)', background: 'var(--bg)', position: 'sticky', top: 0, zIndex: 100, transition: 'background 0.22s, border-color 0.22s' }}>
-        <div className="topbar-left" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button className="menu-btn" onClick={openMenu} style={{ background: 'none', border: 'none', cursor: 'pointer', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, color: 'var(--ink)', fontSize: 15 }}><i className="fa-solid fa-bars" /></button>
-          <span className="topbar-wordmark" style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', transition: 'color 0.22s' }}>XauTracker</span>
-        </div>
-        <div className="topbar-right" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-4)', transition: 'color 0.22s' }}>Forecast Access</div>
-      </div>
+     
 
       <div style={{ flex: 1, padding: '28px 20px 0' }}>
         <div className="page-eyebrow" style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--gold)', background: 'var(--gold-bg)', display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 20, marginBottom: 14, transition: 'background 0.22s, color 0.22s' }}>
