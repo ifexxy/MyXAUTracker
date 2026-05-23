@@ -32,7 +32,7 @@ export default function SubscribePage() {
       const txRef = `xau-${Date.now()}-${user.uid}`;
 
       (window as any).FlutterwaveCheckout({
-        public_key: 'FLUTTERWAVE_PUBLIC_KEY',
+        public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || '',
         tx_ref: txRef,
         amount,
         currency: 'NGN',
