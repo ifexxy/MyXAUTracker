@@ -12,6 +12,16 @@ export async function fetchGoldPrice(): Promise<GoldPrice | null> {
   }
 }
 
+export async function fetchBitcoinPrice(): Promise<GoldPrice | null> {
+  try {
+    const res = await fetch(`${BASE}/api/bitcoin-price`);
+    if (!res.ok) throw new Error(`backend ${res.status}`);
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchNews(): Promise<NewsArticle[]> {
   try {
     const res = await fetch(`${BASE}/api/news`);
