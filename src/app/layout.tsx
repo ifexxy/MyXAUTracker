@@ -37,7 +37,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-title" content="XAU Tracker" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-1T072J6769" />
-        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('xau-theme')||'light';document.documentElement.setAttribute('data-theme',t);})()` }} />
+                <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('xau-theme')||'light';document.documentElement.setAttribute('data-theme',t);})()` }} />
+        <script dangerouslySetInnerHTML={{ __html: `
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-1T072J6769');
+try { var t=localStorage.getItem('xau-theme')||'light'; document.documentElement.setAttribute('data-theme',t); } catch(e){}
+` }} />
       </head>
       <body>
         <RootLayoutClient>{children}</RootLayoutClient>
