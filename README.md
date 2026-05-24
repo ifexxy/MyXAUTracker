@@ -30,13 +30,6 @@ npm install
 npm run dev
 ```
 
-Create a `.env` file with your API keys:
-
-```
-TWELVE_DATA_KEY=your_key
-METALS_DEV_KEY=your_key
-NEXT_PUBLIC_FIREBASE_*=
-```
 
 ## Project Structure
 
