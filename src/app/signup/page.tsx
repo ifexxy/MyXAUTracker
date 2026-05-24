@@ -279,7 +279,7 @@ export default function SignupPage() {
     if (!authLoading && user) router.push('/predict');
   }, [user, authLoading, router]);
 
-  // ── FIX: initialise reCAPTCHA as soon as step 2 mounts ──
+  // ┄1�7┄1�7 FIX: initialise reCAPTCHA as soon as step 2 mounts ┄1�7┄1�7
   // Guard with !recaptchaVerifier so navigating back then forward
   // doesn't attempt to render a second widget on the same DOM node.
   useEffect(() => {
@@ -306,7 +306,7 @@ export default function SignupPage() {
     setStep(2);
   };
 
-  // ── FIX: removed initRecaptcha() — verifier is now ready before this runs ──
+  // ┄1�7┄1�7 FIX: removed initRecaptcha()  1�7 verifier is now ready before this runs ┄1�7┄1�7
   const sendOTP = async () => {
     setError('');
     if (!phone.trim()) { setError('Please enter your phone number.'); return; }
@@ -481,7 +481,7 @@ export default function SignupPage() {
           </div>
         </div>
 
-        {/* ── STEP 1 ── */}
+        {/* ┄1�7┄1�7 STEP 1 ┄1�7┄1�7 */}
         {step === 1 ? (
           <>
             <div className="mb-[16px]">
@@ -620,7 +620,7 @@ export default function SignupPage() {
             </div>
           </>
         ) : (
-          /* ── STEP 2 ── */
+          /* ┄1�7┄1�7 STEP 2 ┄1�7┄1�7 */
           <>
             <div className="mb-[16px]">
               <label
@@ -663,7 +663,7 @@ export default function SignupPage() {
                         transform: countryOpen ? 'rotate(180deg)' : 'none',
                       }}
                     >
-                      ▼
+                      ▄1�7
                     </span>
                   </div>
 
@@ -768,7 +768,7 @@ export default function SignupPage() {
               </div>
             </div>
 
-            {/* ── FIX: reCAPTCHA renders here immediately on step 2 mount ── */}
+            {/* ┄1�7┄1�7 FIX: reCAPTCHA renders here immediately on step 2 mount ┄1�7┄1�7 */}
             <div id="recaptcha-container" style={{ marginTop: 10 }} />
 
             {error && (
@@ -916,7 +916,7 @@ export default function SignupPage() {
               className="text-center text-[13px] mt-[18px]"
               style={{ color: 'var(--ink-2)' }}
             >
-              Already have an account?{' '}
+              (Having issues getting OTP? After clicking "Send Code", Tick on the "I'm not a robot" when it shows) Already have an account?{' '}
               <Link href="/login" style={{ color: 'var(--gold)', fontWeight: 800 }}>
                 Sign in
               </Link>
