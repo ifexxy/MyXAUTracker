@@ -916,10 +916,11 @@ export default function SignupPage() {
               className="text-center text-[13px] mt-[18px]"
               style={{ color: 'var(--ink-2)' }}
             >
-              (Having issues getting OTP? After clicking "Send Code", Tick on the "I'm not a robot" when it shows) Already have an account?{' '}
+              Already have an account?{' '}
               <Link href="/login" style={{ color: 'var(--gold)', fontWeight: 800 }}>
                 Sign in
               </Link>
+                            (Having issues getting OTP? After clicking "Send Code", Tick on the "I'm not a robot" when it shows)
             </div>
           </>
         )}
