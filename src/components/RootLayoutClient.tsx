@@ -15,6 +15,10 @@ export default function RootLayoutClient({ children }: { children: React.ReactNo
 
   useEffect(() => {
     setDrawerOpen(false);
+    const gtag = (window as any).gtag;
+    if (typeof gtag === 'function') {
+      gtag('config', 'G-1T072J6769', { page_path: pathname });
+    }
   }, [pathname]);
 
   useEffect(() => {
