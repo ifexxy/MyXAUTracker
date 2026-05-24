@@ -1,12 +1,5 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "redirects": [
-    {
-      "source": "/index",
-      "destination": "/",
-      "statusCode": 301
-    }
-  ]
+  "framework": "nextjs",
+  "buildCommand": "npx next build",
+  "outputDirectory": ".next"
 }

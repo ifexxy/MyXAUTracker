@@ -55,11 +55,6 @@ async function fetchMetalsDevPrice() {
   const ch = round(rate.change) ?? 0;
   const chp = round(rate.change_percent) ?? 0;
 
-  /*
-    Metals.Dev spot response may not include "open".
-    If change is current price minus previous/open reference,
-    then open/reference price can be derived as price - change.
-  */
   const open = round(rate.open) ?? round(rate.open_price) ?? round(price - ch);
 
   const high = round(rate.high) ?? Math.max(price, open);
