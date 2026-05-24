@@ -813,6 +813,18 @@ export default function SignupPage() {
                   </>
                 )}
               </button>
+            <p
+  style={{
+    fontSize: 11,
+    color: 'var(--ink-3)',
+    textAlign: 'center',
+    marginTop: 10,
+    lineHeight: 1.6,
+  }}
+>
+  Having issues getting OTP? After clicking Send Code, tick on the{' '}
+  <strong style={{ color: 'var(--ink-2)' }}>I'm not a robot</strong> when it appears.
+</p>
             ) : (
               <>
                 <div className="mb-[16px]" style={{ marginTop: 16 }}>
