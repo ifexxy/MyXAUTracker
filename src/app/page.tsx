@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getFirebase } from '@/lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -33,9 +33,9 @@ interface ManualUser {
 }
 
 export default function AdminPage() {
-  const router = useRouter();
+  
   const { user, loading: authLoading, signOut } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  
   const [isAdmin, setIsAdmin] = useState(false);
 
   // Login form
