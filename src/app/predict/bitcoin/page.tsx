@@ -408,11 +408,11 @@ export default function BitcoinPredictPage() {
             <div id="dash-access-text" style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
               {hasAccess ? (
                 userData.subscriptionStatus === 'active'
-                  ? `✅ Subscription renews ${userData.currentPeriodEnd ? new Date(userData.currentPeriodEnd).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}`
+                  ? `Subscription renews ${userData.currentPeriodEnd ? new Date(userData.currentPeriodEnd).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}`
                   : userData.subscriptionStatus === 'trial'
-                    ? `⏳ Free trial — expires ${userData.trialEndsAt ? new Date(userData.trialEndsAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}`
-                    : `✅ Access granted${userData.manualAccessExpiresAt ? ` · Expires ${new Date(userData.manualAccessExpiresAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}` : ' · Permanent'}`
-              ) : '❌ No active access'}
+                    ? `Free trial — expires ${userData.trialEndsAt ? new Date(userData.trialEndsAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}`
+                    : `Access granted${userData.manualAccessExpiresAt ? ` · Expires ${new Date(userData.manualAccessExpiresAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}` : ' · Permanent'}`
+              ) : 'No active access'}
             </div>
           </div>
           <div id="dash-actions" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
