@@ -446,7 +446,7 @@ export default function SignupPage() {
                   )}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="8012345678" autoComplete="tel"
+                  <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="7xxxxxxx" autoComplete="tel"
                     style={{ display: 'block', width: '100%', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--ink)', fontSize: 15, padding: '14px 15px', outline: 'none' }} />
                 </div>
               </div>
@@ -458,6 +458,9 @@ export default function SignupPage() {
                 style={{ background: 'var(--ink)', color: 'var(--bg)', border: 'none', opacity: loading ? 0.5 : 1 }}>
                 {loading ? <><i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Sending...</> : <><i className="fa-solid fa-mobile-screen" /> Send Verification Code</>}
               </button>
+            <div className="text-center text-[13px] mt-[18px]" style={{ color: 'var(--ink-2)' }}>
+              Having issues getting the OTP? Click on "Send Code" and also tick the "I am not a robot". alternatively you can <Link href="/contact" style={{ color: 'var(--gold)', fontWeight: 800 }}>Contact Us</Link>
+            </div>
             ) : (
               <>
                 <div className="mb-[16px]" style={{ marginTop: 16 }}>
