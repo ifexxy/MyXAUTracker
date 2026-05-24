@@ -788,35 +788,37 @@ export default function SignupPage() {
             )}
 
             {!otpSent ? (
-              <button
-                onClick={sendOTP}
-                disabled={loading}
-                className="w-full rounded-[12px] py-[14px] px-[16px] mt-[16px] text-[14px] font-bold flex items-center justify-center gap-[8px] cursor-pointer"
-                style={{
-                  background: 'var(--ink)',
-                  color: 'var(--bg)',
-                  border: 'none',
-                  opacity: loading ? 0.5 : 1,
-                }}
-              >
-                {loading ? (
-                  <>
-                    <i
-                      className="fa-solid fa-spinner"
-                      style={{ animation: 'spin 0.8s linear infinite' }}
-                    />{' '}
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-mobile-screen" /> Send Verification Code
-                  </>
-                )}
-              </button>
-              <p style={{ fontSize: 11, color: 'var(--ink-3)', textAlign: 'center', marginTop: 10, lineHeight: 1.6 }}>
-                Having issues getting OTP? After clicking Send Code, tick on the{' '}
-                <strong style={{ color: 'var(--ink-2)' }}>I'm not a robot</strong> when it appears.
-              </p>
+              <>
+                <button
+                  onClick={sendOTP}
+                  disabled={loading}
+                  className="w-full rounded-[12px] py-[14px] px-[16px] mt-[16px] text-[14px] font-bold flex items-center justify-center gap-[8px] cursor-pointer"
+                  style={{
+                    background: 'var(--ink)',
+                    color: 'var(--bg)',
+                    border: 'none',
+                    opacity: loading ? 0.5 : 1,
+                  }}
+                >
+                  {loading ? (
+                    <>
+                      <i
+                        className="fa-solid fa-spinner"
+                        style={{ animation: 'spin 0.8s linear infinite' }}
+                      />{' '}
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa-solid fa-mobile-screen" /> Send Verification Code
+                    </>
+                  )}
+                </button>
+                <p style={{ fontSize: 11, color: 'var(--ink-3)', textAlign: 'center', marginTop: 10, lineHeight: 1.6 }}>
+                  Having issues getting OTP? After clicking Send Code, tick on the{' '}
+                  <strong style={{ color: 'var(--ink-2)' }}>I'm not a robot</strong> when it appears.
+                </p>
+              </>
             ) : (
               <>
                 <div className="mb-[16px]" style={{ marginTop: 16 }}>
