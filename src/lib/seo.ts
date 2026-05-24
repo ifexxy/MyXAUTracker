@@ -8,6 +8,13 @@ export interface PageMeta {
 }
 
 export const pageMeta: Record<string, PageMeta> = {
+   '/': {
+    title: 'Welcome to XauTracker - Forecast Realtime Gold and Bitcion Prices',
+    description: 'Real-time XAU/USD gold and BTC/USD bitcoin price predictions, entry signals, market sentiment, and key price levels powered by ATR volatility modelling.',
+    ogTitle: 'XAU Tracker — Gold & Bitcoin Market Analysis',
+    ogDescription: 'Real-time algorithmic price predictions for gold and bitcoin with ATR-based volatility models.',
+    canonical: 'https://www.xautracker.com',
+  },
   '/predict': {
     title: 'Gold Predict · XAU/USD Price Forecast & Market Signals — Xautracker.com',
     description: 'Algorithmic XAU/USD gold price predictions for 5m, 10m, 15m, 1h, 6h and 24h. Key levels, sentiment and market signals.',
