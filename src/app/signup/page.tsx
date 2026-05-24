@@ -278,6 +278,22 @@ export default function SignupPage() {
   useEffect(() => {
     if (!authLoading && user) router.push('/predict');
   }, [user, authLoading, router]);
+  
+  useEffect(() => {
+  if (step === 2) {
+    const { auth } = getFirebase();
+    const rv = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'normal' });
+    setRecaptchaVerifier(rv);
+  }
+}, [step]);
+
+useEffect(() => {
+  if (step === 2 && !recaptchaVerifier) {
+    const { auth } = getFirebase();
+    const rv = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'normal' });
+    setRecaptchaVerifier(rv);
+  }
+}, [step]);
 
   const getFullPhone = () => selectedCountry.code + phone.replace(/^0/, '');
 
@@ -302,20 +318,29 @@ export default function SignupPage() {
   };
 
   const sendOTP = async () => {
-    setError('');
-    if (!phone.trim()) { setError('Please enter your phone number.'); return; }
-    setLoading(true);
-    try {
-      const fb = getFirebase();
-      // Check phone not used
-      const q = query(collection(fb.db, 'users'), where('phone', '==', getFullPhone()));
-      const existing = await getDocs(q);
-      if (!existing.empty) {
-        setError('This phone number is already registered.');
-        setLoading(false);
-        return;
-      }
-      const rv = initRecaptcha();
+  setError('');
+  if (!phone.trim()) { setError('Please enter your phone number.'); return; }
+  if (!recaptchaVerifier) { setError('reCAPTCHA not ready yet.'); return; }
+  setLoading(true);
+  try {
+    const fb = getFirebase();
+    const q = query(collection(fb.db, 'users'), where('phone', '==', getFullPhone()));
+    const existing = await getDocs(q);
+    if (!existing.empty) {
+      setError('This phone number is already registered.');
+      setLoading(false);
+      return;
+    }
+    const result = await signInWithPhoneNumber(fb.auth, getFullPhone(), recaptchaVerifier);
+    setConfirmationResult(result);
+    setOtpSent(true);
+  } catch (e: any) {
+    setError(e.message || 'Failed to send code.');
+  } finally {
+    setLoading(false);
+  }
+};
+      
       if (!rv) return;
       const result = await signInWithPhoneNumber(fb.auth, getFullPhone(), rv);
       setConfirmationResult(result);
@@ -425,7 +450,7 @@ export default function SignupPage() {
                   <div onClick={() => setCountryOpen(!countryOpen)} className="flex items-center gap-[7px] cursor-pointer select-none"
                     style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12, padding: '14px 12px', minWidth: 105, fontSize: 14, color: 'var(--ink)', whiteSpace: 'nowrap' }}>
                     <span>{selectedCountry.flag}</span><span>{selectedCountry.code}</span>
-                    <span style={{ fontSize: 9, color: 'var(--ink-3)', transition: 'transform 0.2s', transform: countryOpen ? 'rotate(180deg)' : 'none' }}>▼</span>
+                    <span style={{ fontSize: 9, color: 'var(--ink-3)', transition: 'transform 0.2s', transform: countryOpen ? 'rotate(180deg)' : 'none' }}>▄1�7</span>
                   </div>
                   {countryOpen && (
                     <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: 280, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 14, zIndex: 500, boxShadow: '0 18px 40px rgba(0,0,0,0.22)', overflow: 'hidden' }}>
