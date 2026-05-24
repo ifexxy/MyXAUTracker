@@ -920,7 +920,6 @@ export default function SignupPage() {
               <Link href="/login" style={{ color: 'var(--gold)', fontWeight: 800 }}>
                 Sign in
               </Link>
-                            (Having issues getting OTP? After clicking "Send Code", Tick on the "I'm not a robot" when it shows)
             </div>
           </>
         )}
