@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# XAU Tracker
+
+Real-time algorithmic price predictions for **XAU/USD (Gold)** and **BTC/USD (Bitcoin)** using ATR-based volatility modelling.
+
+## Features
+
+- **Gold Predict** — Entry signals and price forecasts for 10m, 1h, 4h and 24h timeframes using the ATR × √(t/1440) model
+- **Bitcoin Predict** — Same ATR-based prediction engine for BTC/USD
+- **Market Signals** — Real-time buy/hold/sell sentiment gauges
+- **Key Price Levels** — Pivot-point based support and resistance levels
+- **TradingView Charts** — Embedded advanced chart widgets
+- **Live Price Strip** — Streaming bid/ask with daily change and ATR
+- **Session Tracking** — Asian, London, New York session indicators with volatility multipliers
+- **Account Dashboard** — Trial/subscription access management with Firebase auth
+
+## Tech Stack
+
+- **Next.js 16** (App Router)
+- **React 19**
+- **TypeScript**
+- **Firebase** (Auth + Firestore)
+- **Tailwind CSS** + custom CSS variables (light/dark themes)
+- **TwelveData / Metals.dev** — price APIs
+- **TradingView** — embedded charts
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create a `.env` file with your API keys:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+TWELVE_DATA_KEY=your_key
+METALS_DEV_KEY=your_key
+NEXT_PUBLIC_FIREBASE_*=
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+src/
+  app/            — Route pages and layouts
+  components/     — Shared React components
+  contexts/       — Auth, GoldPrice, Theme providers
+  lib/            — API helpers, Firebase init, SEO config
+  types/          — TypeScript interfaces
+api/              — Serverless API routes (price, news, payment)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Routes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Path | Description |
+|---|---|
+| `/` | Homepage |
+| `/predict` | Gold XAU/USD forecast |
+| `/predict/bitcoin` | Bitcoin BTC/USD forecast |
+| `/minds` | Community chat |
+| `/news` | Market news |
+| `/trends` | Price charts |
+| `/subscribe` | Premium subscription |
+| `/about` | About |
+| `/contact` | Contact |
+| `/disclaimer` | Legal disclaimer |
+| `/login` / `/signup` | Authentication |
+| `/admin` | Admin panel |
