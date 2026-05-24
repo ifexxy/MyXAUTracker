@@ -9,7 +9,7 @@ export interface PageMeta {
 
 export const pageMeta: Record<string, PageMeta> = {
    '/': {
-    title: 'Welcome to XauTracker - Forecast Realtime Gold and Bitcion Prices',
+    title: 'Welcome to XauTracker - Forecast Realtime Gold and Bitcoin Prices',
     description: 'Real-time XAU/USD gold and BTC/USD bitcoin price predictions, entry signals, market sentiment, and key price levels powered by ATR volatility modelling.',
     ogTitle: 'XAU Tracker — Gold & Bitcoin Market Analysis',
     ogDescription: 'Real-time algorithmic price predictions for gold and bitcoin with ATR-based volatility models.',
