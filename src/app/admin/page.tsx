@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getFirebase } from '@/lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -255,11 +255,35 @@ export default function AdminPage() {
   };
 
   const revokeFromList = async (email: string) => {
-    if (!confirm(`Revoke access for ${email}?`)) return;
-    setAccessEmail(email);
-    setAccessAction('revoke');
-    await grantAccess();
-  };
+  if (!confirm(`Revoke access for ${email}?`)) return;
+  if (!email) { showToast('⚠ Enter a user email'); return; }
+  try {
+    const fb = getFirebase();
+    const token = await fb.auth.currentUser?.getIdToken();
+    if (!token) return;
+    const res = await fetch('/api/grant-access', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        adminToken: token,
+        targetEmail: email,
+        action: 'revoke',
+        daysOrMonths: '1',
+        unit: 'months',
+        note: '',
+      }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('✓ Access revoked for ' + email);
+      loadManualAccessList();
+    } else {
+      showToast('⚠ ' + (data.error || 'Revoke failed'));
+    }
+  } catch (e: any) {
+    showToast('⚠ ' + e.message);
+  }
+};
 
   const loadManualAccessList = async () => {
     try {
