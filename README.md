@@ -58,4 +58,4 @@ api/              — Serverless API routes (price, news, payment)
 | `/contact` | Contact |
 | `/disclaimer` | Legal disclaimer |
 | `/login` / `/signup` | Authentication |
-| `/admin` | Admin panel |
+
