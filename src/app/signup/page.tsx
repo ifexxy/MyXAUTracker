@@ -279,7 +279,7 @@ export default function SignupPage() {
     if (!authLoading && user) router.push('/predict');
   }, [user, authLoading, router]);
 
-  // ┄1�7┄1�7 FIX: initialise reCAPTCHA as soon as step 2 mounts ┄1�7┄1�7
+  // ── FIX: initialise reCAPTCHA as soon as step 2 mounts ──
   // Guard with !recaptchaVerifier so navigating back then forward
   // doesn't attempt to render a second widget on the same DOM node.
   useEffect(() => {
@@ -306,7 +306,7 @@ export default function SignupPage() {
     setStep(2);
   };
 
-  // ┄1�7┄1�7 FIX: removed initRecaptcha()  1�7 verifier is now ready before this runs ┄1�7┄1�7
+  // ── FIX: removed initRecaptcha() — verifier is now ready before this runs ──
   const sendOTP = async () => {
     setError('');
     if (!phone.trim()) { setError('Please enter your phone number.'); return; }
@@ -481,7 +481,7 @@ export default function SignupPage() {
           </div>
         </div>
 
-        {/* ┄1�7┄1�7 STEP 1 ┄1�7┄1�7 */}
+        {/* ── STEP 1 ── */}
         {step === 1 ? (
           <>
             <div className="mb-[16px]">
@@ -620,7 +620,7 @@ export default function SignupPage() {
             </div>
           </>
         ) : (
-          /* ┄1�7┄1�7 STEP 2 ┄1�7┄1�7 */
+          /* ── STEP 2 ── */
           <>
             <div className="mb-[16px]">
               <label
@@ -663,7 +663,7 @@ export default function SignupPage() {
                         transform: countryOpen ? 'rotate(180deg)' : 'none',
                       }}
                     >
-                      ▄1�7
+                      ▼
                     </span>
                   </div>
 
@@ -768,7 +768,7 @@ export default function SignupPage() {
               </div>
             </div>
 
-            {/* ┄1�7┄1�7 FIX: reCAPTCHA renders here immediately on step 2 mount ┄1�7┄1�7 */}
+            {/* ── FIX: reCAPTCHA renders here immediately on step 2 mount ── */}
             <div id="recaptcha-container" style={{ marginTop: 10 }} />
 
             {error && (
