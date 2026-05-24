@@ -458,7 +458,9 @@ export default function SignupPage() {
                 style={{ background: 'var(--ink)', color: 'var(--bg)', border: 'none', opacity: loading ? 0.5 : 1 }}>
                 {loading ? <><i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Sending...</> : <><i className="fa-solid fa-mobile-screen" /> Send Verification Code</>}
               </button>
-          
+          <div style={{ fontSize: 12, color: 'var(--ink-3)', textAlign: 'center', marginTop: 12, lineHeight: 1.55 }}>
+    After clicking send verification code, tick &quot;I&apos;m not a robot&quot; to receive OTP
+  </div>
             ) : (
               <>
                 <div className="mb-[16px]" style={{ marginTop: 16 }}>
