@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import html2canvas from 'html2canvas';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGoldPrice } from '@/contexts/GoldPriceContext';
