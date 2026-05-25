@@ -23,16 +23,6 @@ export default function Topbar({ onMenuClick, rightContent }: TopbarProps) {
         </button>
         <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>XauTracker</span>
       </div>
-      <div className="flex items-center gap-[10px]">
-        <div
-          className="flex items-center gap-[5px] text-[10px] font-bold px-[9px] py-[4px] rounded-full"
-          style={{ color: 'var(--green)', background: 'var(--green-bg)', letterSpacing: '0.04em' }}
-        >
-          <div className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--green)', animation: 'blink 1.6s ease-in-out infinite' }} />
-          LIVE
-        </div>
-        {rightContent}
-      </div>
     </div>
   );
 }
