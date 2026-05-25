@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getFirebase } from '@/lib/firebase';
-import { createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, linkWithCredential } from 'firebase/auth';
+import { createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp, getDocs, collection, query, where } from 'firebase/firestore';
 import { useAuth } from '@/contexts/AuthContext';
 import Footer from '@/components/Footer';
@@ -339,11 +339,8 @@ export default function SignupPage() {
     setLoading(true);
     try {
       const fb = getFirebase();
-      // Create email/password account first
+      const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
       const { user: newUser } = await createUserWithEmailAndPassword(fb.auth, email, password);
-      // Link phone credential — this validates the OTP; throws if wrong
-  const phoneCred = PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
-  await linkWithCredential(newUser, phoneCred);
       const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       await setDoc(doc(fb.db, 'users', newUser.uid), {
         email,
