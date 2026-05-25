@@ -615,27 +615,7 @@ const sig24h = sigs?.e24h.sig ?? '';
   }
   if (line) ctx.fillText(line.trim(), PAD_L, ry);
 
-  /* Confidence row */
-  const confRowY = BOT + 134;
-  ctx.fillStyle = 'rgba(255,255,255,0.28)';
-  ctx.font = '500 22px "Helvetica Neue", Arial, sans-serif';
-  ctx.fillText('Confidence', PAD_L, confRowY);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '700 22px "Helvetica Neue", Arial, sans-serif';
-  ctx.textAlign = 'right';
-  ctx.fillText(sig.conf + '%', S - PAD_R, confRowY);
-  ctx.textAlign = 'left';
 
-  const bL = CW + PAD_R - 20;
-  ctx.fillStyle = 'rgba(255,255,255,0.07)';
-  ctx.beginPath(); ctx.roundRect(PAD_L, confRowY + 10, bL, 6, 3); ctx.fill();
-  ctx.fillStyle = sigColor;
-  ctx.beginPath(); ctx.roundRect(PAD_L, confRowY + 10, bL * (sig.conf / 100), 6, 3); ctx.fill();
-
-  /* Divider */
-  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(PAD_L, confRowY + 34); ctx.lineTo(S - PAD_R, confRowY + 34); ctx.stroke();
 
   /* Bottom bar: site + timestamp */
   ctx.fillStyle = '#ffffff';
