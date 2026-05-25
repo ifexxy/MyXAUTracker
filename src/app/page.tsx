@@ -73,10 +73,10 @@ export default function HomePage() {
       {/* CTA */}
       <section style={{ padding: '26px 20px', borderBottom: '1px solid var(--border)' }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.25, letterSpacing: -0.4, marginBottom: 8 }}>
-          Trade Gold<br />like a Pro.
+          Trade Gold/Bitcoin<br />like a Pro.
         </h1>
         <p style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.65, marginBottom: 20 }}>
-          Whether you&apos;re a pro trader or a newbie, we have the right tools to supercharge your gold trading experience. Join traders who rely on XauTracker every day to make profit with minimal loss.
+          Whether you&apos;re a pro trader or a newbie, we have the right tools to supercharge your trading experience. Join traders who rely on XauTracker every day to make profit with minimal loss.
         </p>
 
         <div style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 16, background: 'var(--bg-2)', marginBottom: 14 }}>
