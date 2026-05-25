@@ -444,127 +444,209 @@ const sig24h = sigs?.e24h.sig ?? '';
 
   const sigColor =
     sig.badgeCls === 'bull' ? '#00d48f' :
-    sig.badgeCls === 'bear' ? '#ff4561' : '#ffffff';
+    sig.badgeCls === 'bear' ? '#ff4561' : '#aaaaaa';
+  const isBull = sig.badgeCls === 'bull';
+  const isBear = sig.badgeCls === 'bear';
 
   /* ── Background ── */
-  ctx.fillStyle = '#0d0d0d';
+  ctx.fillStyle = '#0a0a0a';
   ctx.fillRect(0, 0, S, S);
 
-  /* ── Left colour bar ── */
-  ctx.fillStyle = sigColor;
-  ctx.fillRect(60, 60, 5, S - 120);
-
-  const LEFT = 96;
-  let y = 130;
-
-  /* ── Timeframe label ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = '500 28px "Helvetica Neue", Arial, sans-serif';
-  ctx.textAlign = 'left';
-  ctx.letterSpacing = '0.12em';
-  ctx.fillText(frameLabel.toUpperCase() + ' ENTRY SIGNAL', LEFT, y);
-  y += 80;
-
-  /* ── Signal ── */
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '800 88px "Helvetica Neue", Arial, sans-serif';
-  ctx.fillText(sig.sig, LEFT, y);
-  y += 20;
-
-  /* ── Direction ── */
-  ctx.fillStyle = sigColor;
-  ctx.font = '600 34px "Helvetica Neue", Arial, sans-serif';
-  ctx.fillText(sig.dir, LEFT, y + 40);
-  y += 100;
-
-  /* ── Reason (word wrap) ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.65)';
-  ctx.font = '400 32px "Helvetica Neue", Arial, sans-serif';
-  const maxW = S - LEFT - 60;
-  const words = sig.reason.split(' ');
-  let line = '';
-  y += 20;
-  for (const word of words) {
-    const test = line + word + ' ';
-    if (ctx.measureText(test).width > maxW && line) {
-      ctx.fillText(line.trim(), LEFT, y);
-      line = word + ' '; y += 50;
-    } else { line = test; }
+  /* ── Generate simulated price history ending at current price ── */
+  const NUM = 80;
+  const prices: number[] = [];
+  const vol = (atr || 20) / 15;
+  let px = p.price - (Math.random() * atr * 0.6);
+  const raw: number[] = [px];
+  for (let i = 1; i < NUM; i++) {
+    const drift = isBull ? 0.52 : isBear ? 0.48 : 0.50;
+    px += (Math.random() - (1 - drift)) * vol * 2.2;
+    raw.push(px);
   }
-  if (line) { ctx.fillText(line.trim(), LEFT, y); y += 50; }
-  y += 40;
+  /* Anchor last point exactly to current price */
+  const diff = p.price - raw[NUM - 1];
+  for (let i = 0; i < NUM; i++) prices.push(raw[i] + diff);
 
-  /* ── Divider ── */
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-  ctx.lineWidth = 1;
+  /* ── Chart bounds ── */
+  const PAD_L = 40, PAD_R = 110, PAD_T = 210, PAD_B = 220;
+  const CW = S - PAD_L - PAD_R;
+  const CH = S - PAD_T - PAD_B;
+
+  const minP = Math.min(...prices) - (atr || 20) * 0.35;
+  const maxP = Math.max(...prices) + (atr || 20) * 0.35;
+  const priceRange = maxP - minP;
+
+  function ix(i: number) { return PAD_L + (i / (NUM - 1)) * CW; }
+  function iy(price: number) { return PAD_T + CH - ((price - minP) / priceRange) * CH; }
+
+  /* ── Horizontal grid lines ── */
+  const GRID = 5;
+  for (let i = 0; i <= GRID; i++) {
+    const gp = minP + (priceRange / GRID) * i;
+    const gy = iy(gp);
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(PAD_L, gy); ctx.lineTo(S - PAD_R, gy); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    ctx.font = '400 20px "Helvetica Neue", Arial, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('$' + gp.toFixed(0), S - PAD_R + 10, gy + 7);
+  }
+
+  /* ── Area fill under line ── */
+  ctx.save();
   ctx.beginPath();
-  ctx.moveTo(LEFT, y); ctx.lineTo(S - 60, y);
-  ctx.stroke();
-  y += 56;
-
-  /* ── Confidence row ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.38)';
-  ctx.font = '500 28px "Helvetica Neue", Arial, sans-serif';
-  ctx.fillText('Confidence', LEFT, y);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '700 28px "Helvetica Neue", Arial, sans-serif';
-  ctx.textAlign = 'right';
-  ctx.fillText(sig.conf + '%', S - 60, y);
-  ctx.textAlign = 'left';
-  y += 28;
-
-  /* Confidence bar track */
-  const barLen = S - LEFT - 60;
-  ctx.fillStyle = 'rgba(255,255,255,0.08)';
-  ctx.beginPath();
-  ctx.roundRect(LEFT, y, barLen, 8, 4);
+  ctx.moveTo(ix(0), iy(prices[0]));
+  for (let i = 1; i < NUM; i++) ctx.lineTo(ix(i), iy(prices[i]));
+  ctx.lineTo(ix(NUM - 1), PAD_T + CH);
+  ctx.lineTo(ix(0), PAD_T + CH);
+  ctx.closePath();
+  const areaGrad = ctx.createLinearGradient(0, PAD_T, 0, PAD_T + CH);
+  areaGrad.addColorStop(0, sigColor + '28');
+  areaGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = areaGrad;
   ctx.fill();
-  /* Confidence bar fill */
+  ctx.restore();
+
+  /* ── Price line ── */
+  ctx.beginPath();
+  ctx.moveTo(ix(0), iy(prices[0]));
+  for (let i = 1; i < NUM; i++) ctx.lineTo(ix(i), iy(prices[i]));
+  ctx.strokeStyle = sigColor;
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([]);
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  /* ── Current price dashed line ── */
+  const curY = iy(p.price);
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 7]);
+  ctx.beginPath(); ctx.moveTo(PAD_L, curY); ctx.lineTo(S - PAD_R, curY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  /* ── Current price pill on right axis ── */
+  const pillW = 94, pillH = 30;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.roundRect(S - PAD_R + 6, curY - pillH / 2, pillW, pillH, 6);
+  ctx.fill();
+  ctx.fillStyle = '#0a0a0a';
+  ctx.font = '700 18px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('$' + p.price.toFixed(0), S - PAD_R + 6 + pillW / 2, curY + 6);
+
+  /* ── Signal marker at end of chart ── */
+  const mx = ix(NUM - 1);
+  const my = iy(prices[NUM - 1]);
+  /* Glowing dot */
+  ctx.save();
+  ctx.shadowColor = sigColor;
+  ctx.shadowBlur = 22;
   ctx.fillStyle = sigColor;
   ctx.beginPath();
-  ctx.roundRect(LEFT, y, barLen * (sig.conf / 100), 8, 4);
+  ctx.arc(mx, my, 9, 0, Math.PI * 2);
   ctx.fill();
-  y += 56;
+  ctx.restore();
+  /* Arrow above or below */
+  const aSz = 18, aOff = 30;
+  ctx.fillStyle = sigColor;
+  if (isBull) {
+    ctx.beginPath();
+    ctx.moveTo(mx,        my - aOff - aSz);
+    ctx.lineTo(mx + aSz,  my - aOff + 4);
+    ctx.lineTo(mx - aSz,  my - aOff + 4);
+    ctx.closePath(); ctx.fill();
+  } else if (isBear) {
+    ctx.beginPath();
+    ctx.moveTo(mx,        my + aOff + aSz);
+    ctx.lineTo(mx + aSz,  my + aOff - 4);
+    ctx.lineTo(mx - aSz,  my + aOff - 4);
+    ctx.closePath(); ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.arc(mx, my, 16, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
-  /* ── Divider ── */
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  /* ── HEADER ── */
+  ctx.textAlign = 'left';
+  /* Timeframe pill */
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  ctx.beginPath(); ctx.roundRect(PAD_L, 44, 320, 44, 8); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.font = '600 22px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText(frameLabel.toUpperCase() + '  ·  ENTRY SIGNAL', PAD_L + 16, 72);
+
+  /* Signal text */
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 74px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText(sig.sig, PAD_L, 165);
+
+  /* Direction — right aligned */
+  ctx.fillStyle = sigColor;
+  ctx.font = '600 28px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(sig.dir, S - PAD_R, 165);
+
+  /* ── BOTTOM SECTION ── */
+  const BOT = S - PAD_B + 28;
+
+  /* Analysis label */
+  ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.font = '600 20px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText('ANALYSIS', PAD_L, BOT);
+
+  /* Reason text (word wrap) */
+  ctx.fillStyle = 'rgba(255,255,255,0.62)';
+  ctx.font = '400 26px "Helvetica Neue", Arial, sans-serif';
+  const maxTW = CW + PAD_R - 20;
+  const words = sig.reason.split(' ');
+  let line = '', ry = BOT + 38;
+  for (const w of words) {
+    const test = line + w + ' ';
+    if (ctx.measureText(test).width > maxTW && line) {
+      ctx.fillText(line.trim(), PAD_L, ry);
+      line = w + ' '; ry += 40;
+    } else line = test;
+  }
+  if (line) ctx.fillText(line.trim(), PAD_L, ry);
+
+  /* Confidence row */
+  const confRowY = BOT + 134;
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.font = '500 22px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText('Confidence', PAD_L, confRowY);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 22px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(sig.conf + '%', S - PAD_R, confRowY);
+  ctx.textAlign = 'left';
+
+  const bL = CW + PAD_R - 20;
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  ctx.beginPath(); ctx.roundRect(PAD_L, confRowY + 10, bL, 6, 3); ctx.fill();
+  ctx.fillStyle = sigColor;
+  ctx.beginPath(); ctx.roundRect(PAD_L, confRowY + 10, bL * (sig.conf / 100), 6, 3); ctx.fill();
+
+  /* Divider */
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
   ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(LEFT, y); ctx.lineTo(S - 60, y);
-  ctx.stroke();
-  y += 52;
+  ctx.beginPath(); ctx.moveTo(PAD_L, confRowY + 34); ctx.lineTo(S - PAD_R, confRowY + 34); ctx.stroke();
 
-  /* ── Price row ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.38)';
-  ctx.font = '500 26px "Helvetica Neue", Arial, sans-serif';
-  ctx.fillText('XAU/USD', LEFT, y);
+  /* Bottom bar: site + timestamp */
   ctx.fillStyle = '#ffffff';
-  ctx.font = '700 26px "Helvetica Neue", Arial, sans-serif';
-  ctx.textAlign = 'right';
-  ctx.fillText('$' + fmtPrice(p.price), S - 60, y);
+  ctx.font = '700 24px "Helvetica Neue", Arial, sans-serif';
   ctx.textAlign = 'left';
-  y += 46;
+  ctx.fillText('xautracker.com', PAD_L, S - 38);
 
-  /* ── Session row ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.38)';
-  ctx.font = '500 26px "Helvetica Neue", Arial, sans-serif';
-  ctx.fillText('Session', LEFT, y);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '700 26px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.font = '400 20px "Helvetica Neue", Arial, sans-serif';
   ctx.textAlign = 'right';
-  ctx.fillText(session.sessionLabel, S - 60, y);
-  ctx.textAlign = 'left';
-
-  /* ── Bottom: xautracker.com ── */
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '700 26px "Helvetica Neue", Arial, sans-serif';
-  ctx.fillText('xautracker.com', LEFT, S - 52);
-
-  /* ── Bottom right: timestamp ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
-  ctx.font = '400 22px "Helvetica Neue", Arial, sans-serif';
-  ctx.textAlign = 'right';
-  ctx.fillText(new Date().toUTCString().slice(0, 25), S - 60, S - 52);
+  ctx.fillText(new Date().toUTCString().slice(0, 22), S - PAD_R, S - 38);
 
   /* ── Export ── */
   canvas.toBlob(async (blob) => {
