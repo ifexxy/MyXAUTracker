@@ -208,6 +208,8 @@ export default function PredictPage() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [howToOpen, setHowToOpen] = useState(false);
   const [activePopup, setActivePopup] = useState<string | null>(null);
+  const [notifEnabled, setNotifEnabled] = useState(false);
+const prevSignalsRef = useRef<Record<string, string>>({});
 
   useEffect(() => {
     if (!user) { setUserData(null); return; }
@@ -238,6 +240,52 @@ export default function PredictPage() {
     });
     tvRef.current.appendChild(script);
   }, [theme]);
+  
+  // Restore saved preference on mount
+useEffect(() => {
+  const saved = localStorage.getItem('xau-notif');
+  if (saved === 'true' && Notification.permission === 'granted') {
+    setNotifEnabled(true);
+  }
+}, []);
+
+// Save preference whenever it changes
+useEffect(() => {
+  localStorage.setItem('xau-notif', String(notifEnabled));
+}, [notifEnabled]);
+
+// Watch for signal changes and fire notifications
+useEffect(() => {
+  if (!sigs || !notifEnabled) return;
+
+  const current: Record<string, string> = {
+    '10m': sigs.e10m.sig,
+    '1h':  sigs.e1h.sig,
+    '4h':  sigs.e4h.sig,
+    '24h': sigs.e24h.sig,
+  };
+
+  const prev = prevSignalsRef.current;
+
+  Object.entries(current).forEach(([frame, sig]) => {
+    if (!prev[frame] || prev[frame] === sig) return;
+
+    // Only notify on meaningful direction changes, not noise
+    const isActionable = (s: string) =>
+      s.includes('LONG') || s.includes('SHORT') ||
+      s.includes('ENTER') || s.includes('NO SIGNAL');
+
+    if (isActionable(sig) || isActionable(prev[frame])) {
+      new Notification(`XAU/USD ${frame} Signal Changed`, {
+        body: `${prev[frame]} → ${sig}`,
+        icon: '/favicon.ico',
+        tag: `xau-signal-${frame}`,
+      });
+    }
+  });
+
+  prevSignalsRef.current = current;
+}, [sigs, notifEnabled]);
 
   const p = price || { price: 0, open: 0, high: 0, low: 0, bid: 0, ask: 0, ch: 0, chp: 0, source: '—' };
   const isUp = (p.ch || 0) >= 0;
@@ -310,6 +358,15 @@ export default function PredictPage() {
       range: '$' + fmtP(fc.bandLow) + ' – $' + fmtP(fc.bandHigh),
     };
   }
+  
+  async function requestNotifPermission() {
+  if (!('Notification' in window)) {
+    alert('Your browser does not support notifications.');
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  setNotifEnabled(perm === 'granted');
+}
 
   function openPopup(key: string) {
     if (!pred || !sigs) return;
@@ -515,11 +572,26 @@ export default function PredictPage() {
 
       {/* ═══ Entry Signals Timeline ═══ */}
       <div className="tl-outer-card">
-        <div className="tl-card-header">
-          <i className="fa-solid fa-bolt" />
-          <span className="tl-card-header-label">Entry Signals</span>
-        </div>
-
+     <div className="tl-card-header">
+  <i className="fa-solid fa-bolt" />
+  <span className="tl-card-header-label">Entry Signals</span>
+  <button
+    onClick={notifEnabled ? () => setNotifEnabled(false) : requestNotifPermission}
+    style={{
+      marginLeft: 'auto',
+      background: notifEnabled ? 'var(--green-bg)' : 'var(--bg-3)',
+      border: `1px solid ${notifEnabled ? 'var(--green)' : 'var(--border)'}`,
+      color: notifEnabled ? 'var(--green)' : 'var(--ink-3)',
+      borderRadius: 8, padding: '4px 10px',
+      fontSize: 11, fontWeight: 700,
+      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+      fontFamily: 'inherit',
+    }}
+  >
+    <i className={`fa-solid fa-bell${notifEnabled ? '' : '-slash'}`} />
+    {notifEnabled ? 'Alerts ON' : 'Alerts'}
+  </button>
+</div>
         {/* Now */}
         <div className="tl-row">
           <div className="tl-dot live" />
