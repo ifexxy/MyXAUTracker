@@ -249,6 +249,11 @@ export default function PredictPage() {
   /* ── Notifications ── */
   const [notifEnabled, setNotifEnabled] = useState(false);
   const prevSignalsRef = useRef<Record<string, string>>({});
+  
+const sig10m = sigs?.e10m.sig ?? '';
+const sig1h  = sigs?.e1h.sig  ?? '';
+const sig4h  = sigs?.e4h.sig  ?? '';
+const sig24h = sigs?.e24h.sig ?? '';
 
   /* Restore saved notification preference */
   useEffect(() => {
@@ -351,36 +356,27 @@ export default function PredictPage() {
 
   /* ── Signal change notifications ── */
   useEffect(() => {
-    if (!mounted || !sigs || !notifEnabled) return;
+  if (!mounted || !notifEnabled || !sig10m) return;
 
-    const current: Record<string, string> = {
-      '10m': sigs.e10m.sig,
-      '1h':  sigs.e1h.sig,
-      '4h':  sigs.e4h.sig,
-      '24h': sigs.e24h.sig,
-    };
+  const current: Record<string, string> = {
+    '10m': sig10m, '1h': sig1h, '4h': sig4h, '24h': sig24h,
+  };
 
-    const prev = prevSignalsRef.current;
+  const prev = prevSignalsRef.current;
 
-    const isActionable = (s: string) =>
-      s.includes('LONG') || s.includes('SHORT') ||
-      s.includes('ENTER') || s.includes('NO SIGNAL');
+  Object.entries(current).forEach(([frame, sig]) => {
+    if (!prev[frame] || prev[frame] === sig) return;
+    try {
+      new Notification(`XAU/USD ${frame} Signal Changed`, {
+        body: `${prev[frame]} → ${sig}`,
+        icon: '/favicon.ico',
+        tag: `xau-signal-${frame}`,
+      });
+    } catch {}
+  });
 
-    Object.entries(current).forEach(([frame, sig]) => {
-      if (!prev[frame] || prev[frame] === sig) return;
-      if (isActionable(sig) || isActionable(prev[frame])) {
-        try {
-          new Notification(`XAU/USD ${frame} Signal Changed`, {
-            body: `${prev[frame]} → ${sig}`,
-            icon: '/favicon.ico',
-            tag: `xau-signal-${frame}`,
-          });
-        } catch {}
-      }
-    });
-
-    prevSignalsRef.current = current;
-  }, [sigs, notifEnabled, mounted]);
+  prevSignalsRef.current = current;
+}, [sig10m, sig1h, sig4h, sig24h, notifEnabled, mounted]);
 
   /* ── Notification permission request ── */
   async function requestNotifPermission() {
