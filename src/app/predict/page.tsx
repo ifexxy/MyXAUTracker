@@ -437,194 +437,134 @@ const sig24h = sigs?.e24h.sig ?? '';
   const tlConfColor = (c: number) => c >= 75 ? 'var(--green)' : c >= 55 ? 'var(--gold)' : 'var(--red)';
   
   async function shareSignal(frameLabel: string, sig: EntrySignal) {
-  const W = 1080, H = 1920;
+  const S = 1080;
   const canvas = document.createElement('canvas');
-  canvas.width = W; canvas.height = H;
+  canvas.width = S; canvas.height = S;
   const ctx = canvas.getContext('2d')!;
 
-  const GOLD   = '#d4a72c';
-  const GREEN  = '#00d48f';
-  const RED    = '#ff4561';
   const sigColor =
-    sig.badgeCls === 'bull' ? GREEN :
-    sig.badgeCls === 'bear' ? RED   : GOLD;
+    sig.badgeCls === 'bull' ? '#00d48f' :
+    sig.badgeCls === 'bear' ? '#ff4561' : '#ffffff';
 
   /* ── Background ── */
-  ctx.fillStyle = '#000000';
-  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#0d0d0d';
+  ctx.fillRect(0, 0, S, S);
 
-  /* ── Subtle dot grid ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.035)';
-  for (let x = 40; x < W; x += 48) {
-    for (let y = 40; y < H; y += 48) {
-      ctx.beginPath();
-      ctx.arc(x, y, 1.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  /* ── Large background glow behind signal ── */
-  const glow = ctx.createRadialGradient(W / 2, 820, 0, W / 2, 820, 520);
-  glow.addColorStop(0, sigColor + '18');
-  glow.addColorStop(1, 'transparent');
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 300, W, 1100);
-
-  /* ── Top accent line ── */
-  const topLine = ctx.createLinearGradient(0, 0, W, 0);
-  topLine.addColorStop(0,   'transparent');
-  topLine.addColorStop(0.3, sigColor + 'aa');
-  topLine.addColorStop(0.5, sigColor);
-  topLine.addColorStop(0.7, sigColor + 'aa');
-  topLine.addColorStop(1,   'transparent');
-  ctx.fillStyle = topLine;
-  ctx.fillRect(0, 0, W, 3);
-
-  /* ── Bottom accent line ── */
-  ctx.fillStyle = topLine;
-  ctx.fillRect(0, H - 3, W, 3);
-
-  /* ── Thin border inset ── */
-  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-  ctx.lineWidth = 1.5;
-  ctx.strokeRect(30, 30, W - 60, H - 60);
-
-  /* ── Timeframe pill ── */
-  const pillW = 260, pillH = 52, pillX = (W - pillW) / 2, pillY = 110;
-  ctx.fillStyle = sigColor + '18';
-  ctx.strokeStyle = sigColor + '55';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.roundRect(pillX, pillY, pillW, pillH, pillH / 2);
-  ctx.fill(); ctx.stroke();
+  /* ── Left colour bar ── */
   ctx.fillStyle = sigColor;
-  ctx.font = '700 22px "SF Mono", ui-monospace, monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText(frameLabel.toUpperCase() + '  ENTRY SIGNAL', W / 2, pillY + 33);
+  ctx.fillRect(60, 60, 5, S - 120);
 
-  /* ── Main signal text ── */
-  ctx.save();
-  ctx.shadowColor = sigColor;
-  ctx.shadowBlur = 60;
-  ctx.fillStyle = sigColor;
-  ctx.font = '800 112px -apple-system, "Helvetica Neue", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(sig.sig, W / 2, 640);
-  ctx.restore();
+  const LEFT = 96;
+  let y = 130;
 
-  /* ── Direction line ── */
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '500 38px -apple-system, "Helvetica Neue", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(sig.dir, W / 2, 720);
-
-  /* ── Divider ── */
-  const divGrad = ctx.createLinearGradient(80, 0, W - 80, 0);
-  divGrad.addColorStop(0,   'transparent');
-  divGrad.addColorStop(0.2, 'rgba(255,255,255,0.1)');
-  divGrad.addColorStop(0.8, 'rgba(255,255,255,0.1)');
-  divGrad.addColorStop(1,   'transparent');
-  ctx.strokeStyle = divGrad;
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(80, 780); ctx.lineTo(W - 80, 780);
-  ctx.stroke();
-
-  /* ── Reason label ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.35)';
-  ctx.font = '600 22px "SF Mono", ui-monospace, monospace';
+  /* ── Timeframe label ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '500 28px "Helvetica Neue", Arial, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('ANALYSIS', 80, 850);
+  ctx.letterSpacing = '0.12em';
+  ctx.fillText(frameLabel.toUpperCase() + ' ENTRY SIGNAL', LEFT, y);
+  y += 80;
 
-  /* ── Reason text (word wrap) ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.75)';
-  ctx.font = '400 32px -apple-system, "Helvetica Neue", sans-serif';
-  const maxW = W - 160;
+  /* ── Signal ── */
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 88px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText(sig.sig, LEFT, y);
+  y += 20;
+
+  /* ── Direction ── */
+  ctx.fillStyle = sigColor;
+  ctx.font = '600 34px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText(sig.dir, LEFT, y + 40);
+  y += 100;
+
+  /* ── Reason (word wrap) ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.font = '400 32px "Helvetica Neue", Arial, sans-serif';
+  const maxW = S - LEFT - 60;
   const words = sig.reason.split(' ');
-  let line = '', y = 900;
+  let line = '';
+  y += 20;
   for (const word of words) {
     const test = line + word + ' ';
     if (ctx.measureText(test).width > maxW && line) {
-      ctx.fillText(line.trim(), 80, y);
+      ctx.fillText(line.trim(), LEFT, y);
       line = word + ' '; y += 50;
     } else { line = test; }
   }
-  if (line) ctx.fillText(line.trim(), 80, y);
+  if (line) { ctx.fillText(line.trim(), LEFT, y); y += 50; }
+  y += 40;
 
-  /* ── Confidence section ── */
-  const confY = 1150;
-  ctx.fillStyle = 'rgba(255,255,255,0.35)';
-  ctx.font = '600 22px "SF Mono", ui-monospace, monospace';
-  ctx.textAlign = 'left';
-  ctx.fillText('CONFIDENCE', 80, confY);
-  ctx.fillStyle = sigColor;
-  ctx.font = '700 22px "SF Mono", ui-monospace, monospace';
-  ctx.textAlign = 'right';
-  ctx.fillText(sig.conf + '%', W - 80, confY);
-
-  /* Confidence track */
-  const barY = confY + 18, barH = 10, barX = 80, barLen = W - 160;
-  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  /* ── Divider ── */
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.roundRect(barX, barY, barLen, barH, barH / 2);
-  ctx.fill();
-  /* Confidence fill with glow */
-  ctx.save();
-  ctx.shadowColor = sigColor;
-  ctx.shadowBlur = 12;
-  ctx.fillStyle = sigColor;
-  ctx.beginPath();
-  ctx.roundRect(barX, barY, barLen * (sig.conf / 100), barH, barH / 2);
-  ctx.fill();
-  ctx.restore();
+  ctx.moveTo(LEFT, y); ctx.lineTo(S - 60, y);
+  ctx.stroke();
+  y += 56;
 
-  /* ── Stats row ── */
-  const statsY = 1280;
-  const statsData = [
-    { label: 'SPOT PRICE', value: '$' + fmtPrice(p.price) },
-    { label: 'SESSION',    value: session.volLabel },
-    { label: 'DAILY ATR',  value: '$' + atr.toFixed(2) },
-  ];
-  const cellW = (W - 160) / 3;
-  statsData.forEach((s, i) => {
-    const cx = 80 + i * cellW + cellW / 2;
-    /* cell background */
-    ctx.fillStyle = 'rgba(255,255,255,0.04)';
-    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(80 + i * cellW + (i > 0 ? 8 : 0), statsY - 44, cellW - (i > 0 ? 8 : 0) - (i < 2 ? 8 : 0), 110, 14);
-    ctx.fill(); ctx.stroke();
-
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.font = '600 20px "SF Mono", ui-monospace, monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText(s.label, cx, statsY - 10);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '700 30px -apple-system, "Helvetica Neue", sans-serif';
-    ctx.fillText(s.value, cx, statsY + 32);
-  });
-
-  /* ── Timestamp ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.22)';
-  ctx.font = '400 24px "SF Mono", ui-monospace, monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText(new Date().toUTCString(), W / 2, 1480);
-
-  /* ── Bottom disclaimer ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.18)';
-  ctx.font = '400 22px -apple-system, "Helvetica Neue", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('Not financial advice  ·  xautracker.com', W / 2, 1820);
-
-  /* ── Watermark XAU/USD text ── */
-  ctx.save();
-  ctx.globalAlpha = 0.03;
+  /* ── Confidence row ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.38)';
+  ctx.font = '500 28px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText('Confidence', LEFT, y);
   ctx.fillStyle = '#ffffff';
-  ctx.font = '800 200px -apple-system, "Helvetica Neue", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('XAU/USD', W / 2, H - 80);
-  ctx.restore();
+  ctx.font = '700 28px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(sig.conf + '%', S - 60, y);
+  ctx.textAlign = 'left';
+  y += 28;
+
+  /* Confidence bar track */
+  const barLen = S - LEFT - 60;
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  ctx.beginPath();
+  ctx.roundRect(LEFT, y, barLen, 8, 4);
+  ctx.fill();
+  /* Confidence bar fill */
+  ctx.fillStyle = sigColor;
+  ctx.beginPath();
+  ctx.roundRect(LEFT, y, barLen * (sig.conf / 100), 8, 4);
+  ctx.fill();
+  y += 56;
+
+  /* ── Divider ── */
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(LEFT, y); ctx.lineTo(S - 60, y);
+  ctx.stroke();
+  y += 52;
+
+  /* ── Price row ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.38)';
+  ctx.font = '500 26px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText('XAU/USD', LEFT, y);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 26px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('$' + fmtPrice(p.price), S - 60, y);
+  ctx.textAlign = 'left';
+  y += 46;
+
+  /* ── Session row ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.38)';
+  ctx.font = '500 26px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText('Session', LEFT, y);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 26px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(session.sessionLabel, S - 60, y);
+  ctx.textAlign = 'left';
+
+  /* ── Bottom: xautracker.com ── */
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 26px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText('xautracker.com', LEFT, S - 52);
+
+  /* ── Bottom right: timestamp ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '400 22px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(new Date().toUTCString().slice(0, 25), S - 60, S - 52);
 
   /* ── Export ── */
   canvas.toBlob(async (blob) => {
