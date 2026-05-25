@@ -286,7 +286,7 @@ useEffect(() => {
   });
 
   prevSignalsRef.current = current;
-}, [sigs, notifEnabled]);,
+}, [sigs, notifEnabled]);
 
   const p = price || { price: 0, open: 0, high: 0, low: 0, bid: 0, ask: 0, ch: 0, chp: 0, source: '—' };
   const isUp = (p.ch || 0) >= 0;
