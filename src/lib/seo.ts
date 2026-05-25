@@ -9,33 +9,33 @@ export interface PageMeta {
 
 export const pageMeta: Record<string, PageMeta> = {
    '/': {
-    title: 'Welcome to XauTracker - Forecast Realtime Gold and Bitcoin Prices',
+    title: 'Forecast Realtime Gold and Bitcoin Prices',
     description: 'Real-time XAU/USD gold and BTC/USD bitcoin price predictions, entry signals, market sentiment, and key price levels powered by ATR volatility modelling.',
-    ogTitle: 'XAU Tracker — Gold & Bitcoin Market Analysis',
+    ogTitle: 'Gold & Bitcoin Market Analysis',
     ogDescription: 'Real-time algorithmic price predictions for gold and bitcoin with ATR-based volatility models.',
     canonical: 'https://www.xautracker.com',
   },
   '/predict': {
-    title: 'Gold Predict · XAU/USD Price Forecast & Market Signals — Xautracker.com',
+    title: 'XAU/USD Price Forecast & Market Signals — Xautracker.com',
     description: 'Algorithmic XAU/USD gold price predictions for 5m, 10m, 15m, 1h, 6h and 24h. Key levels, sentiment and market signals.',
-    ogTitle: 'Gold Predict · XAU/USD Forecast — Xautracker.com',
+    ogTitle: 'XAU/USD Forecast — Xautracker.com',
     ogDescription: 'Realistic algorithmic XAU/USD gold price predictions with ATR-based volatility model.',
     canonical: 'https://www.xautracker.com/predict',
   },
   '/predict/bitcoin': {
-    title: 'Bitcoin Predict · BTC/USD Price Forecast & Market Signals — Xautracker.com',
+    title: 'BTC/USD Price Forecast & Market Signals — Xautracker.com',
     description: 'Algorithmic BTC/USD bitcoin price predictions for 5m, 10m, 15m, 1h, 6h and 24h. Key levels, sentiment and market signals.',
-    ogTitle: 'Bitcoin Predict · BTC/USD Forecast — Xautracker.com',
+    ogTitle: 'BTC/USD Forecast — Xautracker.com',
     ogDescription: 'Realistic algorithmic BTC/USD bitcoin price predictions with ATR-based volatility model.',
     canonical: 'https://www.xautracker.com/predict/bitcoin',
   },
   '/minds': {
-    title: 'Minds — XAU Tracker Community Chat',
+    title: 'Community Chat',
     description: 'Join the XAU Tracker community. Discuss gold, bitcoin, trading strategies and market analysis with fellow traders.',
     canonical: 'https://www.xautracker.com/minds',
   },
   '/news': {
-    title: 'News — XAU Tracker',
+    title: 'News',
     description: 'Latest gold and bitcoin market news, analysis and updates from trusted sources.',
     canonical: 'https://www.xautracker.com/news',
   },
