@@ -437,130 +437,205 @@ const sig24h = sigs?.e24h.sig ?? '';
   const tlConfColor = (c: number) => c >= 75 ? 'var(--green)' : c >= 55 ? 'var(--gold)' : 'var(--red)';
   
   async function shareSignal(frameLabel: string, sig: EntrySignal) {
+  const W = 1080, H = 1920;
   const canvas = document.createElement('canvas');
-  canvas.width = 1080;
-  canvas.height = 1080;
+  canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d')!;
 
-  // Background
-  ctx.fillStyle = '#070c12';
-  ctx.fillRect(0, 0, 1080, 1080);
-
-  // Gold top border
-  const grad = ctx.createLinearGradient(0, 0, 1080, 0);
-  grad.addColorStop(0, 'transparent');
-  grad.addColorStop(0.5, '#d4a72c');
-  grad.addColorStop(1, 'transparent');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 1080, 4);
-
-  // Card background
-  ctx.fillStyle = '#0e1622';
-  ctx.roundRect(60, 80, 960, 920, 24);
-  ctx.fill();
-
-  // Brand
-  ctx.fillStyle = '#d4a72c';
-  ctx.roundRect(80, 110, 52, 52, 12);
-  ctx.fill();
-  ctx.fillStyle = '#000';
-  ctx.font = 'bold 28px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('✦', 106, 143);
-
-  ctx.fillStyle = '#e8edf5';
-  ctx.font = 'bold 28px sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText('XAU', 148, 143);
-  ctx.fillStyle = '#d4a72c';
-  ctx.fillText('/USD', 198, 143);
-
-  // Frame label
-  ctx.fillStyle = '#6e7f99';
-  ctx.font = '26px monospace';
-  ctx.textAlign = 'left';
-  ctx.fillText(frameLabel.toUpperCase() + ' ENTRY SIGNAL', 80, 230);
-
-  // Signal
+  const GOLD   = '#d4a72c';
+  const GREEN  = '#00d48f';
+  const RED    = '#ff4561';
   const sigColor =
-    sig.badgeCls === 'bull' ? '#00d48f' :
-    sig.badgeCls === 'bear' ? '#ff4561' : '#d4a72c';
-  ctx.fillStyle = sigColor;
-  ctx.font = 'bold 72px sans-serif';
-  ctx.fillText(sig.sig, 80, 330);
+    sig.badgeCls === 'bull' ? GREEN :
+    sig.badgeCls === 'bear' ? RED   : GOLD;
 
-  // Direction
-  ctx.fillStyle = sigColor;
-  ctx.font = '32px monospace';
-  ctx.fillText(sig.dir, 80, 390);
+  /* ── Background ── */
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, W, H);
 
-  // Divider
-  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-  ctx.lineWidth = 2;
+  /* ── Subtle dot grid ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.035)';
+  for (let x = 40; x < W; x += 48) {
+    for (let y = 40; y < H; y += 48) {
+      ctx.beginPath();
+      ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  /* ── Large background glow behind signal ── */
+  const glow = ctx.createRadialGradient(W / 2, 820, 0, W / 2, 820, 520);
+  glow.addColorStop(0, sigColor + '18');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 300, W, 1100);
+
+  /* ── Top accent line ── */
+  const topLine = ctx.createLinearGradient(0, 0, W, 0);
+  topLine.addColorStop(0,   'transparent');
+  topLine.addColorStop(0.3, sigColor + 'aa');
+  topLine.addColorStop(0.5, sigColor);
+  topLine.addColorStop(0.7, sigColor + 'aa');
+  topLine.addColorStop(1,   'transparent');
+  ctx.fillStyle = topLine;
+  ctx.fillRect(0, 0, W, 3);
+
+  /* ── Bottom accent line ── */
+  ctx.fillStyle = topLine;
+  ctx.fillRect(0, H - 3, W, 3);
+
+  /* ── Thin border inset ── */
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(30, 30, W - 60, H - 60);
+
+  /* ── Timeframe pill ── */
+  const pillW = 260, pillH = 52, pillX = (W - pillW) / 2, pillY = 110;
+  ctx.fillStyle = sigColor + '18';
+  ctx.strokeStyle = sigColor + '55';
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(80, 430);
-  ctx.lineTo(1000, 430);
+  ctx.roundRect(pillX, pillY, pillW, pillH, pillH / 2);
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = sigColor;
+  ctx.font = '700 22px "SF Mono", ui-monospace, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(frameLabel.toUpperCase() + '  ENTRY SIGNAL', W / 2, pillY + 33);
+
+  /* ── Main signal text ── */
+  ctx.save();
+  ctx.shadowColor = sigColor;
+  ctx.shadowBlur = 60;
+  ctx.fillStyle = sigColor;
+  ctx.font = '800 112px -apple-system, "Helvetica Neue", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(sig.sig, W / 2, 640);
+  ctx.restore();
+
+  /* ── Direction line ── */
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '500 38px -apple-system, "Helvetica Neue", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(sig.dir, W / 2, 720);
+
+  /* ── Divider ── */
+  const divGrad = ctx.createLinearGradient(80, 0, W - 80, 0);
+  divGrad.addColorStop(0,   'transparent');
+  divGrad.addColorStop(0.2, 'rgba(255,255,255,0.1)');
+  divGrad.addColorStop(0.8, 'rgba(255,255,255,0.1)');
+  divGrad.addColorStop(1,   'transparent');
+  ctx.strokeStyle = divGrad;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(80, 780); ctx.lineTo(W - 80, 780);
   ctx.stroke();
 
-  // Reason (word wrap)
-  ctx.fillStyle = '#6e7f99';
-  ctx.font = '28px sans-serif';
+  /* ── Reason label ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '600 22px "SF Mono", ui-monospace, monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('ANALYSIS', 80, 850);
+
+  /* ── Reason text (word wrap) ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.font = '400 32px -apple-system, "Helvetica Neue", sans-serif';
+  const maxW = W - 160;
   const words = sig.reason.split(' ');
-  let line = '';
-  let y = 490;
+  let line = '', y = 900;
   for (const word of words) {
     const test = line + word + ' ';
-    if (ctx.measureText(test).width > 880 && line !== '') {
+    if (ctx.measureText(test).width > maxW && line) {
       ctx.fillText(line.trim(), 80, y);
-      line = word + ' ';
-      y += 42;
-    } else {
-      line = test;
-    }
+      line = word + ' '; y += 50;
+    } else { line = test; }
   }
   if (line) ctx.fillText(line.trim(), 80, y);
 
-  // Confidence bar
-  const barY = 720;
-  ctx.fillStyle = '#121c2a';
-  ctx.roundRect(80, barY, 880, 16, 8);
+  /* ── Confidence section ── */
+  const confY = 1150;
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '600 22px "SF Mono", ui-monospace, monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('CONFIDENCE', 80, confY);
+  ctx.fillStyle = sigColor;
+  ctx.font = '700 22px "SF Mono", ui-monospace, monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText(sig.conf + '%', W - 80, confY);
+
+  /* Confidence track */
+  const barY = confY + 18, barH = 10, barX = 80, barLen = W - 160;
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  ctx.beginPath();
+  ctx.roundRect(barX, barY, barLen, barH, barH / 2);
   ctx.fill();
-  const confColor =
-    sig.conf >= 75 ? '#00d48f' : sig.conf >= 55 ? '#d4a72c' : '#ff4561';
-  ctx.fillStyle = confColor;
-  ctx.roundRect(80, barY, 880 * (sig.conf / 100), 16, 8);
+  /* Confidence fill with glow */
+  ctx.save();
+  ctx.shadowColor = sigColor;
+  ctx.shadowBlur = 12;
+  ctx.fillStyle = sigColor;
+  ctx.beginPath();
+  ctx.roundRect(barX, barY, barLen * (sig.conf / 100), barH, barH / 2);
   ctx.fill();
+  ctx.restore();
 
-  ctx.fillStyle = '#e8edf5';
-  ctx.font = 'bold 30px monospace';
-  ctx.fillText('Confidence: ' + sig.conf + '%', 80, 790);
+  /* ── Stats row ── */
+  const statsY = 1280;
+  const statsData = [
+    { label: 'SPOT PRICE', value: '$' + fmtPrice(p.price) },
+    { label: 'SESSION',    value: session.volLabel },
+    { label: 'DAILY ATR',  value: '$' + atr.toFixed(2) },
+  ];
+  const cellW = (W - 160) / 3;
+  statsData.forEach((s, i) => {
+    const cx = 80 + i * cellW + cellW / 2;
+    /* cell background */
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(80 + i * cellW + (i > 0 ? 8 : 0), statsY - 44, cellW - (i > 0 ? 8 : 0) - (i < 2 ? 8 : 0), 110, 14);
+    ctx.fill(); ctx.stroke();
 
-  // Live price
-  ctx.fillStyle = '#3a4a60';
-  ctx.font = '26px monospace';
-  ctx.fillText('XAU/USD  $' + fmtPrice(p.price), 80, 860);
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = '600 20px "SF Mono", ui-monospace, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(s.label, cx, statsY - 10);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '700 30px -apple-system, "Helvetica Neue", sans-serif';
+    ctx.fillText(s.value, cx, statsY + 32);
+  });
 
-  // Timestamp
-  ctx.fillStyle = '#3a4a60';
-  ctx.font = '24px monospace';
-  ctx.fillText(new Date().toUTCString(), 80, 910);
+  /* ── Timestamp ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.font = '400 24px "SF Mono", ui-monospace, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(new Date().toUTCString(), W / 2, 1480);
 
-  // Disclaimer
-  ctx.fillStyle = '#3a4a60';
-  ctx.font = '22px sans-serif';
-  ctx.fillText('Not financial advice · xautracker.com', 80, 970);
+  /* ── Bottom disclaimer ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.18)';
+  ctx.font = '400 22px -apple-system, "Helvetica Neue", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Not financial advice  ·  xautracker.com', W / 2, 1820);
 
-  // Share
+  /* ── Watermark XAU/USD text ── */
+  ctx.save();
+  ctx.globalAlpha = 0.03;
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 200px -apple-system, "Helvetica Neue", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('XAU/USD', W / 2, H - 80);
+  ctx.restore();
+
+  /* ── Export ── */
   canvas.toBlob(async (blob) => {
     if (!blob) return;
-    const file = new File([blob], `xau-signal-${frameLabel}.png`, { type: 'image/png' });
+    const file = new File([blob], `xau-${frameLabel}-signal.png`, { type: 'image/png' });
     if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file], title: `XAU/USD ${frameLabel} Signal: ${sig.sig}` });
+      await navigator.share({ files: [file], title: `XAU/USD ${frameLabel}: ${sig.sig}` });
     } else {
-      // Fallback: download
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `xau-signal-${frameLabel}.png`;
+      a.download = `xau-${frameLabel}-signal.png`;
       a.click();
     }
   }, 'image/png');
