@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getFirebase } from '@/lib/firebase';
-import { createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithPhoneNumber, PhoneAuthProvider } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp, getDocs, collection, query, where } from 'firebase/firestore';
 import { useAuth } from '@/contexts/AuthContext';
 import Footer from '@/components/Footer';
@@ -273,7 +273,7 @@ export default function SignupPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
-  const [recaptchaVerifier, setRecaptchaVerifier] = useState<any>(null);
+  
 
   useEffect(() => {
     if (!authLoading && user) router.push('/predict');
@@ -282,13 +282,7 @@ export default function SignupPage() {
   // ── FIX: initialise reCAPTCHA as soon as step 2 mounts ──
   // Guard with !recaptchaVerifier so navigating back then forward
   // doesn't attempt to render a second widget on the same DOM node.
-  useEffect(() => {
-    if (step === 2 && !recaptchaVerifier) {
-      const { auth } = getFirebase();
-      const rv = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'normal' });
-      setRecaptchaVerifier(rv);
-    }
-  }, [step]);
+ 
 
   const getFullPhone = () => selectedCountry.code + phone.replace(/^0/, '');
 
@@ -310,7 +304,6 @@ export default function SignupPage() {
   const sendOTP = async () => {
     setError('');
     if (!phone.trim()) { setError('Please enter your phone number.'); return; }
-    if (!recaptchaVerifier) { setError('reCAPTCHA not ready yet, please wait.'); return; }
     setLoading(true);
     try {
       const fb = getFirebase();
@@ -322,7 +315,7 @@ export default function SignupPage() {
         setLoading(false);
         return;
       }
-      const result = await signInWithPhoneNumber(fb.auth, getFullPhone(), recaptchaVerifier);
+      const result = await signInWithPhoneNumber(fb.auth, getFullPhone());
       setConfirmationResult(result);
       setOtpSent(true);
     } catch (e: any) {
@@ -769,22 +762,7 @@ export default function SignupPage() {
             </div>
 
             {/* ── FIX: reCAPTCHA renders here immediately on step 2 mount ── */}
-            <div id="recaptcha-container" style={{ marginTop: 10 }} />
-
-            {error && (
-              <div
-                style={{
-                  fontSize: 12,
-                  padding: '10px 12px',
-                  borderRadius: 10,
-                  marginTop: 10,
-                  color: 'var(--red)',
-                  background: 'var(--red-bg)',
-                  border: '1px solid rgba(184,50,50,0.22)',
-                }}
-              >
-                {error}
-              </div>
+           
             )}
 
             {!otpSent ? (
