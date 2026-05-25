@@ -580,6 +580,11 @@ const sig24h = sigs?.e24h.sig ?? '';
   ctx.font = '600 22px "Helvetica Neue", Arial, sans-serif';
   ctx.fillText(frameLabel.toUpperCase() + '  ·  ENTRY SIGNAL', PAD_L + 16, 72);
 
+/* Signal text */
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 74px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText(sig.sig, PAD_L, 165);
+
 
   /* Direction — right aligned */
   ctx.fillStyle = sigColor;
@@ -596,20 +601,7 @@ const sig24h = sigs?.e24h.sig ?? '';
   ctx.font = '600 20px "Helvetica Neue", Arial, sans-serif';
   ctx.fillText('ANALYSIS', PAD_L, BOT);
 
-  /* Reason text (word wrap) */
-  ctx.fillStyle = 'rgba(255,255,255,0.62)';
-  ctx.font = '400 26px "Helvetica Neue", Arial, sans-serif';
-  const maxTW = CW + PAD_R - 20;
-  const words = sig.reason.split(' ');
-  let line = '', ry = BOT + 38;
-  for (const w of words) {
-    const test = line + w + ' ';
-    if (ctx.measureText(test).width > maxTW && line) {
-      ctx.fillText(line.trim(), PAD_L, ry);
-      line = w + ' '; ry += 40;
-    } else line = test;
-  }
-  if (line) ctx.fillText(line.trim(), PAD_L, ry);
+
 
 
 
