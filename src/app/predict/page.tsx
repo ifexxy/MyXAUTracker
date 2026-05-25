@@ -435,6 +435,136 @@ const sig24h = sigs?.e24h.sig ?? '';
 
   /* ── Confidence colour ── */
   const tlConfColor = (c: number) => c >= 75 ? 'var(--green)' : c >= 55 ? 'var(--gold)' : 'var(--red)';
+  
+  async function shareSignal(frameLabel: string, sig: EntrySignal) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1080;
+  const ctx = canvas.getContext('2d')!;
+
+  // Background
+  ctx.fillStyle = '#070c12';
+  ctx.fillRect(0, 0, 1080, 1080);
+
+  // Gold top border
+  const grad = ctx.createLinearGradient(0, 0, 1080, 0);
+  grad.addColorStop(0, 'transparent');
+  grad.addColorStop(0.5, '#d4a72c');
+  grad.addColorStop(1, 'transparent');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1080, 4);
+
+  // Card background
+  ctx.fillStyle = '#0e1622';
+  ctx.roundRect(60, 80, 960, 920, 24);
+  ctx.fill();
+
+  // Brand
+  ctx.fillStyle = '#d4a72c';
+  ctx.roundRect(80, 110, 52, 52, 12);
+  ctx.fill();
+  ctx.fillStyle = '#000';
+  ctx.font = 'bold 28px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('✦', 106, 143);
+
+  ctx.fillStyle = '#e8edf5';
+  ctx.font = 'bold 28px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('XAU', 148, 143);
+  ctx.fillStyle = '#d4a72c';
+  ctx.fillText('/USD', 198, 143);
+
+  // Frame label
+  ctx.fillStyle = '#6e7f99';
+  ctx.font = '26px monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText(frameLabel.toUpperCase() + ' ENTRY SIGNAL', 80, 230);
+
+  // Signal
+  const sigColor =
+    sig.badgeCls === 'bull' ? '#00d48f' :
+    sig.badgeCls === 'bear' ? '#ff4561' : '#d4a72c';
+  ctx.fillStyle = sigColor;
+  ctx.font = 'bold 72px sans-serif';
+  ctx.fillText(sig.sig, 80, 330);
+
+  // Direction
+  ctx.fillStyle = sigColor;
+  ctx.font = '32px monospace';
+  ctx.fillText(sig.dir, 80, 390);
+
+  // Divider
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(80, 430);
+  ctx.lineTo(1000, 430);
+  ctx.stroke();
+
+  // Reason (word wrap)
+  ctx.fillStyle = '#6e7f99';
+  ctx.font = '28px sans-serif';
+  const words = sig.reason.split(' ');
+  let line = '';
+  let y = 490;
+  for (const word of words) {
+    const test = line + word + ' ';
+    if (ctx.measureText(test).width > 880 && line !== '') {
+      ctx.fillText(line.trim(), 80, y);
+      line = word + ' ';
+      y += 42;
+    } else {
+      line = test;
+    }
+  }
+  if (line) ctx.fillText(line.trim(), 80, y);
+
+  // Confidence bar
+  const barY = 720;
+  ctx.fillStyle = '#121c2a';
+  ctx.roundRect(80, barY, 880, 16, 8);
+  ctx.fill();
+  const confColor =
+    sig.conf >= 75 ? '#00d48f' : sig.conf >= 55 ? '#d4a72c' : '#ff4561';
+  ctx.fillStyle = confColor;
+  ctx.roundRect(80, barY, 880 * (sig.conf / 100), 16, 8);
+  ctx.fill();
+
+  ctx.fillStyle = '#e8edf5';
+  ctx.font = 'bold 30px monospace';
+  ctx.fillText('Confidence: ' + sig.conf + '%', 80, 790);
+
+  // Live price
+  ctx.fillStyle = '#3a4a60';
+  ctx.font = '26px monospace';
+  ctx.fillText('XAU/USD  $' + fmtPrice(p.price), 80, 860);
+
+  // Timestamp
+  ctx.fillStyle = '#3a4a60';
+  ctx.font = '24px monospace';
+  ctx.fillText(new Date().toUTCString(), 80, 910);
+
+  // Disclaimer
+  ctx.fillStyle = '#3a4a60';
+  ctx.font = '22px sans-serif';
+  ctx.fillText('Not financial advice · xautracker.com', 80, 970);
+
+  // Share
+  canvas.toBlob(async (blob) => {
+    if (!blob) return;
+    const file = new File([blob], `xau-signal-${frameLabel}.png`, { type: 'image/png' });
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ files: [file], title: `XAU/USD ${frameLabel} Signal: ${sig.sig}` });
+    } else {
+      // Fallback: download
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `xau-signal-${frameLabel}.png`;
+      a.click();
+    }
+  }, 'image/png');
+}
 
   /* ══════════════════════════════════════════════════════════════
      RENDER GUARDS
@@ -701,6 +831,14 @@ const sig24h = sigs?.e24h.sig ?? '';
             <button className="tl-info-btn" onClick={() => openPopup(item.key)} aria-label={`${item.frame} details`}>
               <i className="fa-solid fa-circle-info" />
             </button>
+            <button
+  className="tl-info-btn"
+  onClick={() => shareSignal(item.frame, item.sig)}
+  aria-label={`Share ${item.frame} signal`}
+  title="Share as image"
+>
+  <i className="fa-solid fa-share-nodes" />
+</button>
           </div>
         ))}
       </div>
