@@ -761,9 +761,7 @@ export default function SignupPage() {
               </div>
             </div>
 
-            {/* ── FIX: reCAPTCHA renders here immediately on step 2 mount ── */}
            
-            )}
 
             {!otpSent ? (
               <>
