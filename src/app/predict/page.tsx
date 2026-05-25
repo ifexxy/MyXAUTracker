@@ -250,11 +250,6 @@ export default function PredictPage() {
   const [notifEnabled, setNotifEnabled] = useState(false);
   const prevSignalsRef = useRef<Record<string, string>>({});
   
-const sig10m = sigs?.e10m.sig ?? '';
-const sig1h  = sigs?.e1h.sig  ?? '';
-const sig4h  = sigs?.e4h.sig  ?? '';
-const sig24h = sigs?.e24h.sig ?? '';
-
   /* Restore saved notification preference */
   useEffect(() => {
     if (!mounted) return;
@@ -353,6 +348,11 @@ const sig24h = sigs?.e24h.sig ?? '';
     (userData.manualAccess && (!userData.manualAccessExpiresAt || new Date(userData.manualAccessExpiresAt).getTime() > now))
   ) : false;
   const accessExpired = user && userData && !hasAccess;
+
+const sig10m = sigs?.e10m.sig ?? '';
+const sig1h  = sigs?.e1h.sig  ?? '';
+const sig4h  = sigs?.e4h.sig  ?? '';
+const sig24h = sigs?.e24h.sig ?? '';
 
   /* ── Signal change notifications ── */
   useEffect(() => {
