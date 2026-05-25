@@ -580,10 +580,6 @@ const sig24h = sigs?.e24h.sig ?? '';
   ctx.font = '600 22px "Helvetica Neue", Arial, sans-serif';
   ctx.fillText(frameLabel.toUpperCase() + '  ·  ENTRY SIGNAL', PAD_L + 16, 72);
 
-  /* Signal text */
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '800 74px "Helvetica Neue", Arial, sans-serif';
-  ctx.fillText(sig.sig, PAD_L, 165);
 
   /* Direction — right aligned */
   ctx.fillStyle = sigColor;
