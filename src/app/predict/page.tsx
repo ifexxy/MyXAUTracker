@@ -387,7 +387,246 @@ useEffect(() => {
     (userData.manualAccess && (!userData.manualAccessExpiresAt || new Date(userData.manualAccessExpiresAt).getTime() > now))
   ) : false;
   const accessExpired = user && userData && !hasAccess;
+ const handleShare = async (id: string) => {
+    const sig = signals[id] || forecasts[id.replace('fc-', '')];
+    if (!sig || id === 'now') return;
 
+    const dir = sig.direction;
+    const W = 800, pad = 56;
+    const lineH = 30, smallH = 24, bigH = 42;
+    let y = pad;
+
+    const ctx = document.createElement('canvas').getContext('2d')!;
+    const measure = (txt: string, size: number, bold: boolean) => {
+      ctx.font = (bold ? 'bold ' : '') + size + 'px system-ui,-apple-system,sans-serif';
+      return ctx.measureText(txt).width;
+    };
+    const write = (txt: string, size: number, bold: boolean, color: string, x: number, yy: number) => {
+      ctx.font = (bold ? 'bold ' : '') + size + 'px system-ui,-apple-system,sans-serif';
+      ctx.fillStyle = color;
+      ctx.textBaseline = 'top';
+      ctx.fillText(txt, x, yy);
+    };
+    const wrap = (txt: string, size: number, bold: boolean, color: string, maxW: number, yy: number) => {
+      ctx.font = (bold ? 'bold ' : '') + size + 'px system-ui,-apple-system,sans-serif';
+      ctx.fillStyle = color;
+      ctx.textBaseline = 'top';
+      const words = txt.split(' ');
+      let line = '', ly = yy;
+      for (const w of words) {
+        const test = line ? line + ' ' + w : w;
+        if (ctx.measureText(test).width > maxW && line) {
+          ctx.fillText(line, pad, ly);
+          line = w; ly += size * 1.5;
+        } else { line = test; }
+      }
+      if (line) ctx.fillText(line, pad, ly);
+      return ly + size * 1.5;
+    };
+    const rrect = (x: number, yy: number, w: number, h: number, r: number) => {
+      ctx.beginPath();
+      ctx.moveTo(x+r, yy);
+      ctx.lineTo(x+w-r, yy);
+      ctx.quadraticCurveTo(x+w, yy, x+w, yy+r);
+      ctx.lineTo(x+w, yy+h-r);
+      ctx.quadraticCurveTo(x+w, yy+h, x+w-r, yy+h);
+      ctx.lineTo(x+r, yy+h);
+      ctx.quadraticCurveTo(x, yy+h, x, yy+h-r);
+      ctx.lineTo(x, yy+r);
+      ctx.quadraticCurveTo(x, yy, x+r, yy);
+      ctx.closePath();
+    };
+
+    /* ── Header ── */
+    // X badge
+    const bx = pad, by = y, bSize = 44;
+    const grad = ctx.createLinearGradient(bx, by, bx + bSize, by + bSize);
+    grad.addColorStop(0, '#c8962a'); grad.addColorStop(1, '#f0c040');
+    rrect(bx, by, bSize, bSize, 12); ctx.fillStyle = grad; ctx.fill();
+    write('X', 20, true, '#000', bx + 13, by + 10);
+    // XauTracker
+    const hx = bx + bSize + 14;
+    write('XauTracker', 18, true, '#f0f0f0', hx, by);
+    write('Gold Signal · ' + new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }), 13, false, '#888', hx, by + 24);
+    y += bSize + 28;
+
+    /* ── Divider ── */
+    const dgrd = ctx.createLinearGradient(pad, y, W - pad, y);
+    dgrd.addColorStop(0, 'rgba(200,150,42,0.4)');
+    dgrd.addColorStop(1, 'rgba(200,150,42,0.05)');
+    ctx.strokeStyle = dgrd;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad, y + 0.5); ctx.lineTo(W - pad, y + 0.5); ctx.stroke();
+    y += 24;
+
+    /* ── Frame label ── */
+    write(sig.timeframe + ' Entry Signal', 13, true, '#888', pad, y);
+    y += 22;
+
+    /* ── Signal text ── */
+    const sigTxt = dir === 'bull' ? 'ENTER LONG' : dir === 'bear' ? 'ENTER SHORT' : 'HOLD / FLAT';
+    write(sigTxt, 34, true, '#f0f0f0', pad, y);
+    y += 46;
+
+    /* ── Direction ── */
+    const dirColors: Record<string, string> = { bull: '#3dba72', bear: '#e05555', flat: '#c8962a' };
+    const dirTxts: Record<string, string> = { bull: 'Bullish · price expected to rise', bear: 'Bearish · price expected to fall', flat: 'Neutral · price expected to trade sideways' };
+    write(dirTxts[dir] || dirTxts.flat, 16, true, dirColors[dir] || '#666', pad, y);
+    y += 32;
+
+    /* ── Badge ── */
+    const badgeTxt = dir === 'bull' ? 'LONG' : dir === 'bear' ? 'SHORT' : 'FLAT';
+    const badgeCol = dirColors[dir] || '#666';
+    const badgeBg = dir === 'bull' ? '#0d2a1a' : dir === 'bear' ? '#2a0d0d' : '#241b08';
+    const bw = measure(badgeTxt, 13, true) + 28, bh = 26;
+    rrect(pad, y, bw, bh, 13); ctx.fillStyle = badgeBg; ctx.fill();
+    write(badgeTxt, 13, true, badgeCol, pad + 14, y + 5);
+    y += bh + 24;
+
+    /* ── Confidence ── */
+    write('Confidence', 14, false, '#888', pad, y);
+    const confW = measure(sig.confidence + '%', 16, true);
+    write(sig.confidence + '%', 16, true, '#f0f0f0', W - pad - confW, y);
+    y += 22;
+    // bar track
+    const barY = y, barH = 5;
+    rrect(pad, barY, W - 2 * pad, barH, 2.5); ctx.fillStyle = '#222'; ctx.fill();
+    const confColor = sig.confidence >= 75 ? '#3dba72' : sig.confidence >= 55 ? '#c8962a' : '#e05555';
+    const fillW = (W - 2 * pad) * sig.confidence / 100;
+    rrect(pad, barY, fillW, barH, 2.5); ctx.fillStyle = confColor; ctx.fill();
+    y += barH + 24;
+
+    /* ── Reason box ── */
+    const reason = (dir === 'bull'
+      ? 'Bullish momentum detected. Price expected to rise within the forecast window. ±1σ band: '
+      : dir === 'bear'
+        ? 'Bearish momentum detected. Price expected to fall within the forecast window. ±1σ band: '
+        : 'Low momentum / conflicting signals. Price expected to trade sideways. ±1σ band: ') + sig.band;
+    const boxPad = 14, boxR = 12;
+    // First measure the height
+    const tmpY = y;
+    ctx.font = '14px system-ui,-apple-system,sans-serif';
+    const words = reason.split(' ');
+    let line = '', lines = 1;
+    for (const w of words) {
+      const test = line ? line + ' ' + w : w;
+      if (ctx.measureText(test).width > W - 2 * pad - 2 * boxPad && line) {
+        lines++; line = w;
+      } else { line = test; }
+    }
+    const boxH = lines * 21 + 28;
+    // bg box
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    rrect(pad, tmpY, W - 2 * pad, boxH, boxR); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1; rrect(pad, tmpY, W - 2 * pad, boxH, boxR); ctx.stroke();
+    // text
+    wrap(reason, 14, false, '#888', W - 2 * pad - 2 * boxPad, tmpY + 14);
+    y = tmpY + boxH + 24;
+
+    /* ── Price / Change row ── */
+    // divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W - pad, y); ctx.stroke();
+    y += 18;
+
+    const priceTxt = '$' + fmtPrice(p.price);
+    write('XAU/USD Spot', 13, false, '#666', pad, y);
+    write(priceTxt, 22, true, '#f0f0f0', pad, y + 18);
+
+    const changeTxt = (isUp ? '+' : '') + (p.chp || 0).toFixed(2) + '%';
+    const chW = measure(changeTxt, 20, true);
+    write('Daily Change', 13, false, '#666', W - pad - chW, y);
+    write(changeTxt, 20, true, isUp ? '#3dba72' : '#e05555', W - pad - chW, y + 18);
+    y += 52;
+
+    /* ── Footer ── */
+    y += 16;
+    write('This signal is an algorithmic estimate · Not financial advice', 12, false, '#555', pad, y);
+    y += 18;
+    write('Generated by XauTracker · ' + new Date().toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }), 12, false, '#555', pad, y);
+    y += 30;
+
+    /* ── Render ── */
+    const H = y;
+    ctx.canvas.width = W; ctx.canvas.height = H;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0e0e0e';
+    ctx.fillRect(0, 0, W, H);
+    // Redraw everything (canvas cleared after resize)
+    y = pad;
+
+    // Re-render — re-execute the drawing steps
+    // Header
+    const bx2 = pad, by2 = y, bSize2 = 44;
+    const grad2 = ctx.createLinearGradient(bx2, by2, bx2 + bSize2, by2 + bSize2);
+    grad2.addColorStop(0, '#c8962a'); grad2.addColorStop(1, '#f0c040');
+    rrect(bx2, by2, bSize2, bSize2, 12); ctx.fillStyle = grad2; ctx.fill();
+    write('X', 20, true, '#000', bx2 + 13, by2 + 10);
+    write('XauTracker', 18, true, '#f0f0f0', bx2 + bSize2 + 14, by2);
+    write('Gold Signal · ' + new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }), 13, false, '#888', bx2 + bSize2 + 14, by2 + 24);
+    y += bSize2 + 28;
+
+    // Divider
+    const dgrd2 = ctx.createLinearGradient(pad, y, W - pad, y);
+    dgrd2.addColorStop(0, 'rgba(200,150,42,0.4)'); dgrd2.addColorStop(1, 'rgba(200,150,42,0.05)');
+    ctx.strokeStyle = dgrd2; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad, y + 0.5); ctx.lineTo(W - pad, y + 0.5); ctx.stroke();
+    y += 24;
+
+    // Frame
+    write(sig.timeframe + ' Entry Signal', 13, true, '#888', pad, y); y += 22;
+    // Signal
+    write(sigTxt, 34, true, '#f0f0f0', pad, y); y += 46;
+    // Direction
+    write(dirTxts[dir] || dirTxts.flat, 16, true, dirColors[dir] || '#666', pad, y); y += 32;
+    // Badge
+    rrect(pad, y, bw, bh, 13); ctx.fillStyle = badgeBg; ctx.fill();
+    write(badgeTxt, 13, true, badgeCol, pad + 14, y + 5);
+    y += bh + 24;
+    // Confidence
+    write('Confidence', 14, false, '#888', pad, y);
+    write(sig.confidence + '%', 16, true, '#f0f0f0', W - pad - measure(sig.confidence + '%', 16, true), y);
+    y += 22;
+    rrect(pad, y, W - 2 * pad, barH, 2.5); ctx.fillStyle = '#222'; ctx.fill();
+    rrect(pad, y, fillW, barH, 2.5); ctx.fillStyle = confColor; ctx.fill();
+    y += barH + 24;
+    // Reason
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    rrect(pad, y, W - 2 * pad, boxH, boxR); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1;
+    rrect(pad, y, W - 2 * pad, boxH, boxR); ctx.stroke();
+    wrap(reason, 14, false, '#888', W - 2 * pad - 2 * boxPad, y + 14);
+    y += boxH + 24;
+    // Price row divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W - pad, y); ctx.stroke();
+    y += 18;
+    write('XAU/USD Spot', 13, false, '#666', pad, y);
+    write('$' + fmtPrice(p.price), 22, true, '#f0f0f0', pad, y + 18);
+    write('Daily Change', 13, false, '#666', W - pad - measure(changeTxt, 20, true), y);
+    write(changeTxt, 20, true, isUp ? '#3dba72' : '#e05555', W - pad - measure(changeTxt, 20, true), y + 18);
+    y += 64;
+    // Footer
+    write('This signal is an algorithmic estimate · Not financial advice', 12, false, '#555', pad, y);
+    y += 18;
+    write('Generated by XauTracker · ' + new Date().toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }), 12, false, '#555', pad, y);
+
+    /* ── Share / Download ── */
+    ctx.canvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const fileName = `xautracker-${id}-signal.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
+      if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ title: `${sig.timeframe} Signal - XauTracker`, files: [file] }); } catch {}
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = fileName; a.click();
+        URL.revokeObjectURL(url);
+      }
+    });
 const sig10m = sigs?.e10m.sig ?? '';
 const sig1h  = sigs?.e1h.sig  ?? '';
 const sig4h  = sigs?.e4h.sig  ?? '';
