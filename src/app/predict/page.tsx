@@ -243,19 +243,22 @@ const prevSignalsRef = useRef<Record<string, string>>({});
   
   // Restore saved preference on mount
 useEffect(() => {
+  if (typeof window === 'undefined') return;
   const saved = localStorage.getItem('xau-notif');
-  if (saved === 'true' && Notification.permission === 'granted') {
+  if (saved === 'true' && 'Notification' in window && Notification.permission === 'granted') {
     setNotifEnabled(true);
   }
 }, []);
 
 // Save preference whenever it changes
 useEffect(() => {
+  if (typeof window === 'undefined') return;
   localStorage.setItem('xau-notif', String(notifEnabled));
 }, [notifEnabled]);
 
 // Watch for signal changes and fire notifications
 useEffect(() => {
+  if (typeof window === 'undefined') return;
   if (!sigs || !notifEnabled) return;
 
   const current: Record<string, string> = {
@@ -267,14 +270,12 @@ useEffect(() => {
 
   const prev = prevSignalsRef.current;
 
+  const isActionable = (s: string) =>
+    s.includes('LONG') || s.includes('SHORT') ||
+    s.includes('ENTER') || s.includes('NO SIGNAL');
+
   Object.entries(current).forEach(([frame, sig]) => {
     if (!prev[frame] || prev[frame] === sig) return;
-
-    // Only notify on meaningful direction changes, not noise
-    const isActionable = (s: string) =>
-      s.includes('LONG') || s.includes('SHORT') ||
-      s.includes('ENTER') || s.includes('NO SIGNAL');
-
     if (isActionable(sig) || isActionable(prev[frame])) {
       new Notification(`XAU/USD ${frame} Signal Changed`, {
         body: `${prev[frame]} → ${sig}`,
@@ -285,7 +286,7 @@ useEffect(() => {
   });
 
   prevSignalsRef.current = current;
-}, [sigs, notifEnabled]);
+}, [sigs, notifEnabled]);,
 
   const p = price || { price: 0, open: 0, high: 0, low: 0, bid: 0, ask: 0, ch: 0, chp: 0, source: '—' };
   const isUp = (p.ch || 0) >= 0;
@@ -360,7 +361,7 @@ useEffect(() => {
   }
   
   async function requestNotifPermission() {
-  if (!('Notification' in window)) {
+  if (typeof window === 'undefined' || !('Notification' in window)) {
     alert('Your browser does not support notifications.');
     return;
   }
