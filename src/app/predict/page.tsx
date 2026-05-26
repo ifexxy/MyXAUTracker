@@ -243,7 +243,7 @@ function BottomBanner() {
     <div
       style={{
         position: 'fixed',
-        bottom: 70, /* sits just above the bottom nav */
+        bottom: 0, /* sits just above the bottom nav */
         left: '50%',
         transform: 'translateX(-50%)',
         width: '100%',
@@ -260,7 +260,7 @@ function BottomBanner() {
         cursor: 'pointer',
         userSelect: 'none',
       }}
-      onClick={() => window.open('https://xautracker.com/bitcoin', '_blank')}
+      onClick={() => window.open('https://xautracker.com/predict/bitcoin', '_blank')}
     >
       {/* Left */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
