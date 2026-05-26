@@ -478,22 +478,21 @@ const sig24h = sigs?.e24h.sig ?? '';
   }
 
   /* ── Popup helpers ── */
-  function buildSignalPopup(frameLabel: string, sig: EntrySignal): PopupData {
+  function buildSignalPopup(frameLabel: string, sig: EntrySignal, fc: Forecast): PopupData {
     const isLong = sig.badgeCls === 'bull';
     const isShort = sig.badgeCls === 'bear';
     const entryP = p.price;
-    const atrVal = atr || 20;
     let sl: string | undefined;
     let tp1: string | undefined;
     let tp2: string | undefined;
     if (isLong) {
-      sl = '$' + fmtP(entryP - atrVal * 1.5);
-      tp1 = '$' + fmtP(entryP + atrVal * 2);
-      tp2 = '$' + fmtP(entryP + atrVal * 3);
+      sl = '$' + fmtP(fc.bandLow);
+      tp1 = '$' + fmtP(fc.target);
+      tp2 = '$' + fmtP(fc.bandHigh);
     } else if (isShort) {
-      sl = '$' + fmtP(entryP + atrVal * 1.5);
-      tp1 = '$' + fmtP(entryP - atrVal * 2);
-      tp2 = '$' + fmtP(entryP - atrVal * 3);
+      sl = '$' + fmtP(fc.bandHigh);
+      tp1 = '$' + fmtP(fc.target);
+      tp2 = '$' + fmtP(fc.bandLow);
     }
     return {
       kicker: frameLabel + ' entry signal',
@@ -525,10 +524,10 @@ const sig24h = sigs?.e24h.sig ?? '';
   function openPopup(key: string) {
     if (!pred || !sigs) return;
     let data: PopupData | null = null;
-    if      (key === '10m')     data = buildSignalPopup('10 min', sigs.e10m);
-    else if (key === '1h')      data = buildSignalPopup('1 hour', sigs.e1h);
-    else if (key === '4h')      data = buildSignalPopup('4 hour', sigs.e4h);
-    else if (key === '24h-sig') data = buildSignalPopup('24 hour', sigs.e24h);
+    if      (key === '10m')     data = buildSignalPopup('10 min', sigs.e10m, pred.f1h);
+    else if (key === '1h')      data = buildSignalPopup('1 hour', sigs.e1h, pred.f1h);
+    else if (key === '4h')      data = buildSignalPopup('4 hour', sigs.e4h, pred.f6h);
+    else if (key === '24h-sig') data = buildSignalPopup('24 hour', sigs.e24h, pred.f24h);
     else if (key === 'fc-1h')   data = buildFcPopup('1 hour', pred.f1h, p.price);
     else if (key === 'fc-6h')   data = buildFcPopup('6 hour', pred.f6h, p.price);
     else if (key === 'fc-24h')  data = buildFcPopup('24 hour', pred.f24h, p.price);
