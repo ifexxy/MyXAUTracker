@@ -8,8 +8,8 @@
   "theme_color": "#000000",
   "orientation": "portrait",
   "icons": [
-  { "src": "https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xuatracker-favicon.png", "sizes": "192x192", "type": "image/png" },
-  { "src": "https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png", "sizes": "512x512", "type": "image/png" },
-  { "src": "https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  { "src": "https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xuatracker-favicon-1.png", "sizes": "192x192", "type": "image/png" },
+  { "src": "https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xuatracker-favicon-1.png", "sizes": "512x512", "type": "image/png" },
+  { "src": "https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xuatracker-favicon-1.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
 ]
 }
