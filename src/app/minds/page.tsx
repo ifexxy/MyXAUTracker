@@ -68,7 +68,6 @@ export default function MindsPage() {
   const [avatarDataUrl, setAvatarDataUrl] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const feedRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const cooldownTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -80,6 +79,8 @@ export default function MindsPage() {
   const [hasMore, setHasMore] = useState(true);
   const [oldestDocSnap, setOldestDocSnap] = useState<any>(null);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [announceText, setAnnounceText] = useState('');
+  const [announceSending, setAnnounceSending] = useState(false);
   const unsubsRef = useRef<(() => void)[]>([]);
   const messagesRef = useRef<Message[]>([]);
 
@@ -125,7 +126,8 @@ export default function MindsPage() {
     // Announcements
     const unsubAnn = onSnapshot(
       query(collection(fb.db, 'chatAnnouncements'), where('pinned', '==', true), orderBy('createdAt', 'desc')),
-      snap => { const l: Announcement[] = []; snap.forEach(d => l.push({ id: d.id, ...d.data() } as Announcement)); setAnnouncements(l); }
+      snap => { const l: Announcement[] = []; snap.forEach(d => l.push({ id: d.id, ...d.data() } as Announcement)); setAnnouncements(l); },
+      (err) => console.error('Announcements listener error:', err)
     );
     unsubsRef.current.push(unsubAnn);
 
@@ -145,29 +147,36 @@ export default function MindsPage() {
   /* ─── messages: paginated + realtime ─── */
   const loadMessages = async (fb: any) => {
     setInitialLoading(true);
-    const q = query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'desc'), limit(20));
+    const q = query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'desc'), limit(10));
     const snap = await getDocs(q);
     const docs = snap.docs;
-    if (docs.length < 20) setHasMore(false);
+    if (docs.length < 10) setHasMore(false);
     setOldestDocSnap(docs.length > 0 ? docs[docs.length - 1] : null);
-    const msgs: Message[] = docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
+    const msgs: Message[] = docs.map(d => ({ id: d.id, ...d.data() } as Message));
     setMessages(msgs);
     messagesRef.current = msgs;
     setInitialLoading(false);
 
-    // Realtime listener for new messages after the last loaded
-    const lastTs = msgs.length > 0 ? msgs[msgs.length - 1].createdAt : null;
-    const listenQ = lastTs
-      ? query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'asc'), startAfter(lastTs))
-      : query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'asc'), limit(20));
+    // Realtime listener for new messages (newer than the first/newest)
+    const newestTs = msgs.length > 0 ? msgs[0].createdAt : null;
+    const listenQ = newestTs
+      ? query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'asc'), startAfter(newestTs))
+      : query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'asc'), limit(10));
     const unsub = onSnapshot(listenQ, (snap2) => {
-      const news: Message[] = [];
-      const current = messagesRef.current;
-      snap2.forEach(d => {
-        if (!current.find(m => m.id === d.id)) news.push({ id: d.id, ...d.data() } as Message);
+      const incoming: Message[] = [];
+      snap2.forEach(d => incoming.push({ id: d.id, ...d.data() } as Message));
+      if (!incoming.length) return;
+      incoming.reverse(); // newest first
+      setMessages(prev => {
+        const updated = [...prev];
+        incoming.forEach(msg => {
+          const idx = updated.findIndex(m => m.id === msg.id);
+          if (idx > -1) updated[idx] = msg;
+          else updated.unshift(msg);
+        });
+        return updated;
       });
-      if (news.length > 0) setMessages(prev => [...prev, ...news]);
-    });
+    }, (err) => console.error('Messages listener error:', err));
     unsubsRef.current.push(unsub);
   };
 
@@ -175,13 +184,13 @@ export default function MindsPage() {
     if (loadingMore || !hasMore || !oldestDocSnap || !fbRef.current) return;
     setLoadingMore(true);
     try {
-      const q = query(collection(fbRef.current.db, 'chatMessages'), orderBy('createdAt', 'desc'), startAfter(oldestDocSnap), limit(20));
+      const q = query(collection(fbRef.current.db, 'chatMessages'), orderBy('createdAt', 'desc'), startAfter(oldestDocSnap), limit(10));
       const snap = await getDocs(q);
       const docs = snap.docs;
-      if (docs.length < 20) setHasMore(false);
+      if (docs.length < 10) setHasMore(false);
       if (docs.length > 0) setOldestDocSnap(docs[docs.length - 1]);
-      const older = docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
-      setMessages(prev => [...older, ...prev]);
+      const older = docs.map(d => ({ id: d.id, ...d.data() } as Message));
+      setMessages(prev => [...prev, ...older]);
     } catch {}
     setLoadingMore(false);
   };
@@ -199,27 +208,7 @@ export default function MindsPage() {
     unsubsRef.current.push(() => window.removeEventListener('beforeunload', handleUnload));
   };
 
-  /* ─── scroll to bottom on new messages ─── */
-  const msgLenRef = useRef(messages.length);
-  useEffect(() => {
-    if (messages.length > msgLenRef.current) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-    msgLenRef.current = messages.length;
-  }, [messages.length]);
-
-  /* ─── infinite scroll (load more on scroll to top) ─── */
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const loadMoreRef = useRef(loadMore);
-  useEffect(() => { loadMoreRef.current = loadMore; });
-  useEffect(() => {
-    if (!sentinelRef.current || !hasMore || initialLoading) return;
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) loadMoreRef.current();
-    }, { rootMargin: '200px' });
-    obs.observe(sentinelRef.current);
-    return () => obs.disconnect();
-  }, [hasMore, initialLoading]);
+  /* ─── (removed: scroll-to-bottom + infinite scroll) ─── */
 
   /* ─── auto-expand textarea ─── */
   useEffect(() => {
@@ -289,10 +278,21 @@ export default function MindsPage() {
 
   const toggleReaction = async (msgId: string, emoji: string) => {
     if (!user) return;
+    // optimistic update
+    setMessages(prev => prev.map(m => {
+      if (m.id !== msgId) return m;
+      const r = { ...(m.reactions || {}) };
+      const list = [...(r[emoji] || [])];
+      const idx = list.indexOf(user.uid);
+      if (idx > -1) list.splice(idx, 1);
+      else list.push(user.uid);
+      if (list.length) r[emoji] = list;
+      else delete r[emoji];
+      return { ...m, reactions: r };
+    }));
     try {
       const fb = getFirebase();
-      const msgRef = doc(fb.db, 'chatMessages', msgId);
-      const msgSnap = await getDoc(msgRef);
+      const msgSnap = await getDoc(doc(fb.db, 'chatMessages', msgId));
       if (!msgSnap.exists()) return;
       const data = msgSnap.data();
       const reactions = { ...(data.reactions || {}) };
@@ -302,8 +302,23 @@ export default function MindsPage() {
       else list.push(user.uid);
       if (list.length) reactions[emoji] = list;
       else delete reactions[emoji];
-      await updateDoc(msgRef, { reactions });
-    } catch {}
+      await updateDoc(doc(fb.db, 'chatMessages', msgId), { reactions });
+    } catch (e) { console.error('Reaction error:', e); }
+  };
+
+  console.log('Minds: user email =', user?.email, 'isAdmin =', user?.email?.toLowerCase() === 'ifexxy9@gmail.com');
+
+  const postAnnouncement = async () => {
+    const text = announceText.trim();
+    if (!text || announceSending || !user) return;
+    setAnnounceSending(true);
+    try {
+      const fb = getFirebase();
+      await addDoc(collection(fb.db, 'chatAnnouncements'), { text, pinned: true, createdAt: serverTimestamp(), createdBy: user.uid });
+      setAnnounceText('');
+      showToast('Announcement posted');
+    } catch (e) { console.error(e); showToast('Failed to post announcement'); }
+    setAnnounceSending(false);
   };
 
   useEffect(() => {
@@ -397,6 +412,20 @@ export default function MindsPage() {
       {/* ═══════ CHAT ═══════ */}
       {screen === 'chat' && (
         <div style={{ padding: '0 16px' }}>
+          {/* ── Admin announcement composer ── */}
+          {user?.email?.toLowerCase() === 'ifexxy9@gmail.com' && (
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
+              <input type="text" value={announceText} onChange={e => setAnnounceText(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); postAnnouncement(); } }}
+                placeholder="Write an announcement…" maxLength={500}
+                style={{ flex: 1, background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--ink)', fontSize: 13, padding: '9px 12px', outline: 'none' }} />
+              <button onClick={postAnnouncement} disabled={announceSending || !announceText.trim()}
+                style={{ padding: '9px 14px', background: 'var(--gold)', color: '#000', border: 'none', borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', opacity: announceSending || !announceText.trim() ? 0.4 : 1, whiteSpace: 'nowrap' }}>
+                {announceSending ? 'Posting…' : 'Post'}
+              </button>
+            </div>
+          )}
+
           {/* ── Announcements ── */}
           {announcements.map(a => (
             <div key={a.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 16px', marginBottom: 12, background: 'var(--gold-bg)', border: '1px solid rgba(200,150,42,0.2)', borderRadius: 12, fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
@@ -453,9 +482,7 @@ export default function MindsPage() {
 
           {/* ── Messages ── */}
           <div ref={feedRef} style={{ paddingBottom: 20 }}>
-            {/* Sentinel for infinite scroll */}
-            <div ref={sentinelRef} style={{ height: 1 }} />
-            {/* Load more button (manual fallback) */}
+            {/* Load more button */}
             {hasMore && !initialLoading && (
               <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
                 <button onClick={loadMore} disabled={loadingMore} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 10, padding: '8px 20px', fontSize: 12, color: 'var(--ink-3)', cursor: 'pointer', fontWeight: 600 }}>
@@ -528,7 +555,6 @@ export default function MindsPage() {
                 );
               })
             )}
-            <div ref={bottomRef} />
           </div>
         </div>
       )}
