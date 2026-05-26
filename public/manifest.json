@@ -1,0 +1,15 @@
+{
+  "name": "XauTracker - Gold Price Forecast",
+  "short_name": "XauTracker",
+  "description": "Real-time XAU/USD gold price predictions, entry signals, and market analysis.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" },
+    { "src": "/icon.svg", "sizes": "512x512", "type": "image/svg+xml" },
+    { "src": "/icon.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
