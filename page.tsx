@@ -324,6 +324,8 @@ export default function MindsPage() {
     } catch (e) { console.error('Reaction error:', e); }
   };
 
+  console.log('Minds: user email =', user?.email, 'isAdmin =', user?.email?.toLowerCase() === 'ifexxy9@gmail.com');
+
   const postAnnouncement = async () => {
     const text = announceText.trim();
     if (!text || announceSending || !user) return;
@@ -429,7 +431,7 @@ export default function MindsPage() {
       {screen === 'chat' && (
         <div style={{ padding: '0 16px' }}>
           {/* ── Admin announcement composer ── */}
-          {user?.email === 'ifexxy9@gmail.com' && (
+          {user?.email?.toLowerCase() === 'ifexxy9@gmail.com' && (
             <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
               <input type="text" value={announceText} onChange={e => setAnnounceText(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); postAnnouncement(); } }}
