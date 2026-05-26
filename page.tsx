@@ -3,584 +3,1298 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useGoldPrice } from '@/contexts/GoldPriceContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { fmtPrice, fmtChange } from '@/lib/api';
 import { getFirebase } from '@/lib/firebase';
-import {
-  doc, getDoc, setDoc, addDoc, collection, query, orderBy, limit,
-  onSnapshot, serverTimestamp, where, getDocs, startAfter,
-  updateDoc, deleteDoc, getCountFromServer
-} from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { showToast } from '@/components/Toast';
-import Footer from '@/components/Footer';
+import { doc, getDoc } from 'firebase/firestore';
+import type { UserData } from '@/types';
 
-/* ─── types ─── */
-interface ChatProfile { username: string; photoURL: string | null; }
-interface ReplyTo { id: string; username: string; text: string; }
-interface Message {
-  id: string; uid: string; username: string; photoURL: string | null;
-  text: string; createdAt: any;
-  reactions?: Record<string, string[]>;
-  replyTo?: ReplyTo | null;
-}
-interface Announcement {
-  id: string; text: string; createdAt: any; pinned: boolean; createdBy: string;
+/* ══════════════════════════════════════════════════════════════
+   MARKET SESSION
+══════════════════════════════════════════════════════════════ */
+function getSessionInfo() {
+  const h = new Date().getUTCHours();
+  const asian = h >= 0 && h < 8;
+  const london = h >= 7 && h < 16;
+  const ny = h >= 13 && h < 21;
+  const overlap = london && ny;
+  let sessionMultiplier = 0.55, volLabel = 'MINIMAL', sessionLabel = 'Off-Hours';
+  if (overlap)      { sessionMultiplier = 1.35; volLabel = 'PEAK';   sessionLabel = 'London + NY Overlap'; }
+  else if (ny)      { sessionMultiplier = 1.20; volLabel = 'HIGH';   sessionLabel = 'New York'; }
+  else if (london)  { sessionMultiplier = 1.10; volLabel = 'MEDIUM'; sessionLabel = 'London'; }
+  else if (asian)   { sessionMultiplier = 0.70; volLabel = 'LOW';    sessionLabel = 'Asian'; }
+  return { asian, london, ny, overlap, sessionMultiplier, volLabel, sessionLabel };
 }
 
-/* ─── helpers ─── */
-function timeAgo(date: any): string {
-  if (!date) return '';
-  const ms = date?.toMillis?.() ?? date?.seconds * 1000 ?? date;
-  const sec = Math.floor((Date.now() - ms) / 1000);
-  if (sec < 10) return 'just now';
-  if (sec < 60) return sec + 's ago';
-  const min = Math.floor(sec / 60);
-  if (min < 60) return min + 'm ago';
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return hr + 'h ago';
-  const d = Math.floor(hr / 24);
-  return d + 'd ago';
+/* ══════════════════════════════════════════════════════════════
+   ATR ESTIMATOR
+══════════════════════════════════════════════════════════════ */
+function estimateATR(high: number, low: number, price: number, chp: number) {
+  const intradayRange = high - low;
+  const changeRange = Math.abs(chp / 100 * price) * 2;
+  return Math.min(Math.max(Math.max(intradayRange, changeRange), 10), 80);
 }
 
-function avatarColor(username: string) {
-  const pal = ['#d4a72c','#00d48f','#a080ff','#ff6b35','#00b4d8','#ff4561'];
-  return pal[(username.charCodeAt(0) || 0) % pal.length];
+/* ══════════════════════════════════════════════════════════════
+   TYPES
+══════════════════════════════════════════════════════════════ */
+interface SessionInfo {
+  asian: boolean; london: boolean; ny: boolean; overlap: boolean;
+  sessionMultiplier: number; volLabel: string; sessionLabel: string;
 }
 
-function linkify(raw: string) {
-  const esc = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return esc.replace(/(https?:\/\/[^\s<>"']+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer" style="color:var(--gold);text-decoration:underline">$1</a>');
+interface Forecast {
+  target: number; bandLow: number; bandHigh: number; conf: number; sigma: number;
 }
 
-const EMOJIS = ['👍', '🔥', '❤️', '😂', '😮'];
+interface Predictions {
+  atr: number; session: SessionInfo; mrStrength: number; effectiveDrift: number;
+  f1h: Forecast; f6h: Forecast; f24h: Forecast;
+}
 
-/* ─── component ─── */
-export default function MindsPage() {
-  const { user } = useAuth();
-  const [screen, setScreen] = useState<'loading'|'access-wall'|'setup'|'chat'>('loading');
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [messageCount, setMessageCount] = useState(0);
-  const [composeText, setComposeText] = useState('');
-  const [sending, setSending] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
-  const [setupName, setSetupName] = useState('');
-  const [setupErr, setSetupErr] = useState('');
-  const [setupLoading, setSetupLoading] = useState(false);
-  const [avatarDataUrl, setAvatarDataUrl] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const feedRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const cooldownTimer = useRef<NodeJS.Timeout | null>(null);
+interface EntrySignal {
+  sig: string; dir: string; reason: string; conf: number;
+  badgeTxt: string; badgeCls: 'bull' | 'bear' | 'flat' | 'wait';
+}
 
-  /* new state */
-  const [replyTo, setReplyTo] = useState<ReplyTo | null>(null);
-  const [onlineCount, setOnlineCount] = useState(0);
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [oldestDocSnap, setOldestDocSnap] = useState<any>(null);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [announceText, setAnnounceText] = useState('');
-  const [announceSending, setAnnounceSending] = useState(false);
-  const unsubsRef = useRef<(() => void)[]>([]);
-  const messagesRef = useRef<Message[]>([]);
+interface EntrySignals {
+  e10m: EntrySignal; e1h: EntrySignal; e4h: EntrySignal; e24h: EntrySignal;
+}
 
-  /* keep messagesRef in sync */
-  useEffect(() => { messagesRef.current = messages; }, [messages]);
+interface PopupData {
+  kicker: string; signal: string; dir: string; dirColor: string;
+  reason: string; conf: string; range: string | null;
+  entryPrice?: string; sl?: string; tp1?: string; tp2?: string;
+}
 
-  /* ─── Auth + access ─── */
-  const fbRef = useRef<any>(null);
+/* ══════════════════════════════════════════════════════════════
+   CORE PREDICTION ENGINE
+══════════════════════════════════════════════════════════════ */
+function buildPredictions(price: number, chp: number, high: number, low: number): Predictions {
+  const atr = estimateATR(high, low, price, chp);
+  const session = getSessionInfo();
+  const dailyMomentumDollar = (chp / 100) * price;
+  const hourlyDrift = dailyMomentumDollar / 24;
+  const movePct = Math.abs(chp);
+  const mrStrength = Math.min(movePct / 3.0, 0.80);
+  const effectiveDrift = hourlyDrift * (1 - mrStrength * 0.6);
+
+  function sigma(minutes: number) {
+    return atr * Math.sqrt(minutes / 1440) * session.sessionMultiplier;
+  }
+
+  function forecast(minutes: number): Forecast {
+    const s = sigma(minutes);
+    const drift = effectiveDrift * (minutes / 60);
+    const noise = s * (Math.random() * 0.5 - 0.25);
+    const target = parseFloat((price + drift + noise).toFixed(2));
+    const bandLow = parseFloat((target - s).toFixed(2));
+    const bandHigh = parseFloat((target + s).toFixed(2));
+    const baseConf = Math.max(30, 96 - (minutes / 1440) * 55);
+    const volPenalty = Math.min((atr - 20) / 2, 15);
+    const conf = Math.round(Math.max(28, baseConf - volPenalty));
+    return { target, bandLow, bandHigh, conf, sigma: s };
+  }
+
+  return {
+    atr, session, mrStrength, effectiveDrift,
+    f1h: forecast(60), f6h: forecast(360), f24h: forecast(1440),
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ENTRY SIGNAL ENGINE
+══════════════════════════════════════════════════════════════ */
+function computeEntrySignals(
+  price: number, chp: number, high: number, low: number,
+  atr: number, sess: SessionInfo
+): EntrySignals {
+  const isUp = chp >= 0;
+  const absMom = Math.abs(chp);
+  const rangePos = (price - low) / Math.max(high - low, 0.01);
+  const pseudoRSI = rangePos * 100;
+  const momStrong = absMom >= 0.5;
+  const momMod = absMom >= 0.2 && absMom < 0.5;
+  const overbought = pseudoRSI > 72;
+  const oversold = pseudoRSI < 28;
+  const neutral = !overbought && !oversold;
+  const highVol = atr > 35;
+  const poorSess = !(sess.overlap || sess.ny || sess.london);
+
+  function mk(sig: string, dir: string, reason: string, conf: number, bTxt: string): EntrySignal {
+    const badgeCls: EntrySignal['badgeCls'] =
+      bTxt === 'LONG'  ? 'bull' :
+      bTxt === 'SHORT' ? 'bear' :
+      bTxt === 'FLAT'  ? 'flat' : 'wait';
+    return { sig, dir, reason, conf, badgeTxt: bTxt, badgeCls };
+  }
+
+  let e10m: EntrySignal;
+  if (poorSess)
+    e10m = mk('WAIT', 'Low liquidity', `Asian/off-hours session. Poor conditions. ATR: $${atr.toFixed(2)}`, 35, 'WAIT');
+  else if (momStrong && isUp && !overbought)
+    e10m = mk('ENTER LONG', `Bullish · +${absMom.toFixed(2)}% momentum`, `Strong momentum, not overbought (RSI≈${pseudoRSI.toFixed(0)}). 10m long scalp setup.`, highVol ? 65 : 74, 'LONG');
+  else if (momStrong && !isUp && !oversold)
+    e10m = mk('ENTER SHORT', `Bearish · ${chp.toFixed(2)}% momentum`, `Strong downward momentum, not oversold (RSI≈${pseudoRSI.toFixed(0)}). 10m short scalp setup.`, highVol ? 65 : 74, 'SHORT');
+  else if (overbought && isUp)
+    e10m = mk('CAUTION', 'Overbought — scalp risk high', `Price at day high (RSI≈${pseudoRSI.toFixed(0)}). 10m longs risk a sharp reversal.`, 45, 'WAIT');
+  else if (oversold && !isUp)
+    e10m = mk('CAUTION', 'Oversold — scalp risk high', `Price at day low (RSI≈${pseudoRSI.toFixed(0)}). 10m shorts risk a snap-back.`, 45, 'WAIT');
+  else if (momMod && neutral)
+    e10m = mk(isUp ? 'ENTER LONG' : 'ENTER SHORT', `Mild ${isUp ? 'bullish' : 'bearish'} · ${isUp ? '+' : ''}${chp.toFixed(2)}%`, `Moderate momentum, neutral range. Acceptable 10m scalp.`, 58, isUp ? 'LONG' : 'SHORT');
+  else
+    e10m = mk('NO SIGNAL', 'Momentum too weak', 'Insufficient conviction for a 10m trade.', 36, 'SKIP');
+
+  let e1h: EntrySignal;
+  if (poorSess)
+    e1h = mk('WAIT', 'Low liquidity — avoid 1h entries', `Asian/off-hours reduces follow-through. ATR: $${atr.toFixed(2)}`, 38, 'WAIT');
+  else if (momStrong && isUp && !overbought)
+    e1h = mk('ENTER LONG', `Bullish · +${absMom.toFixed(2)}% confirmed`, `Strong upward momentum, not overbought (RSI≈${pseudoRSI.toFixed(0)}). Good 1h long setup.`, highVol ? 70 : 78, 'LONG');
+  else if (momStrong && !isUp && !oversold)
+    e1h = mk('ENTER SHORT', `Bearish · ${chp.toFixed(2)}% confirmed`, `Strong downward momentum, not oversold (RSI≈${pseudoRSI.toFixed(0)}). Good 1h short setup.`, highVol ? 70 : 78, 'SHORT');
+  else if (momStrong && isUp && overbought)
+    e1h = mk('CAUTION', 'Bullish but overbought', `Price near day high (RSI≈${pseudoRSI.toFixed(0)}). Wait for pullback before 1h long.`, 52, 'WAIT');
+  else if (momStrong && !isUp && oversold)
+    e1h = mk('CAUTION', 'Bearish but oversold', `Price near day low (RSI≈${pseudoRSI.toFixed(0)}). Risk of snap-back on 1h.`, 52, 'WAIT');
+  else if (momMod && isUp && neutral)
+    e1h = mk('ENTER LONG', `Mild bullish · +${absMom.toFixed(2)}% · neutral RSI`, `Moderate upward move, neutral range. Acceptable 1h long.`, 62, 'LONG');
+  else if (momMod && !isUp && neutral)
+    e1h = mk('ENTER SHORT', `Mild bearish · ${chp.toFixed(2)}% · neutral RSI`, `Moderate downward move, neutral range. Acceptable 1h short.`, 62, 'SHORT');
+  else
+    e1h = mk('NO SIGNAL', 'Momentum too weak for 1h trade', 'Weak momentum or conflicting signals.', 40, 'SKIP');
+
+  const strongBull4h = absMom >= 0.4 && isUp && !overbought;
+  const strongBear4h = absMom >= 0.4 && !isUp && !oversold;
+  let e4h: EntrySignal;
+  if (strongBull4h)
+    e4h = mk('ENTER LONG', `Bullish · +${absMom.toFixed(2)}% · room to run`, `Momentum strong for 4h trade. Not overbought (RSI≈${pseudoRSI.toFixed(0)}).`, sess.overlap ? 82 : sess.ny ? 78 : 70, 'LONG');
+  else if (strongBear4h)
+    e4h = mk('ENTER SHORT', `Bearish · ${chp.toFixed(2)}% · room to fall`, `Momentum strong for 4h trade. Not oversold (RSI≈${pseudoRSI.toFixed(0)}).`, sess.overlap ? 82 : sess.ny ? 78 : 70, 'SHORT');
+  else if (oversold && absMom < 0.6)
+    e4h = mk('REVERSAL LONG', `Oversold bounce · RSI≈${pseudoRSI.toFixed(0)}`, 'Price near day low, declining momentum. Counter-trend 4h long possible. High risk.', 58, 'LONG');
+  else if (overbought && absMom < 0.6)
+    e4h = mk('REVERSAL SHORT', `Overbought fade · RSI≈${pseudoRSI.toFixed(0)}`, 'Price near day high, weakening momentum. Counter-trend 4h short possible. High risk.', 58, 'SHORT');
+  else if (absMom >= 0.4 && isUp && overbought)
+    e4h = mk('WAIT', 'Bullish but overextended', `+${absMom.toFixed(2)}% already baked in. RSI≈${pseudoRSI.toFixed(0)}. Wait for 4h pullback.`, 48, 'WAIT');
+  else if (absMom >= 0.4 && !isUp && oversold)
+    e4h = mk('WAIT', 'Bearish but oversold', `${chp.toFixed(2)}% drop extended. RSI≈${pseudoRSI.toFixed(0)}. Risk of snap-back.`, 48, 'WAIT');
+  else
+    e4h = mk('NO SIGNAL', 'Insufficient momentum for 4h trade', 'No clear 4h entry setup.', 35, 'SKIP');
+
+  const trendBull = absMom >= 0.6 && isUp && rangePos > 0.45 && rangePos < 0.88;
+  const trendBear = absMom >= 0.6 && !isUp && rangePos < 0.55 && rangePos > 0.12;
+  let e24h: EntrySignal;
+  if (trendBull)
+    e24h = mk('ENTER LONG', `Strong bullish trend · +${absMom.toFixed(2)}%`, 'Strong momentum in mid-range. Good daily long setup.', highVol ? 72 : 80, 'LONG');
+  else if (trendBear)
+    e24h = mk('ENTER SHORT', `Strong bearish trend · ${chp.toFixed(2)}%`, 'Strong momentum in mid-range. Good daily short setup.', highVol ? 72 : 80, 'SHORT');
+  else if (pseudoRSI < 20 && absMom < 1.0)
+    e24h = mk('LONG (REVERSAL)', `Extreme oversold · RSI≈${pseudoRSI.toFixed(0)}`, 'Price at extreme low. Mean reversion setup for daily long.', 60, 'LONG');
+  else if (pseudoRSI > 80 && absMom < 1.0)
+    e24h = mk('SHORT (REVERSAL)', `Extreme overbought · RSI≈${pseudoRSI.toFixed(0)}`, 'Price at extreme high. Mean reversion setup for daily short.', 60, 'SHORT');
+  else if (absMom >= 0.6 && isUp && overbought)
+    e24h = mk('WAIT', 'Bullish but 24h overextended', 'Move already extended. Wait for a healthier entry.', 45, 'WAIT');
+  else if (absMom >= 0.6 && !isUp && oversold)
+    e24h = mk('WAIT', 'Bearish but 24h overextended', 'Drop already extended. Risk of reversal.', 45, 'WAIT');
+  else
+    e24h = mk('NO SIGNAL', 'No clear daily trend', 'Insufficient conviction for a 24h trade.', 32, 'SKIP');
+
+  return { e10m, e1h, e4h, e24h };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MARKET SIGNAL
+══════════════════════════════════════════════════════════════ */
+function computeMarketSignal(chp: number, isUp: boolean) {
+  const extendedMove = Math.abs(chp) > 1.5;
+  const rng = 0.3 + Math.random() * 0.4;
+  let buy: number, hold: number, sell: number;
+  if (extendedMove) {
+    if (isUp) { buy = Math.round(30 + rng * 15); sell = Math.round(20 + rng * 15); }
+    else       { sell = Math.round(30 + rng * 15); buy = Math.round(20 + rng * 15); }
+    hold = 100 - buy - sell;
+  } else {
+    if (isUp) { buy = Math.round(45 + rng * 20); hold = Math.round((100 - buy) * 0.55); sell = 100 - buy - hold; }
+    else       { sell = Math.round(45 + rng * 20); hold = Math.round((100 - sell) * 0.55); buy = 100 - sell - hold; }
+  }
+  buy = Math.max(buy, 5); sell = Math.max(sell, 5); hold = Math.max(100 - buy - sell, 5);
+  return { buy, hold, sell };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════════════════ */
+function fmtD(v: number) { return (v >= 0 ? '+' : '') + v.toFixed(2); }
+function fmtP(v: number) {
+  return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MAIN COMPONENT
+══════════════════════════════════════════════════════════════ */
+/* ── Adjustable banner height here ── */
+const BANNER_HEIGHT = 56;
+
+function BottomBanner() {
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 0, /* sits just above the bottom nav */
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '100%',
+        maxWidth: 480,
+        height: BANNER_HEIGHT,
+        background: dark ? '#111827' : '#f1f5f9',
+        borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+        borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 20px',
+        zIndex: 99,
+        cursor: 'pointer',
+        userSelect: 'none',
+      }}
+      onClick={() => window.open('https://xautracker.com/predict/bitcoin', '_blank')}
+    >
+      {/* Left */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 8,
+            background: dark ? 'rgba(247,147,26,0.15)' : 'rgba(247,147,26,0.12)',
+            border: '1px solid rgba(247,147,26,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 15,
+            flexShrink: 0,
+          }}
+        >
+          ₿
+        </div>
+        <span
+          style={{
+            fontSize: 14,
+            fontWeight: 700,
+            color: dark ? '#ffffff' : '#0f172a',
+            fontFamily: 'inherit',
+          }}
+        >
+          Trade Bitcoin?
+        </span>
+      </div>
+
+      {/* Right */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          fontSize: 13,
+          fontWeight: 600,
+          color: dark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.45)',
+          fontFamily: 'inherit',
+          flexShrink: 0,
+        }}
+      >
+        Click to see Analysis
+        <i
+          className="fa-solid fa-arrow-right"
+          style={{
+            fontSize: 11,
+            color: dark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.45)',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default function PredictPage() {
+  /* ── mounted guard — nothing browser-specific runs on the server ── */
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  const { user, loading: authLoading, signOut } = useAuth();
+  const { price, loading: priceLoading } = useGoldPrice();
+  const { theme } = useTheme();
+  const tvRef = useRef<HTMLDivElement>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [howToOpen, setHowToOpen] = useState(false);
+  const [activePopup, setActivePopup] = useState<string | null>(null);
+  const [popupStore, setPopupStore] = useState<Record<string, PopupData>>({});
+
+  /* ── Notifications ── */
+  const [notifEnabled, setNotifEnabled] = useState(false);
+  const prevSignalsRef = useRef<Record<string, string>>({});
+  
+  /* Restore saved notification preference */
   useEffect(() => {
-    if (user === undefined) return;
-    if (!user) { setScreen('access-wall'); return; }
+    if (!mounted) return;
+    try {
+      const saved = localStorage.getItem('xau-notif');
+      if (saved === 'true' && 'Notification' in window && Notification.permission === 'granted') {
+        setNotifEnabled(true);
+      }
+    } catch {}
+  }, [mounted]);
+
+  /* Save notification preference */
+  useEffect(() => {
+    if (!mounted) return;
+    try {
+      localStorage.setItem('xau-notif', String(notifEnabled));
+    } catch {}
+  }, [notifEnabled, mounted]);
+
+  /* User data */
+  useEffect(() => {
+    if (!user) { setUserData(null); return; }
     (async () => {
       try {
         const fb = getFirebase();
-        fbRef.current = fb;
         const snap = await getDoc(doc(fb.db, 'users', user.uid));
-        const d = snap.data();
-        const now = Date.now();
-        const hasAccess = d ? (
-          (d.trialEndsAt && new Date(d.trialEndsAt).getTime() > now) ||
-          (d.subscriptionStatus === 'active' && d.currentPeriodEnd && new Date(d.currentPeriodEnd).getTime() > now) ||
-          (d.manualAccess === true && (!d.manualAccessExpiresAt || new Date(d.manualAccessExpiresAt).getTime() > now))
-        ) : false;
-        if (!hasAccess) { setScreen('access-wall'); return; }
-        const profileSnap = await getDoc(doc(fb.db, 'chatProfiles', user.uid));
-        if (profileSnap.exists()) {
-          setScreen('chat');
-        } else {
-          setScreen('setup');
-        }
-      } catch { setScreen('access-wall'); }
+        if (snap.exists()) setUserData(snap.data() as UserData);
+      } catch {}
     })();
   }, [user]);
 
-  /* ─── init chat when screen becomes 'chat' ─── */
+  /* TradingView widget */
   useEffect(() => {
-    if (screen !== 'chat' || !fbRef.current) return;
-    const fb = fbRef.current;
+    if (!mounted || !tvRef.current) return;
+    tvRef.current.innerHTML = '';
+    const script = document.createElement('script');
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+    script.async = true;
+    script.innerHTML = JSON.stringify({
+      autosize: true, symbol: 'OANDA:XAUUSD', interval: '60',
+      timezone: 'Etc/UTC', theme: theme === 'dark' ? 'dark' : 'light',
+      style: '1', locale: 'en',
+      backgroundColor: theme === 'dark' ? '#0e0e0e' : '#ffffff',
+      gridColor: theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+      hide_top_toolbar: false, hide_legend: false, save_image: false,
+      calendar: false, hide_volume: false,
+      support_host: 'https://www.tradingview.com',
+    });
+    tvRef.current.appendChild(script);
+  }, [theme, mounted]);
 
-    // Count
-    getCountFromServer(collection(fb.db, 'chatMessages')).then(snap => setMessageCount(snap.data().count)).catch(() => {});
+  /* ── Derived values ── */
+  const p = price || { price: 0, open: 0, high: 0, low: 0, bid: 0, ask: 0, ch: 0, chp: 0, source: '—' };
+  const isUp = (p.ch || 0) >= 0;
+  const session = getSessionInfo();
 
-    // Announcements
-    const unsubAnn = onSnapshot(
-      query(collection(fb.db, 'chatAnnouncements'), where('pinned', '==', true), orderBy('createdAt', 'desc')),
-      snap => { const l: Announcement[] = []; snap.forEach(d => l.push({ id: d.id, ...d.data() } as Announcement)); setAnnouncements(l); },
-      (err) => console.error('Announcements listener error:', err)
-    );
-    unsubsRef.current.push(unsubAnn);
+  const pred = p.price > 0
+    ? buildPredictions(p.price, p.chp || 0, p.high || p.price, p.low || p.price)
+    : null;
 
-    // Messages: initial fetch + realtime listener
-    loadMessages(fb);
+  const atr = pred?.atr ?? 0;
+  const mrStrength = pred?.mrStrength ?? 0;
 
-    // Presence
-    trackPresence(fb);
+  const sigs = pred
+    ? computeEntrySignals(p.price, p.chp || 0, p.high || p.price, p.low || p.price, atr, session)
+    : null;
 
-    return () => {
-      unsubsRef.current.forEach(fn => fn());
-      unsubsRef.current = [];
-      if (user) deleteDoc(doc(fb.db, 'chatOnline', user.uid)).catch(() => {});
-    };
-  }, [screen]);
+  const marketSignal = p.price > 0
+    ? computeMarketSignal(p.chp || 0, isUp)
+    : { buy: 0, hold: 0, sell: 0 };
 
-  /* ─── messages: paginated + realtime ─── */
-  const loadMessages = async (fb: any) => {
-    setInitialLoading(true);
-    const q = query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'desc'), limit(20));
-    const snap = await getDocs(q);
-    const docs = snap.docs;
-    if (docs.length < 20) setHasMore(false);
-    setOldestDocSnap(docs.length > 0 ? docs[docs.length - 1] : null);
-    const msgs: Message[] = docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
-    setMessages(msgs);
-    messagesRef.current = msgs;
-    setInitialLoading(false);
+  const score = marketSignal.buy - marketSignal.sell;
+  const [sentimentEmoji, sentimentText] =
+    score > 25  ? ['🟢', 'BULLISH'] :
+    score > 10  ? ['🔼', 'MILDLY BULLISH'] :
+    score > -10 ? ['⚖️', 'NEUTRAL'] :
+    score > -25 ? ['🔽', 'MILDLY BEARISH'] :
+                  ['🔴', 'BEARISH'];
 
-    // Realtime listener for new messages after the last loaded
-    const lastTs = msgs.length > 0 ? msgs[msgs.length - 1].createdAt : null;
-    const listenQ = lastTs
-      ? query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'asc'), startAfter(lastTs))
-      : query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'asc'), limit(20));
-    const unsub = onSnapshot(listenQ, (snap2) => {
-      setMessages(prev => {
-        const updated = [...prev];
-        snap2.forEach(d => {
-          const msg = { id: d.id, ...d.data() } as Message;
-          const idx = updated.findIndex(m => m.id === d.id);
-          if (idx > -1) updated[idx] = msg;
-          else updated.push(msg);
-        });
-        return updated;
+  const pivot = ((p.high || p.price) + (p.low || p.price) + p.price) / 3;
+  const r1 = 2 * pivot - (p.low || p.price);
+  const r2 = pivot + ((p.high || p.price) - (p.low || p.price));
+  const s1 = 2 * pivot - (p.high || p.price);
+  const s2 = pivot - ((p.high || p.price) - (p.low || p.price));
+
+  const atrCat = atr < 20 ? 'LOW' : atr < 35 ? 'NORMAL' : 'HIGH';
+  const intradayRange = (p.high || 0) - (p.low || 0);
+  const intradayRangePct = atr > 0 ? ((intradayRange / atr) * 100).toFixed(0) : '0';
+  const volCat = Number(intradayRangePct) < 40 ? 'QUIET' : Number(intradayRangePct) < 80 ? 'NORMAL' : 'WIDE';
+  const mrLabel = mrStrength < 0.2 ? 'LOW' : mrStrength < 0.5 ? 'MODERATE' : 'HIGH';
+
+  const now = Date.now();
+  const hasAccess = userData ? (
+    (userData.trialEndsAt && new Date(userData.trialEndsAt).getTime() > now) ||
+    (userData.subscriptionStatus === 'active' && userData.currentPeriodEnd && new Date(userData.currentPeriodEnd).getTime() > now) ||
+    (userData.manualAccess && (!userData.manualAccessExpiresAt || new Date(userData.manualAccessExpiresAt).getTime() > now))
+  ) : false;
+  const accessExpired = user && userData && !hasAccess;
+
+const sig10m = sigs?.e10m.sig ?? '';
+const sig1h  = sigs?.e1h.sig  ?? '';
+const sig4h  = sigs?.e4h.sig  ?? '';
+const sig24h = sigs?.e24h.sig ?? '';
+
+  /* ── Signal change notifications ── */
+  useEffect(() => {
+  if (!mounted || !notifEnabled || !sig10m) return;
+
+  const current: Record<string, string> = {
+    '10m': sig10m, '1h': sig1h, '4h': sig4h, '24h': sig24h,
+  };
+
+  const prev = prevSignalsRef.current;
+
+  Object.entries(current).forEach(([frame, sig]) => {
+    if (!prev[frame] || prev[frame] === sig) return;
+    try {
+      new Notification(`XAU/USD ${frame} Signal Changed`, {
+        body: `${prev[frame]} → ${sig}`,
+        icon: '/favicon.ico',
+        tag: `xau-signal-${frame}`,
       });
-    }, (err) => console.error('Messages listener error:', err));
-    unsubsRef.current.push(unsub);
-  };
-
-  const loadMore = async () => {
-    if (loadingMore || !hasMore || !oldestDocSnap || !fbRef.current) return;
-    setLoadingMore(true);
-    try {
-      const q = query(collection(fbRef.current.db, 'chatMessages'), orderBy('createdAt', 'desc'), startAfter(oldestDocSnap), limit(20));
-      const snap = await getDocs(q);
-      const docs = snap.docs;
-      if (docs.length < 20) setHasMore(false);
-      if (docs.length > 0) setOldestDocSnap(docs[docs.length - 1]);
-      const older = docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
-      setMessages(prev => [...older, ...prev]);
     } catch {}
-    setLoadingMore(false);
-  };
+  });
 
-  /* ─── presence ─── */
-  const trackPresence = async (fb: any) => {
-    if (!user) return;
+  prevSignalsRef.current = current;
+}, [sig10m, sig1h, sig4h, sig24h, notifEnabled, mounted]);
+
+  /* ── Notification permission request ── */
+  async function requestNotifPermission() {
+    if (!mounted || !('Notification' in window)) {
+      alert('Your browser does not support notifications.');
+      return;
+    }
     try {
-      await setDoc(doc(fb.db, 'chatOnline', user.uid), { uid: user.uid, onlineAt: serverTimestamp() });
+      const perm = await Notification.requestPermission();
+      setNotifEnabled(perm === 'granted');
     } catch {}
-    const unsub = onSnapshot(collection(fb.db, 'chatOnline'), snap => setOnlineCount(snap.size));
-    unsubsRef.current.push(unsub);
-    const handleUnload = () => { if (user) deleteDoc(doc(fb.db, 'chatOnline', user.uid)).catch(() => {}); };
-    window.addEventListener('beforeunload', handleUnload);
-    unsubsRef.current.push(() => window.removeEventListener('beforeunload', handleUnload));
-  };
+  }
 
-  /* ─── scroll to bottom on new messages ─── */
-  const msgLenRef = useRef(messages.length);
-  useEffect(() => {
-    if (messages.length > msgLenRef.current) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  /* ── Popup helpers ── */
+  function buildSignalPopup(frameLabel: string, sig: EntrySignal): PopupData {
+    const isLong = sig.badgeCls === 'bull';
+    const isShort = sig.badgeCls === 'bear';
+    const entryP = p.price;
+    const minMap: Record<string, number> = { '10 min': 10, '1 hour': 60, '4 hour': 240, '24 hour': 1440 };
+    const minutes = minMap[frameLabel] || 60;
+    const sigSigma = atr * Math.sqrt(minutes / 1440) * session.sessionMultiplier;
+    let sl: string | undefined;
+    let tp1: string | undefined;
+    let tp2: string | undefined;
+    if (isLong) {
+      sl = '$' + fmtP(entryP - sigSigma);
+      tp1 = '$' + fmtP(entryP + sigSigma * 0.5);
+      tp2 = '$' + fmtP(entryP + sigSigma);
+    } else if (isShort) {
+      sl = '$' + fmtP(entryP + sigSigma);
+      tp1 = '$' + fmtP(entryP - sigSigma * 0.5);
+      tp2 = '$' + fmtP(entryP - sigSigma);
     }
-    msgLenRef.current = messages.length;
-  }, [messages.length]);
+    return {
+      kicker: frameLabel + ' entry signal',
+      signal: sig.sig,
+      dir: sig.dir,
+      dirColor: sig.badgeCls === 'bull' ? 'var(--green)' : sig.badgeCls === 'bear' ? 'var(--red)' : 'var(--gold)',
+      reason: sig.reason,
+      conf: sig.conf + '%',
+      range: null,
+      entryPrice: '$' + fmtP(entryP),
+      sl, tp1, tp2,
+    };
+  }
 
-  /* ─── infinite scroll (load more on scroll to top) ─── */
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const loadMoreRef = useRef(loadMore);
-  useEffect(() => { loadMoreRef.current = loadMore; });
-  useEffect(() => {
-    if (!sentinelRef.current || !hasMore || initialLoading) return;
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) loadMoreRef.current();
-    }, { rootMargin: '200px' });
-    obs.observe(sentinelRef.current);
-    return () => obs.disconnect();
-  }, [hasMore, initialLoading]);
+  function buildFcPopup(frameLabel: string, fc: Forecast, basePrice: number): PopupData {
+    const diff = fc.target - basePrice;
+    const pct = (diff / basePrice) * 100;
+    return {
+      kicker: frameLabel + ' price forecast',
+      signal: '$' + fmtP(fc.target),
+      dir: (diff >= 0 ? '+' : '') + fmtD(diff) + '  (' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%)',
+      dirColor: diff >= 0 ? 'var(--green)' : 'var(--red)',
+      reason: 'ATR-based σ(t) = ATR × √(t / 1440) forecast. The ±1σ band shows the 68% probability range for this timeframe.',
+      conf: fc.conf + '%',
+      range: '$' + fmtP(fc.bandLow) + ' – $' + fmtP(fc.bandHigh),
+    };
+  }
 
-  /* ─── auto-expand textarea ─── */
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + 'px';
+  function openPopup(key: string) {
+    if (!pred || !sigs) return;
+    let data: PopupData | null = null;
+    if      (key === '10m')     data = buildSignalPopup('10 min', sigs.e10m);
+    else if (key === '1h')      data = buildSignalPopup('1 hour', sigs.e1h);
+    else if (key === '4h')      data = buildSignalPopup('4 hour', sigs.e4h);
+    else if (key === '24h-sig') data = buildSignalPopup('24 hour', sigs.e24h);
+    else if (key === 'fc-1h')   data = buildFcPopup('1 hour', pred.f1h, p.price);
+    else if (key === 'fc-6h')   data = buildFcPopup('6 hour', pred.f6h, p.price);
+    else if (key === 'fc-24h')  data = buildFcPopup('24 hour', pred.f24h, p.price);
+    if (data) {
+      setPopupStore(prev => ({ ...prev, [key]: data as PopupData }));
+      setActivePopup(key);
     }
-  }, [composeText]);
+  }
 
-  /* ─── handlers ─── */
-  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 3 * 1024 * 1024) { showToast('Image must be under 3MB'); return; }
-    const reader = new FileReader();
-    reader.onload = (ev) => setAvatarDataUrl(ev?.target?.result as string);
-    reader.readAsDataURL(file);
-  };
+  /* ── Confidence colour ── */
+  const tlConfColor = (c: number) => c >= 75 ? 'var(--green)' : c >= 55 ? 'var(--gold)' : 'var(--red)';
+  
+  async function shareSignal(frameLabel: string, sig: EntrySignal) {
+  const S = 1080;
+  const canvas = document.createElement('canvas');
+  canvas.width = S; canvas.height = S;
+  const ctx = canvas.getContext('2d')!;
 
-  const registerUsername = async () => {
-    const name = setupName.trim();
-    if (!name || name.length < 3) { setSetupErr('Username must be at least 3 characters.'); return; }
-    setSetupLoading(true); setSetupErr('');
-    try {
-      const fb = getFirebase();
-      const taken = await getDocs(query(collection(fb.db, 'chatUsernames'), where('usernameLower', '==', name.toLowerCase())));
-      if (!taken.empty) { setSetupErr('That username is already taken.'); setSetupLoading(false); return; }
-      let photoURL: string | null = null;
-      if (avatarDataUrl) {
-        const blob = await fetch(avatarDataUrl).then(r => r.blob());
-        const imgRef = ref(getStorage(fb.app), `chatAvatars/${user!.uid}`);
-        await uploadBytes(imgRef, blob);
-        photoURL = await getDownloadURL(imgRef);
-      }
-      await setDoc(doc(fb.db, 'chatUsernames', name.toLowerCase()), { uid: user!.uid, username: name, usernameLower: name.toLowerCase(), createdAt: serverTimestamp() });
-      await setDoc(doc(fb.db, 'chatProfiles', user!.uid), { uid: user!.uid, username: name, photoURL, createdAt: serverTimestamp() });
-      setScreen('chat');
-    } catch (e: any) {
-      setSetupErr(e.message || 'Error setting up profile.');
-    } finally { setSetupLoading(false); }
-  };
+  const sigColor =
+    sig.badgeCls === 'bull' ? '#00d48f' :
+    sig.badgeCls === 'bear' ? '#ff4561' : '#aaaaaa';
+  const isBull = sig.badgeCls === 'bull';
+  const isBear = sig.badgeCls === 'bear';
 
-  const sendMessage = async () => {
-    const text = composeText.trim();
-    if (!text || sending || cooldown > 0 || !user) return;
-    setSending(true);
-    try {
-      const fb = getFirebase();
-      const profileSnap = await getDoc(doc(fb.db, 'chatProfiles', user.uid));
-      const profile = profileSnap.data() as ChatProfile;
-      const data: any = { uid: user.uid, username: profile.username, photoURL: profile.photoURL || null, text, createdAt: serverTimestamp() };
-      if (replyTo) data.replyTo = replyTo;
-      await addDoc(collection(fb.db, 'chatMessages'), data);
-      setComposeText('');
-      setReplyTo(null);
-      setSending(false);
-      setCooldown(15);
-      if (cooldownTimer.current) clearInterval(cooldownTimer.current);
-      cooldownTimer.current = setInterval(() => {
-        setCooldown(prev => {
-          if (prev <= 1) { clearInterval(cooldownTimer.current!); return 0; }
-          return prev - 1;
-        });
-      }, 1000);
-    } catch { showToast('Failed to send message.'); setSending(false); }
-  };
+  /* ── Background ── */
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 0, S, S);
 
-  const toggleReaction = async (msgId: string, emoji: string) => {
-    if (!user) return;
-    // optimistic update
-    setMessages(prev => prev.map(m => {
-      if (m.id !== msgId) return m;
-      const r = { ...(m.reactions || {}) };
-      const list = [...(r[emoji] || [])];
-      const idx = list.indexOf(user.uid);
-      if (idx > -1) list.splice(idx, 1);
-      else list.push(user.uid);
-      if (list.length) r[emoji] = list;
-      else delete r[emoji];
-      return { ...m, reactions: r };
-    }));
-    try {
-      const fb = getFirebase();
-      const msgSnap = await getDoc(doc(fb.db, 'chatMessages', msgId));
-      if (!msgSnap.exists()) return;
-      const data = msgSnap.data();
-      const reactions = { ...(data.reactions || {}) };
-      const list = [...(reactions[emoji] || [])];
-      const idx = list.indexOf(user.uid);
-      if (idx > -1) list.splice(idx, 1);
-      else list.push(user.uid);
-      if (list.length) reactions[emoji] = list;
-      else delete reactions[emoji];
-      await updateDoc(doc(fb.db, 'chatMessages', msgId), { reactions });
-    } catch (e) { console.error('Reaction error:', e); }
-  };
+  /* ── Generate simulated price history ending at current price ── */
+  const NUM = 80;
+  const prices: number[] = [];
+  const vol = (atr || 20) / 15;
+  let px = p.price - (Math.random() * atr * 0.6);
+  const raw: number[] = [px];
+  for (let i = 1; i < NUM; i++) {
+    const drift = isBull ? 0.52 : isBear ? 0.48 : 0.50;
+    px += (Math.random() - (1 - drift)) * vol * 2.2;
+    raw.push(px);
+  }
+  /* Anchor last point exactly to current price */
+  const diff = p.price - raw[NUM - 1];
+  for (let i = 0; i < NUM; i++) prices.push(raw[i] + diff);
 
-  console.log('Minds: user email =', user?.email, 'isAdmin =', user?.email?.toLowerCase() === 'ifexxy9@gmail.com');
+  /* ── Chart bounds ── */
+  const PAD_L = 40, PAD_R = 110, PAD_T = 210, PAD_B = 220;
+  const CW = S - PAD_L - PAD_R;
+  const CH = S - PAD_T - PAD_B;
 
-  const postAnnouncement = async () => {
-    const text = announceText.trim();
-    if (!text || announceSending || !user) return;
-    setAnnounceSending(true);
-    try {
-      const fb = getFirebase();
-      await addDoc(collection(fb.db, 'chatAnnouncements'), { text, pinned: true, createdAt: serverTimestamp(), createdBy: user.uid });
-      setAnnounceText('');
-      showToast('Announcement posted');
-    } catch (e) { console.error(e); showToast('Failed to post announcement'); }
-    setAnnounceSending(false);
-  };
+  const minP = Math.min(...prices) - (atr || 20) * 0.35;
+  const maxP = Math.max(...prices) + (atr || 20) * 0.35;
+  const priceRange = maxP - minP;
 
-  useEffect(() => {
-    return () => { if (cooldownTimer.current) clearInterval(cooldownTimer.current); };
-  }, []);
+  function ix(i: number) { return PAD_L + (i / (NUM - 1)) * CW; }
+  function iy(price: number) { return PAD_T + CH - ((price - minP) / priceRange) * CH; }
 
-  /* ═══════════════ RENDER ═══════════════ */
+  /* ── Horizontal grid lines ── */
+  const GRID = 5;
+  for (let i = 0; i <= GRID; i++) {
+    const gp = minP + (priceRange / GRID) * i;
+    const gy = iy(gp);
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(PAD_L, gy); ctx.lineTo(S - PAD_R, gy); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    ctx.font = '400 20px "Helvetica Neue", Arial, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('$' + gp.toFixed(0), S - PAD_R + 10, gy + 7);
+  }
+
+  /* ── Area fill under line ── */
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(ix(0), iy(prices[0]));
+  for (let i = 1; i < NUM; i++) ctx.lineTo(ix(i), iy(prices[i]));
+  ctx.lineTo(ix(NUM - 1), PAD_T + CH);
+  ctx.lineTo(ix(0), PAD_T + CH);
+  ctx.closePath();
+  const areaGrad = ctx.createLinearGradient(0, PAD_T, 0, PAD_T + CH);
+  areaGrad.addColorStop(0, sigColor + '28');
+  areaGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = areaGrad;
+  ctx.fill();
+  ctx.restore();
+
+  /* ── Price line ── */
+  ctx.beginPath();
+  ctx.moveTo(ix(0), iy(prices[0]));
+  for (let i = 1; i < NUM; i++) ctx.lineTo(ix(i), iy(prices[i]));
+  ctx.strokeStyle = sigColor;
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([]);
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  /* ── Current price dashed line ── */
+  const curY = iy(p.price);
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 7]);
+  ctx.beginPath(); ctx.moveTo(PAD_L, curY); ctx.lineTo(S - PAD_R, curY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  /* ── Current price pill on right axis ── */
+  const pillW = 94, pillH = 30;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.roundRect(S - PAD_R + 6, curY - pillH / 2, pillW, pillH, 6);
+  ctx.fill();
+  ctx.fillStyle = '#0a0a0a';
+  ctx.font = '700 18px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('$' + p.price.toFixed(0), S - PAD_R + 6 + pillW / 2, curY + 6);
+
+  /* ── Signal marker at end of chart ── */
+  const mx = ix(NUM - 1);
+  const my = iy(prices[NUM - 1]);
+  /* Glowing dot */
+  ctx.save();
+  ctx.shadowColor = sigColor;
+  ctx.shadowBlur = 22;
+  ctx.fillStyle = sigColor;
+  ctx.beginPath();
+  ctx.arc(mx, my, 9, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  /* Arrow above or below */
+  const aSz = 18, aOff = 30;
+  ctx.fillStyle = sigColor;
+  if (isBull) {
+    ctx.beginPath();
+    ctx.moveTo(mx,        my - aOff - aSz);
+    ctx.lineTo(mx + aSz,  my - aOff + 4);
+    ctx.lineTo(mx - aSz,  my - aOff + 4);
+    ctx.closePath(); ctx.fill();
+  } else if (isBear) {
+    ctx.beginPath();
+    ctx.moveTo(mx,        my + aOff + aSz);
+    ctx.lineTo(mx + aSz,  my + aOff - 4);
+    ctx.lineTo(mx - aSz,  my + aOff - 4);
+    ctx.closePath(); ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.arc(mx, my, 16, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  /* ── HEADER ── */
+  ctx.textAlign = 'left';
+  /* Timeframe pill */
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  ctx.beginPath(); ctx.roundRect(PAD_L, 44, 320, 44, 8); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.font = '600 22px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText(frameLabel.toUpperCase() + '  ·  ENTRY SIGNAL', PAD_L + 16, 72);
+
+/* Signal text */
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 74px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText(sig.sig, PAD_L, 165);
+
+
+  /* Direction — right aligned */
+  ctx.fillStyle = sigColor;
+  ctx.font = '600 28px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(sig.dir, S - PAD_R, 165);
+
+  /* ── BOTTOM SECTION ── */
+  const BOT = S - PAD_B + 28;
+
+  /* Analysis label */
+  ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.font = '600 20px "Helvetica Neue", Arial, sans-serif';
+  ctx.fillText('ANALYSIS', PAD_L, BOT);
+
+  /* Reason text (word wrap) */
+  ctx.fillStyle = 'rgba(255,255,255,0.62)';
+  ctx.font = '400 26px "Helvetica Neue", Arial, sans-serif';
+  const maxTW = CW + PAD_R - 20;
+  const words = sig.reason.split(' ');
+  let line = '', ry = BOT + 38;
+  for (const w of words) {
+    const test = line + w + ' ';
+    if (ctx.measureText(test).width > maxTW && line) {
+      ctx.fillText(line.trim(), PAD_L, ry);
+      line = w + ' '; ry += 40;
+    } else line = test;
+  }
+  if (line) ctx.fillText(line.trim(), PAD_L, ry);
+
+
+
+  /* Bottom bar: site + timestamp */
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 24px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('xautracker.com', PAD_L, S - 38);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.font = '400 20px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(new Date().toUTCString().slice(0, 22), S - PAD_R, S - 38);
+
+  /* ── Export ── */
+  canvas.toBlob(async (blob) => {
+    if (!blob) return;
+    const file = new File([blob], `xau-${frameLabel}-signal.png`, { type: 'image/png' });
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ files: [file], title: `XAU/USD ${frameLabel}: ${sig.sig}` });
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `xau-${frameLabel}-signal.png`;
+      a.click();
+    }
+  }, 'image/png');
+}
+
+  /* ══════════════════════════════════════════════════════════════
+     RENDER GUARDS
+  ══════════════════════════════════════════════════════════════ */
+
+  /* Server / pre-hydration — render nothing except a spinner */
+  if (!mounted) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh' }}>
+        <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: 28, color: 'var(--ink-3)' }} />
+      </div>
+    );
+  }
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center" style={{ minHeight: '100dvh', padding: 40 }}>
+        <div style={{ textAlign: 'center' }}>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: 28, color: 'var(--ink-3)', marginBottom: 16 }} />
+          <div style={{ fontSize: 13, color: 'var(--ink-3)' }}>Loading your account...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center" style={{ minHeight: '100dvh', padding: 24 }}>
+        <div style={{ textAlign: 'center', maxWidth: 320 }}>
+          <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--gold-bg)', border: '1px solid var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 24, color: 'var(--gold)' }}>
+            <i className="fa-solid fa-lock" />
+          </div>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--ink)', marginBottom: 10, lineHeight: 1.3 }}>Sign in to access<br />Gold Forecast</h2>
+          <p style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.65, marginBottom: 24 }}>
+            Create a free account or sign in to view real-time predictions, entry signals, and market analysis.
+          </p>
+          <Link href="/login" className="btn-primary no-underline" style={{ textDecoration: 'none', marginBottom: 10 }}>
+            <i className="fa-solid fa-right-to-bracket" /> Sign In
+          </Link>
+          <Link href="/signup" className="btn-outline" style={{ textDecoration: 'none' }}>
+            <i className="fa-solid fa-user-plus" /> Create Free Account
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (accessExpired) {
+    return (
+      <div className="flex items-center justify-center" style={{ minHeight: '100dvh', padding: 24 }}>
+        <div style={{ textAlign: 'center', maxWidth: 320 }}>
+          <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'var(--red-bg)', border: '1px solid var(--red)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 22 }}>⛔</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--ink)', marginBottom: 10, lineHeight: 1.3 }}>Your access has expired</div>
+          <div style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.65, marginBottom: 24 }}>Please contact us to reactivate your account.</div>
+          <Link href="/contact" className="btn-primary no-underline" style={{ textDecoration: 'none', marginBottom: 10 }}>
+            <i className="fa-solid fa-envelope" /> Contact Us
+          </Link>
+          <button onClick={signOut} className="btn-ghost" style={{ cursor: 'pointer', minWidth: 0 }}>
+            <i className="fa-solid fa-right-from-bracket" /> Sign Out
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     MAIN RENDER
+  ══════════════════════════════════════════════════════════════ */
   return (
     <>
-      {/* Hero */}
-      <section style={{ padding: '28px 20px 12px', textAlign: 'center' }}>
-        <h1 style={{ fontSize: 42, lineHeight: 0.98, fontWeight: 800, letterSpacing: -1.5, color: 'var(--ink)' }}>
-          Minds<span style={{ color: 'var(--gold)' }}>.</span>
-        </h1>
-        <p style={{ maxWidth: 330, margin: '12px auto 0', color: 'var(--ink-2)', fontSize: 14, lineHeight: 1.65 }}>
-          Share your mind on gold, trading sessions, chart levels with the XauTracker community.
-        </p>
-        <div className="flex justify-center gap-[6px] flex-wrap mt-[12px]">
-          <span className="inline-flex items-center gap-[5px] text-[11px] font-bold px-[10px] py-[6px] rounded-full" style={{ color: 'var(--ink-2)', background: 'var(--bg-2)', border: '1px solid var(--border)' }}>
-            <i className="fa-solid fa-bolt" style={{ fontSize: 9, color: 'var(--gold)' }} /> Newest first
-          </span>
-          <span className="inline-flex items-center gap-[5px] text-[11px] font-bold px-[10px] py-[6px] rounded-full" style={{ color: 'var(--ink-2)', background: 'var(--bg-2)', border: '1px solid var(--border)' }}>
-            <i className="fa-solid fa-link" style={{ fontSize: 9, color: 'var(--gold)' }} /> Links supported
-          </span>
+      {/* Account Dashboard */}
+      {user && userData && (
+        <div className="predict-card" id="account-dashboard" style={{ marginTop: 14, background: 'var(--bg-2)' }}>
+          <h3><i className="fa-solid fa-circle-user" />My Account</h3>
+          <div className="account-shell">
+            <div className="account-avatar"><i className="fa-solid fa-user" /></div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div id="dash-email" style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.email}</div>
+              <div id="dash-status-badge" style={{ marginTop: 5 }}>
+                {userData.subscriptionStatus === 'trial' && (
+                  <span style={{ fontSize: 10, padding: '2px 10px', borderRadius: 10, background: 'var(--gold-bg)', color: 'var(--gold)', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    <i className="fa-solid fa-clock" style={{ fontSize: 6 }} />TRIAL
+                  </span>
+                )}
+                {userData.subscriptionStatus === 'active' && (
+                  <span style={{ fontSize: 10, padding: '2px 10px', borderRadius: 10, background: 'var(--green-bg)', color: 'var(--green)', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    <i className="fa-solid fa-circle" style={{ fontSize: 6 }} />ACTIVE
+                  </span>
+                )}
+                {userData.manualAccess && (
+                  <span style={{ fontSize: 10, padding: '2px 10px', borderRadius: 10, background: 'var(--green-bg)', color: 'var(--green)', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    <i className="fa-solid fa-key" style={{ fontSize: 6 }} />GRANTED
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="account-info">
+            <div className="account-label">Access Status</div>
+            <div id="dash-access-text" style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
+              {hasAccess ? (
+                userData.subscriptionStatus === 'active'
+                  ? `Subscription renews ${userData.currentPeriodEnd ? new Date(userData.currentPeriodEnd).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}`
+                  : userData.subscriptionStatus === 'trial'
+                    ? `Free trial — expires ${userData.trialEndsAt ? new Date(userData.trialEndsAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}`
+                    : `Access granted${userData.manualAccessExpiresAt ? ` · Expires ${new Date(userData.manualAccessExpiresAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}` : ' · Permanent'}`
+              ) : 'No active access'}
+            </div>
+          </div>
+          <div id="dash-actions" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {userData.subscriptionStatus !== 'active' ? (
+              <Link href="/contact" className="btn-solid" style={{ textDecoration: 'none' }}>Contact Us</Link>
+            ) : (
+              <Link href="/subscribe" className="btn-solid" style={{ textDecoration: 'none', background: 'var(--gold)', color: '#000', borderColor: 'var(--gold)' }}>
+                <i className="fa-solid fa-crown" /> Renew
+              </Link>
+            )}
+            <button onClick={signOut} className="btn-ghost" style={{ cursor: 'pointer' }}>
+              <i className="fa-solid fa-right-from-bracket" /> Sign Out
+            </button>
+          </div>
         </div>
-      </section>
+      )}
 
-      {/* Community strip */}
-      <div className="flex mx-[20px] mb-[16px] rounded-[12px] overflow-hidden" style={{ border: '1px solid var(--border)', background: 'var(--bg-2)' }}>
-        <div style={{ flex: 1, padding: '12px 10px', textAlign: 'center' }}>
-          <div style={{ fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>Messages</div>
-          <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--gold)' }}>{messageCount || '—'}</div>
+      {/* Live price strip */}
+      <div className="live-strip">
+        <div className="live-strip-left">
+          <div>
+            <div className="mini-label">XAU/USD Spot</div>
+            <div className="live-price-big">
+              <span className="sym">$</span>
+              <span id="strip-price">{fmtPrice(p.price)}</span>
+            </div>
+          </div>
+          <div className={`live-change ${isUp ? 'up' : 'down'}`}>
+            {fmtChange(p.ch || 0)} ({(p.chp || 0).toFixed(2)}%)
+          </div>
         </div>
-        <div style={{ flex: 1, padding: '12px 10px', textAlign: 'center', borderLeft: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>Online</div>
-          <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--green)' }}>{onlineCount}&thinsp;users</div>
-        </div>
-        <div style={{ flex: 1, padding: '12px 10px', textAlign: 'center', borderLeft: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>Access</div>
-          <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink)' }}>Trial / Pro</div>
+        <div className="atr-badge">
+          <div>Daily ATR</div>
+          <div id="strip-atr">${atr.toFixed(2)}</div>
         </div>
       </div>
 
-      {/* Access wall */}
-      {screen === 'access-wall' && (
-        <div className="mx-[20px] mb-[18px] p-[20px] rounded-[16px]" style={{ background: 'var(--bg-2)', border: '1px solid var(--border)' }}>
-          <div style={{ width: 58, height: 58, margin: '0 auto 16px', borderRadius: 18, background: 'var(--gold-bg)', color: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
-            <i className="fa-solid fa-comments" />
-          </div>
-          <div style={{ fontSize: 22, fontWeight: 800, textAlign: 'center', color: 'var(--ink)', marginBottom: 8 }}>Join the Conversation</div>
-          <div style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.6, textAlign: 'center', marginBottom: 18 }}>Sign in with an active trial or subscription to chat with other gold traders.</div>
-          <Link href="/login" className="flex items-center justify-center gap-[9px] w-full py-[14px] text-[14px] font-bold rounded-[12px] no-underline" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
-            <i className="fa-solid fa-right-to-bracket" /> Sign In
-          </Link>
+      {/* Stats grid */}
+      <div className="stats-grid-3">
+        <div className="stat-card">
+          <div className="stat-label"><i className="fa-solid fa-arrow-up stat-icon" style={{ color: 'var(--green)' }} />High</div>
+          <div className="stat-val">{fmtPrice(p.high || 0)}</div>
         </div>
-      )}
+        <div className="stat-card">
+          <div className="stat-label"><i className="fa-solid fa-arrow-down stat-icon" style={{ color: 'var(--red)' }} />Low</div>
+          <div className="stat-val">{fmtPrice(p.low || 0)}</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label"><i className="fa-solid fa-door-open stat-icon" style={{ color: 'var(--gold)' }} />Open</div>
+          <div className="stat-val">{fmtPrice(p.open || 0)}</div>
+        </div>
+      </div>
 
-      {/* Setup */}
-      {screen === 'setup' && (
-        <div className="mx-[20px] mb-[18px] p-[20px] rounded-[16px]" style={{ background: 'var(--bg-2)', border: '1px solid var(--border)' }}>
-          <div style={{ width: 58, height: 58, margin: '0 auto 16px', borderRadius: 18, background: 'var(--gold-bg)', color: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
-            <i className="fa-solid fa-user-pen" />
+      {/* Session row */}
+      <div className="session-row" id="session-row">
+        {[
+          { id: 'sess-asian',  label: 'Asian',    active: session.asian && !session.london },
+          { id: 'sess-london', label: 'London',   active: session.london },
+          { id: 'sess-ny',     label: 'New York', active: session.ny },
+        ].map(s => (
+          <div key={s.id} className={`session-chip${s.active ? ' active' : ''}`} id={s.id}>
+            <div className="dot" />{s.label}
           </div>
-          <div style={{ fontSize: 22, fontWeight: 800, textAlign: 'center', color: 'var(--ink)', marginBottom: 8 }}>Pick Your Username</div>
-          <div style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.6, textAlign: 'center', marginBottom: 18 }}>Choose a trader name before entering Minds. You can optionally add a profile photo.</div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '20px 0' }}>
-            <div style={{ position: 'relative', width: 88, height: 88, cursor: 'pointer' }} onClick={() => fileRef.current?.click()}>
-              <div style={{ width: 88, height: 88, borderRadius: '50%', background: 'var(--bg)', border: '2px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', color: 'var(--ink-3)', fontSize: 30 }}>
-                {avatarDataUrl ? <img src={avatarDataUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <i className="fa-solid fa-camera" />}
-              </div>
-              <div style={{ position: 'absolute', right: 1, bottom: 1, width: 27, height: 27, borderRadius: '50%', background: 'var(--gold)', color: '#000', border: '3px solid var(--bg-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>
-                <i className="fa-solid fa-plus" />
-              </div>
+        ))}
+        <div className="session-chip" id="sess-vol" style={{ marginLeft: 'auto' }}>
+          <i className="fa-solid fa-wave-square" style={{ fontSize: 9 }} />
+          <span id="sess-vol-label">{session.volLabel} VOL</span>
+        </div>
+      </div>
+
+      {/* How to use */}
+      <div style={{ padding: '14px 16px 0' }}>
+        <button
+          onClick={() => setHowToOpen(true)}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '13px 16px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--gold-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <i className="fa-solid fa-circle-question" style={{ color: 'var(--gold)', fontSize: 14 }} />
             </div>
-            <input type="file" ref={fileRef} accept="image/*" style={{ display: 'none' }} onChange={handleAvatarSelect} />
-            <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 8 }}>Tap to add profile photo (optional)</div>
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink)' }}>How to use the Forecast Tools</span>
           </div>
-          <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Username</label>
-          <input type="text" value={setupName} onChange={(e) => setSetupName(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))} placeholder="goldtrader" maxLength={20}
-            style={{ width: '100%', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--ink)', fontSize: 16, padding: '14px 15px', outline: 'none' }} />
-          <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 7 }}>Letters, numbers and underscores only · 3–20 characters</div>
-          {setupErr && <div style={{ fontSize: 13, color: 'var(--red)', padding: '12px 14px', background: 'var(--red-bg)', borderRadius: 10, marginTop: 14 }}>{setupErr}</div>}
-          <button onClick={registerUsername} disabled={setupLoading}
-            className="flex items-center justify-center gap-[9px] w-full py-[14px] mt-[18px] text-[14px] font-bold rounded-[12px] cursor-pointer"
-            style={{ background: 'var(--ink)', color: 'var(--bg)', border: 'none', opacity: setupLoading ? 0.55 : 1 }}>
-            {setupLoading ? <><i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Setting up...</> : <><i className="fa-solid fa-check" /> Set Username & Enter</>}
+          <i className="fa-solid fa-chevron-right" style={{ color: 'var(--ink-4)', fontSize: 11, flexShrink: 0 }} />
+        </button>
+      </div>
+
+      {/* TradingView */}
+      <div
+        style={{ margin: '14px 16px 0', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', height: 400 }}
+        ref={tvRef}
+      />
+
+      {/* Algo note */}
+      <div className="algo-note">
+        <i className="fa-solid fa-microchip" />
+        Forecasts use <strong style={{ color: 'var(--gold)' }}>ATR × √(t/1440)</strong> — the financial square-root-of-time volatility model.{' '}
+        <strong style={{ color: 'var(--red)' }}>Not financial advice.</strong>
+      </div>
+
+      {/* ═══ Entry Signals Timeline ═══ */}
+      <div className="tl-outer-card">
+        <div className="tl-card-header">
+          <i className="fa-solid fa-bolt" />
+          <span className="tl-card-header-label">Entry Signals</span>
+          <button
+            onClick={notifEnabled ? () => setNotifEnabled(false) : requestNotifPermission}
+            style={{
+              marginLeft: 'auto',
+              background: notifEnabled ? 'var(--green-bg)' : 'var(--bg-3)',
+              border: `1px solid ${notifEnabled ? 'var(--green)' : 'var(--border)'}`,
+              color: notifEnabled ? 'var(--green)' : 'var(--ink-3)',
+              borderRadius: 8, padding: '4px 10px',
+              fontSize: 11, fontWeight: 700,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+              fontFamily: 'inherit',
+            }}
+          >
+            <i className={`fa-solid fa-bell${notifEnabled ? '' : '-slash'}`} />
+            {notifEnabled ? 'Alerts ON' : 'Alerts'}
           </button>
         </div>
-      )}
 
-      {/* ═══════ CHAT ═══════ */}
-      {screen === 'chat' && (
-        <div style={{ padding: '0 16px' }}>
-          {/* ── Admin announcement composer ── */}
-          {user?.email?.toLowerCase() === 'ifexxy9@gmail.com' && (
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
-              <input type="text" value={announceText} onChange={e => setAnnounceText(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); postAnnouncement(); } }}
-                placeholder="Write an announcement…" maxLength={500}
-                style={{ flex: 1, background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--ink)', fontSize: 13, padding: '9px 12px', outline: 'none' }} />
-              <button onClick={postAnnouncement} disabled={announceSending || !announceText.trim()}
-                style={{ padding: '9px 14px', background: 'var(--gold)', color: '#000', border: 'none', borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', opacity: announceSending || !announceText.trim() ? 0.4 : 1, whiteSpace: 'nowrap' }}>
-                {announceSending ? 'Posting…' : 'Post'}
+        {/* Now */}
+        <div className="tl-row">
+          <div className="tl-dot live" />
+          <span className="tl-frame">Now</span>
+          <div className="tl-main">
+            <div className="tl-value">${fmtPrice(p.price)}</div>
+            <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 3 }}>
+              {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </div>
+          </div>
+          <span className="tl-badge live-badge">LIVE</span>
+          <div style={{ width: 30, flexShrink: 0 }} />
+        </div>
+
+        {/* Signal rows */}
+        {sigs && [
+          { key: '10m',     frame: '10 min',  sig: sigs.e10m },
+          { key: '1h',      frame: '1 hour',  sig: sigs.e1h  },
+          { key: '4h',      frame: '4 hour',  sig: sigs.e4h  },
+          { key: '24h-sig', frame: '24 hour', sig: sigs.e24h },
+        ].map(item => (
+          <div key={item.key} className="tl-row">
+            <div className="tl-dot" />
+            <span className="tl-frame">{item.frame}</span>
+            <div className="tl-main">
+              <div className="tl-value">{item.sig.sig}</div>
+              <div className="tl-conf-row">
+                <div className="tl-conf-bar">
+                  <div className="tl-conf-fill" style={{ width: `${item.sig.conf}%`, background: tlConfColor(item.sig.conf) }} />
+                </div>
+                <span className="tl-conf-pct">{item.sig.conf}%</span>
+              </div>
+            </div>
+            <span className={`tl-badge ${item.sig.badgeCls}`}>{item.sig.badgeTxt}</span>
+            <button className="tl-info-btn" onClick={() => openPopup(item.key)} aria-label={`${item.frame} details`}>
+              <i className="fa-solid fa-circle-info" />
+            </button>
+            <button
+  className="tl-info-btn"
+  onClick={() => shareSignal(item.frame, item.sig)}
+  aria-label={`Share ${item.frame} signal`}
+  title="Share as image"
+>
+  <i className="fa-solid fa-share-nodes" />
+</button>
+          </div>
+        ))}
+      </div>
+
+      {/* ═══ Price Forecast Timeline ═══ */}
+      <div className="tl-outer-card" style={{ marginBottom: 14 }}>
+        <div className="tl-card-header">
+          <i className="fa-solid fa-chart-line" />
+          <span className="tl-card-header-label">Price Forecast</span>
+        </div>
+
+        {pred && [
+          { key: 'fc-1h',  frame: '1 hour',  fc: pred.f1h  },
+          { key: 'fc-6h',  frame: '6 hour',  fc: pred.f6h  },
+          { key: 'fc-24h', frame: '24 hour', fc: pred.f24h },
+        ].map(item => {
+          const diff = item.fc.target - p.price;
+          const bType: 'bull' | 'bear' | 'flat' = diff > 1.5 ? 'bull' : diff < -1.5 ? 'bear' : 'flat';
+          const bTxt = bType === 'bull' ? 'BULL' : bType === 'bear' ? 'BEAR' : 'FLAT';
+          return (
+            <div key={item.key} className="tl-row">
+              <div className="tl-dot" />
+              <span className="tl-frame">{item.frame}</span>
+              <div className="tl-main">
+                <div className="tl-value">${fmtPrice(item.fc.target)}</div>
+                <div className="tl-conf-row">
+                  <div className="tl-conf-bar">
+                    <div className="tl-conf-fill" style={{ width: `${item.fc.conf}%`, background: tlConfColor(item.fc.conf) }} />
+                  </div>
+                  <span className="tl-conf-pct">{item.fc.conf}%</span>
+                </div>
+              </div>
+              <span className={`tl-badge ${bType}`}>{bTxt}</span>
+              <button className="tl-info-btn" onClick={() => openPopup(item.key)} aria-label={`${item.frame} forecast details`}>
+                <i className="fa-solid fa-circle-info" />
               </button>
             </div>
-          )}
+          );
+        })}
+      </div>
 
-          {/* ── Announcements ── */}
-          {announcements.map(a => (
-            <div key={a.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 16px', marginBottom: 12, background: 'var(--gold-bg)', border: '1px solid rgba(200,150,42,0.2)', borderRadius: 12, fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
-              <i className="fa-solid fa-bullhorn" style={{ color: 'var(--gold)', fontSize: 14, flexShrink: 0, marginTop: 1 }} />
-              <div>
-                <span style={{ fontWeight: 700, color: 'var(--ink)' }}>Announcement</span>
-                <div style={{ marginTop: 2 }}>{a.text}</div>
+      {/* Market Signal */}
+      <div className="predict-card">
+        <h3><i className="fa-solid fa-gauge-high" />Market Signal</h3>
+        <div className="signal-grid">
+          {[
+            { label: 'BUY',  color: 'var(--green)', cls: 'buy',  val: marketSignal.buy  },
+            { label: 'HLD',  color: 'var(--gold)',  cls: 'hold', val: marketSignal.hold },
+            { label: 'SELL', color: 'var(--red)',   cls: 'sell', val: marketSignal.sell },
+          ].map(row => (
+            <div key={row.label} className="sig-gauge-row">
+              <span className="sig-name" style={{ color: row.color }}>{row.label}</span>
+              <div className="sig-gauge-bar">
+                <div className={`sig-gauge-fill ${row.cls}`} style={{ width: `${row.val}%` }} />
               </div>
+              <span className="sig-pct" style={{ color: row.color }}>{row.val}%</span>
             </div>
           ))}
+        </div>
+      </div>
 
-          {/* ── Compose bar ── */}
-          <div style={{ marginBottom: 16 }}>
-            {/* Reply context bar */}
-            {replyTo && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 12px', marginBottom: 8, background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 10, fontSize: 12, color: 'var(--ink-2)' }}>
-                <i className="fa-solid fa-reply" style={{ fontSize: 10, color: 'var(--gold)', flexShrink: 0, marginTop: 2 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ fontWeight: 700, color: 'var(--ink)' }}>@{replyTo.username}</span>
-                  <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 1 }}>{replyTo.text}</div>
-                </div>
-                <button onClick={() => setReplyTo(null)} style={{ background: 'none', border: 'none', color: 'var(--ink-3)', cursor: 'pointer', fontSize: 14, padding: 0, flexShrink: 0 }}>
-                  <i className="fa-solid fa-xmark" />
-                </button>
+      {/* Market Sentiment */}
+      <div className="predict-card">
+        <h3><i className="fa-solid fa-heart-pulse" />Market Sentiment</h3>
+        <div className="sentiment-arc">
+          <div className="sentiment-big">{sentimentEmoji}</div>
+          <div className="sentiment-lbl">{sentimentText}</div>
+        </div>
+      </div>
+
+      {/* Key Price Levels */}
+      <div className="predict-card">
+        <h3><i className="fa-solid fa-layer-group" />Key Price Levels</h3>
+        {[
+          { label: 'Strong Resistance', val: r2, badge: 'R2', cls: 'badge-resist'  },
+          { label: 'Resistance',        val: r1, badge: 'R1', cls: 'badge-resist'  },
+          { label: 'Support',           val: s1, badge: 'S1', cls: 'badge-support' },
+          { label: 'Strong Support',    val: s2, badge: 'S2', cls: 'badge-support' },
+        ].map((lvl, i) => (
+          <>
+            {i === 2 && (
+              <div key="now" className="level-row current-level">
+                <span className="level-name" style={{ fontWeight: 700, color: 'var(--ink)' }}>Current Price</span>
+                <span className="level-val" style={{ color: 'var(--gold)' }}>${fmtPrice(p.price)}</span>
+                <span className="level-badge badge-neutral">NOW</span>
               </div>
             )}
+            <div key={lvl.badge} className="level-row">
+              <span className="level-name">{lvl.label}</span>
+              <span className="level-val">${fmtPrice(lvl.val)}</span>
+              <span className={`level-badge ${lvl.cls}`}>{lvl.badge}</span>
+            </div>
+          </>
+        ))}
+      </div>
 
-            {/* Compose row */}
-            <div className="flex gap-[10px] items-end">
-              <div style={{ width: 36, height: 36, borderRadius: '50%', flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, background: `${avatarColor(user?.email || '?')}22`, border: `2px solid ${avatarColor(user?.email || '?')}55`, color: avatarColor(user?.email || '?') }}>
-                {user?.email?.[0].toUpperCase() || '?'}
-              </div>
-              <textarea ref={textareaRef} value={composeText} onChange={(e) => { if (e.target.value.length <= 300) setComposeText(e.target.value); }}
-                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                placeholder="What's on your mind?" maxLength={300} rows={1}
-                style={{ flex: 1, background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 14, color: 'var(--ink)', fontSize: 15, padding: '10px 14px', outline: 'none', resize: 'none', lineHeight: 1.5, minHeight: 40, overflow: 'hidden' }} />
-              <button onClick={sendMessage} disabled={sending || cooldown > 0 || !composeText.trim()}
-                style={{ width: 40, height: 40, background: 'var(--ink)', color: 'var(--bg)', border: 'none', borderRadius: 12, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, opacity: sending || cooldown > 0 || !composeText.trim() ? 0.35 : 1 }}>
-                <i className="fa-solid fa-paper-plane" />
-              </button>
-            </div>
-            <div className="flex justify-between items-center mt-[6px] px-[2px]">
-              {cooldown > 0 ? (
-                <div className="flex items-center gap-[8px]" style={{ flex: 1 }}>
-                  <div style={{ flex: 1, height: 3, background: 'var(--bg-3)', borderRadius: 2, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', background: 'var(--red)', borderRadius: 2, transition: 'width 1s linear', width: `${(cooldown / 15) * 100}%` }} />
-                  </div>
-                  <span style={{ fontSize: 11, color: 'var(--red)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{cooldown}s</span>
-                </div>
-              ) : <div />}
-              <span style={{ fontSize: 11, color: 'var(--ink-3)', fontVariantNumeric: 'tabular-nums' }}>{composeText.length} / 300</span>
-            </div>
+      {/* Model Inputs */}
+      <div className="predict-card">
+        <h3><i className="fa-solid fa-sliders" />Model Inputs</h3>
+
+        <div className="factor-row">
+          <div className="factor-icon" style={{ background: 'var(--gold-bg)', color: 'var(--gold)' }}><i className="fa-solid fa-chart-simple" /></div>
+          <div className="factor-text">
+            <div className="factor-name">Daily ATR</div>
+            <div className="factor-desc">Daily range ${atr.toFixed(2)} — {atrCat.toLowerCase()} volatility environment</div>
           </div>
+          <div className="factor-sig" style={{ background: 'var(--gold-bg)', color: 'var(--gold)' }}>${atr.toFixed(2)}</div>
+        </div>
 
-          {/* ── Messages ── */}
-          <div ref={feedRef} style={{ paddingBottom: 20 }}>
-            {/* Sentinel for infinite scroll */}
-            <div ref={sentinelRef} style={{ height: 1 }} />
-            {/* Load more button (manual fallback) */}
-            {hasMore && !initialLoading && (
-              <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
-                <button onClick={loadMore} disabled={loadingMore} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 10, padding: '8px 20px', fontSize: 12, color: 'var(--ink-3)', cursor: 'pointer', fontWeight: 600 }}>
-                  {loadingMore ? <><i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Loading…</> : 'Load earlier messages'}
-                </button>
-              </div>
-            )}
-
-            {initialLoading ? (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-3)' }}>
-                <i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite', fontSize: 24 }} />
-              </div>
-            ) : messages.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '44px 18px', color: 'var(--ink-3)' }}>
-                <i className="fa-solid fa-comments" style={{ fontSize: 32, marginBottom: 10 }} />
-                <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--ink)', marginBottom: 5 }}>No messages yet</div>
-                <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>Be the first to share your thoughts!</div>
-              </div>
-            ) : (
-              messages.map((m, idx) => {
-                const isOwn = m.uid === user?.uid;
-                const ac = avatarColor(m.username || '?');
-                const letter = (m.username || '?')[0].toUpperCase();
-                const reactions = m.reactions || {};
-                const userReacted = (emoji: string) => user ? (reactions[emoji] || []).includes(user.uid) : false;
-                return (
-                  <div key={m.id} style={{ borderBottom: idx < messages.length - 1 ? '1px solid var(--border)' : 'none', padding: '14px 0' }}>
-                    {/* Header row */}
-                    <div className="flex items-center gap-[8px] mb-[4px]">
-                      <div style={{ width: 32, height: 32, borderRadius: '50%', flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, background: `${ac}22`, border: `2px solid ${ac}44`, color: ac }}>
-                        {m.photoURL ? <img src={m.photoURL} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : letter}
-                      </div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: isOwn ? 'var(--gold)' : 'var(--ink)' }}>{m.username}</span>
-                      {(idx === 0 || messages[idx - 1]?.uid !== m.uid) && <span style={{ fontSize: 11, color: 'var(--ink-3)' }}>{timeAgo(m.createdAt)}</span>}
-                      {isOwn && <span style={{ fontSize: 10, padding: '1px 7px', background: 'var(--bg-2)', color: 'var(--gold)', borderRadius: 10, fontWeight: 700 }}>You</span>}
-                    </div>
-
-                    {/* Reply context */}
-                    {m.replyTo && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--ink-3)', marginBottom: 4, paddingLeft: 40 }}>
-                        <i className="fa-solid fa-reply" style={{ fontSize: 9, flexShrink: 0 }} />
-                        <span style={{ fontWeight: 600, color: 'var(--ink-2)' }}>@{m.replyTo.username}</span>
-                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.replyTo.text}</span>
-                      </div>
-                    )}
-
-                    {/* Text */}
-                    <div style={{ paddingLeft: 40, fontSize: 14, color: 'var(--ink)', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word', marginBottom: 6 }} dangerouslySetInnerHTML={{ __html: linkify(m.text) }} />
-
-                    {/* Reactions + actions row */}
-                    <div style={{ paddingLeft: 40, display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-                      {EMOJIS.map(emoji => {
-                        const count = (reactions[emoji] || []).length;
-                        const reacted = userReacted(emoji);
-                        if (count === 0 && !reacted) return null;
-                        return (
-                          <button key={emoji} onClick={() => toggleReaction(m.id, emoji)}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '2px 8px', borderRadius: 12, fontSize: 12, border: '1px solid', cursor: 'pointer', background: reacted ? 'var(--gold-bg)' : 'transparent', borderColor: reacted ? 'var(--gold)' : 'var(--border)', color: 'var(--ink-2)' }}>
-                            {emoji} {count > 0 && <span style={{ fontWeight: 600 }}>{count}</span>}
-                          </button>
-                        );
-                      })}
-                      {/* Reply button */}
-                      <button onClick={() => setReplyTo({ id: m.id, username: m.username, text: m.text })}
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '2px 8px', borderRadius: 12, fontSize: 12, border: '1px solid var(--border)', cursor: 'pointer', background: 'transparent', color: 'var(--ink-3)' }}>
-                        <i className="fa-solid fa-reply" style={{ fontSize: 10 }} /> Reply
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-            <div ref={bottomRef} />
+        <div className="factor-row">
+          <div className="factor-icon" style={{ background: isUp ? 'var(--green-bg)' : 'var(--red-bg)', color: isUp ? 'var(--green)' : 'var(--red)' }}><i className="fa-solid fa-arrow-trend-up" /></div>
+          <div className="factor-text">
+            <div className="factor-name">Momentum</div>
+            <div className="factor-desc">{isUp ? 'Positive' : 'Negative'} {Math.abs(p.chp || 0).toFixed(2)}% move today</div>
+          </div>
+          <div className="factor-sig" style={{ background: isUp ? 'var(--green-bg)' : 'var(--red-bg)', color: isUp ? 'var(--green)' : 'var(--red)' }}>
+            {(isUp ? '+' : '') + (p.chp || 0).toFixed(2)}%
           </div>
         </div>
+
+        <div className="factor-row">
+          <div className="factor-icon" style={{ background: 'var(--bg-3)', color: 'var(--ink-2)' }}><i className="fa-solid fa-wave-square" /></div>
+          <div className="factor-text">
+            <div className="factor-name">Intraday Volatility</div>
+            <div className="factor-desc">Today&apos;s range ${intradayRange.toFixed(2)} = {intradayRangePct}% of ATR</div>
+          </div>
+          <div className="factor-sig" style={{ background: 'var(--bg-3)', color: 'var(--ink-2)' }}>{volCat}</div>
+        </div>
+
+        <div className="factor-row">
+          <div className="factor-icon" style={{ background: 'var(--gold-bg)', color: 'var(--gold)' }}><i className="fa-solid fa-arrows-rotate" /></div>
+          <div className="factor-text">
+            <div className="factor-name">Mean Reversion</div>
+            <div className="factor-desc">Counter-trend pull probability</div>
+          </div>
+          <div className="factor-sig" style={{ background: 'var(--gold-bg)', color: 'var(--gold)' }}>{mrLabel}</div>
+        </div>
+
+        <div className="factor-row">
+          <div className="factor-icon" style={{
+            background: session.sessionMultiplier >= 1.2 ? 'var(--red-bg)' : session.sessionMultiplier >= 1.0 ? 'var(--gold-bg)' : 'var(--bg-3)',
+            color:      session.sessionMultiplier >= 1.2 ? 'var(--red)'    : session.sessionMultiplier >= 1.0 ? 'var(--gold)'    : 'var(--ink-3)',
+          }}><i className="fa-solid fa-building-columns" /></div>
+          <div className="factor-text">
+            <div className="factor-name">Market Session</div>
+            <div className="factor-desc">{session.sessionLabel} session &middot; {session.volLabel.toLowerCase()} activity</div>
+          </div>
+          <div className="factor-sig" style={{
+            background: session.sessionMultiplier >= 1.2 ? 'var(--red-bg)' : session.sessionMultiplier >= 1.0 ? 'var(--gold-bg)' : 'var(--bg-3)',
+            color:      session.sessionMultiplier >= 1.2 ? 'var(--red)'    : session.sessionMultiplier >= 1.0 ? 'var(--gold)'    : 'var(--ink-3)',
+          }}>&times;{session.sessionMultiplier.toFixed(2)}</div>
+        </div>
+      </div>
+
+      {/* Disclaimer */}
+      <div className="disclaimer">
+        <i className="fa-solid fa-circle-exclamation" />
+        Not financial advice. Predictions are algorithmic estimates based on ATR volatility modelling. XAU/USD carries significant market risk. Always consult a licensed financial professional before trading.
+      </div>
+
+      {/* Footer */}
+      <footer>
+        <div className="footer-links">
+          <Link className="footer-link" href="/about">About</Link>
+          <Link className="footer-link" href="/contact">Contact</Link>
+          <Link className="footer-link" href="/disclaimer">Disclaimer</Link>
+        </div>
+        <div className="footer-disc">Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates, not financial advice.</div>
+        <div className="footer-copy">&copy; 2026 XauTracker.com &middot; Powered by TwelveData</div>
+      </footer>
+      
+      <BottomBanner />
+
+      {/* ── How To Popup ── */}
+      {howToOpen && (
+        <>
+          <div className="tl-overlay open" onClick={() => setHowToOpen(false)} />
+          <div className="tl-popup open" id="howto-popup">
+            <div className="tl-popup-handle" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 9, background: 'var(--gold-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <i className="fa-solid fa-circle-question" style={{ color: 'var(--gold)', fontSize: 16 }} />
+              </div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.2 }}>How to use the Forecast Tools</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, background: 'var(--red-bg)', border: '1px solid rgba(184,50,50,0.18)', borderRadius: 10, padding: '12px 14px', marginBottom: 16 }}>
+              <i className="fa-solid fa-triangle-exclamation" style={{ color: 'var(--red)', fontSize: 14, flexShrink: 0, marginTop: 1 }} />
+              <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.65 }}>
+                <strong style={{ color: 'var(--ink)' }}>Attention:</strong> Trading Gold carries high significant risk. Always do your own analysis and read our{' '}
+                <Link href="/disclaimer" style={{ color: 'var(--red)', fontWeight: 700 }}>disclaimer</Link>.
+              </div>
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.65, marginBottom: 16 }}>The forecast tools uses ATR modelling and carries sections like:</div>
+            <div style={{ border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
+              {[
+                { title: 'Entry Signals',    desc: 'It forecasts how your next trade should go depending on the volatility of gold at that time.' },
+                { title: 'Price Forecast',   desc: 'It predicts what range gold would be trading at at a particular time.' },
+                { title: 'Market Signal',    desc: 'The current market trend.' },
+                { title: 'Market Sentiment', desc: 'The current market trend based on the chart.' },
+                { title: 'Price Levels',     desc: 'The support and resistance of the XAU/USD chart.' },
+                { title: 'Model',            desc: 'Carries other necessary information regarding gold, what session is on, the current volatility etc.' },
+              ].map((s, i, arr) => (
+                <div key={i} style={{ padding: '13px 14px', background: 'var(--bg-2)', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink)', marginBottom: 3 }}>{s.title}</div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-3)', lineHeight: 1.6 }}>{s.desc}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ background: 'var(--gold-bg)', border: '1px solid rgba(154,110,0,0.18)', borderRadius: 10, padding: '12px 14px', marginBottom: 16 }}>
+              <div style={{ fontSize: 12, color: 'var(--ink-2)', lineHeight: 1.7 }}>
+                Use this tool as a guide to making better trades. Do not follow forecasts blindly — always follow the market as gold can be very unpredictable.
+              </div>
+            </div>
+            <button className="tl-popup-close" onClick={() => setHowToOpen(false)}>
+              <i className="fa-solid fa-xmark" /> Close
+            </button>
+          </div>
+        </>
       )}
 
-      <Footer />
+      {/* ── Detail Popup ── */}
+      {activePopup && popupStore[activePopup] && (
+        <>
+          <div className="tl-overlay open" onClick={() => setActivePopup(null)} />
+          <div className="tl-popup open">
+            <div className="tl-popup-handle" />
+            <div className="tl-popup-kicker">{popupStore[activePopup].kicker}</div>
+            <div className="tl-popup-signal">{popupStore[activePopup].signal}</div>
+            <div className="tl-popup-dir" style={{ color: popupStore[activePopup].dirColor }}>{popupStore[activePopup].dir}</div>
+            <div className="tl-popup-reason">{popupStore[activePopup].reason}</div>
+            {popupStore[activePopup].entryPrice && popupStore[activePopup].sl && (
+              <>
+                <div className="tl-popup-divider" />
+                <div style={{ fontSize: 11, color: 'var(--ink-3)', marginBottom: 10, lineHeight: 1.5, fontStyle: 'italic' }}>
+                  Generative entry based on analysis
+                </div>
+                <div className="tl-popup-meta-row">
+                  <span className="tl-popup-meta-label">Entry</span>
+                  <span className="tl-popup-meta-val">{popupStore[activePopup].entryPrice}</span>
+                </div>
+                <div className="tl-popup-meta-row">
+                  <span className="tl-popup-meta-label">Stop Loss</span>
+                  <span className="tl-popup-meta-val" style={{ color: 'var(--red)' }}>{popupStore[activePopup].sl}</span>
+                </div>
+                <div className="tl-popup-meta-row">
+                  <span className="tl-popup-meta-label">TP1</span>
+                  <span className="tl-popup-meta-val" style={{ color: 'var(--green)' }}>{popupStore[activePopup].tp1}</span>
+                </div>
+                <div className="tl-popup-meta-row">
+                  <span className="tl-popup-meta-label">TP2</span>
+                  <span className="tl-popup-meta-val" style={{ color: 'var(--green)' }}>{popupStore[activePopup].tp2}</span>
+                </div>
+              </>
+            )}
+            <div className="tl-popup-divider" />
+            <div className="tl-popup-meta-row">
+              <span className="tl-popup-meta-label">Confidence</span>
+              <span className="tl-popup-meta-val">{popupStore[activePopup].conf}</span>
+            </div>
+            {popupStore[activePopup].range && (
+              <div className="tl-popup-meta-row">
+                <span className="tl-popup-meta-label">&plusmn;1&sigma; band</span>
+                <span className="tl-popup-meta-val">{popupStore[activePopup].range}</span>
+              </div>
+            )}
+            <button className="tl-popup-close" onClick={() => setActivePopup(null)}>
+              <i className="fa-solid fa-xmark" /> Dismiss
+            </button>
+          </div>
+        </>
+      )}
     </>
   );
 }
