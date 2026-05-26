@@ -403,7 +403,7 @@ export default function SignupPage() {
             lineHeight: 1.65,
           }}
         >
-          Start your 7-day free trial and unlock the gold forecast dashboard,
+          Start your 7-day free trial and unlock the gold/bitcoin forecast dashboard,
           live signals, and trader tools.
         </p>
       </section>
@@ -497,7 +497,7 @@ export default function SignupPage() {
                   fontWeight: 800,
                 }}
               >
-                Email Address
+                Email Address(
               </label>
               <input
                 type="email"
