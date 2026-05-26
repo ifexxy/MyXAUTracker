@@ -65,6 +65,7 @@ interface EntrySignals {
 interface PopupData {
   kicker: string; signal: string; dir: string; dirColor: string;
   reason: string; conf: string; range: string | null;
+  entryPrice?: string; sl?: string; tp1?: string; tp2?: string;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -478,6 +479,22 @@ const sig24h = sigs?.e24h.sig ?? '';
 
   /* ── Popup helpers ── */
   function buildSignalPopup(frameLabel: string, sig: EntrySignal): PopupData {
+    const isLong = sig.badgeCls === 'bull';
+    const isShort = sig.badgeCls === 'bear';
+    const entryP = p.price;
+    const atrVal = atr || 20;
+    let sl: string | undefined;
+    let tp1: string | undefined;
+    let tp2: string | undefined;
+    if (isLong) {
+      sl = '$' + fmtP(entryP - atrVal * 1.5);
+      tp1 = '$' + fmtP(entryP + atrVal * 2);
+      tp2 = '$' + fmtP(entryP + atrVal * 3);
+    } else if (isShort) {
+      sl = '$' + fmtP(entryP + atrVal * 1.5);
+      tp1 = '$' + fmtP(entryP - atrVal * 2);
+      tp2 = '$' + fmtP(entryP - atrVal * 3);
+    }
     return {
       kicker: frameLabel + ' entry signal',
       signal: sig.sig,
@@ -486,6 +503,8 @@ const sig24h = sigs?.e24h.sig ?? '';
       reason: sig.reason,
       conf: sig.conf + '%',
       range: null,
+      entryPrice: '$' + fmtP(entryP),
+      sl, tp1, tp2,
     };
   }
 
@@ -1233,6 +1252,30 @@ const sig24h = sigs?.e24h.sig ?? '';
             <div className="tl-popup-signal">{popupStore[activePopup].signal}</div>
             <div className="tl-popup-dir" style={{ color: popupStore[activePopup].dirColor }}>{popupStore[activePopup].dir}</div>
             <div className="tl-popup-reason">{popupStore[activePopup].reason}</div>
+            {popupStore[activePopup].entryPrice && popupStore[activePopup].sl && (
+              <>
+                <div className="tl-popup-divider" />
+                <div style={{ fontSize: 11, color: 'var(--ink-3)', marginBottom: 10, lineHeight: 1.5, fontStyle: 'italic' }}>
+                  Generative entry based on analysis
+                </div>
+                <div className="tl-popup-meta-row">
+                  <span className="tl-popup-meta-label">Entry</span>
+                  <span className="tl-popup-meta-val">{popupStore[activePopup].entryPrice}</span>
+                </div>
+                <div className="tl-popup-meta-row">
+                  <span className="tl-popup-meta-label">Stop Loss</span>
+                  <span className="tl-popup-meta-val" style={{ color: 'var(--red)' }}>{popupStore[activePopup].sl}</span>
+                </div>
+                <div className="tl-popup-meta-row">
+                  <span className="tl-popup-meta-label">TP1</span>
+                  <span className="tl-popup-meta-val" style={{ color: 'var(--green)' }}>{popupStore[activePopup].tp1}</span>
+                </div>
+                <div className="tl-popup-meta-row">
+                  <span className="tl-popup-meta-label">TP2</span>
+                  <span className="tl-popup-meta-val" style={{ color: 'var(--green)' }}>{popupStore[activePopup].tp2}</span>
+                </div>
+              </>
+            )}
             <div className="tl-popup-divider" />
             <div className="tl-popup-meta-row">
               <span className="tl-popup-meta-label">Confidence</span>
