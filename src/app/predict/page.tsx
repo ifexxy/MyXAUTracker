@@ -232,6 +232,92 @@ function fmtP(v: number) {
 /* ══════════════════════════════════════════════════════════════
    MAIN COMPONENT
 ══════════════════════════════════════════════════════════════ */
+/* ── Adjustable banner height here ── */
+const BANNER_HEIGHT = 56;
+
+function BottomBanner() {
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 70, /* sits just above the bottom nav */
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '100%',
+        maxWidth: 480,
+        height: BANNER_HEIGHT,
+        background: dark ? '#111827' : '#f1f5f9',
+        borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+        borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 20px',
+        zIndex: 99,
+        cursor: 'pointer',
+        userSelect: 'none',
+      }}
+      onClick={() => window.open('https://xautracker.com/bitcoin', '_blank')}
+    >
+      {/* Left */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 8,
+            background: dark ? 'rgba(247,147,26,0.15)' : 'rgba(247,147,26,0.12)',
+            border: '1px solid rgba(247,147,26,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 15,
+            flexShrink: 0,
+          }}
+        >
+          ₿
+        </div>
+        <span
+          style={{
+            fontSize: 14,
+            fontWeight: 700,
+            color: dark ? '#ffffff' : '#0f172a',
+            fontFamily: 'inherit',
+          }}
+        >
+          Trade Bitcoin?
+        </span>
+      </div>
+
+      {/* Right */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          fontSize: 13,
+          fontWeight: 600,
+          color: dark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.45)',
+          fontFamily: 'inherit',
+          flexShrink: 0,
+        }}
+      >
+        Click to see Analysis
+        <i
+          className="fa-solid fa-arrow-right"
+          style={{
+            fontSize: 11,
+            color: dark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.45)',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function PredictPage() {
   /* ── mounted guard — nothing browser-specific runs on the server ── */
   const [mounted, setMounted] = useState(false);
@@ -1087,6 +1173,8 @@ const sig24h = sigs?.e24h.sig ?? '';
         <div className="footer-disc">Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates, not financial advice.</div>
         <div className="footer-copy">&copy; 2026 XauTracker.com &middot; Powered by TwelveData</div>
       </footer>
+      
+      <BottomBanner />
 
       {/* ── How To Popup ── */}
       {howToOpen && (
