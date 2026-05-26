@@ -80,6 +80,8 @@ export default function MindsPage() {
   const [hasMore, setHasMore] = useState(true);
   const [oldestDocSnap, setOldestDocSnap] = useState<any>(null);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [announceText, setAnnounceText] = useState('');
+  const [announceSending, setAnnounceSending] = useState(false);
   const unsubsRef = useRef<(() => void)[]>([]);
   const messagesRef = useRef<Message[]>([]);
 
@@ -322,6 +324,19 @@ export default function MindsPage() {
     } catch (e) { console.error('Reaction error:', e); }
   };
 
+  const postAnnouncement = async () => {
+    const text = announceText.trim();
+    if (!text || announceSending || !user) return;
+    setAnnounceSending(true);
+    try {
+      const fb = getFirebase();
+      await addDoc(collection(fb.db, 'chatAnnouncements'), { text, pinned: true, createdAt: serverTimestamp(), createdBy: user.uid });
+      setAnnounceText('');
+      showToast('Announcement posted');
+    } catch (e) { console.error(e); showToast('Failed to post announcement'); }
+    setAnnounceSending(false);
+  };
+
   useEffect(() => {
     return () => { if (cooldownTimer.current) clearInterval(cooldownTimer.current); };
   }, []);
@@ -413,6 +428,20 @@ export default function MindsPage() {
       {/* ═══════ CHAT ═══════ */}
       {screen === 'chat' && (
         <div style={{ padding: '0 16px' }}>
+          {/* ── Admin announcement composer ── */}
+          {user?.email === 'ifexxy9@gmail.com' && (
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
+              <input type="text" value={announceText} onChange={e => setAnnounceText(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); postAnnouncement(); } }}
+                placeholder="Write an announcement…" maxLength={500}
+                style={{ flex: 1, background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--ink)', fontSize: 13, padding: '9px 12px', outline: 'none' }} />
+              <button onClick={postAnnouncement} disabled={announceSending || !announceText.trim()}
+                style={{ padding: '9px 14px', background: 'var(--gold)', color: '#000', border: 'none', borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', opacity: announceSending || !announceText.trim() ? 0.4 : 1, whiteSpace: 'nowrap' }}>
+                {announceSending ? 'Posting…' : 'Post'}
+              </button>
+            </div>
+          )}
+
           {/* ── Announcements ── */}
           {announcements.map(a => (
             <div key={a.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 16px', marginBottom: 12, background: 'var(--gold-bg)', border: '1px solid rgba(200,150,42,0.2)', borderRadius: 12, fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
