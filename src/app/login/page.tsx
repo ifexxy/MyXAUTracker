@@ -74,7 +74,7 @@ export default function LoginPage() {
           Sign In<span style={{ color: 'var(--gold)' }}>.</span>
         </h1>
         <p style={{ maxWidth: 330, margin: '14px auto 0', color: 'var(--ink-2)', fontSize: 14, lineHeight: 1.65 }}>
-          Welcome back. Sign in to open your gold forecast dashboard, Minds community.
+          Sign in to open your gold or bitcoin forecast dashboard, Minds community.
         </p>
       </section>
 
