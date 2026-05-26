@@ -336,15 +336,28 @@ export default function PredictPage() {
   /* ── Notifications ── */
   const [notifEnabled, setNotifEnabled] = useState(false);
   const prevSignalsRef = useRef<Record<string, string>>({});
-  
+  const swRegRef = useRef<ServiceWorkerRegistration | null>(null);
+
+  /* Register service worker for mobile notification support */
+  useEffect(() => {
+    if (!mounted || !('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/sw.js').then(reg => { swRegRef.current = reg; }).catch(() => {});
+  }, [mounted]);
+
+  async function showNotif(title: string, opts: NotificationOptions) {
+    if (swRegRef.current) {
+      try { swRegRef.current.showNotification(title, opts); return; } catch {}
+    }
+    try { new Notification(title, opts); } catch {}
+  }
+
   /* Restore saved notification preference */
   useEffect(() => {
     if (!mounted) return;
     try {
       const saved = localStorage.getItem('xau-notif');
-      if (saved === 'true' && 'Notification' in window && Notification.permission === 'granted') {
-        setNotifEnabled(true);
-      }
+      const granted = 'Notification' in window && Notification.permission === 'granted';
+      if (saved === 'true' && granted) setNotifEnabled(true);
     } catch {}
   }, [mounted]);
 
@@ -453,13 +466,11 @@ const sig24h = sigs?.e24h.sig ?? '';
 
   Object.entries(current).forEach(([frame, sig]) => {
     if (!prev[frame] || prev[frame] === sig) return;
-    try {
-      new Notification(`XAU/USD ${frame} Signal Changed`, {
-        body: `${prev[frame]} → ${sig}`,
-        icon: '/favicon.ico',
-        tag: `xau-signal-${frame}`,
-      });
-    } catch {}
+    showNotif(`XAU/USD ${frame} Signal Changed`, {
+      body: `${prev[frame]} → ${sig}`,
+      icon: '/favicon.ico',
+      tag: `xau-signal-${frame}`,
+    });
   });
 
   prevSignalsRef.current = current;
@@ -478,21 +489,24 @@ const sig24h = sigs?.e24h.sig ?? '';
   }
 
   /* ── Popup helpers ── */
-  function buildSignalPopup(frameLabel: string, sig: EntrySignal, fc: Forecast): PopupData {
+  function buildSignalPopup(frameLabel: string, sig: EntrySignal): PopupData {
     const isLong = sig.badgeCls === 'bull';
     const isShort = sig.badgeCls === 'bear';
     const entryP = p.price;
+    const minMap: Record<string, number> = { '10 min': 10, '1 hour': 60, '4 hour': 240, '24 hour': 1440 };
+    const minutes = minMap[frameLabel] || 60;
+    const sigSigma = atr * Math.sqrt(minutes / 1440) * session.sessionMultiplier;
     let sl: string | undefined;
     let tp1: string | undefined;
     let tp2: string | undefined;
     if (isLong) {
-      sl = '$' + fmtP(fc.bandLow);
-      tp1 = '$' + fmtP(fc.target);
-      tp2 = '$' + fmtP(fc.bandHigh);
+      sl = '$' + fmtP(entryP - sigSigma);
+      tp1 = '$' + fmtP(entryP + sigSigma * 0.5);
+      tp2 = '$' + fmtP(entryP + sigSigma);
     } else if (isShort) {
-      sl = '$' + fmtP(fc.bandHigh);
-      tp1 = '$' + fmtP(fc.target);
-      tp2 = '$' + fmtP(fc.bandLow);
+      sl = '$' + fmtP(entryP + sigSigma);
+      tp1 = '$' + fmtP(entryP - sigSigma * 0.5);
+      tp2 = '$' + fmtP(entryP - sigSigma);
     }
     return {
       kicker: frameLabel + ' entry signal',
@@ -524,10 +538,10 @@ const sig24h = sigs?.e24h.sig ?? '';
   function openPopup(key: string) {
     if (!pred || !sigs) return;
     let data: PopupData | null = null;
-    if      (key === '10m')     data = buildSignalPopup('10 min', sigs.e10m, pred.f1h);
-    else if (key === '1h')      data = buildSignalPopup('1 hour', sigs.e1h, pred.f1h);
-    else if (key === '4h')      data = buildSignalPopup('4 hour', sigs.e4h, pred.f6h);
-    else if (key === '24h-sig') data = buildSignalPopup('24 hour', sigs.e24h, pred.f24h);
+    if      (key === '10m')     data = buildSignalPopup('10 min', sigs.e10m);
+    else if (key === '1h')      data = buildSignalPopup('1 hour', sigs.e1h);
+    else if (key === '4h')      data = buildSignalPopup('4 hour', sigs.e4h);
+    else if (key === '24h-sig') data = buildSignalPopup('24 hour', sigs.e24h);
     else if (key === 'fc-1h')   data = buildFcPopup('1 hour', pred.f1h, p.price);
     else if (key === 'fc-6h')   data = buildFcPopup('6 hour', pred.f6h, p.price);
     else if (key === 'fc-24h')  data = buildFcPopup('24 hour', pred.f24h, p.price);
