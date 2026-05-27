@@ -231,7 +231,7 @@ function fmtP(v: number) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   MAIN COMPONENT
+   MAIN \
 ══════════════════════════════════════════════════════════════ */
 /* ── Adjustable banner height here ── */
 const BANNER_HEIGHT = 56;
@@ -332,7 +332,7 @@ export default function PredictPage() {
   const [howToOpen, setHowToOpen] = useState(false);
   const [activePopup, setActivePopup] = useState<string | null>(null);
   const [popupStore, setPopupStore] = useState<Record<string, PopupData>>({});
-
+const [copyDone, setCopyDone] = useState(false);
   /* ── Notifications ── */
   const [notifEnabled, setNotifEnabled] = useState(false);
   const prevSignalsRef = useRef<Record<string, string>>({});
@@ -1259,108 +1259,95 @@ const sig24h = sigs?.e24h.sig ?? '';
       {activePopup && popupStore[activePopup] && (
         <>
           <div className="tl-overlay open" onClick={() => setActivePopup(null)} />
-          <div className="tl-popup open">
-          <div className="tl-popup-handle" />
+        <div className="tl-popup-handle" />
+<div className="tl-popup-kicker">{popupStore[activePopup].kicker}</div>
+<div className="tl-popup-signal">{popupStore[activePopup].signal}</div>
+<div className="tl-popup-dir" style={{ color: popupStore[activePopup].dirColor }}>{popupStore[activePopup].dir}</div>
+<div className="tl-popup-reason">{popupStore[activePopup].reason}</div>
+{popupStore[activePopup].entryPrice && popupStore[activePopup].sl && (
+  <>
+    <div className="tl-popup-divider" />
+    <div style={{ fontSize: 11, color: 'var(--ink-3)', marginBottom: 10, lineHeight: 1.5, fontStyle: 'italic' }}>
+      Generative entry based on analysis
+    </div>
+    <div className="tl-popup-meta-row">
+      <span className="tl-popup-meta-label">Entry</span>
+      <span className="tl-popup-meta-val">{popupStore[activePopup].entryPrice}</span>
+    </div>
+    <div className="tl-popup-meta-row">
+      <span className="tl-popup-meta-label">Stop Loss</span>
+      <span className="tl-popup-meta-val" style={{ color: 'var(--red)' }}>{popupStore[activePopup].sl}</span>
+    </div>
+    <div className="tl-popup-meta-row">
+      <span className="tl-popup-meta-label">TP1</span>
+      <span className="tl-popup-meta-val" style={{ color: 'var(--green)' }}>{popupStore[activePopup].tp1}</span>
+    </div>
+    <div className="tl-popup-meta-row">
+      <span className="tl-popup-meta-label">TP2</span>
+      <span className="tl-popup-meta-val" style={{ color: 'var(--green)' }}>{popupStore[activePopup].tp2}</span>
+    </div>
 
-{/* Header: $XAUUSD "Buy/Sell" signal 📈/📉 */}
-{popupStore[activePopup].entryPrice && popupStore[activePopup].sl ? (() => {
-  const pop = popupStore[activePopup];
-  const isSell = pop.dirColor === 'var(--red)';
-  const isBuy  = pop.dirColor === 'var(--green)';
-  const emoji  = isSell ? '📉' : isBuy ? '📈' : '➡️';
-  const action = isSell ? 'Sell' : isBuy ? 'Buy' : 'Neutral';
-  const actionColor = isSell ? 'var(--red)' : isBuy ? 'var(--green)' : 'var(--gold)';
+    {/* ── Copy button ── */}
+    {(() => {
+      const pop = popupStore[activePopup];
+      const isSell = pop.dirColor === 'var(--red)';
+      const isBuy  = pop.dirColor === 'var(--green)';
+      const action = isSell ? 'Sell' : isBuy ? 'Buy' : 'Neutral';
+      const emoji  = isSell ? '📉' : isBuy ? '📈' : '➡️';
+      const copyText =
+        `$XAUUSD ${action} signal ${emoji}\n` +
+        `Entry: ${pop.entryPrice}\n` +
+        `SL: ${pop.sl}\n` +
+        `TP1: ${pop.tp1}\n` +
+        `TP2: ${pop.tp2}\n\n` +
+        `current price as the time of this post $${fmtPrice(p.price)}`;
 
-  return (
-    <>
-      {/* Signal headline */}
-      <div style={{ marginBottom: 18 }}>
-        <div style={{ fontSize: 13, color: 'var(--ink-3)', marginBottom: 6, fontFamily: 'Space Mono, monospace' }}>
-          {pop.kicker}
-        </div>
-        <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--ink)', lineHeight: 1.25 }}>
-          $XAUUSD{' '}
-          <span style={{ color: actionColor }}>&quot;{action}&quot;</span>
-          {' '}signal {emoji}
-        </div>
-      </div>
-
-      {/* Trade levels block */}
-      <div style={{
-        background: 'var(--bg-2)',
-        border: '1px solid var(--border)',
-        borderRadius: 12,
-        overflow: 'hidden',
-        marginBottom: 16,
-      }}>
-        {[
-          { label: 'Entry',     val: pop.entryPrice!, color: 'var(--ink)'   },
-          { label: 'SL',        val: pop.sl!,         color: 'var(--red)'   },
-          { label: 'TP1',       val: pop.tp1!,        color: 'var(--green)' },
-          { label: 'TP2',       val: pop.tp2!,        color: 'var(--green)' },
-        ].map((row, i, arr) => (
-          <div key={row.label} style={{
+      return (
+        <button
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(copyText);
+              setCopyDone(true);
+              setTimeout(() => setCopyDone(false), 2000);
+            } catch {}
+          }}
+          style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 16px',
-            borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none',
-          }}>
-            <span style={{ fontSize: 13, color: 'var(--ink-3)', fontWeight: 600 }}>{row.label}</span>
-            <span style={{ fontSize: 15, fontWeight: 800, color: row.color, fontFamily: 'Space Mono, monospace' }}>
-              {row.val}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Current price note */}
-      <div style={{
-        fontSize: 12,
-        color: 'var(--ink-3)',
-        lineHeight: 1.6,
-        padding: '10px 14px',
-        background: 'var(--bg-3)',
-        borderRadius: 10,
-        marginBottom: 16,
-        fontStyle: 'italic',
-      }}>
-        Current price at the time of this analysis:{' '}
-        <strong style={{ color: 'var(--ink-2)', fontStyle: 'normal' }}>${fmtPrice(p.price)}</strong>
-      </div>
-
-      {/* Confidence */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>Confidence</span>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-2)', fontFamily: 'Space Mono, monospace' }}>
-          {pop.conf}
-        </span>
-      </div>
-    </>
-  );
-})() : (
-  /* Non-entry popups (forecast frames) */
-  <>
-    <div className="tl-popup-kicker">{popupStore[activePopup].kicker}</div>
-    <div className="tl-popup-signal">{popupStore[activePopup].signal}</div>
-    <div className="tl-popup-dir" style={{ color: popupStore[activePopup].dirColor }}>
-      {popupStore[activePopup].dir}
-    </div>
-    <div className="tl-popup-reason">{popupStore[activePopup].reason}</div>
-    <div className="tl-popup-divider" />
-    <div className="tl-popup-meta-row">
-      <span className="tl-popup-meta-label">Confidence</span>
-      <span className="tl-popup-meta-val">{popupStore[activePopup].conf}</span>
-    </div>
-    {popupStore[activePopup].range && (
-      <div className="tl-popup-meta-row">
-        <span className="tl-popup-meta-label">&plusmn;1&sigma; band</span>
-        <span className="tl-popup-meta-val">{popupStore[activePopup].range}</span>
-      </div>
-    )}
+            justifyContent: 'center',
+            gap: 7,
+            width: '100%',
+            marginTop: 14,
+            padding: '11px 0',
+            background: copyDone ? 'var(--green-bg)' : 'var(--bg-3)',
+            border: `1px solid ${copyDone ? 'var(--green)' : 'var(--border)'}`,
+            borderRadius: 10,
+            color: copyDone ? 'var(--green)' : 'var(--ink-2)',
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            transition: 'all 0.2s',
+          }}
+        >
+          <i className={`fa-solid ${copyDone ? 'fa-check' : 'fa-copy'}`} />
+          {copyDone ? 'Copied!' : 'Copy Signal'}
+        </button>
+      );
+    })()}
   </>
 )}
-
+<div className="tl-popup-divider" />
+<div className="tl-popup-meta-row">
+  <span className="tl-popup-meta-label">Confidence</span>
+  <span className="tl-popup-meta-val">{popupStore[activePopup].conf}</span>
+</div>
+{popupStore[activePopup].range && (
+  <div className="tl-popup-meta-row">
+    <span className="tl-popup-meta-label">&plusmn;1&sigma; band</span>
+    <span className="tl-popup-meta-val">{popupStore[activePopup].range}</span>
+  </div>
+)}
 <button className="tl-popup-close" onClick={() => setActivePopup(null)}>
   <i className="fa-solid fa-xmark" /> Dismiss
 </button>
