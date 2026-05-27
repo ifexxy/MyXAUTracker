@@ -9,6 +9,7 @@ import {
   onSnapshot, serverTimestamp, where, getDocs, startAfter,
   updateDoc, deleteDoc, getCountFromServer
 } from 'firebase/firestore';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { showToast } from '@/components/Toast';
 import Footer from '@/components/Footer';
@@ -79,6 +80,10 @@ export default function MindsPage() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [announceText, setAnnounceText] = useState('');
   const [announceSending, setAnnounceSending] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
   const unsubsRef = useRef<(() => void)[]>([]);
   const messagesRef = useRef<Message[]>([]);
   const pageCursors = useRef<Record<number, any>>({});
@@ -327,6 +332,23 @@ export default function MindsPage() {
     return () => { if (cooldownTimer.current) clearInterval(cooldownTimer.current); };
   }, []);
 
+  const handleLogin = async () => {
+    setLoginError('');
+    if (!loginEmail || !loginPassword) { setLoginError('Enter your email and password.'); return; }
+    setLoginLoading(true);
+    try {
+      const fb = getFirebase();
+      await signInWithEmailAndPassword(fb.auth, loginEmail, loginPassword);
+    } catch (e: any) {
+      const msg =
+        e.code === 'auth/user-not-found' ? 'No account found with this email.' :
+        e.code === 'auth/wrong-password' ? 'Incorrect password.' :
+        e.code === 'auth/too-many-requests' ? 'Too many attempts. Try again later.' :
+        'Sign in failed. Check your details.';
+      setLoginError(msg);
+    } finally { setLoginLoading(false); }
+  };
+
   /* ═══════════════ RENDER ═══════════════ */
   return (
     <>
@@ -364,7 +386,7 @@ export default function MindsPage() {
         </div>
       </div>
 
-      {/* Access wall */}
+      {/* Access wall — inline login */}
       {screen === 'access-wall' && (
         <div className="mx-[20px] mb-[18px] p-[20px] rounded-[16px]" style={{ background: 'var(--bg-2)', border: '1px solid var(--border)' }}>
           <div style={{ width: 58, height: 58, margin: '0 auto 16px', borderRadius: 18, background: 'var(--gold-bg)', color: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
@@ -372,9 +394,20 @@ export default function MindsPage() {
           </div>
           <div style={{ fontSize: 22, fontWeight: 800, textAlign: 'center', color: 'var(--ink)', marginBottom: 8 }}>Join the Conversation</div>
           <div style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.6, textAlign: 'center', marginBottom: 18 }}>Sign in with an active trial or subscription to chat with other gold traders.</div>
-          <Link href="/login" className="flex items-center justify-center gap-[9px] w-full py-[14px] text-[14px] font-bold rounded-[12px] no-underline" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
-            <i className="fa-solid fa-right-to-bracket" /> Sign In
-          </Link>
+          {loginError && <div style={{ fontSize: 13, color: 'var(--red)', background: 'var(--red-bg)', borderRadius: 10, padding: '12px 14px', marginBottom: 14 }}>{loginError}</div>}
+          <input type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleLogin(); }} placeholder="Email" autoFocus
+            style={{ width: '100%', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--ink)', fontSize: 15, padding: '12px 14px', outline: 'none', marginBottom: 10 }} />
+          <input type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleLogin(); }} placeholder="Password"
+            style={{ width: '100%', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--ink)', fontSize: 15, padding: '12px 14px', outline: 'none', marginBottom: 18 }} />
+          <button onClick={handleLogin} disabled={loginLoading}
+            className="flex items-center justify-center gap-[9px] w-full py-[14px] text-[14px] font-bold rounded-[12px] cursor-pointer"
+            style={{ background: 'var(--ink)', color: 'var(--bg)', border: 'none', opacity: loginLoading ? 0.55 : 1 }}>
+            {loginLoading ? <><i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Signing in...</> : <><i className="fa-solid fa-right-to-bracket" /> Sign In</>}
+          </button>
+          <div style={{ textAlign: 'center', marginTop: 14, fontSize: 13, color: 'var(--ink-3)' }}>
+            Don't have an account?{' '}
+            <Link href="/signup" style={{ color: 'var(--gold)', fontWeight: 700, textDecoration: 'none' }}>Sign Up</Link>
+          </div>
         </div>
       )}
 
