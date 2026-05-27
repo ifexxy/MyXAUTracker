@@ -231,7 +231,7 @@ function fmtP(v: number) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   MAIN \
+   MAIN COMPONENT
 ══════════════════════════════════════════════════════════════ */
 /* ── Adjustable banner height here ── */
 const BANNER_HEIGHT = 56;
@@ -1259,7 +1259,8 @@ const sig24h = sigs?.e24h.sig ?? '';
       {activePopup && popupStore[activePopup] && (
         <>
           <div className="tl-overlay open" onClick={() => setActivePopup(null)} />
-        <div className="tl-popup-handle" />
+          <div className="tl-popup open">
+<div className="tl-popup-handle" />
 <div className="tl-popup-kicker">{popupStore[activePopup].kicker}</div>
 <div className="tl-popup-signal">{popupStore[activePopup].signal}</div>
 <div className="tl-popup-dir" style={{ color: popupStore[activePopup].dirColor }}>{popupStore[activePopup].dir}</div>
