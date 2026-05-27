@@ -22,6 +22,7 @@ interface Message {
   text: string; createdAt: any;
   reactions?: Record<string, string[]>;
   replyTo?: ReplyTo | null;
+  imageURL?: string;
 }
 interface Announcement {
   id: string; text: string; createdAt: any; pinned: boolean; createdBy: string;
@@ -54,6 +55,34 @@ function linkify(raw: string) {
 
 const EMOJIS = ['👍', '🔥', '❤️', '😂', '😮'];
 
+function compressImage(file: File, maxBytes: number, maxDim: number): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        const ratio = Math.min(maxDim / w, maxDim / h);
+        w = Math.round(w * ratio); h = Math.round(h * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, w, h);
+      let quality = 0.85;
+      const tryQuality = () => {
+        canvas.toBlob(blob => {
+          if (!blob) { reject(new Error('Compression failed')); return; }
+          if (blob.size <= maxBytes || quality <= 0.2) resolve(blob);
+          else { quality -= 0.15; tryQuality(); }
+        }, 'image/jpeg', quality);
+      };
+      tryQuality();
+    };
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 /* ─── component ─── */
 export default function MindsPage() {
   const { user } = useAuth();
@@ -71,6 +100,11 @@ export default function MindsPage() {
   const feedRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const cooldownTimer = useRef<NodeJS.Timeout | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [expandedImage, setExpandedImage] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   /* new state */
   const [replyTo, setReplyTo] = useState<ReplyTo | null>(null);
@@ -226,6 +260,15 @@ export default function MindsPage() {
   }, [composeText]);
 
   /* ─── handlers ─── */
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('Only image files are allowed.'); return; }
+    setSelectedImage(file);
+    setImagePreview(URL.createObjectURL(file));
+    e.target.value = '';
+  };
+
   const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -260,18 +303,28 @@ export default function MindsPage() {
 
   const sendMessage = async () => {
     const text = composeText.trim();
-    if (!text || sending || cooldown > 0 || !user) return;
+    if ((!text && !selectedImage) || sending || cooldown > 0 || !user) return;
     setSending(true);
+    if (selectedImage) setImageUploading(true);
     try {
       const fb = getFirebase();
       const profileSnap = await getDoc(doc(fb.db, 'chatProfiles', user.uid));
       const profile = profileSnap.data() as ChatProfile;
       const data: any = { uid: user.uid, username: profile.username, photoURL: profile.photoURL || null, text, createdAt: serverTimestamp() };
       if (replyTo) data.replyTo = replyTo;
+      if (selectedImage) {
+        const blob = selectedImage.size > 1000000 ? await compressImage(selectedImage, 1000000, 1200) : selectedImage;
+        const storageRef = ref(getStorage(fb.app), `chatImages/${user.uid}_${Date.now()}.jpg`);
+        const snap = await uploadBytes(storageRef, blob);
+        data.imageURL = await getDownloadURL(snap.ref);
+      }
       await addDoc(collection(fb.db, 'chatMessages'), data);
       setComposeText('');
       setReplyTo(null);
       setSending(false);
+      setImageUploading(false);
+      setSelectedImage(null);
+      if (imagePreview) { URL.revokeObjectURL(imagePreview); setImagePreview(null); }
       setCooldown(15);
       if (cooldownTimer.current) clearInterval(cooldownTimer.current);
       cooldownTimer.current = setInterval(() => {
@@ -280,7 +333,7 @@ export default function MindsPage() {
           return prev - 1;
         });
       }, 1000);
-    } catch { showToast('Failed to send message.'); setSending(false); }
+    } catch { showToast('Failed to send message.'); setSending(false); setImageUploading(false); }
   };
 
   const toggleReaction = async (msgId: string, emoji: string) => {
@@ -497,11 +550,25 @@ export default function MindsPage() {
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                 placeholder="What's on your mind?" maxLength={300} rows={1}
                 style={{ flex: 1, background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 14, color: 'var(--ink)', fontSize: 15, padding: '10px 14px', outline: 'none', resize: 'none', lineHeight: 1.5, minHeight: 40, overflow: 'hidden' }} />
-              <button onClick={sendMessage} disabled={sending || cooldown > 0 || !composeText.trim()}
-                style={{ width: 40, height: 40, background: 'var(--ink)', color: 'var(--bg)', border: 'none', borderRadius: 12, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, opacity: sending || cooldown > 0 || !composeText.trim() ? 0.35 : 1 }}>
-                <i className="fa-solid fa-paper-plane" />
+              <button onClick={() => imageInputRef.current?.click()} disabled={imageUploading}
+                style={{ width: 36, height: 36, background: selectedImage ? 'var(--gold-bg)' : 'transparent', color: selectedImage ? 'var(--gold)' : 'var(--ink-3)', border: selectedImage ? '1px solid var(--gold)' : '1px solid var(--border)', borderRadius: 10, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, opacity: imageUploading ? 0.35 : 1 }}>
+                <i className="fa-solid fa-image" />
+              </button>
+              <input type="file" ref={imageInputRef} accept="image/*" style={{ display: 'none' }} onChange={handleImageSelect} />
+              <button onClick={sendMessage} disabled={sending || cooldown > 0 || (!composeText.trim() && !selectedImage)}
+                style={{ width: 40, height: 40, background: 'var(--ink)', color: 'var(--bg)', border: 'none', borderRadius: 12, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, opacity: sending || cooldown > 0 || (!composeText.trim() && !selectedImage) ? 0.35 : 1 }}>
+                {imageUploading ? <i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> : <i className="fa-solid fa-paper-plane" />}
               </button>
             </div>
+            {imagePreview && (
+              <div style={{ position: 'relative', display: 'inline-block', marginTop: 8, borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                <img src={imagePreview} style={{ maxWidth: 120, maxHeight: 100, display: 'block', objectFit: 'cover' }} />
+                <button onClick={() => { setSelectedImage(null); if (imagePreview) URL.revokeObjectURL(imagePreview); setImagePreview(null); }}
+                  style={{ position: 'absolute', top: 4, right: 4, width: 22, height: 22, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className="fa-solid fa-xmark" />
+                </button>
+              </div>
+            )}
             <div className="flex justify-between items-center mt-[6px] px-[2px]">
               {cooldown > 0 ? (
                 <div className="flex items-center gap-[8px]" style={{ flex: 1 }}>
@@ -593,6 +660,13 @@ export default function MindsPage() {
                     {/* Text */}
                     <div style={{ paddingLeft: 40, fontSize: 14, color: 'var(--ink)', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word', marginBottom: 6 }} dangerouslySetInnerHTML={{ __html: linkify(m.text) }} />
 
+                    {m.imageURL && (
+                      <div style={{ paddingLeft: 40, marginBottom: 8 }}>
+                        <img src={m.imageURL} onClick={() => setExpandedImage(m.imageURL!)}
+                          style={{ maxWidth: 240, maxHeight: 200, borderRadius: 10, border: '1px solid var(--border)', objectFit: 'cover', cursor: 'pointer', background: 'var(--bg-2)' }} />
+                      </div>
+                    )}
+
                     {/* Reactions + actions row */}
                     <div style={{ paddingLeft: 40, display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
                       {EMOJIS.map(emoji => {
@@ -617,6 +691,13 @@ export default function MindsPage() {
               })
             )}
           </div>
+        </div>
+      )}
+
+      {expandedImage && (
+        <div onClick={() => { setExpandedImage(null); }}
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 20 }}>
+          <img src={expandedImage} style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: 8, objectFit: 'contain' }} />
         </div>
       )}
 
