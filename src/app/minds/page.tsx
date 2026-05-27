@@ -9,6 +9,7 @@ import {
   onSnapshot, serverTimestamp, where, getDocs, startAfter,
   updateDoc, deleteDoc, getCountFromServer
 } from 'firebase/firestore';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { showToast } from '@/components/Toast';
 import Footer from '@/components/Footer';
@@ -75,14 +76,19 @@ export default function MindsPage() {
   const [replyTo, setReplyTo] = useState<ReplyTo | null>(null);
   const [onlineCount, setOnlineCount] = useState(0);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [oldestDocSnap, setOldestDocSnap] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [initialLoading, setInitialLoading] = useState(true);
   const [announceText, setAnnounceText] = useState('');
   const [announceSending, setAnnounceSending] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
   const unsubsRef = useRef<(() => void)[]>([]);
   const messagesRef = useRef<Message[]>([]);
+  const pageCursors = useRef<Record<number, any>>({});
+  const PAGE_SIZE = 10;
+  const totalPages = Math.max(1, Math.ceil(messageCount / PAGE_SIZE));
 
   /* keep messagesRef in sync */
   useEffect(() => { messagesRef.current = messages; }, [messages]);
@@ -131,8 +137,8 @@ export default function MindsPage() {
     );
     unsubsRef.current.push(unsubAnn);
 
-    // Messages: initial fetch + realtime listener
-    loadMessages(fb);
+    // Messages: initial fetch
+    goToPage(1);
 
     // Presence
     trackPresence(fb);
@@ -145,54 +151,55 @@ export default function MindsPage() {
   }, [screen]);
 
   /* ─── messages: paginated + realtime ─── */
-  const loadMessages = async (fb: any) => {
+  const goToPage = async (page: number) => {
+    if (!fbRef.current) return;
+    const fb = fbRef.current;
+    setCurrentPage(page);
     setInitialLoading(true);
-    const q = query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'desc'), limit(10));
-    const snap = await getDocs(q);
-    const docs = snap.docs;
-    if (docs.length < 10) setHasMore(false);
-    setOldestDocSnap(docs.length > 0 ? docs[docs.length - 1] : null);
-    const msgs: Message[] = docs.map(d => ({ id: d.id, ...d.data() } as Message));
-    setMessages(msgs);
-    messagesRef.current = msgs;
-    setInitialLoading(false);
 
-    // Realtime listener for new messages (newer than the first/newest)
-    const newestTs = msgs.length > 0 ? msgs[0].createdAt : null;
-    const listenQ = newestTs
-      ? query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'asc'), startAfter(newestTs))
-      : query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'asc'), limit(10));
-    const unsub = onSnapshot(listenQ, (snap2) => {
-      const incoming: Message[] = [];
-      snap2.forEach(d => incoming.push({ id: d.id, ...d.data() } as Message));
-      if (!incoming.length) return;
-      incoming.reverse(); // newest first
-      setMessages(prev => {
-        const updated = [...prev];
-        incoming.forEach(msg => {
-          const idx = updated.findIndex(m => m.id === msg.id);
-          if (idx > -1) updated[idx] = msg;
-          else updated.unshift(msg);
-        });
-        return updated;
-      });
-    }, (err) => console.error('Messages listener error:', err));
-    unsubsRef.current.push(unsub);
-  };
+    // Unsubscribe old listener
+    unsubsRef.current.forEach(fn => fn());
+    unsubsRef.current = [];
 
-  const loadMore = async () => {
-    if (loadingMore || !hasMore || !oldestDocSnap || !fbRef.current) return;
-    setLoadingMore(true);
     try {
-      const q = query(collection(fbRef.current.db, 'chatMessages'), orderBy('createdAt', 'desc'), startAfter(oldestDocSnap), limit(10));
+      let q;
+      if (page === 1) {
+        q = query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'desc'), limit(PAGE_SIZE));
+      } else {
+        const cursor = pageCursors.current[page - 1];
+        if (!cursor) return;
+        q = query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'desc'), startAfter(cursor), limit(PAGE_SIZE));
+      }
       const snap = await getDocs(q);
       const docs = snap.docs;
-      if (docs.length < 10) setHasMore(false);
-      if (docs.length > 0) setOldestDocSnap(docs[docs.length - 1]);
-      const older = docs.map(d => ({ id: d.id, ...d.data() } as Message));
-      setMessages(prev => [...prev, ...older]);
-    } catch {}
-    setLoadingMore(false);
+      if (docs.length > 0) pageCursors.current[page] = docs[docs.length - 1];
+      const msgs: Message[] = docs.map(d => ({ id: d.id, ...d.data() } as Message));
+      setMessages(msgs);
+      messagesRef.current = msgs;
+      setInitialLoading(false);
+
+      // Realtime listener only on page 1
+      if (page === 1 && msgs.length > 0) {
+        const newestTs = msgs[0].createdAt;
+        const listenQ = query(collection(fb.db, 'chatMessages'), orderBy('createdAt', 'asc'), startAfter(newestTs));
+        const unsub = onSnapshot(listenQ, (snap2) => {
+          const incoming: Message[] = [];
+          snap2.forEach(d => incoming.push({ id: d.id, ...d.data() } as Message));
+          if (!incoming.length) return;
+          incoming.reverse();
+          setMessages(prev => {
+            const updated = [...prev];
+            incoming.forEach(msg => {
+              const idx = updated.findIndex(m => m.id === msg.id);
+              if (idx > -1) updated[idx] = msg;
+              else updated.unshift(msg);
+            });
+            return updated;
+          });
+        }, (err) => console.error('Messages listener error:', err));
+        unsubsRef.current.push(unsub);
+      }
+    } catch { setInitialLoading(false); }
   };
 
   /* ─── presence ─── */
@@ -325,6 +332,23 @@ export default function MindsPage() {
     return () => { if (cooldownTimer.current) clearInterval(cooldownTimer.current); };
   }, []);
 
+  const handleLogin = async () => {
+    setLoginError('');
+    if (!loginEmail || !loginPassword) { setLoginError('Enter your email and password.'); return; }
+    setLoginLoading(true);
+    try {
+      const fb = getFirebase();
+      await signInWithEmailAndPassword(fb.auth, loginEmail, loginPassword);
+    } catch (e: any) {
+      const msg =
+        e.code === 'auth/user-not-found' ? 'No account found with this email.' :
+        e.code === 'auth/wrong-password' ? 'Incorrect password.' :
+        e.code === 'auth/too-many-requests' ? 'Too many attempts. Try again later.' :
+        'Sign in failed. Check your details.';
+      setLoginError(msg);
+    } finally { setLoginLoading(false); }
+  };
+
   /* ═══════════════ RENDER ═══════════════ */
   return (
     <>
@@ -362,7 +386,7 @@ export default function MindsPage() {
         </div>
       </div>
 
-      {/* Access wall */}
+      {/* Access wall — inline login */}
       {screen === 'access-wall' && (
         <div className="mx-[20px] mb-[18px] p-[20px] rounded-[16px]" style={{ background: 'var(--bg-2)', border: '1px solid var(--border)' }}>
           <div style={{ width: 58, height: 58, margin: '0 auto 16px', borderRadius: 18, background: 'var(--gold-bg)', color: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
@@ -370,9 +394,20 @@ export default function MindsPage() {
           </div>
           <div style={{ fontSize: 22, fontWeight: 800, textAlign: 'center', color: 'var(--ink)', marginBottom: 8 }}>Join the Conversation</div>
           <div style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.6, textAlign: 'center', marginBottom: 18 }}>Sign in with an active trial or subscription to chat with other gold traders.</div>
-          <Link href="/login" className="flex items-center justify-center gap-[9px] w-full py-[14px] text-[14px] font-bold rounded-[12px] no-underline" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
-            <i className="fa-solid fa-right-to-bracket" /> Sign In
-          </Link>
+          {loginError && <div style={{ fontSize: 13, color: 'var(--red)', background: 'var(--red-bg)', borderRadius: 10, padding: '12px 14px', marginBottom: 14 }}>{loginError}</div>}
+          <input type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleLogin(); }} placeholder="Email" autoFocus
+            style={{ width: '100%', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--ink)', fontSize: 15, padding: '12px 14px', outline: 'none', marginBottom: 10 }} />
+          <input type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleLogin(); }} placeholder="Password"
+            style={{ width: '100%', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--ink)', fontSize: 15, padding: '12px 14px', outline: 'none', marginBottom: 18 }} />
+          <button onClick={handleLogin} disabled={loginLoading}
+            className="flex items-center justify-center gap-[9px] w-full py-[14px] text-[14px] font-bold rounded-[12px] cursor-pointer"
+            style={{ background: 'var(--ink)', color: 'var(--bg)', border: 'none', opacity: loginLoading ? 0.55 : 1 }}>
+            {loginLoading ? <><i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Signing in...</> : <><i className="fa-solid fa-right-to-bracket" /> Sign In</>}
+          </button>
+          <div style={{ textAlign: 'center', marginTop: 14, fontSize: 13, color: 'var(--ink-3)' }}>
+            Don't have an account?{' '}
+            <Link href="/signup" style={{ color: 'var(--gold)', fontWeight: 700, textDecoration: 'none' }}>Sign Up</Link>
+          </div>
         </div>
       )}
 
@@ -480,16 +515,42 @@ export default function MindsPage() {
             </div>
           </div>
 
+          {/* ── Pagination ── */}
+          {!initialLoading && messageCount > PAGE_SIZE && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 16 }}>
+              <button onClick={() => goToPage(1)} disabled={currentPage === 1}
+                style={{ padding: '4px 10px', fontSize: 12, fontWeight: 700, border: '1px solid var(--border)', borderRadius: 8, background: 'transparent', color: 'var(--ink-3)', cursor: currentPage === 1 ? 'default' : 'pointer', opacity: currentPage === 1 ? 0.35 : 1 }}>
+                <i className="fa-solid fa-angles-left" />
+              </button>
+              <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}
+                style={{ padding: '4px 10px', fontSize: 12, fontWeight: 700, border: '1px solid var(--border)', borderRadius: 8, background: 'transparent', color: 'var(--ink-3)', cursor: currentPage === 1 ? 'default' : 'pointer', opacity: currentPage === 1 ? 0.35 : 1 }}>
+                <i className="fa-solid fa-chevron-left" />
+              </button>
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                const start = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
+                const p = start + i;
+                if (p > totalPages) return null;
+                const active = p === currentPage;
+                return (
+                  <button key={p} onClick={() => goToPage(p)}
+                    style={{ minWidth: 32, height: 32, fontSize: 13, fontWeight: active ? 800 : 600, border: active ? '1px solid var(--gold)' : '1px solid var(--border)', borderRadius: 8, background: active ? 'var(--gold-bg)' : 'transparent', color: active ? 'var(--gold)' : 'var(--ink-2)', cursor: 'pointer' }}>
+                    {p}
+                  </button>
+                );
+              })}
+              <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}
+                style={{ padding: '4px 10px', fontSize: 12, fontWeight: 700, border: '1px solid var(--border)', borderRadius: 8, background: 'transparent', color: 'var(--ink-3)', cursor: currentPage === totalPages ? 'default' : 'pointer', opacity: currentPage === totalPages ? 0.35 : 1 }}>
+                <i className="fa-solid fa-chevron-right" />
+              </button>
+              <button onClick={() => goToPage(totalPages)} disabled={currentPage === totalPages}
+                style={{ padding: '4px 10px', fontSize: 12, fontWeight: 700, border: '1px solid var(--border)', borderRadius: 8, background: 'transparent', color: 'var(--ink-3)', cursor: currentPage === totalPages ? 'default' : 'pointer', opacity: currentPage === totalPages ? 0.35 : 1 }}>
+                <i className="fa-solid fa-angles-right" />
+              </button>
+            </div>
+          )}
+
           {/* ── Messages ── */}
           <div ref={feedRef} style={{ paddingBottom: 20 }}>
-            {/* Load more button */}
-            {hasMore && !initialLoading && (
-              <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
-                <button onClick={loadMore} disabled={loadingMore} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 10, padding: '8px 20px', fontSize: 12, color: 'var(--ink-3)', cursor: 'pointer', fontWeight: 600 }}>
-                  {loadingMore ? <><i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Loading…</> : 'Load earlier messages'}
-                </button>
-              </div>
-            )}
 
             {initialLoading ? (
               <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-3)' }}>
