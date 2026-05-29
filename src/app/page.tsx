@@ -58,12 +58,7 @@ export default function HomePage() {
 {/* ── HERO ── */}
 <section style={{ padding: '52px 20px 0', textAlign: 'center' }}>
 
-  {/* Badge */}
-  <div className="inline-flex items-center gap-[6px] text-[10px] font-bold px-[10px] py-[5px] rounded-full mb-[20px]"
-       style={{ color: 'var(--green)', background: 'var(--green-bg)', letterSpacing: '0.08em', textTransform: 'uppercase', border: '1px solid var(--green)' }}>
-    <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--green)', display: 'inline-block', animation: 'pulse 1.5s ease-in-out infinite' }} />
-    Live · XAU/USD
-  </div>
+
 
   {/* H1 */}
   <h1 style={{ fontSize: 36, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.18, letterSpacing: -1, marginBottom: 14 }}>
@@ -80,8 +75,8 @@ export default function HomePage() {
   <Link href={user ? '/predict' : '/signup'}
         className="inline-flex items-center justify-center gap-[8px] px-[28px] py-[15px] text-[14px] font-bold rounded-[8px] no-underline mb-[10px]"
         style={{ background: 'var(--ink)', color: 'var(--bg)', width: '100%', maxWidth: 340 }}>
-    <i className="fa-solid fa-brain" style={{ fontSize: 12 }} />
-    {user ? 'Open Gold Forecast' : 'Start Free — 7 Days'}
+ 
+    {user ? 'Open Gold Forecast' : 'Start 7 Days Trial'}
   </Link>
 
   {/* Secondary */}
@@ -104,10 +99,10 @@ export default function HomePage() {
       {[
         'ATR Volatility Model', 'Live XAU/USD Price', 'RSI · MA20 · MA50',
         'Multi-Timeframe Forecast', 'Market Session Awareness', 'London · NY · Asian Sessions',
-        'Pivot Levels', 'Bull/Bear Signals', 'Live Gold News', 'TwelveData API',
+        'Pivot Levels', 'Bull/Bear Signals', 'TwelveData API',
         'ATR Volatility Model', 'Live XAU/USD Price', 'RSI · MA20 · MA50',
         'Multi-Timeframe Forecast', 'Market Session Awareness', 'London · NY · Asian Sessions',
-        'Pivot Levels', 'Bull/Bear Signals', 'Live Gold News', 'TwelveData API',
+        'Pivot Levels', 'Bull/Bear Signals', 'TwelveData API',
       ].map((item, i) => (
         <span key={i} style={{ fontSize: 11, color: 'var(--ink-4)', whiteSpace: 'nowrap', padding: '0 20px', borderRight: '1px solid var(--border)' }}>
           {item}
