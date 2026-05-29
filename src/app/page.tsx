@@ -55,12 +55,57 @@ export default function HomePage() {
   return (
     <>
       {/* Feature cards */}
+      {/* ── HERO SECTION ── */}
+<section style={{ padding: '48px 20px 36px', borderBottom: '1px solid var(--border)', textAlign: 'center' }}>
+
+  {/* Badge */}
+  <div className="inline-flex items-center gap-[6px] text-[10px] font-bold px-[10px] py-[5px] rounded-full mb-[18px]"
+       style={{ color: 'var(--green)', background: 'var(--green-bg)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+    <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--green)', display: 'inline-block' }} />
+    Live · XAU/USD
+  </div>
+
+  {/* Headline */}
+  <h1 style={{ fontSize: 34, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.2, letterSpacing: -0.8, marginBottom: 14 }}>
+    Gold/Bitcoin Signals.<br />Algorithmic Precision.
+  </h1>
+
+  {/* Sub */}
+  <p style={{ fontSize: 14, color: 'var(--ink-3)', lineHeight: 1.7, maxWidth: 320, margin: '0 auto 28px' }}>
+    ATR-based price forecasts across 10 minutes to 24 hours, and technical analysis, built for serious gold traders.
+  </p>
+
+  {/* Primary CTA */}
+  <Link href="/predict"
+        className="inline-flex items-center gap-[8px] px-[24px] py-[14px] text-[14px] font-bold rounded-[8px] no-underline mb-[12px]"
+        style={{ background: 'var(--ink)', color: 'var(--bg)', display: 'inline-flex' }}>
+    <i className="fa-solid fa-brain" style={{ fontSize: 12 }} /> View Forecast
+  </Link>
+
+  {/* Secondary CTA */}
+  <div>
+    <Link href="/signup"
+          className="text-[12px] font-semibold no-underline"
+          style={{ color: 'var(--ink-3)', borderBottom: '1px solid var(--border)' }}>
+      7-day free trial, no card required →
+    </Link>
+  </div>
+
+  {/* Social proof */}
+  <div className="flex items-center justify-center gap-[6px] mt-[28px]" style={{ flexWrap: 'wrap' }}>
+    {['ATR Model', 'Live Prices', 'RSI · MA20 · MA50', 'Multi-Timeframe'].map((tag, i) => (
+      <span key={i} className="text-[10px] px-[9px] py-[4px] rounded-full"
+            style={{ color: 'var(--ink-4)', background: 'var(--bg-2)', border: '1px solid var(--border)' }}>
+        {tag}
+      </span>
+    ))}
+  </div>
+</section>
       <div className="flex gap-[10px] overflow-x-auto px-0 py-[20px_0_20px_20px]" style={{ borderBottom: '1px solid var(--border)', WebkitOverflowScrolling: 'touch' }}>
         {[
           { name: 'Numbers Don\'t Lie', desc: 'We used ATR model to forecast across 1hr, 4hr and 24h timeframe.' },
           { name: 'Trend Analysis', desc: 'MA20, MA50, RSI(14) and multi-timeframe technical charts.' },
-          { name: 'Market News', desc: 'Live gold market headlines from major financial outlets.' },
-          { name: 'Real-Time', desc: 'Prices refreshed every 10 seconds via TwelveData API.' },
+          { name: 'Real-Time', desc: 'Prices refreshed every 20 seconds via TwelveData API.' },
         ].map((f, i) => (
           <div key={i} className="flex-shrink-0 w-[176px] rounded-[10px] px-[14px] py-[15px]" style={{ background: 'var(--bg-2)' }}>
             <div className="text-[15px] mb-[10px]" style={{ color: 'var(--ink-3)' }}></div>
