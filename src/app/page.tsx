@@ -8,6 +8,34 @@ import Footer from '@/components/Footer';
 export default function HomePage() {
   const { user, loading, signOut } = useAuth();
   const [authInner, setAuthInner] = useState<React.ReactNode>(null);
+  
+{/* Add this state at the top of your component, alongside existing useState hooks */}
+const phrases = ['Built on Real Math.', 'Powered by ATR Model.', '80% Profitability Rate.', 'Algorithmic Precision.'];
+const [phraseIndex, setPhraseIndex] = useState(0);
+const [displayed, setDisplayed] = useState('');
+const [isDeleting, setIsDeleting] = useState(false);
+
+useEffect(() => {
+  const current = phrases[phraseIndex];
+  let timeout: ReturnType<typeof setTimeout>;
+
+  if (!isDeleting && displayed.length < current.length) {
+    // Typing
+    timeout = setTimeout(() => setDisplayed(current.slice(0, displayed.length + 1)), 60);
+  } else if (!isDeleting && displayed.length === current.length) {
+    // Pause at full word
+    timeout = setTimeout(() => setIsDeleting(true), 1800);
+  } else if (isDeleting && displayed.length > 0) {
+    // Deleting
+    timeout = setTimeout(() => setDisplayed(current.slice(0, displayed.length - 1)), 35);
+  } else if (isDeleting && displayed.length === 0) {
+    // Move to next phrase
+    setIsDeleting(false);
+    setPhraseIndex((prev) => (prev + 1) % phrases.length);
+  }
+
+  return () => clearTimeout(timeout);
+}, [displayed, isDeleting, phraseIndex]);
 
   useEffect(() => {
     if (loading) {
@@ -61,10 +89,21 @@ export default function HomePage() {
 
 
   {/* H1 */}
-  <h1 style={{ fontSize: 36, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.18, letterSpacing: -1, marginBottom: 14 }}>
-    Gold Forecasts.<br />
-    <span style={{ color: 'var(--ink-3)' }}>Built on Real Math.</span>
-  </h1>
+<h1 style={{ fontSize: 36, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.18, letterSpacing: -1, marginBottom: 14 }}>
+  Gold Forecasts.<br />
+  <span style={{ color: 'var(--ink-3)' }}>
+    {displayed}
+    <span style={{
+      display: 'inline-block',
+      width: 2,
+      height: '0.85em',
+      background: 'var(--ink-3)',
+      marginLeft: 2,
+      verticalAlign: 'middle',
+      animation: 'blink 0.8s step-end infinite',
+    }} />
+  </span>
+</h1>
 
   {/* Sub */}
   <p style={{ fontSize: 14, color: 'var(--ink-3)', lineHeight: 1.65, maxWidth: 300, margin: '0 auto 26px' }}>
@@ -116,6 +155,10 @@ export default function HomePage() {
   @keyframes marquee {
     from { transform: translateX(0); }
     to   { transform: translateX(-50%); }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
   }
 `}</style>
       <div className="flex gap-[10px] overflow-x-auto px-0 py-[20px_0_20px_20px]" style={{ borderBottom: '1px solid var(--border)', WebkitOverflowScrolling: 'touch' }}>
