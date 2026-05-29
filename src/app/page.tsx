@@ -10,7 +10,7 @@ export default function HomePage() {
   const [authInner, setAuthInner] = useState<React.ReactNode>(null);
   
 {/* Add this state at the top of your component, alongside existing useState hooks */}
-const phrases = ['Built on Real Math.', 'Powered by ATR Model.', '80% Profitability Rate.', 'Algorithmic Precision.'];
+const phrases = ['Built on Real Math.', 'Based on ATR.', '80% Profits.', 'Easy to Use'];
 const [phraseIndex, setPhraseIndex] = useState(0);
 const [displayed, setDisplayed] = useState('');
 const [isDeleting, setIsDeleting] = useState(false);
