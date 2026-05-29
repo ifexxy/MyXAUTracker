@@ -55,57 +55,80 @@ export default function HomePage() {
   return (
     <>
       {/* Feature cards */}
-      {/* ── HERO SECTION ── */}
-<section style={{ padding: '48px 20px 36px', borderBottom: '1px solid var(--border)', textAlign: 'center' }}>
+{/* ── HERO ── */}
+<section style={{ padding: '52px 20px 0', textAlign: 'center' }}>
 
   {/* Badge */}
-  <div className="inline-flex items-center gap-[6px] text-[10px] font-bold px-[10px] py-[5px] rounded-full mb-[18px]"
-       style={{ color: 'var(--green)', background: 'var(--green-bg)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-    <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--green)', display: 'inline-block' }} />
+  <div className="inline-flex items-center gap-[6px] text-[10px] font-bold px-[10px] py-[5px] rounded-full mb-[20px]"
+       style={{ color: 'var(--green)', background: 'var(--green-bg)', letterSpacing: '0.08em', textTransform: 'uppercase', border: '1px solid var(--green)' }}>
+    <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--green)', display: 'inline-block', animation: 'pulse 1.5s ease-in-out infinite' }} />
     Live · XAU/USD
   </div>
 
-  {/* Headline */}
-  <h1 style={{ fontSize: 34, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.2, letterSpacing: -0.8, marginBottom: 14 }}>
-    Gold/Bitcoin Signals.<br />Algorithmic Precision.
+  {/* H1 */}
+  <h1 style={{ fontSize: 36, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.18, letterSpacing: -1, marginBottom: 14 }}>
+    Gold Forecasts.<br />
+    <span style={{ color: 'var(--ink-3)' }}>Built on Real Math.</span>
   </h1>
 
   {/* Sub */}
-  <p style={{ fontSize: 14, color: 'var(--ink-3)', lineHeight: 1.7, maxWidth: 320, margin: '0 auto 28px' }}>
-    ATR-based price forecasts across 10 minutes to 24 hours, and technical analysis, built for serious gold traders.
+  <p style={{ fontSize: 14, color: 'var(--ink-3)', lineHeight: 1.65, maxWidth: 300, margin: '0 auto 26px' }}>
+    ATR-based price signals across 5m–24h timeframes, live market news, and technical analysis for XAU/USD.
   </p>
 
-  {/* Primary CTA */}
-  <Link href="/predict"
-        className="inline-flex items-center gap-[8px] px-[24px] py-[14px] text-[14px] font-bold rounded-[8px] no-underline mb-[12px]"
-        style={{ background: 'var(--ink)', color: 'var(--bg)', display: 'inline-flex' }}>
-    <i className="fa-solid fa-brain" style={{ fontSize: 12 }} /> View Forecast
+  {/* CTA */}
+  <Link href={user ? '/predict' : '/signup'}
+        className="inline-flex items-center justify-center gap-[8px] px-[28px] py-[15px] text-[14px] font-bold rounded-[8px] no-underline mb-[10px]"
+        style={{ background: 'var(--ink)', color: 'var(--bg)', width: '100%', maxWidth: 340 }}>
+    <i className="fa-solid fa-brain" style={{ fontSize: 12 }} />
+    {user ? 'Open Gold Forecast' : 'Start Free — 7 Days'}
   </Link>
 
-  {/* Secondary CTA */}
-  <div>
-    <Link href="/signup"
-          className="text-[12px] font-semibold no-underline"
-          style={{ color: 'var(--ink-3)', borderBottom: '1px solid var(--border)' }}>
-      7-day free trial, no card required →
-    </Link>
-  </div>
+  {/* Secondary */}
+  {!user && (
+    <div style={{ marginBottom: 36 }}>
+      <Link href="/login" style={{ fontSize: 12, color: 'var(--ink-4)', textDecoration: 'none' }}>
+        Already have an account? <span style={{ color: 'var(--ink-3)', borderBottom: '1px solid var(--border)' }}>Sign in</span>
+      </Link>
+    </div>
+  )}
 
-  {/* Social proof */}
-  <div className="flex items-center justify-center gap-[6px] mt-[28px]" style={{ flexWrap: 'wrap' }}>
-    {['ATR Model', 'Live Prices', 'RSI · MA20 · MA50', 'Multi-Timeframe'].map((tag, i) => (
-      <span key={i} className="text-[10px] px-[9px] py-[4px] rounded-full"
-            style={{ color: 'var(--ink-4)', background: 'var(--bg-2)', border: '1px solid var(--border)' }}>
-        {tag}
-      </span>
-    ))}
+  {/* Marquee */}
+  <div style={{ overflow: 'hidden', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '12px 0', marginLeft: -20, marginRight: -20, marginTop: user ? 36 : 0 }}>
+    <div style={{
+      display: 'flex',
+      gap: 0,
+      animation: 'marquee 22s linear infinite',
+      width: 'max-content',
+    }}>
+      {[
+        'ATR Volatility Model', 'Live XAU/USD Price', 'RSI · MA20 · MA50',
+        'Multi-Timeframe Forecast', 'Market Session Awareness', 'London · NY · Asian Sessions',
+        'Pivot Levels', 'Bull/Bear Signals', 'Live Gold News', 'TwelveData API',
+        'ATR Volatility Model', 'Live XAU/USD Price', 'RSI · MA20 · MA50',
+        'Multi-Timeframe Forecast', 'Market Session Awareness', 'London · NY · Asian Sessions',
+        'Pivot Levels', 'Bull/Bear Signals', 'Live Gold News', 'TwelveData API',
+      ].map((item, i) => (
+        <span key={i} style={{ fontSize: 11, color: 'var(--ink-4)', whiteSpace: 'nowrap', padding: '0 20px', borderRight: '1px solid var(--border)' }}>
+          {item}
+        </span>
+      ))}
+    </div>
   </div>
 </section>
+
+<style>{`
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+`}</style>
       <div className="flex gap-[10px] overflow-x-auto px-0 py-[20px_0_20px_20px]" style={{ borderBottom: '1px solid var(--border)', WebkitOverflowScrolling: 'touch' }}>
         {[
           { name: 'Numbers Don\'t Lie', desc: 'We used ATR model to forecast across 1hr, 4hr and 24h timeframe.' },
           { name: 'Trend Analysis', desc: 'MA20, MA50, RSI(14) and multi-timeframe technical charts.' },
-          { name: 'Real-Time', desc: 'Prices refreshed every 20 seconds via TwelveData API.' },
+          { name: 'Market News', desc: 'Live gold market headlines from major financial outlets.' },
+          { name: 'Real-Time', desc: 'Prices refreshed every 10 seconds via TwelveData API.' },
         ].map((f, i) => (
           <div key={i} className="flex-shrink-0 w-[176px] rounded-[10px] px-[14px] py-[15px]" style={{ background: 'var(--bg-2)' }}>
             <div className="text-[15px] mb-[10px]" style={{ color: 'var(--ink-3)' }}></div>
