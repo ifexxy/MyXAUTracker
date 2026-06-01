@@ -91,7 +91,7 @@ useEffect(() => {
   {/* H1 */}
 <h1 style={{ fontSize: 36, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.18, letterSpacing: -1, marginBottom: 14 }}>
   Gold Forecasts.<br />
-  <span style={{ color: 'var(--ink-3)' }}>
+
     {displayed}
     <span style={{
       display: 'inline-block',
@@ -124,7 +124,7 @@ useEffect(() => {
     letterSpacing: 0.1,
   }}
 >
-  <i className="fa-solid fa-brain" style={{ fontSize: 12 }} />
+  <i className="fa-solid fa-arrow-right" style={{ fontSize: 20 }} />
   {user ? 'Open Gold Forecast' : 'Start Free — 7 Days'}
 </Link>
 
@@ -137,40 +137,11 @@ useEffect(() => {
     </div>
   )}
 
-  {/* Marquee */}
-  <div style={{ overflow: 'hidden', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '12px 0', marginLeft: -20, marginRight: -20, marginTop: user ? 36 : 0 }}>
-    <div style={{
-      display: 'flex',
-      gap: 0,
-      animation: 'marquee 22s linear infinite',
-      width: 'max-content',
-    }}>
-      {[
-        'ATR Volatility Model', 'Live XAU/USD Price', 'RSI · MA20 · MA50',
-        'Multi-Timeframe Forecast', 'Market Session Awareness', 'London · NY · Asian Sessions',
-        'Pivot Levels', 'Bull/Bear Signals', 'TwelveData API',
-        'ATR Volatility Model', 'Live XAU/USD Price', 'RSI · MA20 · MA50',
-        'Multi-Timeframe Forecast', 'Market Session Awareness', 'London · NY · Asian Sessions',
-        'Pivot Levels', 'Bull/Bear Signals', 'TwelveData API',
-      ].map((item, i) => (
-        <span key={i} style={{ fontSize: 11, color: 'var(--ink-4)', whiteSpace: 'nowrap', padding: '0 20px', borderRight: '1px solid var(--border)' }}>
-          {item}
-        </span>
-      ))}
-    </div>
-  </div>
+  {/* Marquee Removed */}
+
 </section>
 
-<style>{`
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0; }
-  }
-`}</style>
+
       <div className="flex gap-[10px] overflow-x-auto px-0 py-[20px_0_20px_20px]" style={{ borderBottom: '1px solid var(--border)', WebkitOverflowScrolling: 'touch' }}>
         {[
           { name: 'Numbers Don\'t Lie', desc: 'We used ATR model to forecast across 1hr, 4hr and 24h timeframe.' },
