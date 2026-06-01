@@ -91,7 +91,7 @@ useEffect(() => {
   {/* H1 */}
 <h1 style={{ fontSize: 36, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.18, letterSpacing: -1, marginBottom: 14 }}>
   Gold Forecasts.<br />
-  
+  <span style={{ color: '#5B5BD6' }}>
     {displayed}
     <span style={{
       display: 'inline-block',
@@ -102,12 +102,12 @@ useEffect(() => {
       verticalAlign: 'middle',
       animation: 'blink 0.8s step-end infinite',
     }} />
-
+  </span>
 </h1>
 
   {/* Sub */}
-  <p style={{ fontSize: 14, color: 'var(--ink-3)', lineHeight: 1.65, maxWidth: 300, margin: '0 auto 26px' }}>
-    ATR-based price signals across 10m–24h timeframes, live market news, and technical analysis for XAU/USD and BTC.
+  <p style={{ fontSize: 20, color: 'var(--ink-3)', lineHeight: 1.65, maxWidth: 300, margin: '0 auto 26px' }}>
+    Whether you're a pro trader or a newbie, we have the right tools to supercharge your trading experience. 
   </p>
 
   {/* CTA */}
@@ -140,22 +140,8 @@ useEffect(() => {
   {/* Marquee Removed */}
 
 </section>
+<br />
 
-
-      <div className="flex gap-[10px] overflow-x-auto px-0 py-[20px_0_20px_20px]" style={{ borderBottom: '1px solid var(--border)', WebkitOverflowScrolling: 'touch' }}>
-        {[
-          { name: 'Numbers Don\'t Lie', desc: 'We used ATR model to forecast across 1hr, 4hr and 24h timeframe.' },
-          { name: 'Trend Analysis', desc: 'MA20, MA50, RSI(14) and multi-timeframe technical charts.' },
-          { name: 'Market News', desc: 'Live gold market headlines from major financial outlets.' },
-          { name: 'Real-Time', desc: 'Prices refreshed every 10 seconds via TwelveData API.' },
-        ].map((f, i) => (
-          <div key={i} className="flex-shrink-0 w-[176px] rounded-[10px] px-[14px] py-[15px]" style={{ background: 'var(--bg-2)' }}>
-            <div className="text-[15px] mb-[10px]" style={{ color: 'var(--ink-3)' }}></div>
-            <div className="text-[13px] font-bold mb-[4px]" style={{ color: 'var(--ink)' }}>{f.name}</div>
-            <div className="text-[11px]" style={{ color: 'var(--ink-3)', lineHeight: 1.55 }}>{f.desc}</div>
-          </div>
-        ))}
-      </div>
 
       {/* CTA */}
       <section style={{ padding: '26px 20px', borderBottom: '1px solid var(--border)' }}>
@@ -163,7 +149,7 @@ useEffect(() => {
           Trade Gold/Bitcoin<br />like a Pro.
         </h1>
         <p style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.65, marginBottom: 20 }}>
-          Whether you&apos;re a pro trader or a newbie, we have the right tools to supercharge your trading experience. Join traders who rely on XauTracker every day to make profit with minimal loss.
+ Join traders who rely on XauTracker every day to make profit with minimal loss.
         </p>
 
         <div style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 16, background: 'var(--bg-2)', marginBottom: 14 }}>
