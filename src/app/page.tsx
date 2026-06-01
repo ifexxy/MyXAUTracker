@@ -91,7 +91,7 @@ useEffect(() => {
   {/* H1 */}
 <h1 style={{ fontSize: 36, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.18, letterSpacing: -1, marginBottom: 14 }}>
   Gold Forecasts.<br />
-
+  
     {displayed}
     <span style={{
       display: 'inline-block',
@@ -102,7 +102,7 @@ useEffect(() => {
       verticalAlign: 'middle',
       animation: 'blink 0.8s step-end infinite',
     }} />
-  </span>
+
 </h1>
 
   {/* Sub */}
