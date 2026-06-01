@@ -9,7 +9,7 @@ export default function HomePage() {
   const { user, loading, signOut } = useAuth();
   const [authInner, setAuthInner] = useState<React.ReactNode>(null);
   
-{/* Add this state at the top of your component, alongside existing useState hooks */}
+{/* Bullet lines */}
 const phrases = ['Built on Real Math.', 'Based on ATR.', '80% Profits.', 'Easy to Use'];
 const [phraseIndex, setPhraseIndex] = useState(0);
 const [displayed, setDisplayed] = useState('');
@@ -83,7 +83,7 @@ useEffect(() => {
   return (
     <>
       {/* Feature cards */}
-{/* ── HERO ── */}
+{/* HERO */}
 <section style={{ padding: '52px 20px 0', textAlign: 'center' }}>
 
 
@@ -97,7 +97,7 @@ useEffect(() => {
       display: 'inline-block',
       width: 2,
       height: '0.85em',
-      background: 'var(--ink-3)',
+      background: '#5B5BD6',
       marginLeft: 2,
       verticalAlign: 'middle',
       animation: 'blink 0.8s step-end infinite',
@@ -107,16 +107,26 @@ useEffect(() => {
 
   {/* Sub */}
   <p style={{ fontSize: 14, color: 'var(--ink-3)', lineHeight: 1.65, maxWidth: 300, margin: '0 auto 26px' }}>
-    ATR-based price signals across 5m–24h timeframes, live market news, and technical analysis for XAU/USD.
+    ATR-based price signals across 10m–24h timeframes, live market news, and technical analysis for XAU/USD and BTC.
   </p>
 
   {/* CTA */}
-  <Link href={user ? '/predict' : '/signup'}
-        className="inline-flex items-center justify-center gap-[8px] px-[28px] py-[15px] text-[14px] font-bold rounded-[8px] no-underline mb-[10px]"
-        style={{ background: 'var(--ink)', color: 'var(--bg)', width: '100%', maxWidth: 340 }}>
- 
-    {user ? 'Open Gold Forecast' : 'Start 7 Days Trial'}
-  </Link>
+<Link
+  href={user ? '/predict' : '/signup'}
+  className="inline-flex items-center justify-center gap-[8px] text-[14px] font-bold rounded-[14px] no-underline mb-[10px]"
+  style={{
+    background: '#5B5BD6',
+    color: '#ffffff',
+    padding: '14px 36px',
+    display: 'inline-flex',
+    width: 'auto',
+    maxWidth: 'none',
+    letterSpacing: 0.1,
+  }}
+>
+  <i className="fa-solid fa-brain" style={{ fontSize: 12 }} />
+  {user ? 'Open Gold Forecast' : 'Start Free — 7 Days'}
+</Link>
 
   {/* Secondary */}
   {!user && (
