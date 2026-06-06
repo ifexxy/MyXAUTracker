@@ -506,3 +506,86 @@ footer { padding: 24px 16px 48px; border-top: 1px solid var(--border); margin-to
 
 /* FontAwesome fallback */
 .fa-solid, .fa-regular, .fa-brands { font-family: "Font Awesome 6 Free"; }
+
+/* ══════════════════════════════════════════
+   DESKTOP LAYOUT (≥ 768px)
+══════════════════════════════════════════ */
+@media (min-width: 768px) {
+
+  #app-shell {
+    max-width: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  /* ── Sidebar takes the left column ── */
+  #desktop-sidebar {
+    display: flex !important;
+  }
+
+  /* ── Content shifts right ── */
+  #content {
+    margin-left: 240px;
+    max-width: 720px;
+    width: 100%;
+    min-height: 100dvh;
+  }
+
+  /* ── Hide hamburger in topbar ── */
+  #topbar-menu-btn {
+    display: none !important;
+  }
+
+  /* ── Topbar becomes just a thin strip ── */
+  #topbar {
+    margin-left: 240px;
+  }
+
+  /* ── Stats grid goes 4-col ── */
+  .stats-grid-3 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* ── Predict cards: signals + sentiment side by side ── */
+  .desktop-2col {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 14px 16px 0;
+  }
+  .desktop-2col > .predict-card {
+    margin: 0 !important;
+  }
+
+  /* ── Wider padding on content areas ── */
+  .predict-card,
+  .tl-outer-card,
+  .algo-note,
+  .disclaimer,
+  .session-row,
+  .live-strip,
+  .stats-grid-3 {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  /* ── Live price bigger on desktop ── */
+  .live-price-big {
+    font-size: 52px;
+  }
+
+  /* ── Toast centers over content area ── */
+  #toast {
+    left: calc(240px + 50%);
+    transform: translateX(-50%) translateY(20px);
+  }
+  #toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (min-width: 1100px) {
+  #content {
+    max-width: 860px;
+  }
+}
