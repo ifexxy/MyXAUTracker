@@ -7,7 +7,6 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { GoldPriceProvider } from '@/contexts/GoldPriceContext';
 import Topbar from '@/components/Topbar';
 import Drawer from '@/components/Drawer';
-import DesktopSidebar from '@/components/DesktopSidebar';
 import Toast from '@/components/Toast';
 
 export default function RootLayoutClient({ children }: { children: React.ReactNode }) {
@@ -30,12 +29,7 @@ export default function RootLayoutClient({ children }: { children: React.ReactNo
     <ThemeProvider>
       <AuthProvider>
         <GoldPriceProvider>
-          {/* Mobile drawer */}
           <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-
-          {/* Desktop persistent sidebar */}
-          <DesktopSidebar />
-
           <div id="app-shell">
             <Topbar onMenuClick={() => setDrawerOpen(true)} />
             <div id="content">{children}</div>
