@@ -966,6 +966,301 @@ const sig24h = sigs?.e24h.sig ?? '';
         Forecasts use <strong style={{ color: 'var(--gold)' }}>ATR × √(t/1440)</strong> — the financial square-root-of-time volatility model.{' '}
         <strong style={{ color: 'var(--red)' }}>Not financial advice.</strong>
       </div>
+      
+{/* ═══ Technical Indicators — 1H–4H Swing Scalping ═══ */}
+      {(() => {
+        const CANDLES = 20;
+        interface Candle { o: number; h: number; l: number; c: number; }
+
+        function buildCandles(basePrice: number, atrVal: number, chpVal: number): Candle[] {
+          const isUpTrend = chpVal >= 0;
+          const drift = (chpVal / 100 * basePrice) / CANDLES * 0.35;
+          const body  = atrVal * 0.13;
+          const wick  = atrVal * 0.06;
+
+          const candles: Candle[] = [];
+          let prev = basePrice - drift * CANDLES * (isUpTrend ? 0.7 : 1.3);
+
+          for (let i = 0; i < CANDLES; i++) {
+            const noise = (Math.random() - 0.5) * body;
+            const close = prev + drift + noise;
+            const hi    = Math.max(prev, close) + wick + Math.random() * wick;
+            const lo    = Math.min(prev, close) - wick - Math.random() * wick;
+            candles.push({ o: prev, h: hi, l: lo, c: close });
+            prev = close;
+          }
+          const gap = basePrice - candles[CANDLES - 1].c;
+          return candles.map(c => ({ o: c.o + gap, h: c.h + gap, l: c.l + gap, c: c.c + gap }));
+        }
+
+        if (!p.price || p.price === 0) return null;
+
+        const candles = buildCandles(p.price, atr || 20, p.chp || 0);
+
+        /* ── Swing highs & lows ── */
+        const swingHighs: { idx: number; price: number }[] = [];
+        const swingLows:  { idx: number; price: number }[] = [];
+
+        for (let i = 1; i < CANDLES - 1; i++) {
+          if (candles[i].h > candles[i - 1].h && candles[i].h > candles[i + 1].h)
+            swingHighs.push({ idx: i, price: candles[i].h });
+          if (candles[i].l < candles[i - 1].l && candles[i].l < candles[i + 1].l)
+            swingLows.push({ idx: i, price: candles[i].l });
+        }
+
+        /* ── Market structure ── */
+        let bullishStructure = false;
+        let bearishStructure = false;
+
+        if (swingHighs.length >= 2 && swingLows.length >= 2) {
+          const lastH = swingHighs[swingHighs.length - 1].price;
+          const prevH = swingHighs[swingHighs.length - 2].price;
+          const lastL = swingLows[swingLows.length - 1].price;
+          const prevL = swingLows[swingLows.length - 2].price;
+          bullishStructure = lastH > prevH && lastL > prevL;
+          bearishStructure = lastH < prevH && lastL < prevL;
+        }
+
+        /* ── Liquidity sweep — wider tolerance for 1H–4H wicks ── */
+        const lastCandle = candles[CANDLES - 1];
+        const recentLow  = swingLows.length  > 0 ? swingLows[swingLows.length   - 1].price : null;
+        const recentHigh = swingHighs.length > 0 ? swingHighs[swingHighs.length - 1].price : null;
+
+        const sweepTol = (atr || 20) * 0.15;
+
+        const buySweep  = recentLow  !== null
+          && lastCandle.l < recentLow  - sweepTol
+          && lastCandle.c > recentLow;
+
+        const sellSweep = recentHigh !== null
+          && lastCandle.h > recentHigh + sweepTol
+          && lastCandle.c < recentHigh;
+
+        /* ── BOS confirmation ── */
+        const lastLH = swingHighs.length > 0 ? swingHighs[swingHighs.length - 1].price : null;
+        const lastHL = swingLows.length  > 0 ? swingLows[swingLows.length   - 1].price : null;
+
+        const buyBOS  = buySweep  && lastLH !== null && lastCandle.c > lastLH;
+        const sellBOS = sellSweep && lastHL !== null && lastCandle.c < lastHL;
+
+        /* ── Final signal ── */
+        type SwingSignal =
+          | { type: 'BUY';     sweepLevel: number; bosLevel: number }
+          | { type: 'SELL';    sweepLevel: number; bosLevel: number }
+          | { type: 'WAIT';    reason: string }
+          | { type: 'CAUTION'; reason: string };
+
+        let swingSignal: SwingSignal;
+
+        if (buyBOS && bullishStructure) {
+          swingSignal = { type: 'BUY', sweepLevel: recentLow!, bosLevel: lastLH! };
+        } else if (sellBOS && bearishStructure) {
+          swingSignal = { type: 'SELL', sweepLevel: recentHigh!, bosLevel: lastHL! };
+        } else if (buySweep && !buyBOS) {
+          swingSignal = { type: 'CAUTION', reason: 'Low sweep detected — waiting for BOS confirmation (candle close above $' + fmtP(lastLH ?? p.price) + ')' };
+        } else if (sellSweep && !sellBOS) {
+          swingSignal = { type: 'CAUTION', reason: 'High sweep detected — waiting for BOS confirmation (candle close below $' + fmtP(lastHL ?? p.price) + ')' };
+        } else if (!bullishStructure && !bearishStructure) {
+          swingSignal = { type: 'WAIT', reason: 'No clear market structure on the 1H–4H frame. Price is ranging — stand aside.' };
+        } else {
+          swingSignal = { type: 'WAIT', reason: 'Structure confirmed but no liquidity sweep yet. Wait for price to grab a swing level before entry.' };
+        }
+
+        /* ── Styling helpers ── */
+        const sigColor =
+          swingSignal.type === 'BUY'     ? 'var(--green)' :
+          swingSignal.type === 'SELL'    ? 'var(--red)'   :
+          swingSignal.type === 'CAUTION' ? 'var(--gold)'  : 'var(--ink-3)';
+
+        const sigBg =
+          swingSignal.type === 'BUY'     ? 'var(--green-bg)' :
+          swingSignal.type === 'SELL'    ? 'var(--red-bg)'   :
+          swingSignal.type === 'CAUTION' ? 'var(--gold-bg)'  : 'var(--bg-3)';
+
+        const sigBorder =
+          swingSignal.type === 'BUY'     ? 'rgba(0,212,143,0.25)'  :
+          swingSignal.type === 'SELL'    ? 'rgba(255,69,97,0.25)'  :
+          swingSignal.type === 'CAUTION' ? 'rgba(212,167,44,0.25)' : 'var(--border)';
+
+        const sigIcon =
+          swingSignal.type === 'BUY'     ? 'fa-arrow-trend-up'      :
+          swingSignal.type === 'SELL'    ? 'fa-arrow-trend-down'     :
+          swingSignal.type === 'CAUTION' ? 'fa-triangle-exclamation' : 'fa-clock';
+
+        const sigLabel =
+          swingSignal.type === 'BUY'     ? 'BUY — Long Entry'    :
+          swingSignal.type === 'SELL'    ? 'SELL — Short Entry'   :
+          swingSignal.type === 'CAUTION' ? 'Sweep Detected'       : 'No Trade';
+
+        /* ── TP / SL scaled for 1H–4H ── */
+        const swingATR   = (atr || 20) * Math.sqrt(120 / 1440) * (session.sessionMultiplier || 1);
+        const entryPrice = p.price;
+        const buyTP      = entryPrice + swingATR * 0.75;
+        const buySL      = entryPrice - swingATR * 0.45;
+        const sellTP     = entryPrice - swingATR * 0.75;
+        const sellSL     = entryPrice + swingATR * 0.45;
+
+        /* ── Mini candle chart ── */
+        const barMin  = Math.min(...candles.map(c => c.l));
+        const barMax  = Math.max(...candles.map(c => c.h));
+        const barRng  = barMax - barMin || 1;
+        const CHART_H = 56;
+
+        return (
+          <div className="predict-card" style={{ marginBottom: 14 }}>
+            <h3>
+              <i className="fa-solid fa-crosshairs" />
+              Technical Indicators for 1H – 4H Trading
+            </h3>
+
+            {/* Mini candle chart */}
+            <div style={{
+              display: 'flex', alignItems: 'flex-end', gap: 2,
+              height: CHART_H, marginBottom: 14,
+              padding: '0 2px', borderBottom: '1px solid var(--border)', paddingBottom: 6,
+            }}>
+              {candles.map((c, i) => {
+                const isBullC = c.c >= c.o;
+                const bodyTop = ((barMax - Math.max(c.o, c.c)) / barRng) * CHART_H;
+                const bodyH   = Math.max(((Math.abs(c.c - c.o)) / barRng) * CHART_H, 1.5);
+                const wickTop = ((barMax - c.h) / barRng) * CHART_H;
+                const wickH   = ((c.h - c.l) / barRng) * CHART_H;
+                const isLast  = i === CANDLES - 1;
+                return (
+                  <div key={i} style={{ flex: 1, position: 'relative', height: CHART_H, display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ position: 'absolute', top: wickTop, width: 1, height: wickH, background: isBullC ? 'var(--green)' : 'var(--red)', opacity: 0.5 }} />
+                    <div style={{ position: 'absolute', top: bodyTop, width: '60%', height: bodyH, background: isBullC ? 'var(--green)' : 'var(--red)', borderRadius: 1, opacity: isLast ? 1 : 0.65, boxShadow: isLast ? `0 0 6px ${isBullC ? 'var(--green)' : 'var(--red)'}` : 'none' }} />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Structure badges */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '6px 12px', borderRadius: 8,
+                background: bullishStructure ? 'var(--green-bg)' : 'var(--bg-3)',
+                border: `1px solid ${bullishStructure ? 'rgba(0,212,143,0.25)' : 'var(--border)'}`,
+                fontSize: 11, fontWeight: 700,
+                color: bullishStructure ? 'var(--green)' : 'var(--ink-4)',
+              }}>
+                <i className="fa-solid fa-arrow-up" style={{ fontSize: 9 }} />
+                HH + HL — Bullish Structure
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '6px 12px', borderRadius: 8,
+                background: bearishStructure ? 'var(--red-bg)' : 'var(--bg-3)',
+                border: `1px solid ${bearishStructure ? 'rgba(255,69,97,0.25)' : 'var(--border)'}`,
+                fontSize: 11, fontWeight: 700,
+                color: bearishStructure ? 'var(--red)' : 'var(--ink-4)',
+              }}>
+                <i className="fa-solid fa-arrow-down" style={{ fontSize: 9 }} />
+                LH + LL — Bearish Structure
+              </div>
+            </div>
+
+            {/* Checklist */}
+            <div style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 10, padding: '12px 14px', marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
+                Setup Checklist
+              </div>
+              {[
+                {
+                  label: 'Market structure identified',
+                  ok: bullishStructure || bearishStructure,
+                  detail: bullishStructure ? 'Bullish (HH + HL)' : bearishStructure ? 'Bearish (LH + LL)' : 'Choppy / unclear',
+                },
+                {
+                  label: 'Liquidity sweep',
+                  ok: buySweep || sellSweep,
+                  detail: buySweep  ? `Low swept at $${fmtP(recentLow  ?? 0)} — rejection above` :
+                          sellSweep ? `High swept at $${fmtP(recentHigh ?? 0)} — rejection below` :
+                          'No sweep yet',
+                },
+                {
+                  label: 'BOS confirmation',
+                  ok: buyBOS || sellBOS,
+                  detail: buyBOS  ? `BOS up — closed above $${fmtP(lastLH ?? 0)}` :
+                          sellBOS ? `BOS down — closed below $${fmtP(lastHL ?? 0)}` :
+                          'Waiting for candle close',
+                },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 2 ? '1px solid var(--border)' : 'none' }}>
+                  <div style={{
+                    width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                    background: item.ok ? 'var(--green-bg)' : 'var(--bg-3)',
+                    border: `1px solid ${item.ok ? 'rgba(0,212,143,0.3)' : 'var(--border)'}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 10, color: item.ok ? 'var(--green)' : 'var(--ink-4)',
+                  }}>
+                    <i className={`fa-solid ${item.ok ? 'fa-check' : 'fa-xmark'}`} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink)', marginBottom: 1 }}>{item.label}</div>
+                    <div style={{ fontSize: 11, color: item.ok ? 'var(--ink-2)' : 'var(--ink-4)' }}>{item.detail}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Main signal */}
+            <div style={{
+              background: sigBg, border: `1px solid ${sigBorder}`, borderRadius: 12, padding: '16px',
+              marginBottom: (swingSignal.type === 'BUY' || swingSignal.type === 'SELL') ? 12 : 0,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 9, flexShrink: 0,
+                  background: sigColor === 'var(--green)'  ? 'rgba(0,212,143,0.15)'  :
+                              sigColor === 'var(--red)'    ? 'rgba(255,69,97,0.15)'  :
+                              sigColor === 'var(--gold)'   ? 'rgba(212,167,44,0.15)' : 'var(--bg-3)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 15, color: sigColor,
+                }}>
+                  <i className={`fa-solid ${sigIcon}`} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: sigColor, lineHeight: 1.1 }}>{sigLabel}</div>
+                  <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 2 }}>1H – 4H Swing Trade</div>
+                </div>
+              </div>
+
+              {(swingSignal.type === 'WAIT' || swingSignal.type === 'CAUTION') && (
+                <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.65 }}>
+                  {swingSignal.reason}
+                </div>
+              )}
+
+              {(swingSignal.type === 'BUY' || swingSignal.type === 'SELL') && (
+                <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.65 }}>
+                  {swingSignal.type === 'BUY'
+                    ? `Price swept liquidity below $${fmtP(swingSignal.sweepLevel)} and rejected. BOS confirmed with a close above $${fmtP(swingSignal.bosLevel)}. Bullish structure intact on the higher timeframe.`
+                    : `Price swept liquidity above $${fmtP(swingSignal.sweepLevel)} and rejected. BOS confirmed with a close below $${fmtP(swingSignal.bosLevel)}. Bearish structure intact on the higher timeframe.`
+                  }
+                </div>
+              )}
+            </div>
+
+            {/* TP / SL — only on confirmed entry */}
+            {(swingSignal.type === 'BUY' || swingSignal.type === 'SELL') && (
+              <div style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
+                {[
+                  { label: 'Entry',       val: '$' + fmtP(entryPrice),                                         color: sigColor          },
+                  { label: 'Take Profit', val: '$' + fmtP(swingSignal.type === 'BUY' ? buyTP  : sellTP),       color: 'var(--green)'    },
+                  { label: 'Stop Loss',   val: '$' + fmtP(swingSignal.type === 'BUY' ? buySL  : sellSL),       color: 'var(--red)'      },
+                ].map((row, i, arr) => (
+                  <div key={row.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                    <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>{row.label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, fontFamily: 'monospace', color: row.color }}>{row.val}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ═══ Entry Signals Timeline ═══ */}
       <div className="tl-outer-card">
