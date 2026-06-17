@@ -29,6 +29,13 @@ export const pageMeta: Record<string, PageMeta> = {
     ogDescription: 'Realistic algorithmic BTC/USD bitcoin price predictions with ATR-based volatility model.',
     canonical: 'https://www.xautracker.com/predict/bitcoin',
   },
+   '/predict/usdchf': {
+    title: 'USD/CHF Price Forecast & Market Signals — Xautracker.com',
+    description: 'Algorithmic USD/CHF bitcoin price predictions for 5m, 10m, 15m, 1h, 6h and 24h. Key levels, sentiment and market signals.',
+    ogTitle: 'USD/CHF Forecast — Xautracker.com',
+    ogDescription: 'Realistic algorithmic USDCHF price predictions with ATR-based volatility model.',
+    canonical: 'https://www.xautracker.com/predict/usdchf',
+  },
   '/minds': {
     title: 'Community Chat',
     description: 'Join the XAU Tracker community. Discuss gold, bitcoin, trading strategies and market analysis with fellow traders.',
