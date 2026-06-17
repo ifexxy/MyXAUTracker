@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: '/minds', label: 'Minds' },
   { href: '/predict', label: 'XAU Forecast' },
   { href: '/predict/bitcoin', label: 'BTC Forecast' },
+  {bhref: '/predict/usdchf', label: 'USDCHF Analysis' },
 ];
 
 const BOTTOM_NAV = [
