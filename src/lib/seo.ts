@@ -36,6 +36,20 @@ export const pageMeta: Record<string, PageMeta> = {
     ogDescription: 'Realistic algorithmic USDCHF price predictions with ATR-based volatility model.',
     canonical: 'https://www.xautracker.com/predict/usdchf',
   },
+  '/account': {
+    title: 'Account Dashboard',
+    description: 'User Account Dashboard',
+    ogTitle: 'Xautracker.com',
+    ogDescription: '',
+    canonical: 'https://www.xautracker.com/account',
+  },
+  '/welcome': {
+    title: 'Welcome Dashboard',
+    description: 'User Account Dashboard',
+    ogTitle: 'Xautracker.com',
+    ogDescription: '',
+    canonical: 'https://www.xautracker.com/welcome',
+  },
   '/minds': {
     title: 'Community Chat',
     description: 'Join the XAU Tracker community. Discuss gold, bitcoin, trading strategies and market analysis with fellow traders.',
