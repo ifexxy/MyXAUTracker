@@ -276,7 +276,7 @@ export default function SignupPage() {
   const [recaptchaVerifier, setRecaptchaVerifier] = useState<any>(null);
 
   useEffect(() => {
-    if (!authLoading && user) router.push('/predict');
+    if (!authLoading && user) router.push('/welcome');
   }, [user, authLoading, router]);
 
   // ── FIX: initialise reCAPTCHA as soon as step 2 mounts ──
