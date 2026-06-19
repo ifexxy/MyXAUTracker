@@ -356,7 +356,7 @@ export default function SignupPage() {
         lastPaymentAt: null,
         lastPaymentAmount: null,
       });
-      router.push('/predict');
+      router.push('/welcome');
     } catch (e: any) {
       const msg =
         e.code === 'auth/invalid-verification-code' ? 'Incorrect code. Try again.' :
