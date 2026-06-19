@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      router.push('/predict');
+      router.push('/account');
     }
   }, [user, authLoading, router]);
 
