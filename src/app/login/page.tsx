@@ -34,7 +34,7 @@ export default function LoginPage() {
     try {
       const { auth } = getFirebase();
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/predict');
+      router.push('/account');
     } catch (e: any) {
       const msg =
         e.code === 'auth/user-not-found' ? 'No account found with this email.' :
