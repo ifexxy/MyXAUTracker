@@ -52,8 +52,8 @@ useEffect(() => {
               <div className="text-[12px] font-semibold" style={{ color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 185 }}>{user.email}</div>
             </div>
           </div>
-          <Link href="/predict" className="flex items-center justify-center gap-[8px] w-full py-[14px] text-[14px] font-bold rounded-[8px] no-underline mb-[8px]" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
-            Open Gold Forecast
+          <Link href="/account" className="flex items-center justify-center gap-[8px] w-full py-[14px] text-[14px] font-bold rounded-[8px] no-underline mb-[8px]" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
+            Account Dashboard
           </Link>
           <button onClick={signOut} className="flex items-center justify-center gap-[8px] w-full py-[12px] text-[13px] font-semibold rounded-[10px] cursor-pointer" style={{ background: 'transparent', color: 'var(--ink-3)', border: '1px solid var(--border)' }}>
             <i className="fa-solid fa-right-from-bracket" /> Sign Out
@@ -112,7 +112,7 @@ useEffect(() => {
 
   {/* CTA */}
 <Link
-  href={user ? '/predict' : '/signup'}
+  href={user ? '/account' : '/signup'}
   className="inline-flex items-center justify-center gap-[8px] text-[14px] font-bold rounded-[14px] no-underline mb-[10px]"
   style={{
     background: '#5B5BD6',
@@ -125,7 +125,7 @@ useEffect(() => {
   }}
 >
   <i className="fa-solid fa-arrow-right" style={{ fontSize: 20 }} />
-  {user ? 'Open Gold Forecast' : 'Start Free — 7 Days'}
+  {user ? 'Account Dashboard' : 'Start Free — 7 Days'}
 </Link>
 
   {/* Secondary */}
