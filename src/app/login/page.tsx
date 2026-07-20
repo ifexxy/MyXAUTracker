@@ -104,7 +104,7 @@ export default function LoginPage() {
             </div>
             <Link href="/signup" className="w-full rounded-[12px] py-[13px] px-[16px] text-[14px] font-bold flex items-center justify-center gap-[8px] no-underline"
               style={{ background: 'transparent', color: 'var(--ink-2)', border: '1px solid var(--border)' }}>
-              <i className="fa-solid fa-user-plus" /> Create Account, 7 Days Free
+              <i className="fa-solid fa-user-plus" /> Create Account
             </Link>
             <div className="text-center text-[13px] mt-[18px]" style={{ color: 'var(--ink-2)', lineHeight: 1.6 }}>
               <button onClick={() => setShowReset(true)} style={{ color: 'var(--gold)', cursor: 'pointer', fontWeight: 800, background: 'none', border: 'none', fontSize: 13 }}>Forgot password?</button>
