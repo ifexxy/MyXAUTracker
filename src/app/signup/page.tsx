@@ -342,7 +342,7 @@ export default function SignupPage() {
       await confirmationResult.confirm(otp);
       const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, otp);
       const { user: newUser } = await createUserWithEmailAndPassword(fb.auth, email, password);
-      const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      const trialEndsAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
       await setDoc(doc(fb.db, 'users', newUser.uid), {
         email,
         phone: getFullPhone(),
@@ -403,7 +403,7 @@ export default function SignupPage() {
             lineHeight: 1.65,
           }}
         >
-          Start your 7-day free trial and unlock the gold/bitcoin forecast dashboard,
+          Start your 3 days free trial and unlock the gold/bitcoin forecast dashboard,
           live signals, and trader tools.
         </p>
       </section>
