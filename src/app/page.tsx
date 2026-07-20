@@ -64,10 +64,10 @@ useEffect(() => {
       setAuthInner(
         <>
           <div className="inline-flex items-center gap-[5px] text-[10px] font-bold px-[9px] py-[4px] rounded-full mb-[10px]" style={{ color: 'var(--green)', background: 'var(--green-bg)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-            7-Day Free Trial · No Payment Required
+            Get 3 days trial. Pay 25 USDT/month after trial ends!
           </div>
           <p className="text-[13px] mb-[14px]" style={{ color: 'var(--ink-2)', lineHeight: 1.6 }}>
-            <strong style={{ color: 'var(--ink)' }}>Two steps</strong> to get started, just email and password. Full forecast dashboard free for 7 days.
+            <strong style={{ color: 'var(--ink)' }}>Two steps</strong> to get started, just email and password. Full forecast dashboard free for 3 days.
           </p>
           <Link href="/signup" className="flex items-center justify-center gap-[8px] w-full py-[14px] text-[14px] font-bold rounded-[8px] no-underline mb-[8px]" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
             <i className="fa-solid fa-rocket" style={{ fontSize: 12 }} /> Create Free Account
@@ -125,7 +125,7 @@ useEffect(() => {
   }}
 >
   <i className="fa-solid fa-arrow-right" style={{ fontSize: 20 }} />
-  {user ? 'Account Dashboard' : 'Start Free — 7 Days'}
+  {user ? 'Account Dashboard' : 'Start Free Trial'}
 </Link>
 
   {/* Secondary */}
