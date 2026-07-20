@@ -55,7 +55,7 @@ export default function WelcomePage() {
 
   const statusLabel =
     userData?.subscriptionStatus === 'active' ? 'Active Subscription' :
-    userData?.subscriptionStatus === 'trial'  ? '7-Day Free Trial'    :
+    userData?.subscriptionStatus === 'trial'  ? '3-Day Free Trial'    :
     userData?.manualAccess                    ? 'Access Granted'      :
     'No Active Plan';
 
@@ -197,7 +197,7 @@ export default function WelcomePage() {
               textDecoration: 'none',
             }}
           >
-            <i className="fa-solid fa-gauge" />
+  
             Go to Account Dashboard
           </Link>
         </div>
