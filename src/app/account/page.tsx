@@ -55,7 +55,7 @@ export default function AccountPage() {
 
   const statusLabel =
     userData?.subscriptionStatus === 'active' ? 'Active Subscription' :
-    userData?.subscriptionStatus === 'trial'  ? '7-Day Free Trial'    :
+    userData?.subscriptionStatus === 'trial'  ? '3-Day Free Trial'    :
     userData?.manualAccess                    ? 'Access Granted'      :
     'No Active Plan';
 
