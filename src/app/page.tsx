@@ -10,7 +10,7 @@ export default function HomePage() {
   const [authInner, setAuthInner] = useState<React.ReactNode>(null);
   
 {/* Bullet lines */}
-const phrases = ['Built on Real Math.', 'Based on ATR.', '80% Profits.', 'Easy to Use'];
+const phrases = ['Built on Real Math.', 'Based on ATR.', '70% Winrate.', 'Easy to Use'];
 const [phraseIndex, setPhraseIndex] = useState(0);
 const [displayed, setDisplayed] = useState('');
 const [isDeleting, setIsDeleting] = useState(false);
