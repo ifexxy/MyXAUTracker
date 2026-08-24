@@ -535,6 +535,52 @@ const sig24h = sigs?.e24h.sig ?? '';
   prevSignalsRef.current = current;
 }, [sig10m, sig1h, sig4h, sig24h, notifEnabled, mounted]);
 
+     /* ── Log entry signals to Firestore for outcome tracking ──
+     Fires once per distinct new LONG/SHORT setup per timeframe — not on
+     every 30s poll while the same setup persists. WAIT/SKIP/lock states
+     are skipped since there's no entry price to verify against TP/SL. */
+  const loggedSignalsRef = useRef<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!mounted || !sigs || !p.price) return;
+
+    const frames: { key: '10m' | '1h' | '4h' | '24h'; label: string; sig: EntrySignal }[] = [
+      { key: '10m', label: '10 min',  sig: sigs.e10m },
+      { key: '1h',  label: '1 hour',  sig: sigs.e1h  },
+      { key: '4h',  label: '4 hour',  sig: sigs.e4h  },
+      { key: '24h', label: '24 hour', sig: sigs.e24h },
+    ];
+
+    frames.forEach(({ key, label, sig }) => {
+      if (sig.badgeCls !== 'bull' && sig.badgeCls !== 'bear') return;
+
+      const fingerprint = `${sig.sig}|${sig.dir}`;
+      if (loggedSignalsRef.current[key] === fingerprint) return; // already logged this exact setup
+      loggedSignalsRef.current[key] = fingerprint;
+
+      const popup = buildSignalPopup(label, sig);
+      if (!popup.sl || !popup.tp1 || !popup.tp2) return; // volatility-locked — nothing to track
+
+      const num = (s: string) => parseFloat(s.replace(/[^0-9.-]/g, ''));
+
+      fetch('/api/log-signal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          instrument: 'XAUUSD',
+          timeframe: key,
+          direction: sig.badgeCls === 'bull' ? 'long' : 'short',
+          entryPrice: num(popup.entryPrice!),
+          sl: num(popup.sl),
+          tp1: num(popup.tp1),
+          tp2: num(popup.tp2),
+          rr1: popup.rr1 ? parseFloat(popup.rr1.split(':')[1]) : null,
+          rr2: popup.rr2 ? parseFloat(popup.rr2.split(':')[1]) : null,
+        }),
+      }).catch(() => {}); // best-effort — a failed log shouldn't affect the UI
+    });
+  }, [sigs, mounted, p.price]);
+
   /* ── Notification permission request ── */
   async function requestNotifPermission() {
     if (!mounted || !('Notification' in window)) {
