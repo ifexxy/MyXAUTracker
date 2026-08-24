@@ -5,6 +5,6 @@
 }
 {
   "crons": [
-    { "path": "src/app/api/check-signals", "schedule": "0 0 * * *" }
+    { "path": "/api/check-signals", "schedule": "0 0 * * *" }
   ]
 }
