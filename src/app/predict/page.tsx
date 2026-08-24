@@ -154,7 +154,7 @@ function computeEntrySignals(
     return { e10m: lock, e1h: lock, e4h: lock, e24h: lock };
   }
   let e10m: EntrySignal;
-  if (poorSess)7
+  if (poorSess)
     e10m = mk('WAIT', 'Low liquidity', `Asian/off-hours session. Poor conditions. ATR: $${atr.toFixed(2)}`, 35, 'WAIT');
   else if (momStrong && isUp && !overbought)
     e10m = mk('ENTER LONG', `Bullish · +${absMom.toFixed(2)}% momentum`, `Strong momentum, not overbought (RSI≈${pseudoRSI.toFixed(0)}). 10m long scalp setup.`, highVol ? 65 : 74, 'LONG');
