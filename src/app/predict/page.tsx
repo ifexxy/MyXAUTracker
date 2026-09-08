@@ -62,18 +62,10 @@ interface EntrySignals {
   e10m: EntrySignal; e1h: EntrySignal; e4h: EntrySignal; e24h: EntrySignal;
 }
 
-/* Sudden-spike volatility lock — freezes entry prices until price action normalizes */
-interface VolSpike {
-  active: boolean;
-  moveAbs: number;
-  dir: 'up' | 'down';
-}
-
 interface PopupData {
   kicker: string; signal: string; dir: string; dirColor: string;
   reason: string; conf: string; range: string | null;
   entryPrice?: string; sl?: string; tp1?: string; tp2?: string;
-  rr1?: string; rr2?: string;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -116,8 +108,7 @@ function buildPredictions(price: number, chp: number, high: number, low: number)
 ══════════════════════════════════════════════════════════════ */
 function computeEntrySignals(
   price: number, chp: number, high: number, low: number,
-  atr: number, sess: SessionInfo,
-  volSpike?: VolSpike | null
+  atr: number, sess: SessionInfo
 ): EntrySignals {
   const isUp = chp >= 0;
   const absMom = Math.abs(chp);
@@ -138,21 +129,7 @@ function computeEntrySignals(
       bTxt === 'FLAT'  ? 'flat' : 'wait';
     return { sig, dir, reason, conf, badgeTxt: bTxt, badgeCls };
   }
-  /* ── Sudden-spike lock: a >$20 move inside a 5-minute window is treated as
-     abnormal volatility (news spike / flash move / thin-liquidity whipsaw).
-     No entries — on any timeframe — are issued until the move settles back
-     to a normal range. badgeCls 'wait' means buildSignalPopup will not
-     attach an entry price / SL / TP. ── */
-  if (volSpike?.active) {
-    const lock = mk(
-      'VOLATILITY LOCK',
-      `Sudden ${volSpike.dir === 'up' ? 'spike' : 'drop'} · $${volSpike.moveAbs.toFixed(2)} in <5m`,
-      `Gold moved $${volSpike.moveAbs.toFixed(2)} in under 5 minutes — this is abnormal volatility, likely a news spike or thin-liquidity whipsaw. All entries are paused on every timeframe until price action settles back to a normal range. No entry price will be shown while this lock is active.`,
-      25,
-      'WAIT'
-    );
-    return { e10m: lock, e1h: lock, e4h: lock, e24h: lock };
-  }
+
   let e10m: EntrySignal;
   if (poorSess)
     e10m = mk('WAIT', 'Low liquidity', `Asian/off-hours session. Poor conditions. ATR: $${atr.toFixed(2)}`, 35, 'WAIT');
@@ -356,47 +333,11 @@ export default function PredictPage() {
   const [activePopup, setActivePopup] = useState<string | null>(null);
   const [popupStore, setPopupStore] = useState<Record<string, PopupData>>({});
 const [copyDone, setCopyDone] = useState(false);
-    /* ── Notifications ── */
+  /* ── Notifications ── */
   const [notifEnabled, setNotifEnabled] = useState(false);
   const prevSignalsRef = useRef<Record<string, string>>({});
   const swRegRef = useRef<ServiceWorkerRegistration | null>(null);
 
-  /* ── Sudden-spike volatility lock ──
-     Tracks a rolling 5-minute buffer of price ticks. If price swings ≥ $20
-     within that window, entries are locked (see computeEntrySignals). The
-     lock clears once the rolling 5-minute range settles back under $8,
-     giving hysteresis so it doesn't flicker on/off right at the threshold. */
-  const priceHistoryRef = useRef<{ t: number; price: number }[]>([]);
-  const [volSpike, setVolSpike] = useState<VolSpike | null>(null);
-  const SPIKE_WINDOW_MS = 5 * 60 * 1000;
-  const SPIKE_TRIGGER_DOLLARS = 20;
-  const SPIKE_CLEAR_DOLLARS = 8;
-
-  useEffect(() => {
-    if (!mounted || !price?.price) return;
-    const now = Date.now();
-    const hist = priceHistoryRef.current;
-    hist.push({ t: now, price: price.price });
-    const cutoff = now - SPIKE_WINDOW_MS;
-    while (hist.length && hist[0].t < cutoff) hist.shift();
-    if (hist.length < 2) return;
-
-    let minP = hist[0].price, maxP = hist[0].price;
-    let minIdx = 0, maxIdx = 0;
-    hist.forEach((h, i) => {
-      if (h.price < minP) { minP = h.price; minIdx = i; }
-      if (h.price > maxP) { maxP = h.price; maxIdx = i; }
-    });
-    const range = maxP - minP;
-
-    if (range >= SPIKE_TRIGGER_DOLLARS) {
-      const dir: 'up' | 'down' = maxIdx > minIdx ? 'up' : 'down';
-      setVolSpike({ active: true, moveAbs: range, dir });
-    } else if (range < SPIKE_CLEAR_DOLLARS) {
-      setVolSpike(prev => (prev?.active ? null : prev));
-    }
-    /* else: between clear/trigger thresholds — hold the current state */
-  }, [price?.price, mounted]);
   /* Register service worker for mobile notification support */
   useEffect(() => {
     if (!mounted || !('serviceWorker' in navigator)) return;
@@ -472,8 +413,8 @@ const [copyDone, setCopyDone] = useState(false);
   const atr = pred?.atr ?? 0;
   const mrStrength = pred?.mrStrength ?? 0;
 
-    const sigs = pred
-    ? computeEntrySignals(p.price, p.chp || 0, p.high || p.price, p.low || p.price, atr, session, volSpike)
+  const sigs = pred
+    ? computeEntrySignals(p.price, p.chp || 0, p.high || p.price, p.low || p.price, atr, session)
     : null;
 
   const marketSignal = p.price > 0
@@ -535,52 +476,6 @@ const sig24h = sigs?.e24h.sig ?? '';
   prevSignalsRef.current = current;
 }, [sig10m, sig1h, sig4h, sig24h, notifEnabled, mounted]);
 
-     /* ── Log entry signals to Firestore for outcome tracking ──
-     Fires once per distinct new LONG/SHORT setup per timeframe — not on
-     every 30s poll while the same setup persists. WAIT/SKIP/lock states
-     are skipped since there's no entry price to verify against TP/SL. */
-  const loggedSignalsRef = useRef<Record<string, string>>({});
-
-  useEffect(() => {
-    if (!mounted || !sigs || !p.price) return;
-
-    const frames: { key: '10m' | '1h' | '4h' | '24h'; label: string; sig: EntrySignal }[] = [
-      { key: '10m', label: '10 min',  sig: sigs.e10m },
-      { key: '1h',  label: '1 hour',  sig: sigs.e1h  },
-      { key: '4h',  label: '4 hour',  sig: sigs.e4h  },
-      { key: '24h', label: '24 hour', sig: sigs.e24h },
-    ];
-
-    frames.forEach(({ key, label, sig }) => {
-      if (sig.badgeCls !== 'bull' && sig.badgeCls !== 'bear') return;
-
-      const fingerprint = `${sig.sig}|${sig.dir}`;
-      if (loggedSignalsRef.current[key] === fingerprint) return; // already logged this exact setup
-      loggedSignalsRef.current[key] = fingerprint;
-
-      const popup = buildSignalPopup(label, sig);
-      if (!popup.sl || !popup.tp1 || !popup.tp2) return; // volatility-locked — nothing to track
-
-      const num = (s: string) => parseFloat(s.replace(/[^0-9.-]/g, ''));
-
-      fetch('/api/log-signal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          instrument: 'XAUUSD',
-          timeframe: key,
-          direction: sig.badgeCls === 'bull' ? 'long' : 'short',
-          entryPrice: num(popup.entryPrice!),
-          sl: num(popup.sl),
-          tp1: num(popup.tp1),
-          tp2: num(popup.tp2),
-          rr1: popup.rr1 ? parseFloat(popup.rr1.split(':')[1]) : null,
-          rr2: popup.rr2 ? parseFloat(popup.rr2.split(':')[1]) : null,
-        }),
-      }).catch(() => {}); // best-effort — a failed log shouldn't affect the UI
-    });
-  }, [sigs, mounted, p.price]);
-
   /* ── Notification permission request ── */
   async function requestNotifPermission() {
     if (!mounted || !('Notification' in window)) {
@@ -594,15 +489,6 @@ const sig24h = sigs?.e24h.sig ?? '';
   }
 
   /* ── Popup helpers ── */
-    /* Target RR per timeframe — TP2 hits this ratio exactly; TP1 is the halfway
-     partial-take target (half the RR), same pattern as before. */
-  const RR_TARGET: Record<string, number> = {
-    '10 min': 1,   // 1 : 1
-    '1 hour': 2,   // 1 : 2
-    '4 hour': 4,   // 1 : 4
-    '24 hour': 10, // 1 : 10
-  };
-
   function buildSignalPopup(frameLabel: string, sig: EntrySignal): PopupData {
     const isLong = sig.badgeCls === 'bull';
     const isShort = sig.badgeCls === 'bear';
@@ -610,35 +496,18 @@ const sig24h = sigs?.e24h.sig ?? '';
     const minMap: Record<string, number> = { '10 min': 10, '1 hour': 60, '4 hour': 240, '24 hour': 1440 };
     const minutes = minMap[frameLabel] || 60;
     const sigSigma = atr * Math.sqrt(minutes / 1440) * session.sessionMultiplier;
-
-    /* Risk = SL distance (still 1σ, unchanged). Reward is now driven by the
-       fixed target RR for this timeframe instead of a flat 0.5σ/1σ split. */
-    const risk = sigSigma;
-    const rrFull = RR_TARGET[frameLabel] ?? 1;
-    const rrHalf = rrFull / 2;
-    const reward1 = risk * rrHalf;
-    const reward2 = risk * rrFull;
-
     let sl: string | undefined;
     let tp1: string | undefined;
     let tp2: string | undefined;
-    let rr1: string | undefined;
-    let rr2: string | undefined;
-
     if (isLong) {
-      sl = '$' + fmtP(entryP - risk);
-      tp1 = '$' + fmtP(entryP + reward1);
-      tp2 = '$' + fmtP(entryP + reward2);
-      rr1 = '1 : ' + rrHalf.toFixed(2);
-      rr2 = '1 : ' + rrFull.toFixed(2);
+      sl = '$' + fmtP(entryP - sigSigma);
+      tp1 = '$' + fmtP(entryP + sigSigma * 0.5);
+      tp2 = '$' + fmtP(entryP + sigSigma);
     } else if (isShort) {
-      sl = '$' + fmtP(entryP + risk);
-      tp1 = '$' + fmtP(entryP - reward1);
-      tp2 = '$' + fmtP(entryP - reward2);
-      rr1 = '1 : ' + rrHalf.toFixed(2);
-      rr2 = '1 : ' + rrFull.toFixed(2);
+      sl = '$' + fmtP(entryP + sigSigma);
+      tp1 = '$' + fmtP(entryP - sigSigma * 0.5);
+      tp2 = '$' + fmtP(entryP - sigSigma);
     }
-
     return {
       kicker: frameLabel + ' entry signal',
       signal: sig.sig,
@@ -648,7 +517,7 @@ const sig24h = sigs?.e24h.sig ?? '';
       conf: sig.conf + '%',
       range: null,
       entryPrice: '$' + fmtP(entryP),
-      sl, tp1, tp2, rr1, rr2,
+      sl, tp1, tp2,
     };
   }
 
@@ -1416,22 +1285,6 @@ const sig24h = sigs?.e24h.sig ?? '';
           </button>
         </div>
 
-                {volSpike?.active && (
-          <div style={{
-            display: 'flex', alignItems: 'flex-start', gap: 10,
-            background: 'var(--red-bg)', border: '1px solid rgba(184,50,50,0.25)',
-            borderRadius: 10, padding: '12px 14px', margin: '0 0 14px',
-          }}>
-            <i className="fa-solid fa-triangle-exclamation" style={{ color: 'var(--red)', fontSize: 14, flexShrink: 0, marginTop: 1 }} />
-            <div style={{ fontSize: 12.5, color: 'var(--ink-2)', lineHeight: 1.6 }}>
-              <strong style={{ color: 'var(--red)' }}>Volatility lock active</strong> — gold moved{' '}
-              <strong style={{ color: 'var(--ink)' }}>${volSpike.moveAbs.toFixed(2)}</strong> in under 5 minutes
-              ({volSpike.dir === 'up' ? 'spike up' : 'spike down'}). Entry prices are paused on every
-              timeframe until price action settles back to a normal range.
-            </div>
-          </div>
-        )}
-
         {/* Now */}
         <div className="tl-row">
           <div className="tl-dot live" />
@@ -1672,7 +1525,7 @@ const sig24h = sigs?.e24h.sig ?? '';
             <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.65, marginBottom: 16 }}>The forecast tools uses ATR modelling and carries sections like:</div>
             <div style={{ border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
               {[
-                                { title: 'Entry Signals',    desc: 'It forecasts how your next trade should go depending on the volatility of gold at that time, with a risk:reward ratio on every entry (10m 1:1, 1h 1:2, 4h 1:4, 24h 1:10). If gold spikes $20+ in under 5 minutes, entries pause on all timeframes until things settle down.' },
+                { title: 'Entry Signals',    desc: 'It forecasts how your next trade should go depending on the volatility of gold at that time.' },
                 { title: 'Price Forecast',   desc: 'It predicts what range gold would be trading at at a particular time.' },
                 { title: 'Market Signal',    desc: 'The current market trend.' },
                 { title: 'Market Sentiment', desc: 'The current market trend based on the chart.' },
@@ -1721,26 +1574,14 @@ const sig24h = sigs?.e24h.sig ?? '';
       <span className="tl-popup-meta-label">Stop Loss</span>
       <span className="tl-popup-meta-val" style={{ color: 'var(--red)' }}>{popupStore[activePopup].sl}</span>
     </div>
-            <div className="tl-popup-meta-row">
+    <div className="tl-popup-meta-row">
       <span className="tl-popup-meta-label">TP1</span>
       <span className="tl-popup-meta-val" style={{ color: 'var(--green)' }}>{popupStore[activePopup].tp1}</span>
     </div>
-    {popupStore[activePopup].rr1 && (
-      <div className="tl-popup-meta-row">
-        <span className="tl-popup-meta-label">R:R (TP1)</span>
-        <span className="tl-popup-meta-val" style={{ color: 'var(--ink-2)' }}>{popupStore[activePopup].rr1}</span>
-      </div>
-    )}
     <div className="tl-popup-meta-row">
       <span className="tl-popup-meta-label">TP2</span>
       <span className="tl-popup-meta-val" style={{ color: 'var(--green)' }}>{popupStore[activePopup].tp2}</span>
     </div>
-    {popupStore[activePopup].rr2 && (
-      <div className="tl-popup-meta-row">
-        <span className="tl-popup-meta-label">R:R (TP2)</span>
-        <span className="tl-popup-meta-val" style={{ color: 'var(--ink-2)' }}>{popupStore[activePopup].rr2}</span>
-      </div>
-    )}
 
     {/* ── Copy button ── */}
     {(() => {
@@ -1753,8 +1594,8 @@ const sig24h = sigs?.e24h.sig ?? '';
         `$XAUUSD ${action} signal ${emoji}\n` +
         `Entry: ${pop.entryPrice}\n` +
         `SL: ${pop.sl}\n` +
-        `TP1: ${pop.tp1} (RR ${pop.rr1})\n` +
-        `TP2: ${pop.tp2} (RR ${pop.rr2})\n\n` +
+        `TP1: ${pop.tp1}\n` +
+        `TP2: ${pop.tp2}\n\n` +
         `current price as the time of this post $${fmtPrice(p.price)}`;
 
       return (
