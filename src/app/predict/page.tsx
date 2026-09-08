@@ -816,7 +816,7 @@ const sig24h = sigs?.e24h.sig ?? '';
           <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--ink)', marginBottom: 10, lineHeight: 1.3 }}>Your access has expired</div>
           <div style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.65, marginBottom: 24 }}>Please subscribe below to continue</div>
           <Link href="/subscribe" className="btn-primary no-underline" style={{ textDecoration: 'none', marginBottom: 10 }}>
-            <i className="fa-solid fa-key" /> Contact Us
+            <i className="fa-solid fa-key" /> Subscribe
           </Link>
           <button onClick={signOut} className="btn-ghost" style={{ cursor: 'pointer', minWidth: 0 }}>
             <i className="fa-solid fa-right-from-bracket" /> Sign Out
