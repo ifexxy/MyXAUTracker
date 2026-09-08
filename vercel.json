@@ -3,9 +3,5 @@
   "buildCommand": "npx next build",
   "outputDirectory": ".next"
 }
-{
-  "crons": [
-    { "path": "/api/check-signals", "schedule": "0 0 * * *" }
-  ]
-}
+
 
