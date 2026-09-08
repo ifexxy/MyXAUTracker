@@ -55,7 +55,7 @@ export default function SubscribePage() {
     const userToken = await getIdToken();
   if (!userToken) { showToast('Auth error, please refresh the page'); setPayLoading(false); return; }
     (window as any).FlutterwaveCheckout({
-      public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || 'FLWPUBK-7faf0329f86eb5b72086601480131c0e-X',
+      public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || '',
       tx_ref: 'xau-' + Date.now() + '-' + (user?.uid || '').slice(0, 8),
       amount: 9900,
       currency: 'NGN',
