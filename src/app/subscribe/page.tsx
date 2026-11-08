@@ -57,7 +57,7 @@ export default function SubscribePage() {
     (window as any).FlutterwaveCheckout({
       public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || '',
       tx_ref: 'xau-' + Date.now() + '-' + (user?.uid || '').slice(0, 8),
-      amount: 9900,
+      amount: 15000,
       currency: 'NGN',
       payment_options: 'card,banktransfer,ussd',
       customer: {
@@ -66,7 +66,7 @@ export default function SubscribePage() {
       },
       customizations: {
         title: 'XauTracker',
-        description: 'Monthly Access — ₦9,900',
+        description: 'Monthly Access — ₦15000',
         logo: 'https://miseducatemen.wordpress.com/wp-content/uploads/2026/05/xautracker-favicon.png',
       },
       callback: async (response: any) => {
@@ -204,7 +204,7 @@ export default function SubscribePage() {
           <div className="transfer-step" style={{ display: 'flex', gap: 12, padding: '10px 0', borderBottom: '1px solid var(--border)', alignItems: 'flex-start', transition: 'border-color 0.22s' }}>
             <div className="transfer-num" style={{ fontSize: 11, fontWeight: 700, color: 'var(--ink-4)', width: 20, flexShrink: 0, paddingTop: 1, transition: 'color 0.22s' }}>01</div>
             <div className="transfer-text" style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.55, transition: 'color 0.22s' }}>
-              Transfer <strong style={{ color: 'var(--ink)' }}>₦9,900</strong> to <strong style={{ color: 'var(--ink)' }}>OPAY</strong> account number <strong style={{ color: 'var(--ink)' }}>6518823532</strong>
+              Transfer <strong style={{ color: 'var(--ink)' }}>₦15,000</strong> to <strong style={{ color: 'var(--ink)' }}>OPAY</strong> account number <strong style={{ color: 'var(--ink)' }}>6518823532</strong>
             </div>
           </div>
           <div className="transfer-step" style={{ display: 'flex', gap: 12, padding: '10px 0', borderBottom: '1px solid var(--border)', alignItems: 'flex-start', transition: 'border-color 0.22s' }}>
