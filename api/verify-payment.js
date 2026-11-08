@@ -50,7 +50,7 @@ module.exports = async function handler(req, res) {
   if (
     flwData.status !== 'success' ||
     flwData.data?.status !== 'successful' ||
-    flwData.data?.amount < 9900 ||
+    flwData.data?.amount < 15000 ||
     flwData.data?.currency !== 'NGN'
   ) {
     console.error('FLW verification failed:', JSON.stringify(flwData));
