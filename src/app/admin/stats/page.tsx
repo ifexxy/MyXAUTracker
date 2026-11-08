@@ -33,6 +33,13 @@ function fmtDate(ms: number): string {
   return new Date(ms).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+function fmtDateTime(ms: number): string {
+  if (!ms) return 'Never';
+  return new Date(ms).toLocaleString('en-US', {
+    day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit',
+  });
+}
+
 function getStatusInfo(u: UserDoc) {
   const now = Date.now();
   if (u.manualAccess === true) {
@@ -74,6 +81,38 @@ function timeAgo(ms: number): string {
   if (days < 7) return `${days}d ago`;
   return fmtDate(ms);
 }
+
+// Colour cue for the Last Seen dot: green = today, gold = this week, grey = older / never
+function seenTone(ms: number): 'now' | 'week' | 'old' {
+  if (!ms) return 'old';
+  const diff = Date.now() - ms;
+  if (diff < 86400000) return 'now';
+  if (diff < 7 * 86400000) return 'week';
+  return 'old';
+}
+
+const TH: React.CSSProperties = {
+  padding: '12px 16px',
+  textAlign: 'left',
+  fontSize: 10,
+  fontWeight: 700,
+  textTransform: 'uppercase',
+  letterSpacing: '.12em',
+  color: 'var(--ink-3)',
+  borderBottom: '1px solid var(--border)',
+  whiteSpace: 'nowrap',
+  background: 'var(--bg-2)',
+};
+
+const TD_MONO: React.CSSProperties = {
+  padding: '13px 16px',
+  fontSize: 12,
+  fontVariantNumeric: 'tabular-nums',
+  color: 'var(--ink-2)',
+  borderBottom: '1px solid var(--border)',
+  verticalAlign: 'middle',
+  whiteSpace: 'nowrap',
+};
 
 export default function AdminStatsPage() {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -196,9 +235,51 @@ export default function AdminStatsPage() {
         .badge-manual { background: rgba(100,100,255,0.1); color: #6060dd; }
         .badge-expired { background: var(--red-bg); color: var(--red); }
         .badge-none { background: var(--bg-3); color: var(--ink-3); }
+
+        /* ── layout (desktop defaults) ── */
+        .stats-page { max-width: 960px; margin: 0 auto; padding: 0 20px 60px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+        .controls { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .search-wrap { flex: 1; min-width: 200px; position: relative; }
+        .table-wrap { background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px; overflow-x: auto; overflow-y: hidden; }
+
+        /* desktop shows the table, mobile shows cards */
+        .user-cards { display: none; }
+
+        .seen { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+        .seen-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--ink-4, #9a9a9a); }
+        .seen-now  .seen-dot { background: var(--green); box-shadow: 0 0 0 3px var(--green-bg); }
+        .seen-week .seen-dot { background: var(--gold); }
+        .seen-now  .seen-text { color: var(--ink); font-weight: 700; }
+        .seen-week .seen-text { color: var(--ink); font-weight: 600; }
+
+        /* ── user cards (mobile) ── */
+        .user-card { padding: 14px 14px 13px; border-bottom: 1px solid var(--border); }
+        .user-card:last-child { border-bottom: none; }
+        .uc-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+        .uc-email { flex: 1; min-width: 0; font-size: 14px; font-weight: 700; color: var(--ink); overflow-wrap: anywhere; line-height: 1.35; }
+        .uc-badge { flex: none; display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+        .uc-seen { margin-top: 10px; padding: 9px 11px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .uc-seen-k { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--ink-3); }
+        .uc-seen .seen-text { font-size: 13px; color: var(--ink-2); }
+        .uc-meta { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .uc-k { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--ink-3); margin-bottom: 3px; }
+        .uc-v { display: block; font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+        .card-state { text-align: center; padding: 40px 16px; color: var(--ink-3); font-size: 13px; }
+        .card-state i { display: block; font-size: 28px; margin-bottom: 10px; color: var(--ink-4); }
+
+        @media (max-width: 720px) {
+          .stats-page { padding: 0 14px 48px; }
+          .summary-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 18px; }
+          .search-wrap { flex: 1 1 100%; min-width: 0; }
+          .controls .filter-select { flex: 1 1 0; min-width: 0; }
+          .users-table { display: none; }
+          .user-cards { display: block; }
+          .pagination { padding: 12px 14px !important; }
+        }
       `}</style>
 
-      <div id="page" style={{ maxWidth: 960, margin: '0 auto', padding: '0 20px 60px' }}>
+      <div id="page" className="stats-page">
         <div id="topbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid var(--border)', marginBottom: 28, gap: 12, flexWrap: 'wrap' }}>
           <div className="topbar-left" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div className="logo" style={{ width: 34, height: 34, background: 'var(--gold-bg)', border: '1px solid var(--border)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gold)', fontSize: 15 }}><i className="fa-solid fa-coins" /></div>
@@ -243,7 +324,7 @@ export default function AdminStatsPage() {
         {isAdmin && (
           <div id="admin-app">
             {/* Summary cards */}
-            <div className="summary-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 24 }}>
+            <div className="summary-grid">
               <div className="sum-card" style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 14, padding: 16 }}>
                 <div className="sum-label" style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.12em', color: 'var(--ink-3)', marginBottom: 8 }}>Total Users</div>
                 <div className="sum-val" style={{ fontSize: 28, fontWeight: 800, color: 'var(--ink)', lineHeight: 1 }}>{allUsers.length}</div>
@@ -267,8 +348,8 @@ export default function AdminStatsPage() {
             </div>
 
             {/* Controls */}
-            <div className="controls" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
-              <div className="search-wrap" style={{ flex: 1, minWidth: 200, position: 'relative' }}>
+            <div className="controls">
+              <div className="search-wrap">
                 <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-3)', fontSize: 13, pointerEvents: 'none' }} />
                 <input className="search-input" type="text" value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }} placeholder="Search by email..."
                   style={{ width: '100%', padding: '10px 12px 10px 34px', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--ink)', fontSize: 13, outline: 'none', transition: 'border-color .2s' }} />
@@ -290,16 +371,16 @@ export default function AdminStatsPage() {
               </button>
             </div>
 
-            {/* Table */}
-            <div className="table-wrap" style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            {/* Users: table on desktop, cards on phones */}
+            <div className="table-wrap">
+              <table className="users-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.12em', color: 'var(--ink-3)', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap', background: 'var(--bg-2)' }}>Email</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.12em', color: 'var(--ink-3)', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap', background: 'var(--bg-2)' }}>Status</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.12em', color: 'var(--ink-3)', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap', background: 'var(--bg-2)' }}>Registered</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.12em', color: 'var(--ink-3)', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap', background: 'var(--bg-2)' }}>Last Seen</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.12em', color: 'var(--ink-3)', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap', background: 'var(--bg-2)' }}>Expires / Ends</th>
+                    <th style={TH}>Email</th>
+                    <th style={TH}>Status</th>
+                    <th style={TH}>Registered</th>
+                    <th style={TH}>Last Seen</th>
+                    <th style={TH}>Expires / Ends</th>
                   </tr>
                 </thead>
                 <tbody id="user-tbody">
@@ -315,7 +396,7 @@ export default function AdminStatsPage() {
                     slice.map(u => {
                       const status = getStatusInfo(u);
                       const registered = u.createdAt ? fmtDate(toMs(u.createdAt)) : '—';
-                      const lastSeen = u.lastSeen ? timeAgo(toMs(u.lastSeen)) : 'Never';
+                      const seenMs = toMs(u.lastSeen);
                       const expiry = getExpiry(u);
                       return (
                         <tr key={u._id} style={{ transition: 'background .13s' }}>
@@ -323,15 +404,65 @@ export default function AdminStatsPage() {
                           <td style={{ padding: '13px 16px', fontSize: 13, color: 'var(--ink-2)', borderBottom: '1px solid var(--border)', verticalAlign: 'middle' }}>
                             <span className={`badge ${status.cls}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 20, whiteSpace: 'nowrap' }}>{status.label}</span>
                           </td>
-                          <td className="td-mono" style={{ padding: '13px 16px', fontSize: 12, fontVariantNumeric: 'tabular-nums', color: 'var(--ink-2)', borderBottom: '1px solid var(--border)', verticalAlign: 'middle' }}>{registered}</td>
-                          <td className="td-mono" style={{ padding: '13px 16px', fontSize: 12, fontVariantNumeric: 'tabular-nums', color: 'var(--ink-2)', borderBottom: '1px solid var(--border)', verticalAlign: 'middle' }}>{lastSeen}</td>
-                          <td className="td-mono" style={{ padding: '13px 16px', fontSize: 12, fontVariantNumeric: 'tabular-nums', color: 'var(--ink-2)', borderBottom: '1px solid var(--border)', verticalAlign: 'middle' }}>{expiry}</td>
+                          <td className="td-mono" style={TD_MONO}>{registered}</td>
+                          <td className="td-mono" title={fmtDateTime(seenMs)} style={TD_MONO}>
+                            <span className={`seen seen-${seenTone(seenMs)}`}>
+                              <span className="seen-dot" />
+                              <span className="seen-text">{timeAgo(seenMs)}</span>
+                            </span>
+                          </td>
+                          <td className="td-mono" style={TD_MONO}>{expiry}</td>
                         </tr>
                       );
                     })
                   )}
                 </tbody>
               </table>
+
+              <div className="user-cards">
+                {loadingTable ? (
+                  <div className="card-state">
+                    <i className="fa-solid fa-spinner fa-spin" />Loading users...
+                  </div>
+                ) : slice.length === 0 ? (
+                  <div className="card-state">
+                    <i className="fa-solid fa-users-slash" />No users match your search.
+                  </div>
+                ) : (
+                  slice.map(u => {
+                    const status = getStatusInfo(u);
+                    const registered = u.createdAt ? fmtDate(toMs(u.createdAt)) : '—';
+                    const seenMs = toMs(u.lastSeen);
+                    const expiry = getExpiry(u);
+                    return (
+                      <div key={u._id} className="user-card">
+                        <div className="uc-head">
+                          <div className="uc-email">{u.email || u._id}</div>
+                          <span className={`uc-badge ${status.cls}`}>{status.label}</span>
+                        </div>
+                        <div className="uc-seen" title={fmtDateTime(seenMs)}>
+                          <span className="uc-seen-k">Last seen</span>
+                          <span className={`seen seen-${seenTone(seenMs)}`}>
+                            <span className="seen-dot" />
+                            <span className="seen-text">{timeAgo(seenMs)}</span>
+                          </span>
+                        </div>
+                        <div className="uc-meta">
+                          <div>
+                            <span className="uc-k">Registered</span>
+                            <span className="uc-v">{registered}</span>
+                          </div>
+                          <div>
+                            <span className="uc-k">Expires / Ends</span>
+                            <span className="uc-v">{expiry}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
               <div className="pagination" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderTop: '1px solid var(--border)', flexWrap: 'wrap', gap: 10 }}>
                 <span className="page-info" style={{ fontSize: 12, color: 'var(--ink-3)' }}>
                   {filtered.length} user{filtered.length !== 1 ? 's' : ''} · Page {safePage} of {totalPages}
