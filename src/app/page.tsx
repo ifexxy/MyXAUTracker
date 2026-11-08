@@ -64,7 +64,7 @@ useEffect(() => {
       setAuthInner(
         <>
           <div className="inline-flex items-center gap-[5px] text-[10px] font-bold px-[9px] py-[4px] rounded-full mb-[10px]" style={{ color: 'var(--green)', background: 'var(--green-bg)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-            Get 3 days trial. Pay 25 USDT/month after trial ends!
+            Get 3 days trial. Pay 10 USD/month after trial ends!
           </div>
           <p className="text-[13px] mb-[14px]" style={{ color: 'var(--ink-2)', lineHeight: 1.6 }}>
             <strong style={{ color: 'var(--ink)' }}>Two steps</strong> to get started, just email and password. Full forecast dashboard free for 3 days.
