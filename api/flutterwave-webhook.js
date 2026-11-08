@@ -22,7 +22,7 @@ module.exports = async function handler(req, res) {
       const amount   = event.data.amount;
       const currency = event.data.currency;
 
-      if (amount < 9900 || currency !== 'NGN') {
+      if (amount < 15000 || currency !== 'NGN') {
         return res.status(400).json({ error: 'Invalid amount or currency' });
       }
 
