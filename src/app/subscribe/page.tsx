@@ -162,7 +162,7 @@ export default function SubscribePage() {
 
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
             <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink-3)', transition: 'color 0.22s' }}>$</span>
-            <span style={{ fontSize: 38, fontWeight: 700, color: 'var(--ink)', lineHeight: 1, letterSpacing: -1, fontVariantNumeric: 'tabular-nums', transition: 'color 0.22s' }}>7.5</span>
+            <span style={{ fontSize: 38, fontWeight: 700, color: 'var(--ink)', lineHeight: 1, letterSpacing: -1, fontVariantNumeric: 'tabular-nums', transition: 'color 0.22s' }}>10</span>
             <span style={{ fontSize: 13, color: 'var(--ink-3)', transition: 'color 0.22s' }}>/mo</span>
           </div>
           <div className="plan-cycle" style={{ fontSize: 11, color: 'var(--ink-4)', marginBottom: 18, transition: 'color 0.22s' }}>or ₦9,900/mo for Nigeria · Billed monthly · Cancel anytime</div>
