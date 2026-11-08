@@ -165,7 +165,7 @@ export default function SubscribePage() {
             <span style={{ fontSize: 38, fontWeight: 700, color: 'var(--ink)', lineHeight: 1, letterSpacing: -1, fontVariantNumeric: 'tabular-nums', transition: 'color 0.22s' }}>10</span>
             <span style={{ fontSize: 13, color: 'var(--ink-3)', transition: 'color 0.22s' }}>/mo</span>
           </div>
-          <div className="plan-cycle" style={{ fontSize: 11, color: 'var(--ink-4)', marginBottom: 18, transition: 'color 0.22s' }}>or ₦9,900/mo for Nigeria · Billed monthly · Cancel anytime</div>
+          <div className="plan-cycle" style={{ fontSize: 11, color: 'var(--ink-4)', marginBottom: 18, transition: 'color 0.22s' }}>or ₦15,000/mo for Nigerian residents · Billed monthly · Cancel anytime</div>
 
           <ul className="plan-features" style={{ listStyle: 'none', padding: 0, margin: '0 0 20px', borderTop: '1px solid var(--border)', transition: 'border-color 0.22s' }}>
             {[
@@ -186,7 +186,7 @@ export default function SubscribePage() {
 
           <button className="btn-primary" id="pay-btn" onClick={startPayment} disabled={payLoading}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 15, background: 'var(--ink)', color: 'var(--bg)', fontFamily: 'Arial, Helvetica, sans-serif', fontSize: 14, fontWeight: 700, borderRadius: 8, border: 'none', cursor: payLoading ? 'not-allowed' : 'pointer', transition: 'opacity 0.16s, background 0.22s, color 0.22s', marginBottom: 10, opacity: payLoading ? 0.45 : 1 }}>
-            {payLoading ? <><i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Processing...</> : <><i className="fa-solid fa-lock-open" /> Subscribe — ₦9,900/month</>}
+            {payLoading ? <><i className="fa-solid fa-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Processing...</> : <><i className="fa-solid fa-lock-open" /> Subscribe — ₦15,000/month</>}
           </button>
           <button className="btn-outline" onClick={signOut}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 13, background: 'transparent', color: 'var(--ink-3)', fontFamily: 'Arial, Helvetica, sans-serif', fontSize: 13, fontWeight: 600, borderRadius: 8, border: '1px solid var(--border)', cursor: 'pointer', transition: 'all 0.16s', textDecoration: 'none' }}>
