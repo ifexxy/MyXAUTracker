@@ -15,6 +15,12 @@ export default function Footer() {
         <Link href="/disclaimer" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-3)', padding: '6px 13px', borderRadius: 20, border: '1px solid var(--border)', textDecoration: 'none' }}>
           Disclaimer
         </Link>
+        <Link href="/privacy" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-3)', padding: '6px 13px', borderRadius: 20, border: '1px solid var(--border)', textDecoration: 'none' }}>
+          Privacy
+        </Link>
+        <Link href="/terms" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-3)', padding: '6px 13px', borderRadius: 20, border: '1px solid var(--border)', textDecoration: 'none' }}>
+          Terms
+        </Link>
       </div>
       <div style={{ fontSize: 11, color: 'var(--ink-4)', lineHeight: 1.65, padding: '12px 14px', background: 'var(--bg-2)', borderRadius: 8, marginBottom: 14 }}>
         Trading gold carries significant financial risk. XauTracker predictions are algorithmic estimates, not financial advice. Consult a licensed professional before trading.
