@@ -1,3 +1,4 @@
+const { FieldValue } = require('firebase-admin/firestore');
 const { db, adminAuth } = require('./_firebase');
 
 module.exports = async function handler(req, res) {
@@ -20,6 +21,7 @@ module.exports = async function handler(req, res) {
     daysOrMonths,
     unit,
     note,
+    reason,
   } = req.body || {};
 
   if (!adminToken || !targetEmail || !action) {
@@ -60,6 +62,37 @@ module.exports = async function handler(req, res) {
   /* 4. Apply the action */
   try {
     const userRef = db.collection('users').doc(targetUid);
+
+    /* ── ban / unban ──────────────────────────────────────────────
+       Disabling the Auth user blocks sign-in (client gets auth/user-disabled);
+       revoking refresh tokens kicks out any session that is already open. */
+    if (action === 'ban' || action === 'unban') {
+      if (targetUid === callerUid)
+        return res.status(400).json({ error: "You can't ban your own account" });
+
+      if (action === 'ban') {
+        const snap = await userRef.get();
+        if (snap.exists && snap.data().role === 'admin')
+          return res.status(400).json({ error: "You can't ban an admin" });
+
+        await adminAuth.updateUser(targetUid, { disabled: true });
+        await adminAuth.revokeRefreshTokens(targetUid);
+        await userRef.set({
+          banned:       true,
+          bannedAt:     FieldValue.serverTimestamp(),
+          bannedReason: String(reason || '').slice(0, 200),
+        }, { merge: true });
+        return res.status(200).json({ success: true, message: `${targetEmail} has been banned` });
+      }
+
+      await adminAuth.updateUser(targetUid, { disabled: false });
+      await userRef.set({
+        banned:       false,
+        bannedAt:     FieldValue.delete(),
+        bannedReason: FieldValue.delete(),
+      }, { merge: true });
+      return res.status(200).json({ success: true, message: `${targetEmail} has been unbanned` });
+    }
 
     if (action === 'revoke') {
       await userRef.update({
