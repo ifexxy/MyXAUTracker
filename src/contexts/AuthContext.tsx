@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { getFirebase, getAuth } from '@/lib/firebase';
 import { onAuthStateChanged, signOut as fbSignOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 
 interface AuthUser {
   uid: string;
@@ -26,34 +25,27 @@ const AuthContext = createContext<AuthContextValue>({
   getIdToken: async () => null,
 });
 
-/* ── Last-seen heartbeat ──────────────────────────────────────────────
-   Writes users/{uid}.lastSeen at most once every 10 minutes per browser,
-   on sign-in / page load and when the tab becomes visible again.
-   Needs a Firestore rule that lets a user update ONLY their own lastSeen
-   (see the rule in the notes). Failures are swallowed on purpose. */
-const SEEN_EVERY_MS = 10 * 60 * 1000;
-const memStamp: Record<string, number> = {};
+/* ── Session check ────────────────────────────────────────────────────
+   Asks /api/session (server-side) on every page load while signed in:
+   - if the account is banned, we sign the user out right away
+   - the server records lastSeen + the visitor's IP
+   While the tab stays open we re-check at most every 10 minutes. */
+const CHECK_EVERY_MS = 10 * 60 * 1000;
+let lastCheck = 0;
 
-function readStamp(key: string): number {
-  try { return Number(localStorage.getItem(key) || 0); } catch { return 0; }
-}
-function writeStamp(key: string, value: number) {
-  try { localStorage.setItem(key, String(value)); } catch {}
-}
-
-async function touchLastSeen(uid: string) {
+async function checkSession(fbUser: User, force: boolean): Promise<'ok' | 'banned'> {
+  if (!force && Date.now() - lastCheck < CHECK_EVERY_MS) return 'ok';
+  lastCheck = Date.now();
   try {
-    const key = `xt_lastSeen:${uid}`;
-    const last = Math.max(memStamp[uid] || 0, readStamp(key));
-    if (Date.now() - last < SEEN_EVERY_MS) return;
-
-    // stamp first so two quick triggers don't both write
-    memStamp[uid] = Date.now();
-    writeStamp(key, memStamp[uid]);
-
-    const { db } = getFirebase();
-    await updateDoc(doc(db, 'users', uid), { lastSeen: serverTimestamp() });
+    const token = await fbUser.getIdToken();
+    const res = await fetch('/api/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+    if (res.status === 403) return 'banned';
   } catch {}
+  return 'ok'; // network errors never lock anyone out
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -63,14 +55,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const { auth } = getFirebase();
-      const unsub = onAuthStateChanged(auth, (fbUser: User | null) => {
+      const unsub = onAuthStateChanged(auth, async (fbUser: User | null) => {
         if (fbUser) {
+          // Check the ban status BEFORE exposing the user to the app, so a
+          // banned account never gets to see the dashboard, not even briefly.
+          const r = await checkSession(fbUser, true);
+          if (r === 'banned') {
+            try { sessionStorage.setItem('xt_banned', '1'); } catch {}
+            setUser(null);
+            setLoading(false);
+            fbSignOut(auth).catch(() => {});
+            return;
+          }
           setUser({
             uid: fbUser.uid,
             email: fbUser.email,
             phone: fbUser.phoneNumber,
           });
-          touchLastSeen(fbUser.uid);
         } else {
           setUser(null);
         }
@@ -79,7 +80,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const onVisible = () => {
         if (document.visibilityState === 'visible' && auth.currentUser) {
-          touchLastSeen(auth.currentUser.uid);
+          const cu = auth.currentUser;
+          checkSession(cu, false).then((r) => {
+            if (r === 'banned') {
+              try { sessionStorage.setItem('xt_banned', '1'); } catch {}
+              fbSignOut(auth).catch(() => {});
+            }
+          });
         }
       };
       document.addEventListener('visibilitychange', onVisible);
