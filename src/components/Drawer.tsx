@@ -20,6 +20,8 @@ const NAV_ITEMS = [
 const BOTTOM_NAV = [
   { href: '/about', label: 'About' },
   { href: '/disclaimer', label: 'Disclaimer' },
+  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/terms', label: 'Terms of Service' },
   { href: '/contact', label: 'Contact' },
 ];
 
