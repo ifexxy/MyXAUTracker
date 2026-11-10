@@ -21,6 +21,16 @@ export default function LoginPage() {
   const [resetOk, setResetOk] = useState(false);
   const [resetErr, setResetErr] = useState('');
 
+  // Shown when a banned user was signed out of an open session
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('xt_banned')) {
+        sessionStorage.removeItem('xt_banned');
+        setError('This account has been suspended. Contact support if you think this is a mistake.');
+      }
+    } catch {}
+  }, []);
+
   useEffect(() => {
     if (!authLoading && user) {
       router.push('/account');
@@ -39,6 +49,7 @@ export default function LoginPage() {
       const msg =
         e.code === 'auth/user-not-found' ? 'No account found with this email.' :
         e.code === 'auth/wrong-password' ? 'Incorrect password.' :
+        e.code === 'auth/user-disabled' ? 'This account has been suspended. Contact support if you think this is a mistake.' :
         e.code === 'auth/too-many-requests' ? 'Too many attempts. Try again later.' :
         'Sign in failed. Check your details.';
       setError(msg);
