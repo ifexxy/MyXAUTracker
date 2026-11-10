@@ -1,5 +1,6 @@
 const { FieldValue } = require('firebase-admin/firestore');
 const { db, adminAuth } = require('./_firebase');
+const { getClientIp } = require('./_ip');
 const {
   COLLECTION,
   MAX_ATTEMPTS,
@@ -73,6 +74,7 @@ module.exports = async function handler(req, res) {
     }
 
     /* 3. Same user document the old flow wrote, minus the phone field */
+    const ip = getClientIp(req);
     const trialEndsAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
     try {
       await db.collection('users').doc(uid).set({
