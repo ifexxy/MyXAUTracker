@@ -21,11 +21,13 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST')
     return res.status(405).json({ error: 'Method not allowed' });
 
-  const { email: rawEmail, password, code } = req.body || {};
+  const { email: rawEmail, password, code, acceptedTerms } = req.body || {};
   const email = normalizeEmail(rawEmail);
 
   if (!isValidEmail(email))
     return res.status(400).json({ error: 'Enter a valid email address.' });
+  if (acceptedTerms !== true)
+  return res.status(400).json({ error: 'Please agree to the Terms of Service and Privacy Policy.' });
   if (typeof password !== 'string' || password.length < 6)
     return res.status(400).json({ error: 'Password must be 6+ characters.' });
   if (!/^\d{6}$/.test(String(code || '')))
@@ -88,6 +90,11 @@ module.exports = async function handler(req, res) {
         currentPeriodEnd:      null,
         lastPaymentAt:         null,
         lastPaymentAmount:     null,
+        acceptedTermsAt: FieldValue.serverTimestamp(),
+signupIp:        ip,
+lastIp:          ip,
+ips:             [ip],
+banned:          false,
       });
     } catch (e) {
       // Don't leave an Auth user with no profile behind
