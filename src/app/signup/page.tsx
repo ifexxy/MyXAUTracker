@@ -64,6 +64,7 @@ export default function SignupPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [captchaToken, setCaptchaToken] = useState('');
+  const [agreed, setAgreed] = useState(false);
   const captchaRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<number | null>(null);
 
@@ -123,6 +124,7 @@ export default function SignupPage() {
 
   const sendOTP = async () => {
     setError('');
+    if (!agreed) { setError('Please agree to the Terms of Service and Privacy Policy to continue.'); return; }
     if (!captchaToken) { setError('Please tick "I\'m not a robot" first.'); return; }
     setLoading(true);
     try {
@@ -151,6 +153,7 @@ export default function SignupPage() {
 
   const doSignUp = async () => {
     setError('');
+    if (!agreed) { setError('Please agree to the Terms of Service and Privacy Policy to continue.'); return; }
     if (!otp || otp.length !== 6) { setError('Enter the 6-digit code.'); return; }
     if (!otpSent) { setError('Please request a code first.'); return; }
     setLoading(true);
@@ -159,7 +162,7 @@ export default function SignupPage() {
       const res = await fetch('/api/verify-email-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), password, code: otp }),
+        body: JSON.stringify({ email: email.trim(), password, code: otp, acceptedTerms: true }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -316,7 +319,7 @@ export default function SignupPage() {
                   fontWeight: 800,
                 }}
               >
-                Email Address(
+                Email Address
               </label>
               <input
                 type="email"
@@ -459,7 +462,26 @@ export default function SignupPage() {
 
             {/* reCAPTCHA renders here each time step 2 mounts */}
             <div ref={captchaRef} style={{ marginTop: 10 }} />
-
+<label
+  style={{
+    display: 'flex', alignItems: 'flex-start', gap: 10, marginTop: 14,
+    padding: '12px 13px', borderRadius: 12, background: 'var(--bg)',
+    border: `1px solid ${agreed ? 'var(--green)' : 'var(--border)'}`,
+    cursor: 'pointer', fontSize: 12.5, lineHeight: 1.55, color: 'var(--ink-2)',
+  }}
+>
+  <input
+    type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)}
+    style={{ width: 18, height: 18, marginTop: 1, flex: 'none', accentColor: 'var(--gold)', cursor: 'pointer' }}
+  />
+  <span>
+    I am 18 or older and I agree to the{' '}
+    <Link href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--gold)', fontWeight: 800 }}>Terms of Service</Link>{' '}
+    and{' '}
+    <Link href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--gold)', fontWeight: 800 }}>Privacy Policy</Link>
+    , including how my email address is used.
+  </span>
+</label>
             {shownError && (
               <div
                 style={{
