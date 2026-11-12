@@ -169,7 +169,7 @@ export default function AccountPage() {
             }}>
               <i className="fa-solid fa-envelope" /> Contact Us
             </Link>
-          ) : {!hasAccess || userData?.subscriptionStatus !== 'expired' ? (
+          ) : (
             <Link href="/subscribe" style={{
               flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
               gap: 7, padding: '11px 0', background: 'var(--gold)', color: '#000',
