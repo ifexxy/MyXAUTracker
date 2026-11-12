@@ -149,13 +149,13 @@ export default function WelcomePage() {
                 {userData?.subscriptionStatus === 'active'
                   ? <>Your subscription renews on <strong style={{ color: 'var(--ink)' }}>{expiryDate}</strong>.</>
                   : userData?.subscriptionStatus === 'trial'
-                    ? <>Your free trial expires on <strong style={{ color: 'var(--ink)' }}>{expiryDate}</strong>. Enjoy full access until then.</>
+                    ? <>Your free trial expires on <strong style={{ color: 'var(--ink)' }}>{expiryDate}</strong>.</>
                     : <>Your access expires on <strong style={{ color: 'var(--ink)' }}>{expiryDate}</strong>.</>
                 }
               </div>
             ) : (
               <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
-                {userData?.manualAccess ? 'Permanent access has been granted to your account.' : 'No active plan found. Contact us to get access.'}
+                {userData?.manualAccess ? 'Permanent access has been granted to your account.' : 'No active plan found. Sunbscribe to get access.'}
               </div>
             )}
           </div>
@@ -170,7 +170,7 @@ export default function WelcomePage() {
               { icon: 'fa-bolt',        text: 'Entry signals for 10M, 1H, 4H & 24H'            },
               { icon: 'fa-chart-line',  text: 'ATR-based price forecasts across timeframes'     },
               { icon: 'fa-bitcoin',     text: 'Bitcoin BTC/USD forecast dashboard'             },
-              { icon: 'fa-dollar-sign', text: 'USD/CHF forex analysis'                         },
+      
               { icon: 'fa-comments',    text: 'Minds trader community chat'                    },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: i < 5 ? '1px solid var(--border)' : 'none' }}>
