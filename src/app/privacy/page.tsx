@@ -15,7 +15,7 @@ const td: React.CSSProperties = { padding: '8px 10px', borderBottom: '1px solid 
 
 export default function PrivacyPage() {
   return (
-    <LegalPage title="Privacy Policy" intro="What we collect, why we collect it, and the choices you have." updated="November 10, 2026">
+    <LegalPage title="Privacy Policy" updated="November 10, 2026">
       <P>XauTracker (&quot;we&quot;, &quot;us&quot;) provides gold, Bitcoin and USD/CHF price forecasts and a community area called Minds at xautracker.com. This policy explains what personal data we collect, why, and the choices you have.</P>
 
       <Section n={1} title="Data we collect">
@@ -54,30 +54,10 @@ export default function PrivacyPage() {
       </Section>
 
       <Section n={3} title="Account suspension">
-        <P>If we believe an account is abusing the service, for example by creating multiple accounts to repeat the free trial, we may suspend it. A suspended account cannot sign in. We may record the date of the suspension and an internal reason.</P>
+        <P>If we believe an account is abusing the service, for example by creating multiple accounts or using VPN to repeat the free trial, we may suspend it. A suspended account cannot sign in. We may record the date of the suspension and an internal reason.</P>
       </Section>
 
-      <Section n={4} title="Who we share data with">
-        <P>We share data only with the service providers that run XauTracker:</P>
-        <div style={{ overflowX: 'auto', marginBottom: 10 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ ...td, textAlign: 'left', color: 'var(--ink)' }}>Provider</th>
-                <th style={{ ...td, textAlign: 'left', color: 'var(--ink)' }}>Purpose</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td style={td}>Google Firebase</td><td style={td}>Authentication and database storage</td></tr>
-              <tr><td style={td}>Vercel</td><td style={td}>Website hosting and servers</td></tr>
-              <tr><td style={td}>Resend</td><td style={td}>Sending verification and account emails</td></tr>
-              <tr><td style={td}>Google reCAPTCHA</td><td style={td}>Bot protection at signup</td></tr>
-              <tr><td style={td}>Flutterwave</td><td style={td}>Payment processing</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <P>We may also disclose information if the law requires it, or to protect our rights and our users.</P>
-      </Section>
+
 
       <Section n={5} title="How long we keep it">
         <P>We keep your account data while your account is active. If you ask us to delete your account, we remove your personal data within a reasonable time, except where we must keep certain records (such as payment records) for legal or accounting reasons, or to enforce a suspension. Verification codes are deleted once used or expired.</P>
