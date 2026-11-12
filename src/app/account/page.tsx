@@ -99,15 +99,7 @@ export default function AccountPage() {
       bg:     'rgba(247,146,26,0.1)',
       border: 'rgba(247,146,26,0.25)',
     },
-    {
-      href:   '/predict/usdchf',
-      emoji:  '🇨🇭',
-      label:  'USD/CHF',
-      sub:    'Forex',
-      color:  'var(--green)',
-      bg:     'var(--green-bg)',
-      border: 'rgba(0,212,143,0.22)',
-    },
+    
   ];
 
   return (
