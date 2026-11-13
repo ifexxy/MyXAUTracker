@@ -413,9 +413,13 @@ const [copyDone, setCopyDone] = useState(false);
   const atr = pred?.atr ?? 0;
   const mrStrength = pred?.mrStrength ?? 0;
 
-  const sigs = pred
-    ? computeEntrySignals(p.price, p.chp || 0, p.high || p.price, p.low || p.price, atr, session)
-    : null;
+  // Backup source (Gold-API.com) with no open/high/low -> no real range to base signals on
+const isFallback = price?.fallback === true;
+const rangeMissing = isFallback && (price?.partial === true || price?.open == null || price?.high == null || price?.low == null);
+
+const sigs = pred && !rangeMissing
+  ? computeEntrySignals(p.price, p.chp || 0, p.high || p.price, p.low || p.price, atr, session)
+  : null;
 
   const marketSignal = p.price > 0
     ? computeMarketSignal(p.chp || 0, isUp)
@@ -894,6 +898,16 @@ const sig24h = sigs?.e24h.sig ?? '';
               <span className="sym">$</span>
               <span id="strip-price">{fmtPrice(p.price)}</span>
             </div>
+             {price && (
+  <div
+    id="data-source"
+    style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: isFallback ? 'var(--gold)' : 'var(--ink-4)' }}
+  >
+    {isFallback
+      ? 'Source: Gold API (Twelve Data unavailable)'
+      : 'Source: Twelve Data'}
+  </div>
+)}
           </div>
           <div className={`live-change ${isUp ? 'up' : 'down'}`}>
             {fmtChange(p.ch || 0)} ({(p.chp || 0).toFixed(2)}%)
@@ -1299,6 +1313,14 @@ const sig24h = sigs?.e24h.sig ?? '';
           <div style={{ width: 30, flexShrink: 0 }} />
         </div>
 
+         {rangeMissing && p.price > 0 && (
+  <div className="tl-row" style={{ justifyContent: 'center', textAlign: 'center', padding: '22px 16px', flexDirection: 'column', gap: 6 }}>
+    <div className="tl-value">No signals available</div>
+    <div style={{ fontSize: 12, color: 'var(--ink-3)', lineHeight: 1.55, maxWidth: 320 }}>
+      The backup price source is not providing today&apos;s open, high and low right now. Signals return automatically when that data is available.
+    </div>
+  </div>
+)}
         {/* Signal rows */}
         {sigs && [
           { key: '10m',     frame: '10 min',  sig: sigs.e10m },
