@@ -9,6 +9,9 @@ export interface GoldPrice {
   chp: number;
   source: string;
   updatedAt?: string;
+  fallback?: boolean;      // true when Twelve Data failed and Gold-API.com answered
+partial?: boolean;       // true when open/high/low/change are unavailable
+primaryError?: string;
 }
 
 export interface ForecastSignal {
