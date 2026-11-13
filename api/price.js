@@ -34,26 +34,26 @@ async function fetchJson(url, extraHeaders = {}) {
                    the x-api-key header). Free plan = 10 requests per hour, so
                    the result is cached in memory and the live price is fetched
                    separately on every call.
-   If GOLD_API_KEY is missing or OHLC fails, we still return the live price
-   (open/high/low/change come back null and the page falls back to the price). */
+   The range is the last 24 hours (rolling), so it never resets at midnight.
+   If GOLD_API_KEY is missing or OHLC fails, we still return the live price but
+   with partial: true and open/high/low/change null, so the page can say
+   "no signals available" instead of computing signals from a fake range. */
 const OHLC_TTL_MS = 10 * 60 * 1000;
-let ohlcCache = null; // { at, day, data }
+let ohlcCache = null; // { at, data }
 
 async function fetchGoldApiOhlc() {
   const key = process.env.GOLD_API_KEY;
   if (!key) return null;
 
   const now = Date.now();
-  const day = new Date(now).toISOString().slice(0, 10);
 
-  if (ohlcCache && ohlcCache.day === day && now - ohlcCache.at < OHLC_TTL_MS) {
+  if (ohlcCache && now - ohlcCache.at < OHLC_TTL_MS) {
     return ohlcCache.data;
   }
 
   try {
-    const startOfDay = Math.floor(Date.parse(`${day}T00:00:00Z`) / 1000);
     const params = new URLSearchParams({
-      startTimestamp: String(startOfDay),
+      startTimestamp: String(Math.floor((now - 24 * 60 * 60 * 1000) / 1000)),
       endTimestamp: String(Math.floor(now / 1000)),
     });
     const data = await fetchJson(`https://api.gold-api.com/ohlc/XAU?${params}`, {
@@ -65,13 +65,13 @@ async function fetchGoldApiOhlc() {
       low: round(data?.low),
     };
     if (ohlc.open === null) throw new Error('No OHLC data');
-    ohlcCache = { at: now, day, data: ohlc };
+    ohlcCache = { at: now, data: ohlc };
     return ohlc;
   } catch (e) {
     console.error('Gold-API OHLC failed:', e.message);
-    // Reuse a stale value from the same UTC day rather than losing the range;
+    // Reuse the last good range (up to 3 hours old) rather than losing it;
     // stamp it so we don't hammer a throttled endpoint.
-    if (ohlcCache && ohlcCache.day === day) {
+    if (ohlcCache && now - ohlcCache.at < 3 * 60 * 60 * 1000) {
       ohlcCache.at = now - OHLC_TTL_MS + 60 * 1000;
       return ohlcCache.data;
     }
@@ -114,6 +114,7 @@ async function fetchGoldApiPrice() {
     ch,
     chp,
     source: 'Gold-API.com',
+    partial: !ohlc,
     updatedAt: data?.updatedAt || null,
   };
 }
