@@ -1,4 +1,5 @@
 const { db, adminAuth } = require('./_firebase');
+const { uidFromTrialRef, isValidTrialPayment, activateTrial } = require('./_trial');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://www.xautracker.com');
@@ -13,7 +14,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { transaction_id, userToken } = req.body || {};
+  const { transaction_id, userToken, type } = req.body || {};
 
   if (!transaction_id || !userToken) {
     return res.status(400).json({ error: 'Missing transaction_id or userToken' });
@@ -45,6 +46,27 @@ module.exports = async function handler(req, res) {
   } catch (e) {
     console.error('Flutterwave fetch failed:', e.message);
     return res.status(502).json({ error: 'Could not reach Flutterwave' });
+  }
+
+  /* 2b. One-time trial payment */
+  if (type === 'trial') {
+    const tx = flwData.data;
+    if (
+      flwData.status !== 'success' ||
+      !isValidTrialPayment(tx) ||
+      uidFromTrialRef(tx.tx_ref) !== uid
+    ) {
+      console.error('Trial payment verification failed:', JSON.stringify(flwData));
+      return res.status(400).json({ error: 'Payment verification failed' });
+    }
+    try {
+      const result = await activateTrial(uid, tx);
+      if (!result.ok) return res.status(result.status).json({ error: result.error });
+      return res.status(200).json({ success: true, trialEndsAt: result.trialEndsAt });
+    } catch (e) {
+      console.error('Trial activation failed:', e.message);
+      return res.status(500).json({ error: 'Failed to start trial' });
+    }
   }
 
   if (
