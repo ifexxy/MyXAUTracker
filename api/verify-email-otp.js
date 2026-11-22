@@ -77,13 +77,15 @@ module.exports = async function handler(req, res) {
 
     /* 3. Same user document the old flow wrote, minus the phone field */
     const ip = getClientIp(req);
-    const trialEndsAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
     try {
       await db.collection('users').doc(uid).set({
         email,
         createdAt:             FieldValue.serverTimestamp(),
-        trialEndsAt,
-        subscriptionStatus:    'trial',
+        // No free trial any more: the 3-day trial starts after a one-time payment
+        // (see _trial.js / verify-payment.js). trialOffer marks accounts that may buy it.
+        trialEndsAt:           null,
+        subscriptionStatus:    'none',
+        trialOffer:            true,
         manualAccess:          false,
         manualAccessNote:      '',
         manualAccessExpiresAt: null,
