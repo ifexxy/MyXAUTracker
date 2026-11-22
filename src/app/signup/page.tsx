@@ -225,8 +225,8 @@ export default function SignupPage() {
             lineHeight: 1.65,
           }}
         >
-          Start your 3 days free trial and unlock the gold/bitcoin forecast dashboard,
-          live signals, and trader tools.
+          Create your account, then start your 3-day trial for a one-time $1 to unlock the
+          gold/bitcoin forecast dashboard, live signals, and trader tools.
         </p>
       </section>
 
