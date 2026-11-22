@@ -54,4 +54,6 @@ export interface UserData {
   manualAccess?: boolean;
   manualAccessExpiresAt?: string;
   role?: string;
+  trialOffer?: boolean;   // true = may start the paid 3-day trial
+  banned?: boolean;
 }
