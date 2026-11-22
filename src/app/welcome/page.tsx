@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,6 +8,7 @@ import { getFirebase } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import type { UserData } from '@/types';
 import Footer from '@/components/Footer';
+import StartTrialCard, { canStartTrial } from '@/components/StartTrialCard';
 
 export default function WelcomePage() {
   const router = useRouter();
@@ -21,16 +22,16 @@ export default function WelcomePage() {
     if (!authLoading && !user && mounted) router.push('/login');
   }, [user, authLoading, mounted, router]);
 
-  useEffect(() => {
+  const loadUserData = useCallback(async () => {
     if (!user) return;
-    (async () => {
-      try {
-        const fb = getFirebase();
-        const snap = await getDoc(doc(fb.db, 'users', user.uid));
-        if (snap.exists()) setUserData(snap.data() as UserData);
-      } catch {}
-    })();
+    try {
+      const fb = getFirebase();
+      const snap = await getDoc(doc(fb.db, 'users', user.uid));
+      if (snap.exists()) setUserData(snap.data() as UserData);
+    } catch {}
   }, [user]);
+
+  useEffect(() => { loadUserData(); }, [loadUserData]);
 
   if (!mounted || authLoading) {
     return (
@@ -53,19 +54,24 @@ export default function WelcomePage() {
     (userData.manualAccess && (!manualExpiry || manualExpiry.getTime() > now))
   ) : false;
 
+  const trialAvailable = canStartTrial(userData);
+
   const statusLabel =
+    trialAvailable                            ? 'Trial Available'     :
     userData?.subscriptionStatus === 'active' ? 'Active Subscription' :
     userData?.subscriptionStatus === 'trial'  ? '3-Day Free Trial'    :
     userData?.manualAccess                    ? 'Access Granted'      :
     'No Active Plan';
 
   const statusColor =
+    trialAvailable                            ? 'var(--gold)'  :
     userData?.subscriptionStatus === 'active' ? 'var(--green)' :
     userData?.subscriptionStatus === 'trial'  ? 'var(--gold)'  :
     userData?.manualAccess                    ? 'var(--green)' :
     'var(--red)';
 
   const statusBg =
+    trialAvailable                            ? 'var(--gold-bg)'  :
     userData?.subscriptionStatus === 'active' ? 'var(--green-bg)' :
     userData?.subscriptionStatus === 'trial'  ? 'var(--gold-bg)'  :
     userData?.manualAccess                    ? 'var(--green-bg)' :
@@ -96,7 +102,9 @@ export default function WelcomePage() {
           Thanks for Registering<span style={{ color: 'var(--gold)' }}>.</span>
         </h1>
         <p style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.65, maxWidth: 320, margin: '0 auto' }}>
-          Your account is ready. Here&apos;s a summary of what you have access to.
+          {trialAvailable
+            ? <>Your account is ready. Start your 3-day trial for $1 to unlock everything below.</>
+            : <>Your account is ready. Here&apos;s a summary of what you have access to.</>}
         </p>
       </section>
 
@@ -155,10 +163,21 @@ export default function WelcomePage() {
               </div>
             ) : (
               <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
-                {userData?.manualAccess ? 'Permanent access has been granted to your account.' : 'No active plan found. Sunbscribe to get access.'}
+                {userData?.manualAccess
+                  ? 'Permanent access has been granted to your account.'
+                  : trialAvailable
+                    ? 'Your account is registered. Start your 3-day trial below to unlock full access.'
+                    : 'No active plan found. Subscribe to get access.'}
               </div>
             )}
           </div>
+
+          {/* Paid trial offer (new accounts only) */}
+          {trialAvailable && (
+            <div style={{ marginBottom: 16 }}>
+              <StartTrialCard onActivated={async () => { await loadUserData(); router.push('/predict'); }} />
+            </div>
+          )}
 
           {/* What's included */}
           <div style={{ background: 'var(--bg-2)', borderRadius: 10, padding: '12px 14px', marginBottom: 18 }}>
