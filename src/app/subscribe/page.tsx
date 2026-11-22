@@ -9,6 +9,7 @@ import { getFirebase } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { showToast } from '@/components/Toast';
 import Footer from '@/components/Footer';
+import StartTrialCard from '@/components/StartTrialCard';
 
 export default function SubscribePage() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function SubscribePage() {
   const [statusHtml, setStatusHtml] = useState('');
   const [payLoading, setPayLoading] = useState(false);
   const [overlayOpen, setOverlayOpen] = useState(false);
+  const [trialAvailable, setTrialAvailable] = useState(false);
   const userTokenRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -40,8 +42,9 @@ export default function SubscribePage() {
           router.push('/predict');
           return;
         }
+        setTrialAvailable(d.trialOffer === true && !d.trialEndsAt && d.banned !== true);
         if (d.trialEndsAt && new Date(d.trialEndsAt).getTime() < now) {
-          setStatusHtml(`<div class="banner expired" style="background:var(--red-bg);border:1px solid rgba(184,50,50,0.2);color:var(--red);border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.6"><i class="fa-solid fa-clock-rotate-left" style="font-size:16px;flex-shrink:0;padding-top:1px"></i><div>Your <strong>7-day free trial has ended.</strong> Subscribe below to continue accessing gold market predictions.</div></div>`);
+          setStatusHtml(`<div class="banner expired" style="background:var(--red-bg);border:1px solid rgba(184,50,50,0.2);color:var(--red);border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.6"><i class="fa-solid fa-clock-rotate-left" style="font-size:16px;flex-shrink:0;padding-top:1px"></i><div>Your <strong>3-day trial has ended.</strong> Subscribe below to continue accessing gold market predictions.</div></div>`);
         }
       } catch (e) {
         console.error('Subscribe page error:', e);
@@ -155,6 +158,12 @@ export default function SubscribePage() {
         </p>
 
         <div id="status-banner" style={{ marginBottom: 18 }} dangerouslySetInnerHTML={{ __html: statusHtml }} />
+
+        {trialAvailable && (
+          <div style={{ marginBottom: 14 }}>
+            <StartTrialCard onActivated={async () => { router.push('/predict'); }} />
+          </div>
+        )}
 
         <div className="plan-card featured" style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 20, background: 'var(--bg-2)', marginBottom: 14, transition: 'background 0.22s, border-color 0.22s', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, var(--gold), transparent)' }} />
