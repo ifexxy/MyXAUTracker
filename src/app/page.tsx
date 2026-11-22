@@ -64,13 +64,13 @@ useEffect(() => {
       setAuthInner(
         <>
           <div className="inline-flex items-center gap-[5px] text-[10px] font-bold px-[9px] py-[4px] rounded-full mb-[10px]" style={{ color: 'var(--green)', background: 'var(--green-bg)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-            Get 3 days trial. Pay 10 USD/month after trial ends!
+            Start a 3-day trial for just $1. Then $10/month.
           </div>
           <p className="text-[13px] mb-[14px]" style={{ color: 'var(--ink-2)', lineHeight: 1.6 }}>
-            <strong style={{ color: 'var(--ink)' }}>Two steps</strong> to get started, just email and password. Full forecast dashboard free for 3 days.
+            <strong style={{ color: 'var(--ink)' }}>Two steps</strong> to register: just email and password. Start your 3-day trial with a one-time $1 payment.
           </p>
           <Link href="/signup" className="flex items-center justify-center gap-[8px] w-full py-[14px] text-[14px] font-bold rounded-[8px] no-underline mb-[8px]" style={{ background: 'var(--ink)', color: 'var(--bg)' }}>
-            <i className="fa-solid fa-rocket" style={{ fontSize: 12 }} /> Create Free Account
+            <i className="fa-solid fa-rocket" style={{ fontSize: 12 }} /> Create Account
           </Link>
           <Link href="/login" className="flex items-center justify-center w-full py-[13px] text-[14px] font-semibold rounded-[8px] no-underline" style={{ background: 'transparent', color: 'var(--ink-2)', border: '1px solid var(--border)' }}>
             Sign In
@@ -125,7 +125,7 @@ useEffect(() => {
   }}
 >
   <i className="fa-solid fa-arrow-right" style={{ fontSize: 20 }} />
-  {user ? 'Account Dashboard' : 'Start Free Trial'}
+  {user ? 'Account Dashboard' : 'Start 3-Day Trial'}
 </Link>
 
   {/* Secondary */}
