@@ -1,5 +1,6 @@
 const { db } = require('./_firebase');
 const crypto = require('crypto');
+const { TRIAL_REF_PREFIX, uidFromTrialRef, isValidTrialPayment, activateTrial } = require('./_trial');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -19,6 +20,18 @@ module.exports = async function handler(req, res) {
   try {
     if (event.event === 'charge.completed' && event.data.status === 'successful') {
       const txRef    = event.data.tx_ref;
+
+      /* Trial payments: start the trial even if the buyer closed the tab
+         before the browser callback ran. Safe to run twice (see activateTrial). */
+      if (String(txRef || '').startsWith(TRIAL_REF_PREFIX)) {
+        const trialUid = uidFromTrialRef(txRef);
+        if (!trialUid || !isValidTrialPayment(event.data))
+          return res.status(200).json({ received: true, ignored: 'invalid trial payment' });
+        const result = await activateTrial(trialUid, event.data);
+        // 4xx outcomes (already used, etc.) are final; answer 200 so Flutterwave stops retrying
+        return res.status(200).json({ received: true, trial: result.ok ? 'activated' : result.error });
+      }
+
       const amount   = event.data.amount;
       const currency = event.data.currency;
 
