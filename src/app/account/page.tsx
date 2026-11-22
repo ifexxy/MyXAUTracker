@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,6 +8,7 @@ import { getFirebase } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import type { UserData } from '@/types';
 import Footer from '@/components/Footer';
+import StartTrialCard, { canStartTrial } from '@/components/StartTrialCard';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -21,16 +22,16 @@ export default function AccountPage() {
     if (!authLoading && !user && mounted) router.push('/login');
   }, [user, authLoading, mounted, router]);
 
-  useEffect(() => {
+  const loadUserData = useCallback(async () => {
     if (!user) return;
-    (async () => {
-      try {
-        const fb = getFirebase();
-        const snap = await getDoc(doc(fb.db, 'users', user.uid));
-        if (snap.exists()) setUserData(snap.data() as UserData);
-      } catch {}
-    })();
+    try {
+      const fb = getFirebase();
+      const snap = await getDoc(doc(fb.db, 'users', user.uid));
+      if (snap.exists()) setUserData(snap.data() as UserData);
+    } catch {}
   }, [user]);
+
+  useEffect(() => { loadUserData(); }, [loadUserData]);
 
   if (!mounted || authLoading) {
     return (
@@ -53,19 +54,24 @@ export default function AccountPage() {
     (userData.manualAccess && (!manualExpiry || manualExpiry.getTime() > now))
   ) : false;
 
+  const trialAvailable = canStartTrial(userData);
+
   const statusLabel =
+    trialAvailable                            ? 'Trial Available'     :
     userData?.subscriptionStatus === 'active' ? 'Active Subscription' :
     userData?.subscriptionStatus === 'trial'  ? '3-Day Free Trial'    :
     userData?.manualAccess                    ? 'Access Granted'      :
     'No Active Plan';
 
   const statusColor =
+    trialAvailable                            ? 'var(--gold)'  :
     userData?.subscriptionStatus === 'active' ? 'var(--green)' :
     userData?.subscriptionStatus === 'trial'  ? 'var(--gold)'  :
     userData?.manualAccess                    ? 'var(--green)' :
     'var(--red)';
 
   const statusBg =
+    trialAvailable                            ? 'var(--gold-bg)'  :
     userData?.subscriptionStatus === 'active' ? 'var(--green-bg)' :
     userData?.subscriptionStatus === 'trial'  ? 'var(--gold-bg)'  :
     userData?.manualAccess                    ? 'var(--green-bg)' :
@@ -153,7 +159,7 @@ export default function AccountPage() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', background: 'var(--bg-2)', borderRadius: 9 }}>
               <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>Access</span>
               <span style={{ fontSize: 13, fontWeight: 700, color: hasAccess ? 'var(--green)' : 'var(--red)' }}>
-                {hasAccess ? 'Full access' : 'Expired'}
+                {hasAccess ? 'Full access' : trialAvailable ? 'Trial not started' : 'Expired'}
               </span>
             </div>
           </div>
@@ -191,6 +197,13 @@ export default function AccountPage() {
           </button>
         </div>
       </div>
+
+      {/* Paid trial offer (new accounts only) */}
+      {trialAvailable && (
+        <div style={{ margin: '0 16px 14px' }}>
+          <StartTrialCard onActivated={async () => { await loadUserData(); router.push('/predict'); }} />
+        </div>
+      )}
 
       {/* What are we analysing today */}
       <div style={{ margin: '0 16px 14px' }}>
