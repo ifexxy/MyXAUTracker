@@ -30,13 +30,13 @@ export default function TermsPage() {
         <UL>
           <li>You must give a valid email address that you control, and verify it with the code we send.</li>
           <li>Keep your password confidential. You are responsible for all activity on your account.</li>
-          <li>One person may hold one account. Do not create multiple accounts, including to repeat the free trial.</li>
+          <li>One person may hold one account. Do not create multiple accounts, including to repeat the trial.</li>
           <li>Do not share, sell or transfer your account or your access.</li>
         </UL>
       </Section>
 
-      <Section n={4} title="Free trial">
-        <P>New accounts receive a 3-day free trial. The trial is limited to one per person. We may end or refuse a trial, or suspend an account, if we believe the trial is being abused.</P>
+      <Section n={4} title="3-day trial">
+        <P>New accounts can start a 3-day trial by making a one-time payment of <B>$1</B>, charged as <B>₦1,500</B>. The trial starts when the payment is confirmed and runs for 3 days. It is limited to one per person, is non-refundable, and does not renew or charge you again automatically. We may end or refuse a trial, or suspend an account, if we believe the trial is being abused.</P>
       </Section>
 
       <Section n={5} title="Subscription and payment">
@@ -69,7 +69,7 @@ export default function TermsPage() {
       </Section>
 
       <Section n={9} title="Suspension and termination">
-        <P>We may suspend or terminate your account, with or without notice, if you breach these Terms, abuse the free trial, create multiple accounts, attempt fraud, or put the Service or other users at risk. A suspended user cannot sign in. If you believe a suspension was a mistake, contact <a href={`mailto:${SUPPORT_EMAIL}`} style={link}>{SUPPORT_EMAIL}</a>. You may stop using the Service and ask us to delete your account at any time.</P>
+        <P>We may suspend or terminate your account, with or without notice, if you breach these Terms, abuse the trial, create multiple accounts, attempt fraud, or put the Service or other users at risk. A suspended user cannot sign in. If you believe a suspension was a mistake, contact <a href={`mailto:${SUPPORT_EMAIL}`} style={link}>{SUPPORT_EMAIL}</a>. You may stop using the Service and ask us to delete your account at any time.</P>
         <P>If we terminate a paid account for a serious breach, we are not obliged to refund the unused part of the payment.</P>
       </Section>
 
